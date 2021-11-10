@@ -7,6 +7,7 @@ The members of the team are:
 - John Kelly
 - Liam Clark
 - Kanishk
+
 *Add any further information about the team here, such as absent team members.*
 
 ## Project structure
