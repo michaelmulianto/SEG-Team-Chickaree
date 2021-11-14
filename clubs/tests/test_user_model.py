@@ -80,6 +80,10 @@ class UserModelTestCase(TestCase):
         self.user.first_name = 'j' * 49
         self._assert_user_is_invalid()
 
+    def test_first_name_must_contain_only_letters(self):
+        self.user.first_name = 'J0hn'
+        self._assert_user_is_invalid()
+
     # Test last_name
     def test_last_name_cannot_be_blank(self):
         self.user.last_name = ''
@@ -104,8 +108,11 @@ class UserModelTestCase(TestCase):
         self.user.last_name = 'j' * 49
         self._assert_user_is_invalid()
 
-    # Test email
+    def test_last_name_must_contain_only_letters(self):
+        self.user.last_name = 'D0e'
+        self._assert_user_is_invalid()
 
+    # Test email
     def test_email_must_be_unique(self):
         User.objects.create_user(
             'janedoe',
