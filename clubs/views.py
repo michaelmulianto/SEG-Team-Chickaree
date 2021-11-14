@@ -6,7 +6,7 @@ Currently implemented views:
     - sign_up
 """
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from clubs import forms
 
 def home(request):
