@@ -1,3 +1,5 @@
+"""Test user-facing implementation of the sign up form."""
+
 from django.test import TestCase
 from django.urls import reverse
 from clubs.models import User
@@ -5,6 +7,7 @@ from clubs.forms import SignUpForm
 from django.contrib.auth.hashers import check_password
 
 class SignUpViewTestCase(TestCase):
+    """Test all aspects of the sign up view"""
 
     def setUp(self):
         self.url = reverse('sign_up')

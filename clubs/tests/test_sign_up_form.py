@@ -7,7 +7,7 @@ from clubs.forms import SignUpForm
 from django.contrib.auth.hashers import check_password
 
 class SignUpFormTestCase(TestCase):
-    """Test all aspects of the sign up forn"""
+    """Test all aspects of the sign up form"""
 
     def setUp(self):
         self.form_input = {
