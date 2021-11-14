@@ -4,6 +4,7 @@ Define the models for the system.
 Currently implemented models:
     - User
 """
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
