@@ -52,5 +52,5 @@ def create_club(request):
         else:
             messages.error(request, "Log in required to create a club")
     else:
-        form = CreateClubForm()
-    return render(request, 'home.html', {'form': form})
+        form = forms.CreateClubForm()
+    return render(request, 'create_club.html', {'form': form})

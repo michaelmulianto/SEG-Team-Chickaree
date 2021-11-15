@@ -60,9 +60,9 @@ class SignUpForm(forms.ModelForm):
 
 class CreateClubForm(forms.Form):
     #Define fields of the form
-    name = forms.CharField(label="Text", widget=forms.Textarea())
-    location = forms.CharField(label="Text", widget=forms.Textarea())
-    description = forms.CharField(label="Text", widget=forms.Textarea())
+    name = forms.CharField(label="Name")
+    location = forms.CharField(label="Location")
+    description = forms.CharField(label="Description", widget=forms.Textarea())
 
     #Create new club using the club form data
     def save(self):
