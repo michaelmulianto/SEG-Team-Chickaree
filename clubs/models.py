@@ -59,3 +59,33 @@ class Club(models.Model):
     created_on = models.DateTimeField(auto_now_add=True, blank=False)
     class Meta:
         ordering = ['-created_on']
+
+class Owner(models.Model):
+    owner = models.ForeignKey(
+        'Name',
+        on_delete=models.CASCADE,
+    )
+    club = models.ForeignKey(
+        'Club',
+        on_delete=models.CASCADE,
+    )
+
+class Officer(models.Model):
+    owner = models.ForeignKey(
+        'Name',
+        on_delete=models.CASCADE,
+    )
+    club = models.ForeignKey(
+        'Club',
+        on_delete=models.CASCADE,
+    )
+
+class Member(models.Model):
+    owner = models.ForeignKey(
+        'Name',
+        on_delete=models.CASCADE,
+    )
+    club = models.ForeignKey(
+        'Club',
+        on_delete=models.CASCADE,
+    )
