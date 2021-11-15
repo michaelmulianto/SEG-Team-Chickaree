@@ -33,3 +33,24 @@ def sign_up(request):
         form = forms.SignUpForm()
 
     return render(request, 'sign_up.html', {'form': form})
+
+def create_club(request):
+    #View to allow user to create club
+    #If POST, form has been submitted
+    if request.method == 'POST':
+        form = CreateClubForm(request.POST)
+        if request.user.is_authenticated:
+            if form.is_valid():
+                Post.objects.create(
+                    owner = request.user,
+                    name = form.cleaned_data['name'],
+                    location = form.cleaned_data['location'],
+                    description = form.cleaned_data['description']
+                )
+                #Temporary redirect
+                return redirect('home')
+        else:
+            messages.error(request, "Log in required to create a club")
+    else:
+        form = CreateClubForm()
+    return render(request, 'home.html', {'form': form})

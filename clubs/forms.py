@@ -7,6 +7,7 @@ Currently implemented forms:
 
 from django import forms
 from clubs.models import User
+from clubs.models import Club
 from django.core.validators import RegexValidator
 
 class SignUpForm(forms.ModelForm):
@@ -56,3 +57,18 @@ class SignUpForm(forms.ModelForm):
             password = self.cleaned_data.get('new_password'),
         )
         return user
+
+class CreateClubForm(forms.Form):
+    #Define fields of the form
+    name = forms.CharField(label="Text", widget=forms.Textarea())
+    location = forms.CharField(label="Text", widget=forms.Textarea())
+    description = forms.CharField(label="Text", widget=forms.Textarea())
+
+    #Create new club using the club form data
+    def save(self):
+        super().save(commit=False)
+        club = Club.objects.create(
+            name = self.cleaned_data.get('name'),
+            location = self.cleaned_data.get('location'),
+            description = self.cleaned_data.get('description'),
+        )
