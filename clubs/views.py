@@ -7,6 +7,7 @@ Currently implemented views:
 """
 
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from clubs import forms
 
 def home(request):
@@ -38,7 +39,7 @@ def create_club(request):
     #View to allow user to create club
     #If POST, form has been submitted
     if request.method == 'POST':
-        form = CreateClubForm(request.POST)
+        form = forms.CreateClubForm(request.POST)
         if request.user.is_authenticated:
             if form.is_valid():
                 Post.objects.create(
