@@ -4,54 +4,76 @@ Define the views for the system.
 Currently implemented views:
     - home
     - sign_up
+    - log_in
 """
-
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.http import Http404
 from django.shortcuts import render, redirect
+from .forms import LogInForm, SignUpForm
 from django.contrib import messages
 from clubs import forms
+from clubs.models import Club
+from django.http import HttpResponseForbidden
 
 def home(request):
     # Default view for visitors.
-    # This should redirect logged in users somewhere eventually.
+    if request.user.is_authenticated:
+
+        return redirect(account)
+
     return render(request, 'home.html')
 
 def sign_up(request):
     # View to allow user to create account.
     # If POST, form has been submitted.
     if request.method == 'POST':
-        form = forms.SignUpForm(request.POST)
+        form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
-
-            # Temporary redirect to indicate success.
-            # (failure renders same page again)
-            # Should redirect somewhere more appropriate eventually,
-            # for example some sort of user page. Should also log user in.
-            return redirect('home')
+            login(request, user)
+            return redirect('account')
 
     # If not POST, visitor is trying to view the form e.g. via home
     else:
-        form = forms.SignUpForm()
+        form = SignUpForm()
 
     return render(request, 'sign_up.html', {'form': form})
 
-def create_club(request):
-    #View to allow user to create club
-    #If POST, form has been submitted
+
+def log_in(request):
     if request.method == 'POST':
-        form = forms.CreateClubForm(request.POST)
+        form = LogInForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('account')
+        messages.add_message(request, messages.ERROR, "The credentials provided are invalid!")
+    form = LogInForm()
+    return render(request, 'log_in.html', {'form': form})
+    #return render(request, 'log_in.html', {'title': title+"| Log In", 'form': form}) when title is ready
+
+def account(request):
+    return render(request, 'account.html')
+
+
+def create_club(request):
+    if request.method == 'POST':
         if request.user.is_authenticated:
+            current_user = request.user
+            form = forms.CreateClubForm(request.POST)
             if form.is_valid():
-                Post.objects.create(
-                    owner = request.user,
-                    name = form.cleaned_data['name'],
-                    location = form.cleaned_data['location'],
-                    description = form.cleaned_data['description']
-                )
-                #Temporary redirect
-                return redirect('home')
+                name = form.cleaned_data.get('name'),
+                location = form.cleaned_data.get('location'),
+                description = form.cleaned_data.get('description'),
+                post = Club.objects.create(name=name, location=location, description=description)
+                return redirect('create_club')
+            else:
+                return render(request, 'create_club.html', {'form': form})
         else:
-            messages.error(request, "Log in required to create a club")
+            return redirect('log_in')
     else:
-        form = forms.CreateClubForm()
-    return render(request, 'create_club.html', {'form': form})
+        return HttpResponseForbidden()
