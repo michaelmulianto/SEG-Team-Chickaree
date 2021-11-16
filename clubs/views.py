@@ -11,6 +11,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import Http404
 from django.shortcuts import render, redirect
 from .forms import LogInForm, SignUpForm
+from django.contrib import messages
+from clubs import forms
+from clubs.models import Club
+from django.http import HttpResponseForbidden
 
 def home(request):
     # Default view for visitors.
@@ -36,6 +40,7 @@ def sign_up(request):
 
     return render(request, 'sign_up.html', {'form': form})
 
+
 def log_in(request):
     if request.method == 'POST':
         form = LogInForm(request.POST)
@@ -53,3 +58,22 @@ def log_in(request):
 
 def account(request):
     return render(request, 'account.html')
+
+
+def create_club(request):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            current_user = request.user
+            form = forms.CreateClubForm(request.POST)
+            if form.is_valid():
+                name = form.cleaned_data.get('name'),
+                location = form.cleaned_data.get('location'),
+                description = form.cleaned_data.get('description'),
+                post = Club.objects.create(name=name, location=location, description=description)
+                return redirect('create_club')
+            else:
+                return render(request, 'create_club.html', {'form': form})
+        else:
+            return redirect('log_in')
+    else:
+        return HttpResponseForbidden()

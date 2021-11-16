@@ -1,0 +1,13 @@
+<html>
+<head>
+    <title>Chess Clubs</title>
+</head>
+<body>
+    <h1>Create Club</h1>
+    <form action="{% url 'create_club' %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <input type="submit" value="Create Club">
+</body>
+</html>

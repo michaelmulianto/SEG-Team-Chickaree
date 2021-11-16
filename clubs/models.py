@@ -45,3 +45,17 @@ class User(AbstractUser):
         unique=True,
         blank=False,
     )
+
+class Club(models.Model):
+    #Define foreign key of the club model
+    # owner = models.ForeignKey(
+    #     'User',
+    #     on_delete=models.CASCADE,
+    # )
+    name = models.CharField(max_length=50, blank=True, unique = True)
+    location = models.CharField(max_length=50, blank=True)
+    description =  models.CharField(max_length=280, blank=True)
+    #Automatically use current time as the club creation date
+    created_on = models.DateTimeField(auto_now_add=True, blank=False)
+    class Meta:
+        ordering = ['-created_on']
