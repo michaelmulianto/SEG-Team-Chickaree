@@ -24,12 +24,8 @@ def sign_up(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
-
-            # Temporary redirect to indicate success.
-            # (failure renders same page again)
-            # Should redirect somewhere more appropriate eventually,
-            # for example some sort of user page. Should also log user in.
-            return redirect('home')
+            login(request, user)
+            return redirect('account')
 
     # If not POST, visitor is trying to view the form e.g. via home
     else:
@@ -50,7 +46,7 @@ def log_in(request):
         messages.add_message(request, messages.ERROR, "The credentials provided are invalid!")
     form = LogInForm()
     return render(request, 'log_in.html', {'form': form})
-    #return render(request, 'log_in.html', {'title': title+"| Log In", 'form': form}) when tittle is ready
+    #return render(request, 'log_in.html', {'title': title+"| Log In", 'form': form}) when title is ready
 
 def account(request):
     return render(request, 'account.html')
