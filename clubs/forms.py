@@ -1,14 +1,22 @@
 """
-Define the forms for the system.
+Define the forms for the system. Forms take data and utilise it for a certain
+purpose like loggin in a user with the correct username and password.
 
 Currently implemented forms:
     - SignUpForm
+    - LogInForm
 """
 
 from django import forms
 from clubs.models import User
 from clubs.models import Club
 from django.core.validators import RegexValidator
+
+"""Form to grant access to a returning user's personalised content"""
+class LogInForm(forms.Form):
+    username = forms.CharField(label='Username')
+    password = forms.CharField(label='Password', widget=forms.PasswordInput)
+
 
 class SignUpForm(forms.ModelForm):
     """Form to allow a visitor to make an account and become a registered user"""
