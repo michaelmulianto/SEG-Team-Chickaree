@@ -60,5 +60,5 @@ class Member(models.Model):
     """Model representing a member of some single chess club"""
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    isOfficer = BooleanField(default=False)
-    isOwner = BooleanField(default=True)
+    isOfficer = models.BooleanField(default=False)
+    isOwner = models.BooleanField(default=True)
