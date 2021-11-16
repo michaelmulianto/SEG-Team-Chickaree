@@ -14,7 +14,10 @@ from .forms import LogInForm, SignUpForm
 
 def home(request):
     # Default view for visitors.
-    # This should redirect logged in users somewhere eventually.
+    if request.user.is_authenticated:
+
+        return redirect(account)
+
     return render(request, 'home.html')
 
 def sign_up(request):
