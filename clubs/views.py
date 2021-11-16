@@ -76,4 +76,4 @@ def create_club(request):
         else:
             return redirect('log_in')
     else:
-        return HttpResponseForbidden()
+        return render(request, 'create_club.html', {'form': forms.CreateClubForm()})

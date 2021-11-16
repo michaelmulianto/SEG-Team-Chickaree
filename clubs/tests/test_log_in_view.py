@@ -8,7 +8,7 @@ from clubs.models import User
 from .helpers import LogInTester
 
 class LogInViewTestCase(TestCase, LogInTester):
-
+    """Test all aspects of log in view"""
     def setUp(self):
         self.url = reverse('log_in')
         self.form_input = {
