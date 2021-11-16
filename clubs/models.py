@@ -12,46 +12,46 @@ from django.core.validators import RegexValidator
 class User(AbstractUser):
     """Model for a generic user, independent of any clubs"""
     username = models.CharField(
-    max_length=32,
-    unique=True,
-    blank=False,
-    validators=[
-        # Ensure only alphanumerics are used and length is min 3.
-        RegexValidator(regex=r'^\w{3,}$'),
-    ],
+        max_length=32,
+        unique=True,
+        blank=False,
+        validators=[
+            # Ensure only alphanumerics are used and length is min 3.
+            RegexValidator(regex=r'^\w{3,}$'),
+        ],
     )
 
     last_name = models.CharField(
-    max_length=48,
-    unique=False,
-    blank=False,
-    validators=[
-        # Ensure only letters are used.
-        RegexValidator(regex=r'^[a-zA-Z]{1,}$'),
-    ],
+        max_length=48,
+        unique=False,
+        blank=False,
+        validators=[
+            # Ensure only letters are used.
+            RegexValidator(regex=r'^[a-zA-Z]{1,}$'),
+        ],
     )
 
     first_name = models.CharField(
-    max_length=48,
-    unique=False,
-    blank=False,
-    validators=[
-        # Ensure only letters are used.
-        RegexValidator(regex=r'^[a-zA-Z]{1,}$'),
-    ],
+        max_length=48,
+        unique=False,
+        blank=False,
+        validators=[
+            # Ensure only letters are used.
+            RegexValidator(regex=r'^[a-zA-Z]{1,}$'),
+        ],
     )
 
     email = models.EmailField(
-    unique=True,
-    blank=False,
+        unique=True,
+        blank=False,
     )
 
 class Club(models.Model):
     #Define foreign key of the club model
-    owner = models.ForeignKey(
-        'User',
-        on_delete=models.CASCADE,
-    )
+    # owner = models.ForeignKey(
+    #     'User',
+    #     on_delete=models.CASCADE,
+    # )
     name = models.CharField(max_length=50, blank=True, unique = True)
     location = models.CharField(max_length=50, blank=True)
     description =  models.CharField(max_length=280, blank=True)
@@ -59,33 +59,3 @@ class Club(models.Model):
     created_on = models.DateTimeField(auto_now_add=True, blank=False)
     class Meta:
         ordering = ['-created_on']
-
-class Owner(models.Model):
-    owner = models.ForeignKey(
-        'Name',
-        on_delete=models.CASCADE,
-    )
-    club = models.ForeignKey(
-        'Club',
-        on_delete=models.CASCADE,
-    )
-
-class Officer(models.Model):
-    owner = models.ForeignKey(
-        'Name',
-        on_delete=models.CASCADE,
-    )
-    club = models.ForeignKey(
-        'Club',
-        on_delete=models.CASCADE,
-    )
-
-class Member(models.Model):
-    owner = models.ForeignKey(
-        'Name',
-        on_delete=models.CASCADE,
-    )
-    club = models.ForeignKey(
-        'Club',
-        on_delete=models.CASCADE,
-    )
