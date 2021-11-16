@@ -5,8 +5,9 @@ from django.urls import reverse
 from clubs.models import User
 from clubs.forms import SignUpForm
 from django.contrib.auth.hashers import check_password
+from .helpers import LogInTester
 
-class SignUpViewTestCase(TestCase):
+class SignUpViewTestCase(TestCase, LogInTester):
     """Test all aspects of the sign up view"""
 
     def setUp(self):
@@ -42,21 +43,21 @@ class SignUpViewTestCase(TestCase):
         form = response.context['form']
         self.assertTrue(isinstance(form, SignUpForm))
         self.assertTrue(form.is_bound)
-        # CHECK IF USER IS LOGGED IN (SHOULD BE FALSE)
+        self.assertFalse(self._is_logged_in())
 
     def test_successful_sign_up(self):
         before_count = User.objects.count()
-        response_url = reverse('home')
+        response_url = reverse('account')
         response = self.client.post(self.url, self.form_input, follow=True)
         after_count = User.objects.count()
         self.assertEqual(after_count, before_count+1)
         self.assertRedirects(response, response_url, status_code=302,
         target_status_code=200) #REDIRECT
-        self.assertTemplateUsed(response, 'home.html')
+        self.assertTemplateUsed(response, 'account.html')
         user = User.objects.get(username='janedoe')
         self.assertEqual(user.first_name, 'Jane')
         self.assertEqual(user.last_name, 'Doe')
         self.assertEqual(user.email, 'janedoe@example.org')
         is_password_correct = check_password('Password123', user.password)
         self.assertTrue(is_password_correct)
-        # CHECK IF USER IS LOGGED IN (SHOULD BE TRUE)
+        self.assertTrue(self._is_logged_in())
