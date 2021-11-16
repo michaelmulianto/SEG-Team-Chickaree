@@ -11,44 +11,48 @@ class CreateClubViewTest(TestCase):
 
     def setUp(self):
         self.url = reverse('create_club')
-        self.form_input = {
-        'first_name': 'Jane',
-        'last_name': 'Doe',
-        'username': 'janedoe',
-        'email': 'janedoe@example.org',
-        'new_password': 'Password123',
-        'password_confirmation': 'Password123'
+        self.user = User.objects.create_user(
+            '@johndoe',
+            first_name='John',
+            last_name='Doe',
+            email='johndoe@example.org',
+            password='Password123',
+        )
+        self.data = {
+        'name' : 'Kings Knight',
+        'location' : 'Kings College',
+        'description' : 'best club in the world'
         }
 
     def test_create_club_url(self):
         self.assertEqual(self.url, '/create_club/')
 
-    def test_get_create_club(self):
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, 200) #OK
-        self.assertTemplateUsed(response, 'create_club.html')
-        form = response.context['form']
-        self.assertTrue(isinstance(form, CreateClubForm))
-        self.assertFalse(form.is_bound)
+    def test_get_create_club_is_forbidden(self):
+        self.client.login(username=self.user.username, password="Password123")
+        user_count_before = Club.objects.count()
+        response = self.client.get(self.url, follow=True)
+        user_count_after = Club.objects.count()
+        self.assertEqual(user_count_after, user_count_before)
+        self.assertEqual(response.status_code, 403)
 
-    # def test_create_club_redirects_when_not_logged_in(self):
-    #     user_count_before = Club.objects.count()
-    #     redirect_url = reverse('log_in')
-    #     response = self.client.post(self.url, self.data, follow=True)
-    #     self.assertRedirects(response, redirect_url,
-    #         status_code=302, target_status_code=200, fetch_redirect_response=True
-    #     )
-    #     user_count_after = Club.objects.count()
-    #     self.assertEqual(user_count_after, user_count_before)
-    #
+    def test_create_club_redirects_when_not_logged_in(self):
+        user_count_before = Club.objects.count()
+        redirect_url = reverse('log_in')
+        response = self.client.post(self.url, self.data, follow=True)
+        self.assertRedirects(response, redirect_url,
+            status_code=302, target_status_code=200, fetch_redirect_response=True
+        )
+        user_count_after = Club.objects.count()
+        self.assertEqual(user_count_after, user_count_before)
+
     # def test_successful_create_club(self):
     #     self.client.login(username=self.user.username, password="Password123")
-    #     before_count = Club.objects.count()
-    #     response = self.client.post(self.url, self.form_input, follow=True)
-    #     after_count = Club.objects.count()
-    #     self.assertEqual(after_count, before_count+1)
+    #     user_count_before = Club.objects.count()
+    #     response = self.client.post(self.url, self.data, follow=True)
+    #     user_count_after = Club.objects.count()
+    #     self.assertEqual(user_count_after, user_count_before+1)
     #     new_club = Club.objects.latest('created_on')
-    #     self.assertEqual(self.user, new_club.owner)
+    #     #self.assertEqual(self.user, new_post.author)
     #     response_url = reverse('create_club')
     #     self.assertRedirects(
     #         response, response_url,
@@ -56,3 +60,12 @@ class CreateClubViewTest(TestCase):
     #         fetch_redirect_response=True
     #     )
     #     self.assertTemplateUsed(response, 'create_club.html')
+
+    def test_unsuccessful_create_club(self):
+        self.client.login(username='@johndoe', password='Password123')
+        user_count_before = Club.objects.count()
+        self.data['name'] = ""
+        response = self.client.post(self.url, self.data, follow=True)
+        user_count_after = Club.objects.count()
+        self.assertEqual(user_count_after, user_count_before)
+        self.assertTemplateUsed(response, 'create_club.html')
