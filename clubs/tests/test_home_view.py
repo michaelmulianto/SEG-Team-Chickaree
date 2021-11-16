@@ -5,7 +5,7 @@ from django.urls import reverse
 from clubs.models import User
 
 class AccountViewTestCase(TestCase):
-
+    """Test aspects of account view"""
     def setUp(self):
         self.url = reverse('home')
         self.user = User.objects.create_user(
