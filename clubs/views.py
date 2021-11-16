@@ -46,8 +46,11 @@ def log_in(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('feed')
+                return redirect('account')
         messages.add_message(request, messages.ERROR, "The credentials provided are invalid!")
     form = LogInForm()
     return render(request, 'log_in.html', {'form': form})
     #return render(request, 'log_in.html', {'title': title+"| Log In", 'form': form}) when tittle is ready
+
+def account(request):
+    return render(request, 'account.html')

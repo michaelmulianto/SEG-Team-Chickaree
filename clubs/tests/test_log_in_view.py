@@ -76,14 +76,14 @@ class LogInViewTestCase(TestCase, LogInTester):
         self.assertEqual(len(messages_list), 1)
         self.assertEqual(messages_list[0].level, messages.ERROR)
 
-    # def test_successful_log_in(self):
-    #     response = self.client.post(self.url, self.form_input, follow=True)
-    #     self.assertTrue(self._is_logged_in())
-    #     response_url = reverse('feed')
-    #     self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
-    #     self.assertTemplateUsed(response, 'feed.html')
-    #     messages_list = list(response.context['messages'])
-    #     self.assertEqual(len(messages_list), 0)
+    def test_successful_log_in(self):
+        response = self.client.post(self.url, self.form_input, follow=True)
+        self.assertTrue(self._is_logged_in())
+        response_url = reverse('account')
+        self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'account.html')
+        messages_list = list(response.context['messages'])
+        self.assertEqual(len(messages_list), 0)
 
 
     def test_valid_log_in_by_inacitve_user(self):
