@@ -15,12 +15,14 @@ from django.contrib import messages
 from clubs import forms
 from clubs.models import Club
 from django.http import HttpResponseForbidden
+from django.core.exceptions import ObjectDoesNotExist
+from clubs.models import User
 
 def home(request):
     # Default view for visitors.
     if request.user.is_authenticated:
 
-        return redirect(account)
+        return render(request, 'account.html', {'user': request.user})
 
     return render(request, 'home.html')
 
@@ -32,7 +34,7 @@ def sign_up(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('account')
+            return redirect(request, 'account.html', {'user': user})
 
     # If not POST, visitor is trying to view the form e.g. via home
     else:
@@ -50,19 +52,19 @@ def log_in(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('account')
+                return redirect(request, 'account', {'user': user})
         messages.add_message(request, messages.ERROR, "The credentials provided are invalid!")
     form = LogInForm()
     return render(request, 'log_in.html', {'form': form})
     #return render(request, 'log_in.html', {'title': title+"| Log In", 'form': form}) when title is ready
 
-def account(request, user_id):
+def account(request):
     try:
-        user = User.objects.get(id=user_id)
+        user = User.objects.get(id = request.user.id)
     except ObjectDoesNotExist:
         return redirect('no_account_found')
     else:
-        return render(request, 'show_user.html', {'user': user})
+        return render(request, 'account.html', {'user': request.user})
 
 
 def create_club(request):
