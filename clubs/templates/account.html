@@ -6,7 +6,6 @@
     <h1>Show User</h1>
 
     <p><b>Personal information displayed here</b></p>
-            <p>Your account information:</p>
             {%csrf_token%}
             <p><b>{{user}}</b></p>
             <p><b>Name: </b> {{user.first_name}} {{" "}} {{user.last_name}}</p>
