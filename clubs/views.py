@@ -15,12 +15,13 @@ from django.contrib import messages
 from clubs import forms
 from clubs.models import Club
 from django.http import HttpResponseForbidden
+from django.core.exceptions import ObjectDoesNotExist
+from clubs.models import User
 
 def home(request):
     # Default view for visitors.
     if request.user.is_authenticated:
-
-        return redirect(account)
+        return redirect('account')
 
     return render(request, 'home.html')
 
@@ -57,7 +58,18 @@ def log_in(request):
     #return render(request, 'log_in.html', {'title': title+"| Log In", 'form': form}) when title is ready
 
 def account(request):
-    return render(request, 'account.html')
+    if request.user.is_authenticated:
+        try:
+            #find the appropriate user
+            user = request.user
+        except ObjectDoesNotExist:
+             return redirect('no_account_found')
+
+             #if found show their information
+        else:
+            return render(request, 'account.html', {'user': request.user})
+    else:
+        return redirect("home")
 
 
 def create_club(request):
