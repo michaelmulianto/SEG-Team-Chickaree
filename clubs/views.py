@@ -71,6 +71,15 @@ def account(request):
     else:
         return redirect("home")
 
+def edit_account(request):
+    if request.user.is_authenticated:
+        pass
+
+    else:
+        return redirect("home")
+
+def change_password(request):
+    pass
 
 def create_club(request):
     if request.method == 'POST':
