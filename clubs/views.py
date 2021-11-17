@@ -56,8 +56,13 @@ def log_in(request):
     return render(request, 'log_in.html', {'form': form})
     #return render(request, 'log_in.html', {'title': title+"| Log In", 'form': form}) when title is ready
 
-def account(request):
-    return render(request, 'account.html')
+def account(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except ObjectDoesNotExist:
+        return redirect('no_account_found')
+    else:
+        return render(request, 'show_user.html', {'user': user})
 
 
 def create_club(request):
