@@ -21,8 +21,7 @@ from clubs.models import User
 def home(request):
     # Default view for visitors.
     if request.user.is_authenticated:
-
-        return render(request, 'account.html', {'user': request.user})
+        return redirect('account')
 
     return render(request, 'home.html')
 
@@ -34,7 +33,7 @@ def sign_up(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect(request, 'account.html', {'user': user})
+            return redirect('account')
 
     # If not POST, visitor is trying to view the form e.g. via home
     else:
@@ -52,18 +51,20 @@ def log_in(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect(request, 'account', {'user': user})
+                return redirect('account')
         messages.add_message(request, messages.ERROR, "The credentials provided are invalid!")
     form = LogInForm()
     return render(request, 'log_in.html', {'form': form})
     #return render(request, 'log_in.html', {'title': title+"| Log In", 'form': form}) when title is ready
 
 def account(request):
-    try:
-        user = User.objects.get(id = request.user.id)
-    except ObjectDoesNotExist:
-        return redirect('no_account_found')
-    else:
+    # try:
+    #     #find the appropriate user
+    #     user = User.objects.get(id = request.user.id)
+    # except ObjectDoesNotExist:
+    #     return redirect('no_account_found')
+    #     #if found show their information
+    # else:
         return render(request, 'account.html', {'user': request.user})
 
 
