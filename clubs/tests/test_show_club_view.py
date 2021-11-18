@@ -1,8 +1,11 @@
+"""Test view to fetch info about a specific club."""
+
 from django.test import TestCase
 from django.urls import reverse
 from clubs.models import Club
 
 class ShowClubTest(TestCase):
+    """Test aspects of show club view"""
     def setUp(self):
         self.club = Club.objects.create(
             name = 'Kings Knight',
