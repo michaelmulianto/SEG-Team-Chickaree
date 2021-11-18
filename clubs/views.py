@@ -90,7 +90,7 @@ def show_clubs(request):
     clubs = Club.objects.all()
     return render(request, 'show_clubs.html', {'my_clubs': clubs})
 
-def apply_to_club(request):
+def apply_to_club(request, club_id):
     if request.method == 'POST':
         if request.user.is_authenticated:
             desired_club = Club.objects.get(id = club_id)
