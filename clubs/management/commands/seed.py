@@ -1,9 +1,8 @@
 from django.core.management.base import BaseCommand, CommandError
 from faker import Faker
-from clubs.models import User, Club
+from clubs.models import User
 
 class Command(BaseCommand):
-    """The database seeder."""
     def __init__(self):
         super().__init__()
         self.faker = Faker('en_GB')
@@ -13,6 +12,7 @@ class Command(BaseCommand):
             fn = self.faker.unique.first_name()
             ln = self.faker.unique.last_name()
             e = f"{fn}.{ln}@example.org"
+            b = self.faker.text(max_nb_chars = 520)
             us = f"@{fn}{ln}"
 
             user = User.objects.create_user(
@@ -20,6 +20,7 @@ class Command(BaseCommand):
                 first_name = fn,
                 last_name = ln,
                 email = e,
+                bio = b,
                 password = "Password123",
             )
 
