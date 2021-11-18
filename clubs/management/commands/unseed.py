@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand, CommandError
 from faker import Faker
-from microblogs.models import User, Club
+from clubs.models import User, Club
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        User.objects.filter(is_staff=False, is_superuser=False).delete()
+        User.objects.exclude(username = 'admin').delete()
         Club.objects.delete()
