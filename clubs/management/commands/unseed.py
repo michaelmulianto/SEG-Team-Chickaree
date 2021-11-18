@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
-from microblogs.models import User
+from faker import Faker
+from microblogs.models import User, Club
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
