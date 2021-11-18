@@ -78,14 +78,16 @@ def create_club(request):
             current_user = request.user
             form = forms.CreateClubForm(request.POST)
             if form.is_valid():
-                name = form.cleaned_data.get('name'),
-                location = form.cleaned_data.get('location'),
-                description = form.cleaned_data.get('description'),
-                post = Club.objects.create(name=name, location=location, description=description)
-                return redirect('create_club')
+                form.save()
+                return redirect('show_clubs')
             else:
                 return render(request, 'create_club.html', {'form': form})
         else:
             return redirect('log_in')
     else:
         return render(request, 'create_club.html', {'form': forms.CreateClubForm()})
+
+def show_clubs(request):
+    clubs = Club.objects.all()
+    return render(request, 'show_clubs.html', {'my_clubs': clubs})
+

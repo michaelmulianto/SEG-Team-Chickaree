@@ -66,11 +66,13 @@ class SignUpForm(forms.ModelForm):
         )
         return user
 
-class CreateClubForm(forms.Form):
-    #Define fields of the form
-    name = forms.CharField(label="Name")
-    location = forms.CharField(label="Location")
-    description = forms.CharField(label="Description", widget=forms.Textarea())
+class CreateClubForm(forms.ModelForm):
+
+    class Meta:
+        model = Club
+        fields = ['name', 'location', 'description']
+        widgets = {'description': forms.Textarea()}
+
 
     #Create new club using the club form data
     def save(self):
@@ -80,3 +82,4 @@ class CreateClubForm(forms.Form):
             location = self.cleaned_data.get('location'),
             description = self.cleaned_data.get('description'),
         )
+        return club

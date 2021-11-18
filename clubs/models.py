@@ -48,13 +48,15 @@ class User(AbstractUser):
 
 class Club(models.Model):
     """Model representing a single chess club."""
-    name = models.CharField(max_length=50, blank=True, unique = True)
-    location = models.CharField(max_length=50, blank=True)
-    description =  models.CharField(max_length=280, blank=True)
+    name = models.CharField(max_length=50, blank=False, unique = True)
+    location = models.CharField(max_length=50, blank=False)
+    description =  models.CharField(max_length=280, blank=False)
     #Automatically use current time as the club creation date
     created_on = models.DateTimeField(auto_now_add=True, blank=False)
+
     class Meta:
         ordering = ['-created_on']
+
 
 class Member(models.Model):
     """Model representing a member of some single chess club"""
