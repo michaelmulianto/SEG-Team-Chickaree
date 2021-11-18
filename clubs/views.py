@@ -5,6 +5,10 @@ Currently implemented views:
     - home
     - sign_up
     - log_in
+    - account
+    - create clubs
+    - show_clubs
+    - show_club
 """
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
