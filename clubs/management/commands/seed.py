@@ -6,6 +6,7 @@ class Command(BaseCommand):
     """The database seeder."""
     PASSWORD = "Password123"
     USER_COUNT = 100
+    CLUB_COUNT = 20
 
     def __init__(self):
         super().__init__()
@@ -21,6 +22,27 @@ class Command(BaseCommand):
                 continue
             user_count += 1
         print('User seeding complete')
+
+        club_count = 0
+        while club_count < Command.CLUB_COUNT:
+            print(f'Seeding club {club_count}',  end='\r')
+            try:
+                self._create_club()
+            except (django.db.utils.IntegrityError):
+                continue
+            club_count += 1
+        print('Club seeding complete')
+
+    def _create_club(self):
+        name = self.faker.name()
+        location = self.faker.country()
+        description = self.faker.text(max_nb_chars=280)
+        Club(
+            name=name,
+            location=location,
+            description=description,
+        )
+
 
     def _create_user(self):
         first_name = self.faker.first_name()
