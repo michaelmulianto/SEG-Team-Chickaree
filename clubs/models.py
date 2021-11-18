@@ -53,8 +53,10 @@ class Club(models.Model):
     description =  models.CharField(max_length=280, blank=False)
     #Automatically use current time as the club creation date
     created_on = models.DateTimeField(auto_now_add=True, blank=False)
+
     class Meta:
         ordering = ['-created_on']
+
 
 class Member(models.Model):
     """Model representing a member of some single chess club"""
