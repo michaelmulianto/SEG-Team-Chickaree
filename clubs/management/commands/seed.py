@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from faker import Faker
-from ..clubs.models import User
+from ..clubs.models import User, Club
 
 class Command(BaseCommand):
     def __init__(self):
@@ -9,18 +9,32 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for i in range(100):
-            fn = self.faker.unique.first_name()
-            ln = self.faker.unique.last_name()
-            e = f"{fn}.{ln}@example.org"
-            us = f"@{fn}{ln}"
+            first_name = self.faker.unique.first_name()
+            last_namen = self.faker.unique.last_name()
+            email = f"{fn}.{ln}@example.org"
+            username = f"@{fn}{ln}"
 
             user = User.objects.create_user(
-                username = us,
-                first_name = fn,
-                last_name = ln,
-                email = e,
+                username = username,
+                first_name = first_name,
+                last_name = last_name,
+                email = email,
                 password = "Password123",
             )
 
             user.full_clean()
             user.save()
+
+        for i in range(20):
+            name = self.faker.unique.name()
+            location = self.faker.country()
+            description = self.faker.text(max_nb_chars=280)
+
+            club = Club(
+                name = name,
+                location = location,
+                description = description
+            )
+
+            club.full_clean()
+            club.save()
