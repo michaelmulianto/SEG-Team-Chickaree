@@ -9,4 +9,4 @@ class ShowClubsViewTestCase(TestCase):
         self.url = reverse('show_clubs')
 
     def test_get_show_clubs_url(self):
-        self.assertEqual('clubs/', self.url)
+        self.assertEqual('/clubs/', self.url)
