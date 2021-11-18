@@ -5,7 +5,8 @@
 <body>
     <h1>Clubs</h1>
     {% for club in my_clubs %}
-    <p>{{ club.name }}</p>
+    <p><b>{{ club.name }}</b> in {{ club.location }}</p>
+    <p><i>{{ club.description }}</i><p>
     {% endfor %}
 </body>
 </html>
