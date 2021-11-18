@@ -73,7 +73,6 @@ class CreateClubForm(forms.ModelForm):
         fields = ['name', 'location', 'description']
         widgets = {'description': forms.Textarea()}
 
-
     #Create new club using the club form data
     def save(self):
         super().save(commit=False)
@@ -82,22 +81,4 @@ class CreateClubForm(forms.ModelForm):
             location = self.cleaned_data.get('location'),
             description = self.cleaned_data.get('description'),
         )
-
-class ApplyToClubForm(forms.Form):
-    class Meta:
-        model = Application
-        fields = ['info']
-        widgets = {'info': forms.Textarea()}
-
-    def clean(self):
-        super().clean()
-
-    def save(self, user_in, club_in):
-        super().save(commit=False)
-        application = Application.objects.create(
-            info = self.cleaned_data.get('info'),
-            user = user_in
-            club = club_in
-        )
-        return club
 
