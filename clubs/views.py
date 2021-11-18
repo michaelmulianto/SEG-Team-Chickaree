@@ -5,6 +5,10 @@ Currently implemented views:
     - home
     - sign_up
     - log_in
+    - account
+    - create clubs
+    - show_clubs
+    - show_club
 """
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -105,3 +109,10 @@ def apply_to_club(request, club_id):
     else:
         return redirect('log_in')
 
+def show_club(request, club_id):
+    try:
+        club = Club.objects.get(id = club_id)
+    except ObjectDoesNotExist:
+        return redirect('show_clubs')
+    else:
+        return render(request, 'show_club.html', {'club': club})
