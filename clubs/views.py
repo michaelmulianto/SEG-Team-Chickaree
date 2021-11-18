@@ -91,17 +91,14 @@ def show_clubs(request):
     return render(request, 'show_clubs.html', {'my_clubs': clubs})
 
 def apply_to_club(request, club_id):
-    if request.method == 'POST':
-        if request.user.is_authenticated:
-            desired_club = Club.objects.get(id = club_id)
-            current_user = request.user 
-            Application.objects.create(
-                user = current_user,
-                club = desired_club,
-            )
-            return redirect('show_clubs')
-        else:
-            return redirect('log_in')
-    else:
+    if request.user.is_authenticated:
+        desired_club = Club.objects.get(id = club_id)
+        current_user = request.user 
+        Application.objects.create(
+            user = current_user,
+            club = desired_club,
+        )
         return redirect('show_clubs')
+    else:
+        return redirect('log_in')
 
