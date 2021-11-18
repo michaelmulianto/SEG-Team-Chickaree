@@ -63,4 +63,4 @@ class Member(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     isOfficer = models.BooleanField(default=False)
-    isOwner = models.BooleanField(default=True)
+    isOwner = models.BooleanField(default=False)
