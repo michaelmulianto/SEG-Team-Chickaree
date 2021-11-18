@@ -91,3 +91,10 @@ def show_clubs(request):
     clubs = Club.objects.all()
     return render(request, 'show_clubs.html', {'my_clubs': clubs})
 
+def show_club(request, club_id):
+    try:
+        club = Club.objects.get(id = club_id)
+    except ObjectDoesNotExist:
+        return redirect('show_clubs')
+    else:
+        return render(request, 'show_club.html', {'club': club})
