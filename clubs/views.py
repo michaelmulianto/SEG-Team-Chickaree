@@ -15,7 +15,7 @@ from django.contrib import messages
 from clubs import forms
 from django.http import HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
-from clubs.models import User, Club
+from clubs.models import User, Club, Application
 
 def home(request):
     # Default view for visitors.
@@ -99,6 +99,7 @@ def apply_to_club(request, club_id):
                 user = current_user,
                 club = desired_club,
             )
+            return redirect('show_clubs')
         else:
             return redirect('log_in')
     else:
