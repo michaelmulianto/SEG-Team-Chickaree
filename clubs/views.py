@@ -13,10 +13,9 @@ from django.shortcuts import render, redirect
 from .forms import LogInForm, SignUpForm
 from django.contrib import messages
 from clubs import forms
-from clubs.models import Club
 from django.http import HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
-from clubs.models import User
+from clubs.models import User, Club
 
 def home(request):
     # Default view for visitors.
@@ -90,4 +89,14 @@ def create_club(request):
 def show_clubs(request):
     clubs = Club.objects.all()
     return render(request, 'show_clubs.html', {'my_clubs': clubs})
+
+def apply_to_club(request):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            desired_club = Club.objects.get(id = club_id)
+            current_user = request.user 
+            Application.objects.create(
+                user = current_user,
+                club = desired_club,
+            )
 
