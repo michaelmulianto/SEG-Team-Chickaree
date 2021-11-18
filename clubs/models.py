@@ -58,12 +58,13 @@ class Club(models.Model):
 
 class Member(models.Model):
     """Model representing a member of some single chess club"""
-    club = models.ForeignKey(Club, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    club = models.ForeignKey('Club', on_delete=models.CASCADE, unique=False, blank=False)
+    user = models.ForeignKey('User', on_delete=models.CASCADE, unique=False, blank=False)
     isOfficer = models.BooleanField(default=False)
     isOwner = models.BooleanField(default=True)
 
 class Application(models.Model):
     """Model for an application to a club"""
-    club = models.ForeignKey(Club, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
+    info = models.CharField(max_length=280, unique=False, blank=False)

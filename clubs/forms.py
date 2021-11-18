@@ -80,3 +80,12 @@ class CreateClubForm(forms.Form):
             location = self.cleaned_data.get('location'),
             description = self.cleaned_data.get('description'),
         )
+
+class ApplyToClubForm(forms.Form):
+    class Meta:
+        model = Application
+        fields = ['info']
+        widgets = {'info': forms.Textarea()}
+
+    def clean(self):
+        super().clean()
