@@ -64,5 +64,6 @@ class Member(models.Model):
     isOwner = models.BooleanField(default=True)
 
 class Application(models.Model):
+    """Model for an application to a club"""
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
