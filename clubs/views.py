@@ -89,3 +89,8 @@ def create_club(request):
             return redirect('log_in')
     else:
         return render(request, 'create_club.html', {'form': forms.CreateClubForm()})
+
+def show_clubs(request):
+    clubs = Club.objects.all()
+    return render(request, 'show_clubs.html', {'my_clubs': clubs})
+
