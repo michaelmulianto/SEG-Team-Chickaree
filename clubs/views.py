@@ -96,8 +96,7 @@ def apply_to_club(request, club_id):
         desired_club = Club.objects.get(id = club_id)
         current_user = request.user 
         # Ensure that the user does not have an existing application or membership to the club.
-        if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and
-          not(Member.objects.filter(club=desired_club, user = current_user).exists()):
+        if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
             Application.objects.create(
                 user = current_user,
                 club = desired_club,
