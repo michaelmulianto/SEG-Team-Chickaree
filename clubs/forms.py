@@ -89,3 +89,11 @@ class ApplyToClubForm(forms.Form):
 
     def clean(self):
         super().clean()
+
+    def save(self, user_in, club_in):
+        super().save(commit=False)
+        application = Application.objects.create(
+            info = self.cleaned_data.get('info'),
+            user = user_in
+            club = club_in
+        )
