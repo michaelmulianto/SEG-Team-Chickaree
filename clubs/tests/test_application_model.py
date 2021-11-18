@@ -32,7 +32,7 @@ class UserModelTestCase(TestCase):
         try:
             self.app.full_clean()
         except (ValidationError):
-            self.fail("Test application should be valid")
+            self.fail("Test Application should be valid")
 
     def _assert_app_is_invalid(self):
         with self.assertRaises(ValidationError):
