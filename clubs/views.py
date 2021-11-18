@@ -99,4 +99,8 @@ def apply_to_club(request, club_id):
                 user = current_user,
                 club = desired_club,
             )
+        else:
+            return redirect('log_in')
+    else:
+        return redirect('show_clubs')
 
