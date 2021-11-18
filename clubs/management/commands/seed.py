@@ -10,7 +10,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for i in range(100):
             first_name = self.faker.unique.first_name()
-            last_namen = self.faker.unique.last_name()
+            last_name = self.faker.unique.last_name()
             email = f"{fn}.{ln}@example.org"
             username = f"@{fn}{ln}"
 
