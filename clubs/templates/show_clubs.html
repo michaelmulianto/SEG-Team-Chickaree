@@ -7,6 +7,7 @@
     {% for club in my_clubs %}
     <p><b>{{ club.name }}</b> in {{ club.location }}</p>
     <p><i>{{ club.description }}</i><p>
+    <p><a href='{% url 'apply_to_club' club.id %}'>Apply to club</a></p>
     {% endfor %}
 </body>
 </html>
