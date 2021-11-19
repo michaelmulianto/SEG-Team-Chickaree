@@ -81,7 +81,9 @@ class CreateClubForm(forms.Form):
             description = self.cleaned_data.get('description'),
         )
 
+
 class EditAccountForm(forms.ModelForm):
+    
     class Meta:
         model = User
         # If we do not specify fields, it will use all of them.
