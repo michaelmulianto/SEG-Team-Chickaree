@@ -1,11 +1,13 @@
-"""Tests for User model, found in clubs/models.py"""
+
+"""Tests for Club model, found in clubs/models.py"""
 
 from django.test import TestCase
 from clubs.models import Club
 from django.core.exceptions import ValidationError
 
-class UserModelTestCase(TestCase):
-    """Test all aspects of a user."""
+
+class ClubModelTestCase(TestCase):
+    """Test all aspects of a club."""
 
     # Test setup
     def setUp(self):

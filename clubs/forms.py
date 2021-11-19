@@ -73,7 +73,6 @@ class CreateClubForm(forms.ModelForm):
         fields = ['name', 'location', 'description']
         widgets = {'description': forms.Textarea()}
 
-
     #Create new club using the club form data
     def save(self):
         super().save(commit=False)
@@ -82,4 +81,4 @@ class CreateClubForm(forms.ModelForm):
             location = self.cleaned_data.get('location'),
             description = self.cleaned_data.get('description'),
         )
-        return club
+

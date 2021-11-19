@@ -5,6 +5,10 @@ Currently implemented views:
     - home
     - sign_up
     - log_in
+    - account
+    - create clubs
+    - show_clubs
+    - show_club
 """
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -13,10 +17,9 @@ from django.shortcuts import render, redirect
 from .forms import LogInForm, SignUpForm
 from django.contrib import messages
 from clubs import forms
-from clubs.models import Club
 from django.http import HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
-from clubs.models import User
+from clubs.models import User, Club, Application, Member
 
 def home(request):
     # Default view for visitors.
@@ -91,3 +94,29 @@ def show_clubs(request):
     clubs = Club.objects.all()
     return render(request, 'show_clubs.html', {'my_clubs': clubs})
 
+def apply_to_club(request, club_id):
+    # It should not be possible for an invalid id to be passed to this point.
+    if request.user.is_authenticated:
+        desired_club = Club.objects.get(id = club_id)
+        current_user = request.user
+        # Ensure that the user does not have an existing application or membership to the club.
+        if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
+            Application.objects.create(
+                user = current_user,
+                club = desired_club,
+            )
+        return redirect('show_clubs')
+    else:
+        return redirect('log_in')
+
+def show_club(request, club_id):
+    try:
+        club = Club.objects.get(id = club_id)
+    except ObjectDoesNotExist:
+        return redirect('show_clubs')
+    else:
+        return render(request, 'show_club.html', {'club': club})
+
+def log_out(request):
+    logout(request)
+    return redirect('home')

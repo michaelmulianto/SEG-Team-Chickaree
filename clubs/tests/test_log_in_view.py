@@ -12,11 +12,11 @@ class LogInViewTestCase(TestCase, LogInTester):
     def setUp(self):
         self.url = reverse('log_in')
         self.form_input = {
-            'username': '@johndoe',
+            'username': 'johndoe',
             'password': 'Password123'
         }
         self.user = User.objects.create_user(
-            '@johndoe',
+            'johndoe',
             first_name = 'John',
             last_name = 'Doe',
             email = 'johndoe@example.org',
