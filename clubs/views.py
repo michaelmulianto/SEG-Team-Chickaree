@@ -72,11 +72,17 @@ def account(request):
         return redirect("home")
 
 def edit_account(request):
-    if request.user.is_authenticated:
-        pass
-
+    current_user = request.user
+    if request.method == 'POST':
+        form = forms.EditAccountForm(instance = current_user, data=request.POST)
+        if form.is_valid():
+            messages.add_message(request, messages.SUCCESS, "Profile updated!")
+            form.save()
+            return redirect('account')
     else:
-        return redirect("home")
+        #make form with the current user information
+        form = forms.EditAccountForm(instance = current_user)
+    return render(request, 'edit_account.html', {'form': form})
 
 def change_password(request):
     pass
@@ -98,15 +104,3 @@ def create_club(request):
             return redirect('log_in')
     else:
         return render(request, 'create_club.html', {'form': forms.CreateClubForm()})
-
-def edit_account(request):
-    current_user = request.user
-    if request.method == 'POST':
-        form = forms.EditAccountForm(instance = current_user, data=request.POST)
-        if form.is_valid():
-            messages.add_message(request, messages.SUCCESS, "Profile updated!")
-            form.save()
-            return redirect('account')
-    else:
-        form = forms.EditAccountForm(instance = current_user)
-    return render(request, 'edit_account.html', {'form': form})
