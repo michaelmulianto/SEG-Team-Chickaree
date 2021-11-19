@@ -40,6 +40,17 @@ class UserModelTestCase(TestCase):
         with self.assertRaises(ValidationError):
             self.app.full_clean()
 
+    # Test experience
+    def test_name_must_not_be_blank(self):
+        self.app.experience = None
+        with self.assertRaises(ValidationError):
+            self.app.full_clean()
+
+    def test_name_must_not_be_other_than_options_given(self):
+        self.app.experience = 4
+        with self.assertRaises(ValidationError):
+            self.app.full_clean()
+
     # Test personalStatement
     def test_name_must_not_be_blank(self):
         self.app.personalStatement = None
