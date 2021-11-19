@@ -6,17 +6,17 @@
     <h1>Edit Account</h1>
 
     <p>Account details</p>
-    {%csrf_token%}
-    <p><b>{{user}}</b></p>
+    <!-- {%csrf_token%}
+     <p><b>{{user}}</b></p>
     <p><b>Name: </b> {{user.first_name}} {{" "}} {{user.last_name}}</p>
     <P><B>Username: </b> {{user.username}}</p>
-    <p><b>Email: </b> {{user.email}} </p>
+    <p><b>Email: </b> {{user.email}} </p> -->
 
 
-    <form action="{% url 'sign_up' %}" method="post">
+    <form action="{% url 'edit_account' %}" method="post">
         {% csrf_token %}
         {{ form.as_p }}
 
-        <input type="submit" value="Sign Up">
+        <input type="submit" value="Update">
 </body>
 </html>
