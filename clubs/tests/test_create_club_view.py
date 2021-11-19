@@ -12,7 +12,7 @@ class CreateClubViewTest(TestCase):
     def setUp(self):
         self.url = reverse('create_club')
         self.user = User.objects.create_user(
-            '@johndoe',
+            'johndoe',
             first_name='John',
             last_name='Doe',
             email='johndoe@example.org',
@@ -62,7 +62,7 @@ class CreateClubViewTest(TestCase):
         self.assertTemplateUsed(response, 'show_clubs.html')
 
     def test_unsuccessful_create_club(self):
-        self.client.login(username='@johndoe', password='Password123')
+        self.client.login(username='johndoe', password='Password123')
         club_count_before = Club.objects.count()
         self.data['name'] = ""
         response = self.client.post(self.url, self.data, follow=True)
