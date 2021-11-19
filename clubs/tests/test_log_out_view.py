@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 from django.urls import reverse
-from microblogs.models import User
+from clubs.models import User
 from .helpers import LogInTester
 
 class LogOutViewTestCase(TestCase, LogInTester):
@@ -19,7 +19,6 @@ class LogOutViewTestCase(TestCase, LogInTester):
             last_name = 'Doe',
             email = 'johndoe@example.org',
             password = 'Password123',
-            bio = 'John here.',
             is_active=True
         )
 
