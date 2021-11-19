@@ -10,10 +10,10 @@ class EditAccountFormTestCase(TestCase):
     def setUp(self):
         self.url = reverse('edit_account')
         self.form_input = {
-            'username' : 'johndoeNew',
-            'first_name': 'John',
+            'username' : 'janedoe',
+            'first_name': 'Jane',
             'last_name': 'Doe',
-            'email' : 'johnNewDoe@example.org',
+            'email' : 'janeDoe@example.org',
         }
         self.user = User.objects.create_user(
             '@johndoe',
@@ -41,3 +41,15 @@ class EditAccountFormTestCase(TestCase):
         self.form_input['username'] = 'b' * 33
         form = EditAccountForm(data=self.form_input)
         self.assertFalse(form.is_valid())
+
+    def test_form_must_save_correctly(self):
+        user = User.objects.get(username='@johndoe')
+        form = EditAccountForm(instance=user, data=self.form_input)
+        before_count = User.objects.count()
+        form.save()
+        after_count = User.objects.count()
+        self.assertEqual(after_count, before_count)
+        self.assertEqual(user.username, 'janedoe')
+        self.assertEqual(user.first_name, 'Jane')
+        self.assertEqual(user.last_name, 'Doe')
+        self.assertEqual(user.email, 'janeDoe@example.org')
