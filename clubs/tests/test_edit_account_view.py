@@ -1,4 +1,4 @@
-"""Tests for the profile view."""
+"""Tests for the edit_account view."""
 from django.contrib import messages
 from django.test import TestCase
 from django.urls import reverse
@@ -6,7 +6,7 @@ from clubs.forms import EditAccountForm
 from clubs.models import User
 
 class EditAccountViewTest(TestCase):
-    """Test suite for the profile view."""
+    """Test suite for the edit_account view."""
 
     def setUp(self):
         self.url = reverse('edit_account')
@@ -93,7 +93,7 @@ class EditAccountViewTest(TestCase):
         self.assertEqual(self.user.last_name, 'Doe')
         self.assertEqual(self.user.email, 'johndoe@example.org')
 
-    def test_succesful_profile_update(self):
+    def test_succesful_edit_account_update(self):
         self.client.login(username=self.user.username, password='Password123')
         before_count = User.objects.count()
         response = self.client.post(self.url, self.form_input, follow=True)
