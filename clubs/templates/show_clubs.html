@@ -1,12 +1,14 @@
-<html>
-<head>
-    <title>Chess Clubs</title>
-</head>
-<body>
-    <h1>Clubs</h1>
-    {% for club in my_clubs %}
-    <p><b>{{ club.name }}</b> in {{ club.location }}</p>
-    <p><i>{{ club.description }}</i><p>
-    {% endfor %}
-</body>
-</html>
+{% extends 'base.html' %}
+{% block body %}
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1>Clubs</h1>
+        {% for club in my_clubs %}
+        <p><b>{{ club.name }}</b> in {{ club.location }}</p>
+        <p><i>{{ club.description }}</i><p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

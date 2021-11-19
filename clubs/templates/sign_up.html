@@ -1,13 +1,15 @@
-<html>
-<head>
-    <title>Chess Clubs</title>
-</head>
-<body>
-    <h1>Sign up</h1>
-    <form action="{% url 'sign_up' %}" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-
-        <input type="submit" value="Sign Up">
-</body>
-</html>
+{% extends 'base.html' %}
+{% block body %}
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1>Sign up</h1>
+        <form action="{% url 'sign_up' %}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Sign Up" class="btn btn-primary">
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
