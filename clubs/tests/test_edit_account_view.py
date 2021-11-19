@@ -37,4 +37,19 @@ class EditAccountViewTest(TestCase):
         self.assertTrue(isinstance(form, EditAccountForm))
         self.assertEqual(form.instance, self.user)
 
-    
+    def test_unsuccesful_profile_update(self):
+        self.client.login(username=self.user.username, password='Password123')
+        self.form_input['first_name'] = 'B' * 50
+        before_count = User.objects.count()
+        response = self.client.post(self.url, self.form_input)
+        after_count = User.objects.count()
+        self.assertEqual(after_count, before_count)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'edit_account.html')
+        form = response.context['form']
+        self.assertTrue(isinstance(form, EditAccountForm))
+        self.assertTrue(form.is_bound)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, 'John')
+        self.assertEqual(self.user.last_name, 'Doe')
+        self.assertEqual(self.user.email, 'johndoe@example.org')
