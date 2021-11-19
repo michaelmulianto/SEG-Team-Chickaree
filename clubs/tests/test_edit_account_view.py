@@ -11,9 +11,9 @@ class EditAccountViewTest(TestCase):
     def setUp(self):
         self.url = reverse('edit_account')
         self.form_input = {
+            'username' : 'johndoe2',
             'first_name': 'John2',
             'last_name': 'Doe2',
-            'username' : 'johndoe2',
             'email' : 'johndoe2@example.org',
         }
         self.user = User.objects.create_user(
@@ -37,7 +37,7 @@ class EditAccountViewTest(TestCase):
         self.assertTrue(isinstance(form, EditAccountForm))
         self.assertEqual(form.instance, self.user)
 
-    def test_unsuccesful_profile_update(self):
+    def test_unsuccesful_edit_account_update(self):
         self.client.login(username=self.user.username, password='Password123')
         self.form_input['first_name'] = 'B' * 50
         before_count = User.objects.count()
@@ -50,6 +50,39 @@ class EditAccountViewTest(TestCase):
         self.assertTrue(isinstance(form, EditAccountForm))
         self.assertTrue(form.is_bound)
         self.user.refresh_from_db()
+        self.assertEqual(self.user.username, '@johndoe')
         self.assertEqual(self.user.first_name, 'John')
         self.assertEqual(self.user.last_name, 'Doe')
         self.assertEqual(self.user.email, 'johndoe@example.org')
+
+    def test_unsuccessful_edit_account_update_due_to_duplicate_email(self):
+        self.client.login(username=self.user.username, password='Password123')
+        second_user = self._create_second_user()
+        self.form_input['email'] = second_user.email
+        before_count = User.objects.count()
+        response = self.client.post(self.url, self.form_input)
+        after_count = User.objects.count()
+        self.assertEqual(after_count, before_count)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'edit_account.html')
+        form = response.context['form']
+        self.assertTrue(isinstance(form, EditAccountForm))
+        self.assertTrue(form.is_bound)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.username, '@johndoe')
+        self.assertEqual(self.user.first_name, 'John')
+        self.assertEqual(self.user.last_name, 'Doe')
+        self.assertEqual(self.user.email, 'johndoe@example.org')
+
+
+    def _create_second_user(self):
+        second_user = User.objects.create_user(
+                    '@janedoe',
+                    first_name = 'Jane',
+                    last_name = 'Doe',
+                    email = 'janedoe@example.org',
+                    password = 'Password123',
+                    is_active=True
+        )
+
+        return second_user
