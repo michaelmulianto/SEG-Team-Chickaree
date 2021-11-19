@@ -10,10 +10,10 @@ class EditAccountFormTestCase(TestCase):
     def setUp(self):
         self.url = reverse('edit_account')
         self.form_input = {
-            'username' : 'johndoe',
+            'username' : 'johndoeNew',
             'first_name': 'John',
             'last_name': 'Doe',
-            'email' : 'johndoe@example.org',
+            'email' : 'johnNewDoe@example.org',
         }
         self.user = User.objects.create_user(
             '@johndoe',
@@ -32,3 +32,7 @@ class EditAccountFormTestCase(TestCase):
         self.assertIn('email', form.fields)
         email_field = form.fields['email']
         self.assertTrue(isinstance(email_field, forms.EmailField))
+
+    def test_valid_edit_account_form(self):
+        form = EditAccountForm(data=self.form_input)
+        self.assertTrue(form.is_valid())
