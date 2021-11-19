@@ -66,9 +66,11 @@ class Member(models.Model):
     club = models.ForeignKey('Club', on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey('User', on_delete=models.CASCADE, unique=False, blank=False)
     isOfficer = models.BooleanField(default=False)
-    isOwner = models.BooleanField(default=True)
+    isOwner = models.BooleanField(default=False)
+
 
 class Application(models.Model):
     """Model for an application to a club"""
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
+

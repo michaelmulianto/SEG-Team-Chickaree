@@ -1,8 +1,10 @@
+
 """Tests for Club model, found in clubs/models.py"""
 
 from django.test import TestCase
 from clubs.models import Club
 from django.core.exceptions import ValidationError
+
 
 class ClubModelTestCase(TestCase):
     """Test all aspects of a club."""
