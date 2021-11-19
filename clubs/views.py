@@ -76,7 +76,7 @@ def edit_account(request):
     if request.method == 'POST':
         form = forms.EditAccountForm(instance = current_user, data=request.POST)
         if form.is_valid():
-            messages.add_message(request, messages.SUCCESS, "Profile updated!")
+            messages.add_message(request, messages.SUCCESS, "Account Details updated!")
             form.save()
             return redirect('account')
     else:
