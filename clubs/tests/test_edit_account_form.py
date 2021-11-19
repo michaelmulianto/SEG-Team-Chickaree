@@ -36,3 +36,8 @@ class EditAccountFormTestCase(TestCase):
     def test_valid_edit_account_form(self):
         form = EditAccountForm(data=self.form_input)
         self.assertTrue(form.is_valid())
+
+    def test_form_uses_model_validation(self):
+        self.form_input['username'] = 'b' * 33
+        form = EditAccountForm(data=self.form_input)
+        self.assertFalse(form.is_valid())
