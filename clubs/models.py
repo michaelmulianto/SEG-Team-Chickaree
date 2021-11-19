@@ -73,4 +73,10 @@ class Application(models.Model):
     """Model for an application to a club"""
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
-
+    LEVELS = (
+        (1,'Beginner'),
+        (2, 'Intermediate'),
+        (3, 'Advanced'),
+    )
+    experience = models.IntegerField(default = 1, choices = LEVELS)
+    personalStatement = models.CharField(max_length=580, blank=False, default = "")
