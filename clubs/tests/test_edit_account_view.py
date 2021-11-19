@@ -27,3 +27,14 @@ class EditAccountViewTest(TestCase):
 
     def test_edit_account_url(self):
         self.assertEqual(self.url, '/edit_account/')
+
+    def test_get_edit_user(self):
+        self.client.login(username=self.user.username, password='Password123')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'edit_account.html')
+        form = response.context['form']
+        self.assertTrue(isinstance(form, EditAccountForm))
+        self.assertEqual(form.instance, self.user)
+
+    
