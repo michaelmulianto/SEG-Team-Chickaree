@@ -14,7 +14,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.http import Http404
 from django.shortcuts import render, redirect
-from .forms import LogInForm, SignUpForm
+from .forms import LogInForm, SignUpForm, ApplyToClubForm
 from django.contrib import messages
 from clubs import forms
 from django.http import HttpResponseForbidden
@@ -90,25 +90,33 @@ def create_club(request):
     else:
         return render(request, 'create_club.html', {'form': forms.CreateClubForm()})
 
+def apply_to_club(request, club_id):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            desired_club = Club.objects.get(id = club_id)
+            current_user = request.user
+        if request.method == 'POST':
+            form = forms.ApplyToClubForm(request.POST)
+            return render(request, 'apply_to_club.html', {'form': form})
+            if form.is_valid():
+                form.save()
+                if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
+                    Application.objects.create(
+                        user = current_user,
+                        club = desired_club,
+                    )
+                return redirect('show_clubs')
+            else:
+                return render(request, 'apply_to_club.html', {'form': form})
+        else:
+            return redirect('log_in')
+    else:
+        return render(request, 'apply_to_club.html', {'form': forms.ApplyToClubForm()})
+
 def show_clubs(request):
     clubs = Club.objects.all()
     return render(request, 'show_clubs.html', {'my_clubs': clubs})
 
-def apply_to_club(request, club_id):
-    # It should not be possible for an invalid id to be passed to this point.
-    if request.user.is_authenticated:
-        desired_club = Club.objects.get(id = club_id)
-        current_user = request.user
-        
-        # Ensure that the user does not have an existing application or membership to the club.
-        if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
-            Application.objects.create(
-                user = current_user,
-                club = desired_club,
-            )
-        return redirect('show_clubs')
-    else:
-        return redirect('log_in')
 
 def show_club(request, club_id):
     try:
