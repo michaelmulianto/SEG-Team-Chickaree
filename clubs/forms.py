@@ -87,4 +87,4 @@ class EditAccountForm(forms.ModelForm):
         model = User
         # If we do not specify fields, it will use all of them.
         # We don't want to include password as we use 2 fields
-        fields = ['username', 'first_name', 'last_name', 'email'
+        fields = ['username', 'first_name', 'last_name', 'email']
