@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Club, Application
+from .models import User, Club, Application, Member
 
 
 @admin.register(User)
@@ -17,8 +17,15 @@ class ClubAdmin(admin.ModelAdmin):
     ]
 
 @admin.register(Application)
-class ClubAdmin(admin.ModelAdmin):
+class applicationAdmin(admin.ModelAdmin):
     """Configuration of the admin interface for applications"""
     list_display = [
         'club', 'user', 'experience', 'personalStatement'
+    ]
+
+@admin.register(Member)
+class applicationAdmin(admin.ModelAdmin):
+    """Configuration of the admin interface for members"""
+    list_display = [
+        'club', 'user', 'isOfficer', 'isOwner'
     ]
