@@ -67,6 +67,8 @@ class Member(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE, unique=False, blank=False)
     isOfficer = models.BooleanField(default=False)
     isOwner = models.BooleanField(default=False)
+    class Meta:
+        ordering = ['club']
 
 
 class Application(models.Model):
@@ -80,4 +82,3 @@ class Application(models.Model):
     )
     experience = models.IntegerField(default = 1, choices = LEVELS)
     personalStatement = models.CharField(max_length=580, blank=False, default = "")
-    
