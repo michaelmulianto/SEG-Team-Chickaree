@@ -85,6 +85,5 @@ class CreateClubForm(forms.ModelForm):
 class EditAccountForm(forms.ModelForm):
     class Meta:
         model = User
-        # If we do not specify fields, it will use all of them.
-        # We don't want to include password as we use 2 fields
+        #only want to make these 4 fields editable
         fields = ['username', 'first_name', 'last_name', 'email']
