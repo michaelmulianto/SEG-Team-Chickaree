@@ -80,3 +80,4 @@ class Application(models.Model):
     )
     experience = models.IntegerField(default = 1, choices = LEVELS)
     personalStatement = models.CharField(max_length=580, blank=False, default = "")
+    
