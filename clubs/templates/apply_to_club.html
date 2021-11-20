@@ -4,7 +4,7 @@
   </head>
     <body>
        <h1>Club Application</h1>
-       <form action="{% url 'apply_to_club' %}" method="post">
+       <form action="{% url 'apply_to_club' club.id %}" method="post">
          {% csrf_token %}
          {{ form.as_p }}
          <input type="submit" value="Apply">
