@@ -38,7 +38,7 @@ class ApplyToClubViewTestCase(TestCase):
         app_count_after = Application.objects.count()
         self.assertEqual(app_count_after, app_count_before)
 
-    def test_successful_create_club(self):
+    def test_successful_apply(self):
         self.client.login(username=self.user.username, password="Password123")
         app_count_before = Application.objects.count()
         response = self.client.post(self.url, follow=True)
