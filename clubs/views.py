@@ -95,7 +95,6 @@ def apply_to_club(request, club_id):
         if request.user.is_authenticated:
             desired_club = Club.objects.get(id = club_id)
             current_user = request.user
-        if request.method == 'POST':
             form = forms.ApplyToClubForm(request.POST)
             return render(request, 'apply_to_club.html', {'form': form})
             if form.is_valid():
@@ -107,11 +106,11 @@ def apply_to_club(request, club_id):
                     )
                 return redirect('show_clubs')
             else:
-                return render(request, 'apply_to_club.html', {'form': form})
+                return render(request, 'apply_to_club.html', {'form': form, 'club':desired_club})
         else:
             return redirect('log_in')
     else:
-        return render(request, 'apply_to_club.html', {'form': forms.ApplyToClubForm()})
+        return render(request, 'apply_to_club.html', {'form': forms.ApplyToClubForm(), 'club':Club.objects.get(id = club_id)})
 
 def show_clubs(request):
     clubs = Club.objects.all()
