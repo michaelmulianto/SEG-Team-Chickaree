@@ -12,7 +12,7 @@ class CreateClubViewTest(TestCase):
     def setUp(self):
         self.url = reverse('create_club')
         self.user = User.objects.create_user(
-            '@johndoe',
+            'johndoe',
             first_name='John',
             last_name='Doe',
             email='johndoe@example.org',
@@ -53,19 +53,19 @@ class CreateClubViewTest(TestCase):
         self.assertEqual(user_count_after, user_count_before+1)
         new_club = Club.objects.latest('created_on')
         #self.assertEqual(self.user, new_post.author)
-        response_url = reverse('create_club')
+        response_url = reverse('show_clubs')
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'create_club.html')
+        self.assertTemplateUsed(response, 'show_clubs.html')
 
     def test_unsuccessful_create_club(self):
-        self.client.login(username='@johndoe', password='Password123')
-        user_count_before = Club.objects.count()
+        self.client.login(username='johndoe', password='Password123')
+        club_count_before = Club.objects.count()
         self.data['name'] = ""
         response = self.client.post(self.url, self.data, follow=True)
-        user_count_after = Club.objects.count()
-        self.assertEqual(user_count_after, user_count_before)
+        club_count_after = Club.objects.count()
+        self.assertEqual(club_count_after, club_count_before)
         self.assertTemplateUsed(response, 'create_club.html')

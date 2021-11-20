@@ -1,0 +1,63 @@
+from django.test import TestCase
+from clubs.models import User, Club, Application
+from django.core.exceptions import ValidationError
+
+class UserModelTestCase(TestCase):
+    def setUp(self):
+        # called before every test
+        self.user = User.objects.create_user(
+            '@johndoe',
+            first_name = 'John',
+            last_name = 'Doe',
+            email = 'johndoe@example.com',
+            password='Password123',
+        )
+
+        self.club = Club.objects.create(
+            name = 'Club John',
+            location = 'Langdon Park',
+            description = 'A chess club.'
+        )
+
+        self.app = Application.objects.create(
+            club = self.club,
+            user = self.user,
+            experience = 2,
+            personalStatement = "I am the best applicant you can ever get."
+        )
+
+    def test_valid_app(self):
+        self._assert_app_is_valid()
+
+    #assertions
+    def _assert_app_is_valid(self):
+        try:
+            self.app.full_clean()
+        except (ValidationError):
+            self.fail("Test Application should be valid")
+
+    def _assert_app_is_invalid(self):
+        with self.assertRaises(ValidationError):
+            self.app.full_clean()
+
+    # Test experience
+    def test_name_must_not_be_blank(self):
+        self.app.experience = None
+        with self.assertRaises(ValidationError):
+            self.app.full_clean()
+
+    def test_name_must_not_be_other_than_options_given(self):
+        self.app.experience = 4
+        with self.assertRaises(ValidationError):
+            self.app.full_clean()
+
+    # Test personalStatement
+    def test_name_must_not_be_blank(self):
+        self.app.personalStatement = None
+        with self.assertRaises(ValidationError):
+            self.app.full_clean()
+
+    def test_name_must_not_be_overlong(self):
+        self.app.personalStatement = 'x' * 581
+        with self.assertRaises(ValidationError):
+            self.app.full_clean()

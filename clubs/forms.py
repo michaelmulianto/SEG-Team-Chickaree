@@ -66,11 +66,12 @@ class SignUpForm(forms.ModelForm):
         )
         return user
 
-class CreateClubForm(forms.Form):
-    #Define fields of the form
-    name = forms.CharField(label="Name")
-    location = forms.CharField(label="Location")
-    description = forms.CharField(label="Description", widget=forms.Textarea())
+class CreateClubForm(forms.ModelForm):
+
+    class Meta:
+        model = Club
+        fields = ['name', 'location', 'description']
+        widgets = {'description': forms.Textarea()}
 
     #Create new club using the club form data
     def save(self):
@@ -81,11 +82,10 @@ class CreateClubForm(forms.Form):
             description = self.cleaned_data.get('description'),
         )
 
-
-class EditAccountForm(forms.ModelForm):
+  class EditAccountForm(forms.ModelForm):
 
     class Meta:
         model = User
         # If we do not specify fields, it will use all of them.
         # We don't want to include password as we use 2 fields
-        fields = ['username', 'first_name', 'last_name', 'email']
+        fields = ['username', 'first_name', 'last_name', 'email'

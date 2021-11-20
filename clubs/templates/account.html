@@ -1,17 +1,18 @@
-<html>
-<head>
-    <title>Chess Clubs</title>
-</head>
-<body>
-    <h1>Show User</h1>
+{% extends 'base_content.html' %}
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1>Show User</h1>
+        <p><b>Personal information displayed here</b></p>
+        {%csrf_token%}
+        <p><b>{{user}}</b></p>
+        <p><b>Name: </b> {{user.first_name}} {{" "}} {{user.last_name}}</p>
+        <P><B>Username: </b> {{user.username}}</p>
+        <p><b>Email: </b> {{user.email}} </p>
+      </div>
+    </div>
+  </div>
 
-    <p><b>Personal information displayed here</b></p>
-            {%csrf_token%}
-            <p><b>{{user}}</b></p>
-            <p><b>Name: </b> {{user.first_name}} {{" "}} {{user.last_name}}</p>
-            <P><B>Username: </b> {{user.username}}</p>
-            <p><b>Email: </b> {{user.email}} </p>
-
-            <p><a href='{% url 'edit_account' %}'>Edit Account</a></p>
-</body>
-</html>
+  <p><a href='{% url 'edit_account' %}'>Edit Account</a></p>
+{% endblock %}
