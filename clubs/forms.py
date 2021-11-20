@@ -81,4 +81,9 @@ class CreateClubForm(forms.ModelForm):
             location = self.cleaned_data.get('location'),
             description = self.cleaned_data.get('description'),
         )
-
+        
+class EditAccountForm(forms.ModelForm):
+    class Meta:
+        model = User
+        #only want to make these 4 fields editable
+        fields = ['username', 'first_name', 'last_name', 'email']

@@ -74,6 +74,21 @@ def account(request):
     else:
         return redirect("home")
 
+def edit_account(request):
+    current_user = request.user
+    if request.method == 'POST':
+        form = forms.EditAccountForm(instance = current_user, data=request.POST)
+        if form.is_valid():
+            messages.add_message(request, messages.SUCCESS, "Account Details updated!")
+            form.save()
+            return redirect('account')
+    else:
+        #make form with the current user information
+        form = forms.EditAccountForm(instance = current_user)
+    return render(request, 'edit_account.html', {'form': form})
+
+def change_password(request):
+    pass
 
 def create_club(request):
     if request.method == 'POST':
