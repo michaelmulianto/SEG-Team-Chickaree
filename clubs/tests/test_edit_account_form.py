@@ -1,3 +1,4 @@
+"""unit test for edit account form"""
 from django import forms
 from django.test import TestCase
 from clubs.forms import EditAccountForm
