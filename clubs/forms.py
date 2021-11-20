@@ -8,8 +8,7 @@ Currently implemented forms:
 """
 
 from django import forms
-from clubs.models import User
-from clubs.models import Club
+from clubs.models import User, Club, Application
 from django.core.validators import RegexValidator
 
 """Form to grant access to a returning user's personalised content"""
@@ -81,3 +80,16 @@ class CreateClubForm(forms.ModelForm):
             location = self.cleaned_data.get('location'),
             description = self.cleaned_data.get('description'),
         )
+
+class ApplyToClubForm(forms.ModelForm):
+    class Meta:
+        model = Application
+        fields = ['experience', 'personalStatement']
+        widgets = {'personalStatement': forms.Textarea()}
+
+        def save(self):
+            super().save(commit=False)
+            application = Application.objects.create(
+                experience = self.cleaned_data.get('experience'),
+                personalStatement = self.cleaned_data.get('personalStatement'),
+            )
