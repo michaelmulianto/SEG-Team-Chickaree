@@ -22,7 +22,7 @@ class ApplyToClubFormTestCase(TestCase):
         form = CreateClubForm(data=self.input)
         self.assertTrue(form.is_valid())
 
-    def test_invalid_create_club_form(self):
+    def test_form_uses_model_validation(self):
         self.input['personalStatement'] = ''
         form = CreateClubForm(data=input)
         self.assertFalse(form.is_valid())
