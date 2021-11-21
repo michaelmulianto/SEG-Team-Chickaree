@@ -20,6 +20,8 @@ from clubs import forms
 from django.http import HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
 from clubs.models import User, Club, Application, Member
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 
 def home(request):
     # Default view for visitors.
@@ -87,9 +89,6 @@ def edit_account(request):
         form = forms.EditAccountForm(instance = current_user)
     return render(request, 'edit_account.html', {'form': form})
 
-def change_password(request):
-    pass
-
 def create_club(request):
     if request.method == 'POST':
         if request.user.is_authenticated:
@@ -135,3 +134,19 @@ def show_club(request, club_id):
 def log_out(request):
     logout(request)
     return redirect('home')
+
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('change_password')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'accounts/change_password.html', {
+        'form': form
+    })
