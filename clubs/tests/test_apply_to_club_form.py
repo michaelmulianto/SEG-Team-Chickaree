@@ -19,10 +19,10 @@ class ApplyToClubFormTestCase(TestCase):
         }
 
     def test_valid_apply_to_club_form(self):
-        form = CreateClubForm(data=self.input)
+        form = ApplyToClubForm(data=self.input)
         self.assertTrue(form.is_valid())
 
     def test_form_uses_model_validation(self):
         self.input['personalStatement'] = ''
-        form = CreateClubForm(data=input)
+        form = ApplyToClubForm(data=input)
         self.assertFalse(form.is_valid())
