@@ -70,10 +70,5 @@ class ApplyToClubViewTestCase(TestCase):
         self.assertEqual(app_count_after, app_count_before)
         
         # Should send user back to application form.
-        response_url = reverse('apply_to_club', kwargs = {'club_id': self.club.id})
-        self.assertRedirects(
-            response, response_url,
-            status_code=302, target_status_code=200,
-            fetch_redirect_response=True
-        )
+        self.assertEqual(response.status_code, 200) # not a redirect. Same page.
         self.assertTemplateUsed(response, 'apply_to_club.html')
