@@ -26,3 +26,14 @@ class ApplyToClubFormTestCase(TestCase):
         self.input['personalStatement'] = ''
         form = ApplyToClubForm(data=self.input)
         self.assertFalse(form.is_valid())
+
+    def test_form_contains_necessary_fields(self):
+        form = ApplyToClubForm()
+
+        # Existence of fields
+        self.assertIn('experience', form.fields)
+        self.assertIn('personalStatement', form.fields)
+
+        # Correct field for experience
+        exp_field = form.fields['experience']
+        self.assertTrue(isinstance(exp_field, forms.ChoiceField))
