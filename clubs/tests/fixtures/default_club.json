@@ -1,0 +1,11 @@
+[
+  {
+    "model": "clubs.club",
+    "pk": 1,
+    "fields": {
+      "name" : "Chess Clubs",
+      "location" : "Langdon Park",
+      "description" : "A chess club."
+    }
+  }
+]

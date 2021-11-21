@@ -7,15 +7,11 @@ from django.core.exceptions import ValidationError
 class UserModelTestCase(TestCase):
     """Test all aspects of a user."""
 
+    fixtures = ['clubs/tests/fixtures/default_user.json']
+
     # Test setup
     def setUp(self):
-        self.user = User.objects.create_user(
-            'johndoe',
-            first_name = 'John',
-            last_name = 'Doe',
-            email = 'johndoe@example.com',
-            password='Password123',
-        )
+        self.user = User.objects.get(username='johndoe')
 
     def test_valid_user(self):
         self._assert_user_is_valid()

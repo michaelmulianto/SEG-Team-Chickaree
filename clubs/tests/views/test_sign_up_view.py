@@ -5,7 +5,7 @@ from django.urls import reverse
 from clubs.models import User
 from clubs.forms import SignUpForm
 from django.contrib.auth.hashers import check_password
-from .helpers import LogInTester
+from clubs.tests.helpers import LogInTester
 
 class SignUpViewTestCase(TestCase, LogInTester):
     """Test all aspects of the sign up view"""

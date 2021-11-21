@@ -7,18 +7,12 @@ from clubs.models import User
 class AccountViewTestCase(TestCase):
     """To be implemented, code stolen from clucker, change feed for account and edit"""
 
+    fixtures = ['clubs/tests/fixtures/default_user.json']
+
     def setUp(self):
         self.url = reverse('account')
-        self.user = User.objects.create_user(
-            'johndoe',
-            first_name = 'John',
-            last_name = 'Doe',
-            email = 'johndoe@example.org',
-            password = 'Password123',
-            is_active=True
-        )
+        self.user = User.objects.get(username='johndoe')
         self.client.login(username='johndoe', password='Password123')
-
 
     def test_get_account_url(self):
         self.assertEqual('/account/', self.url)

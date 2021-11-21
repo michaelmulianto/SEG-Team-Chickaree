@@ -9,14 +9,10 @@ from django.contrib.auth.hashers import check_password
 class ApplyToClubViewTestCase(TestCase):
     """Test all aspects of the apply to club view"""
 
+    fixtures = ['clubs/tests/fixtures/default_user.json']
+
     def setUp(self):
-        self.user = User.objects.create_user(
-            'johndoe',
-            first_name='John',
-            last_name='Doe',
-            email='johndoe@example.org',
-            password='Password123',
-        )
+        self.user = User.objects.get(username='johndoe')
         self.club = Club.objects.create(
             name = 'Kings Knight',
             location = 'Kings College',

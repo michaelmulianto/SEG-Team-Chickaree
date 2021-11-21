@@ -8,22 +8,17 @@ from django.urls import reverse
 class EditAccountFormTestCase(TestCase):
     """Unit tests of the edit_account form."""
 
+    fixtures = ['clubs/tests/fixtures/default_user.json']
+
     def setUp(self):
         self.url = reverse('edit_account')
         self.form_input = {
             'username' : 'janedoe',
             'first_name': 'Jane',
             'last_name': 'Doe',
-            'email' : 'janeDoe@example.org',
+            'email' : 'janedoe@example.org',
         }
-        self.user = User.objects.create_user(
-            '@johndoe',
-            first_name = 'John',
-            last_name = 'Doe',
-            email = 'johndoe@example.org',
-            password = 'Password123',
-            is_active=True
-        )
+        self.user = User.objects.get(username='johndoe')
 
     def test_form_has_necessary_fields(self):
         form = EditAccountForm()
@@ -44,13 +39,12 @@ class EditAccountFormTestCase(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_form_must_save_correctly(self):
-        user = User.objects.get(username='@johndoe')
-        form = EditAccountForm(instance=user, data=self.form_input)
+        form = EditAccountForm(instance=self.user, data=self.form_input)
         before_count = User.objects.count()
         form.save()
         after_count = User.objects.count()
         self.assertEqual(after_count, before_count)
-        self.assertEqual(user.username, 'janedoe')
-        self.assertEqual(user.first_name, 'Jane')
-        self.assertEqual(user.last_name, 'Doe')
-        self.assertEqual(user.email, 'janeDoe@example.org')
+        self.assertEqual(self.user.username, 'janedoe')
+        self.assertEqual(self.user.first_name, 'Jane')
+        self.assertEqual(self.user.last_name, 'Doe')
+        self.assertEqual(self.user.email, 'janedoe@example.org')

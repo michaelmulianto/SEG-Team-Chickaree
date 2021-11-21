@@ -6,16 +6,12 @@ from clubs.models import User
 
 class AccountViewTestCase(TestCase):
     """Test aspects of account view"""
+
+    fixtures = ['clubs/tests/fixtures/default_user.json']
+
     def setUp(self):
         self.url = reverse('home')
-        self.user = User.objects.create_user(
-            'johndoe',
-            first_name = 'John',
-            last_name = 'Doe',
-            email = 'johndoe@example.org',
-            password = 'Password123',
-            is_active=True
-        )
+        self.user = User.objects.get(username='johndoe')
 
     def test_get_home_url(self):
         self.assertEqual('/', self.url)
