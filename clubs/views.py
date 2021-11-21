@@ -63,7 +63,7 @@ def log_in(request):
     else:
         next = request.GET.get('next') or ''
     form = LogInForm()
-    return render(request, 'log_in.html', {'form': form})
+    return render(request, 'log_in.html', {'form': form, 'next' : next})
     #return render(request, 'log_in.html', {'title': title+"| Log In", 'form': form}) when title is ready
 
 @login_required
