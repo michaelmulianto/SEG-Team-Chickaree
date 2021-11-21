@@ -4,7 +4,10 @@ from django.core.exceptions import ValidationError
 
 class UserModelTestCase(TestCase):
 
-    fixtures = ['clubs/tests/fixtures/default_user.json']
+    fixtures = [
+        'clubs/tests/fixtures/default_user.json',
+        #'clubs/tests/fixtures/default_club.json'
+    ]
 
     def setUp(self):
         # called before every test

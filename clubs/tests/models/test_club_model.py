@@ -8,6 +8,8 @@ from django.core.exceptions import ValidationError
 class ClubModelTestCase(TestCase):
     """Test all aspects of a club."""
 
+    #fixtures = ['clubs/tests/fixtures/default_club.json']
+
     # Test setup
     def setUp(self):
         self.club = Club(

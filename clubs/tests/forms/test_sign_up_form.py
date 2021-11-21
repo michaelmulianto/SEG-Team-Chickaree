@@ -11,12 +11,12 @@ class SignUpFormTestCase(TestCase):
 
     def setUp(self):
         self.form_input = {
-        'first_name': 'John',
-        'last_name': 'Doe',
-        'username': 'johndoe',
-        'email': 'johndoe@example.com',
-        'new_password': 'Password123',
-        'password_confirmation': 'Password123'
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'username': 'johndoe',
+            'email': 'johndoe@example.com',
+            'new_password': 'Password123',
+            'password_confirmation': 'Password123'
         }
 
     def test_valid_sign_up_form(self):
