@@ -50,6 +50,7 @@ class ApplyToClubViewTestCase(TestCase):
         app_count_after = Application.objects.count()
         self.assertEqual(app_count_after, app_count_before+1)
         
+        # Should redirect user somewhere appropriate, indicating success.
         response_url = reverse('show_clubs')
         self.assertRedirects(
             response, response_url,
@@ -68,6 +69,7 @@ class ApplyToClubViewTestCase(TestCase):
 
         self.assertEqual(app_count_after, app_count_before)
         
+        # Should send user back to application form.
         response_url = reverse('apply_to_club', kwargs = {'club_id': self.club.id})
         self.assertRedirects(
             response, response_url,
