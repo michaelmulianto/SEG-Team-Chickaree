@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 from clubs.forms import EditAccountForm
 from clubs.models import User
+from clubs.tests.helpers import reverse_with_next
 
 class EditAccountViewTest(TestCase):
     """Test suite for the edit_account view."""
@@ -26,7 +27,7 @@ class EditAccountViewTest(TestCase):
     def test_edit_account_url(self):
         self.assertEqual(self.url, '/edit_account/')
 
-    def test_get_edit_user(self):
+    def test_get_edit_account(self):
         self.client.login(username=self.user.username, password='Password123')
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
@@ -34,6 +35,12 @@ class EditAccountViewTest(TestCase):
         form = response.context['form']
         self.assertTrue(isinstance(form, EditAccountForm))
         self.assertEqual(form.instance, self.user)
+
+    def test_get_edit_account_redirects_when_not_logged_in(self):
+        response = self.client.get(self.url)
+        response_url = reverse_with_next('log_in', self.url)
+        self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
+
 
     def test_unsuccesful_edit_account_update(self):
         self.client.login(username=self.user.username, password='Password123')
@@ -108,4 +115,3 @@ class EditAccountViewTest(TestCase):
         self.assertEqual(self.user.first_name, 'Johnnnn')
         self.assertEqual(self.user.last_name, 'Doeeee')
         self.assertEqual(self.user.email, 'johndoe2@example.org')
-        

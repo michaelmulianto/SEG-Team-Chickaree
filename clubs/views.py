@@ -12,7 +12,7 @@ Currently implemented views:
 """
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.http import Http404
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import LogInForm, SignUpForm
 from django.contrib import messages
@@ -60,20 +60,19 @@ def log_in(request):
     return render(request, 'log_in.html', {'form': form})
     #return render(request, 'log_in.html', {'title': title+"| Log In", 'form': form}) when title is ready
 
+@login_required
 def account(request):
-    if request.user.is_authenticated:
-        try:
-            #find the appropriate user
-            user = request.user
-        except ObjectDoesNotExist:
-             return redirect('no_account_found')
+    try:
+        #find the appropriate user
+        user = request.user
+    except ObjectDoesNotExist:
+         return redirect('no_account_found')
 
-             #if found show their information
-        else:
-            return render(request, 'account.html', {'user': request.user})
+         #if found show their information
     else:
-        return redirect("home")
+        return render(request, 'account.html', {'user': user})
 
+@login_required
 def edit_account(request):
     current_user = request.user
     if request.method == 'POST':
@@ -87,42 +86,38 @@ def edit_account(request):
         form = forms.EditAccountForm(instance = current_user)
     return render(request, 'edit_account.html', {'form': form})
 
+@login_required
 def change_password(request):
     pass
 
+@login_required
 def create_club(request):
     if request.method == 'POST':
-        if request.user.is_authenticated:
-            current_user = request.user
-            form = forms.CreateClubForm(request.POST)
-            if form.is_valid():
-                form.save()
-                return redirect('show_clubs')
-            else:
-                return render(request, 'create_club.html', {'form': form})
+        current_user = request.user
+        form = forms.CreateClubForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('show_clubs')
         else:
-            return redirect('log_in')
+            return render(request, 'create_club.html', {'form': form})
     else:
         return render(request, 'create_club.html', {'form': forms.CreateClubForm()})
+
+@login_required
+def apply_to_club(request, club_id):
+    desired_club = Club.objects.get(id = club_id)
+    current_user = request.user
+    # Ensure that the user does not have an existing application or membership to the club.
+    if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
+        Application.objects.create(
+            user = current_user,
+            club = desired_club,
+        )
+    return redirect('show_clubs')
 
 def show_clubs(request):
     clubs = Club.objects.all()
     return render(request, 'show_clubs.html', {'my_clubs': clubs})
-
-def apply_to_club(request, club_id):
-    # It should not be possible for an invalid id to be passed to this point.
-    if request.user.is_authenticated:
-        desired_club = Club.objects.get(id = club_id)
-        current_user = request.user
-        # Ensure that the user does not have an existing application or membership to the club.
-        if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
-            Application.objects.create(
-                user = current_user,
-                club = desired_club,
-            )
-        return redirect('show_clubs')
-    else:
-        return redirect('log_in')
 
 def show_club(request, club_id):
     try:
