@@ -57,3 +57,21 @@ class ApplyToClubViewTestCase(TestCase):
             fetch_redirect_response=True
         )
         self.assertTemplateUsed(response, 'show_clubs.html')
+
+    def test_apply_with_invalid_form_input(self):
+        self.data['personalStatement'] = ''
+        self.client.login(username=self.user.username, password="Password123")
+
+        app_count_before = Application.objects.count()
+        response = self.client.post(self.url, self.data, follow=True)
+        app_count_after = Application.objects.count()
+
+        self.assertEqual(app_count_after, app_count_before)
+        
+        response_url = reverse('apply_to_club', kwargs = {'club_id': self.club.id})
+        self.assertRedirects(
+            response, response_url,
+            status_code=302, target_status_code=200,
+            fetch_redirect_response=True
+        )
+        self.assertTemplateUsed(response, 'apply_to_club.html')
