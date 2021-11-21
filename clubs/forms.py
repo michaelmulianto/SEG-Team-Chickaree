@@ -87,12 +87,7 @@ class ApplyToClubForm(forms.ModelForm):
         fields = ['experience', 'personalStatement']
         widgets = {'personalStatement': forms.Textarea()}
 
-        # def save(self, *args, **kwargs):
-        #     if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
-        #         super().save(*args, **kwargs, commit=False)
-        #         application = Application.objects.create(
-        #             club = kwargs["club"],
-        #             user = kwargs["user"],
-        #             experience = self.cleaned_data.get('experience'),
-        #             personalStatement = self.cleaned_data.get('personalStatement'),
-        #         )
+        def save(self):
+            # We do not want this to save a new object.
+            # The view for applying will handle this.
+            return
