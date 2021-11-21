@@ -8,6 +8,11 @@ from clubs.models import User
 class EditAccountViewTest(TestCase):
     """Test suite for the edit_account view."""
 
+    fixtures = [
+        'clubs/tests/fixtures/default_user.json',
+        'clubs/tests/fixtures/other_user.json'
+    ]
+
     def setUp(self):
         self.url = reverse('edit_account')
         self.form_input = {
@@ -16,14 +21,7 @@ class EditAccountViewTest(TestCase):
             'last_name': 'Doeeee',
             'email' : 'johndoe2@example.org',
         }
-        self.user = User.objects.create_user(
-            '@johndoe',
-            first_name = 'John',
-            last_name = 'Doe',
-            email = 'johndoe@example.org',
-            password = 'Password123',
-            is_active=True
-        )
+        self.user = User.objects.get(username='johndoe')
 
     def test_edit_account_url(self):
         self.assertEqual(self.url, '/edit_account/')
@@ -50,14 +48,14 @@ class EditAccountViewTest(TestCase):
         self.assertTrue(isinstance(form, EditAccountForm))
         self.assertTrue(form.is_bound)
         self.user.refresh_from_db()
-        self.assertEqual(self.user.username, '@johndoe')
+        self.assertEqual(self.user.username, 'johndoe')
         self.assertEqual(self.user.first_name, 'John')
         self.assertEqual(self.user.last_name, 'Doe')
         self.assertEqual(self.user.email, 'johndoe@example.org')
 
     def test_unsuccessful_edit_account_update_due_to_duplicate_username(self):
         self.client.login(username=self.user.username, password='Password123')
-        second_user = self._create_second_user()
+        second_user = User.objects.get(username='janedoe')
         self.form_input['username'] = second_user.username
         before_count = User.objects.count()
         response = self.client.post(self.url, self.form_input)
@@ -69,14 +67,14 @@ class EditAccountViewTest(TestCase):
         self.assertTrue(isinstance(form, EditAccountForm))
         self.assertTrue(form.is_bound)
         self.user.refresh_from_db()
-        self.assertEqual(self.user.username, '@johndoe')
+        self.assertEqual(self.user.username, 'johndoe')
         self.assertEqual(self.user.first_name, 'John')
         self.assertEqual(self.user.last_name, 'Doe')
         self.assertEqual(self.user.email, 'johndoe@example.org')
 
     def test_unsuccessful_edit_account_update_due_to_duplicate_email(self):
         self.client.login(username=self.user.username, password='Password123')
-        second_user = self._create_second_user()
+        second_user = User.objects.get(username='janedoe')
         self.form_input['email'] = second_user.email
         before_count = User.objects.count()
         response = self.client.post(self.url, self.form_input)
@@ -88,7 +86,7 @@ class EditAccountViewTest(TestCase):
         self.assertTrue(isinstance(form, EditAccountForm))
         self.assertTrue(form.is_bound)
         self.user.refresh_from_db()
-        self.assertEqual(self.user.username, '@johndoe')
+        self.assertEqual(self.user.username, 'johndoe')
         self.assertEqual(self.user.first_name, 'John')
         self.assertEqual(self.user.last_name, 'Doe')
         self.assertEqual(self.user.email, 'johndoe@example.org')
@@ -110,16 +108,4 @@ class EditAccountViewTest(TestCase):
         self.assertEqual(self.user.first_name, 'Johnnnn')
         self.assertEqual(self.user.last_name, 'Doeeee')
         self.assertEqual(self.user.email, 'johndoe2@example.org')
-
-
-    def _create_second_user(self):
-        second_user = User.objects.create_user(
-                    '@janedoe',
-                    first_name = 'Jane',
-                    last_name = 'Doe',
-                    email = 'janedoe@example.org',
-                    password = 'Password123',
-                    is_active=True
-        )
-
-        return second_user
+        

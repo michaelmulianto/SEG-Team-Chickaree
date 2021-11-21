@@ -5,24 +5,20 @@ from django.test import TestCase
 from django.urls import reverse
 from clubs.forms import LogInForm
 from clubs.models import User
-from .helpers import LogInTester
+from clubs.tests.helpers import LogInTester
 
 class LogInViewTestCase(TestCase, LogInTester):
     """Test all aspects of log in view"""
+
+    fixtures = ['clubs/tests/fixtures/default_user.json']
+
     def setUp(self):
         self.url = reverse('log_in')
         self.form_input = {
             'username': 'johndoe',
             'password': 'Password123'
         }
-        self.user = User.objects.create_user(
-            'johndoe',
-            first_name = 'John',
-            last_name = 'Doe',
-            email = 'johndoe@example.org',
-            password = 'Password123',
-            is_active=True
-        )
+        self.user = User.objects.get(username='johndoe')
 
     def test_get_log_in_url(self):
         self.assertEqual('/log_in/', self.url)

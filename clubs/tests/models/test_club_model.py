@@ -1,4 +1,3 @@
-
 """Tests for Club model, found in clubs/models.py"""
 
 from django.test import TestCase

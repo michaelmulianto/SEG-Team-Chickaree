@@ -3,15 +3,12 @@ from clubs.models import User, Club, Application
 from django.core.exceptions import ValidationError
 
 class UserModelTestCase(TestCase):
+
+    fixtures = ['clubs/tests/fixtures/default_user.json']
+
     def setUp(self):
         # called before every test
-        self.user = User.objects.create_user(
-            '@johndoe',
-            first_name = 'John',
-            last_name = 'Doe',
-            email = 'johndoe@example.com',
-            password='Password123',
-        )
+        self.user = User.objects.get(username='johndoe')
 
         self.club = Club.objects.create(
             name = 'Club John',
