@@ -96,17 +96,17 @@ def apply_to_club(request, club_id):
             desired_club = Club.objects.get(id = club_id)
             current_user = request.user
             form = forms.ApplyToClubForm(request.POST)
-            return render(request, 'apply_to_club.html', {'form': form})
             if form.is_valid():
-                form.save()
                 if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
-                    Application.objects.create(
-                        user = current_user,
+                    application = Application.objects.create(
                         club = desired_club,
+                        user = current_user,
+                        experience = form.cleaned_data.get('experience'),
+                        personalStatement = form.cleaned_data.get('personalStatement'),
                     )
-                return redirect('show_clubs')
-            else:
-                return render(request, 'apply_to_club.html', {'form': form, 'club':desired_club})
+                    return redirect('show_clubs')
+            # Next line executes if one of the last 2 conditionals fail.
+            return render(request, 'apply_to_club.html', {'form': form, 'club':desired_club})
         else:
             return redirect('log_in')
     else:
