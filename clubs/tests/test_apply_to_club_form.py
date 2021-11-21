@@ -24,5 +24,5 @@ class ApplyToClubFormTestCase(TestCase):
 
     def test_form_uses_model_validation(self):
         self.input['personalStatement'] = ''
-        form = ApplyToClubForm(data=input)
+        form = ApplyToClubForm(data=self.input)
         self.assertFalse(form.is_valid())
