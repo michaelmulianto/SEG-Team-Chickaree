@@ -1,8 +1,6 @@
 """
 Define the models for the system.
 
-Currently implemented models:
-    - User
 """
 
 from django.db import models

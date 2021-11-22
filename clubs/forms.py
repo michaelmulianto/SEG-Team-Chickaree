@@ -91,3 +91,9 @@ class ApplyToClubForm(forms.ModelForm):
             # We do not want this to save a new object.
             # The view for applying will handle this.
             return
+
+class EditAccountForm(forms.ModelForm):
+    class Meta:
+        model = User
+        #only want to make these 4 fields editable
+        fields = ['username', 'first_name', 'last_name', 'email']

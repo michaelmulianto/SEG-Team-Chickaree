@@ -6,6 +6,7 @@ from clubs.models import Club
 
 class ShowClubTest(TestCase):
     """Test aspects of show club view"""
+
     def setUp(self):
         self.club = Club.objects.create(
             name = 'Kings Knight',

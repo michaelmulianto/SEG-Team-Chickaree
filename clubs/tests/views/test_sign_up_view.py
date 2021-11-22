@@ -5,10 +5,12 @@ from django.urls import reverse
 from clubs.models import User
 from clubs.forms import SignUpForm
 from django.contrib.auth.hashers import check_password
-from .helpers import LogInTester
+from clubs.tests.helpers import LogInTester
 
 class SignUpViewTestCase(TestCase, LogInTester):
     """Test all aspects of the sign up view"""
+
+    fixtures = ['clubs/tests/fixtures/default_user.json']
 
     def setUp(self):
         self.url = reverse('sign_up')
@@ -31,6 +33,13 @@ class SignUpViewTestCase(TestCase, LogInTester):
         form = response.context['form']
         self.assertTrue(isinstance(form, SignUpForm))
         self.assertFalse(form.is_bound)
+
+    def test_get_sign_up_redirects_when_logged_in(self):
+        self.client.login(username='johndoe', password="Password123")
+        response = self.client.get(self.url, follow=True)
+        redirect_url = reverse('account')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'account.html')
 
     def test_unsuccessful_sign_up(self):
         before_count = User.objects.count()
