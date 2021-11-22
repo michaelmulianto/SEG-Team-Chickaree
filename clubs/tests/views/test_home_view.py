@@ -16,10 +16,17 @@ class AccountViewTestCase(TestCase):
     def test_get_home_url(self):
         self.assertEqual('/', self.url)
 
-    def test_get_home_no_loggin_in_user(self):
+    def test_get_home(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'home.html')
+
+    def test_get_home_redirects_when_logged_in(self):
+        self.client.login(username=self.user.username, password="Password123")
+        response = self.client.get(self.url, follow=True)
+        redirect_url = reverse('account')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'account.html')
 
     def test_get_home_logged_in_user(self):
         # Log in and make sure the user is redirected to a different page
