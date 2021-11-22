@@ -22,6 +22,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
 from clubs.models import User, Club, Application, Member
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 from clubs.helpers import login_prohibited
 
 @login_prohibited
@@ -95,9 +97,7 @@ def edit_account(request):
         form = EditAccountForm(instance = current_user)
     return render(request, 'edit_account.html', {'form': form})
 
-@login_required
-def change_password(request):
-    pass
+
 
 @login_required
 def create_club(request):
@@ -161,3 +161,19 @@ def show_club(request, club_id):
 def log_out(request):
     logout(request)
     return redirect('home')
+
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('account')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'change_password.html', {
+        'form': form
+    })
