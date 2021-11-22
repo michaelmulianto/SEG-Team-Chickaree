@@ -150,10 +150,6 @@ def show_clubs(request):
     clubs = Club.objects.all()
     return render(request, 'show_clubs.html', {'my_clubs': clubs})
 
-<<<<<<< HEAD
-
-=======
->>>>>>> main
 def show_club(request, club_id):
     try:
         club = Club.objects.get(id = club_id)
