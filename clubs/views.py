@@ -14,10 +14,13 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.contrib import messages
+from clubs import forms
+from django.http import HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
 
 from django.conf import settings
-from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm
+from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
 from clubs.models import User, Club, Application, Member
 from clubs.helpers import login_prohibited
 
@@ -120,6 +123,28 @@ def apply_to_club(request, club_id):
             club = desired_club,
         )
     return redirect('show_clubs')
+
+def apply_to_club(request, club_id):
+    if request.method == 'POST':
+        if request.user.is_authenticated:
+            desired_club = Club.objects.get(id = club_id)
+            current_user = request.user
+            form = forms.ApplyToClubForm(request.POST)
+            if form.is_valid():
+                if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
+                    application = Application.objects.create(
+                        club = desired_club,
+                        user = current_user,
+                        experience = form.cleaned_data.get('experience'),
+                        personalStatement = form.cleaned_data.get('personalStatement'),
+                    )
+                    return redirect('show_clubs')
+            # Next line executes if one of the last 2 conditionals fail.
+            return render(request, 'apply_to_club.html', {'form': form, 'club':desired_club})
+        else:
+            return redirect('log_in')
+    else:
+        return render(request, 'apply_to_club.html', {'form': forms.ApplyToClubForm(), 'club':Club.objects.get(id = club_id)})
 
 def show_clubs(request):
     clubs = Club.objects.all()
