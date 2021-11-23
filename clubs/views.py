@@ -184,4 +184,7 @@ def change_password(request):
 def club_details(request, club_id):
     #find the appropriate club
     club = Club.objects.get(id = club_id)
-    return render(request, 'club_details.html', {'club': club})
+    members = Member.objects.filter(club = club_id)
+    numberOfMembers = members.count()
+
+    return render(request, 'club_details.html', {'club': club, 'members': numberOfMembers})
