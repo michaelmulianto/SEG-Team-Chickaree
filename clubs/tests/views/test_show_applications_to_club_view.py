@@ -40,9 +40,5 @@ class ApplyToClubViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
 
         response_url = self.url
-        self.assertRedirects(
-            response, response_url,
-            status_code=302, target_status_code=200,
-            fetch_redirect_response=True
-        )
+        self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'application_list.html')
