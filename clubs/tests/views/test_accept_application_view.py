@@ -37,23 +37,25 @@ class AcceptApplicationTestCase(TestCase):
             personalStatement = 'I love chess!' 
         )
 
+        self.url = reverse('accept_application', kwargs = {'app_id': 0})
+
     def test_accept_application_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
         redirect_url = reverse('log_in')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_accept_application_redirects_when_not_owner_of_club(self):
-        self.membership.isOwner = False
-        self.membership.save(update_fields=['isOwner'])
+        self.ownerMember.isOwner = False
+        self.ownerMember.save(update_fields=['isOwner'])
 
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(username=self.ownerUser.username, password="Password123")
         response = self.client.get(self.url, follow=True)
         
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
     
-    def test_show_application_to_club_redirects_when_invalid_club_id_entered(self):
+    def test_show_application_to_club_redirects_when_invalid_application_id_entered(self):
         self.url = reverse('show_applications_to_club', kwargs = {'club_id': 0})
         self.client.login(username=self.user.username, password="Password123")
         response = self.client.get(self.url, follow=True)
