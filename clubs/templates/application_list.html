@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <title>Applications to club</title>
+    </head>
+    <body>
+        <h1>Applications</h1>
+        <table class="table">
+            {% for app in applications %}
+            <tr>
+              <td>{{ app.user.first_name }} {{ app.user.last_name }}</td>
+              <td><b>{{ app.experience }}</b></td>
+              <td>{{ app.personalStatement }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>

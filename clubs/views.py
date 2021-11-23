@@ -152,3 +152,6 @@ def show_applications_to_club(request, club_id):
         # Access denied
         return redirect('show_clubs')
 
+    applications = Application.objects.all().filter(club = club_to_view)
+    return render(request, 'application_list.html', {'applications': applications})
+
