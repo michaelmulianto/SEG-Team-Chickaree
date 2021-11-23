@@ -12,6 +12,8 @@
         <p><b>Number of Members: </b> {{members}} </p>
         {%if userIsMember == False%}
           <td><a href='{% url 'apply_to_club' club.id %}'>Apply to club</a></td>
+        {%else%}
+          <td><a href='#'>Show Members</a></td>
         {%endif%}
       </div>
     </div>
