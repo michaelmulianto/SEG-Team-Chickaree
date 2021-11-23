@@ -4,7 +4,6 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
 from clubs.models import User, Club, Member
-from clubs.forms import CreateClubForm
 from clubs.tests.helpers import reverse_with_next
 
 class ShowApplicationsToClubTestCase(TestCase):
@@ -19,12 +18,14 @@ class ShowApplicationsToClubTestCase(TestCase):
             location = 'Kings College',
             description = 'best club in the world'
         )
-        self.application = Application.objects.create(
+        
+        self.membership = Member.objects.create(
             club = self.club,
             user = self.user,
-            experience = 2,
-            personalStatement = 'I love chess!' 
+            isOwner = True
         )
+
+        self.url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id})
 
     def test_url_of_show_applications_to_club(self):
         self.assertEqual(self.url, '/club/' + str(self.club.id) + '/applications')
