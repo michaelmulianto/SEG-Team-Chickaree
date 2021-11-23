@@ -29,5 +29,6 @@ urlpatterns = [
     path('change_password/', views.change_password, name = 'change_password'),
     path('clubs/', views.show_clubs, name = 'show_clubs'),
     path('apply_to_club/<int:club_id>', views.apply_to_club, name = 'apply_to_club'),
+    path('club_details/', views.club_details, name = 'club_details'),
     path('club/<int:club_id>', views.show_club, name='show_club'),
 ]
