@@ -10,7 +10,6 @@ class AcceptApplicationTestCase(TestCase):
     """Test all aspects of the show applications to club view"""
 
     fixtures = ['clubs/tests/fixtures/default_user.json']
-    fixtures = ['clubs/tests/fixtures/default_club.json']
 
     def setUp(self):
         self.applyingUser = User.objects.get(username='johndoe')
@@ -22,7 +21,11 @@ class AcceptApplicationTestCase(TestCase):
             password='Password123'
         )
 
-        self.club = Club.objects.get(name='Chess Clubs')
+        self.club = Club.objects.create(
+            name = 'Kings Knight',
+            location = 'Kings College',
+            description = 'best club in the world'
+        )
 
         self.ownerMember = Member.objects.create(
             club = self.club,
@@ -40,7 +43,7 @@ class AcceptApplicationTestCase(TestCase):
         self.url = reverse('accept_application', kwargs = {'app_id': self.application.id})
 
     def test_accept_app_url(self):
-        self.assertEqual(self.url, '/accept_application/' + self.application.id)
+        self.assertEqual(self.url, '/accept_application/' + str(self.application.id))
 
     def test_accept_application_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
@@ -59,7 +62,7 @@ class AcceptApplicationTestCase(TestCase):
         self.assertTemplateUsed(response, 'show_clubs.html')
     
     def test_accept_application_redirects_when_invalid_application_id_entered(self):
-        self.url = reverse('show_applications_to_club', kwargs = {'app_id': 0})
+        self.url = reverse('accept_application', kwargs = {'app_id': 0})
         self.client.login(username=self.ownerUser.username, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
