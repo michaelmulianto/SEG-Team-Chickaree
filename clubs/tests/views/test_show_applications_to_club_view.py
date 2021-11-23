@@ -37,8 +37,19 @@ class ApplyToClubViewTestCase(TestCase):
 
     def test_show_application_to_club_redirects_when_not_owner_of_club(self):
         self.membership.isOwner = False
+        self.membership.save(update_fields=['isOwner'])
+
         self.client.login(username=self.user.username, password="Password123")
-        response = self.client.get(self.url)
+        response = self.client.get(self.url, follow=True)
+        
+        redirect_url = reverse('show_clubs')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'show_clubs.html')
+    
+    def test_show_application_to_club_redirects_when_invalid_club_id_entered(self):
+        self.url = reverse('show_applications_to_club', kwargs = {'club_id': 0})
+        self.client.login(username=self.user.username, password="Password123")
+        response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')

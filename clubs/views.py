@@ -143,12 +143,10 @@ def show_applications_to_club(request, club_id):
     try:
         club_to_view = Club.objects.get(id = club_id)
     except ObjectDoesNotExist:
-        # Invalid club id provided. 
+        #Club matching id does not exist. 
         return redirect('show_clubs')
     
-    try:
-        user_membership = Member.objects.get(user = current_user, club = club_to_view, isOwner = True)
-    except ObjectDoesNotExist:
+    if not(Member.objects.filter(club=club_to_view, user=current_user, isOwner=True).exists()):
         # Access denied
         return redirect('show_clubs')
 
