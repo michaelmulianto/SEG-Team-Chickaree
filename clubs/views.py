@@ -136,3 +136,19 @@ def show_club(request, club_id):
 def log_out(request):
     logout(request)
     return redirect('home')
+
+@login_required
+def show_applications_to_club(request, club_id):
+    current_user = request.user
+    try:
+        club_to_view = Club.objects.get(id = club_id)
+    except ObjectDoesNotExist:
+        # Invalid club id provided. 
+        return redirect('show_clubs')
+    
+    try:
+        user_membership = Member.objects.get(user = current_user, club = club_to_view, isOwner = True)
+    except ObjectDoesNotExist:
+        # Access denied
+        return redirect('show_clubs')
+
