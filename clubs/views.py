@@ -105,7 +105,12 @@ def create_club(request):
         current_user = request.user
         form = CreateClubForm(request.POST)
         if form.is_valid():
-            form.save()
+            new_club = form.save()
+            Member.objects.create(
+                club = new_club,
+                user = current_user,
+                isOwner = True
+            )
             return redirect('show_clubs')
         else:
             return render(request, 'create_club.html', {'form': form})
