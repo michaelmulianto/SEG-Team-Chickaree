@@ -3,7 +3,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
-from clubs.models import User, Club
+from clubs.models import User, Club, Member
 from clubs.forms import CreateClubForm
 from clubs.tests.helpers import reverse_with_next
 
@@ -40,12 +40,22 @@ class CreateClubViewTest(TestCase):
 
     def test_successful_create_club(self):
         self.client.login(username=self.user.username, password="Password123")
+
+        # We need to test that both a new club and member object have been created.
         club_count_before = Club.objects.count()
+        member_count_before = Member.objects.count()
+        
         response = self.client.post(self.url, self.data, follow=True)
+        
         club_count_after = Club.objects.count()
+        member_count_after = Member.objects.count()
+
         self.assertEqual(club_count_after, club_count_before+1)
+        self.assertEqual(member_count_after, member_count_before+1)
+        
         new_club = Club.objects.latest('created_on')
-        #self.assertEqual(self.user, new_post.author)
+
+        # Response tests
         response_url = reverse('show_clubs')
         self.assertRedirects(
             response, response_url,
