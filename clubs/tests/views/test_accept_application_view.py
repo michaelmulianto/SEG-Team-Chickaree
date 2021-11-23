@@ -12,8 +12,8 @@ class AcceptApplicationTestCase(TestCase):
     fixtures = ['clubs/tests/fixtures/default_user.json']
 
     def setUp(self):
-        self.applyingUser = User.objects.get(username='johndoe')
-        self.ownerUser = User.objects.create(
+        self.ownerUser = User.objects.get(username='johndoe')
+        self.applyingUser = User.objects.create(
             username = 'janedoe',
             first_name = 'Jane',
             last_name = 'Doe',
@@ -47,7 +47,7 @@ class AcceptApplicationTestCase(TestCase):
 
     def test_accept_application_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
-        redirect_url = reverse('log_in')
+        redirect_url = reverse_with_next('log_in', self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_accept_application_redirects_when_not_owner_of_club(self):
@@ -80,8 +80,8 @@ class AcceptApplicationTestCase(TestCase):
         member_count_after = Member.objects.count()
         application_count_after = Application.objects.count()
 
-        self.assertEqual(member_count_before, member_count_after+1)
-        self.assertEqual(application_count_before, application_count_after-1)
+        self.assertEqual(member_count_before, member_count_after-1)
+        self.assertEqual(application_count_before, application_count_after+1)
 
         response_url = reverse('show_applications_to_club', kwargs={'club_id':self.club.id})
         self.assertEqual(response.status_code, 200)

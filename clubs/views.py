@@ -154,10 +154,10 @@ def show_applications_to_club(request, club_id):
     return render(request, 'application_list.html', {'applications': applications})
 
 @login_required
-def accept_application(request, application_id):
+def accept_application(request, app_id):
     current_user = request.user
     try:
-        application = Application.objects.get(id = application_id)
+        application = Application.objects.get(id = app_id)
     except ObjectDoesNotExist:
         #Application matching id does not exist. 
         return redirect('show_clubs')
@@ -171,6 +171,6 @@ def accept_application(request, application_id):
         club = application.club
     )
 
+    application.delete() # Remains local python object while in scope.
     applications = Application.objects.all().filter(club = application.club)
-    application.delete()
     return render(request, 'application_list.html', {'applications': applications})
