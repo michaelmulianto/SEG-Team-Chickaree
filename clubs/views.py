@@ -167,6 +167,45 @@ def log_out(request):
     logout(request)
     return redirect('home')
 
+@login_required
+def show_applications_to_club(request, club_id):
+    current_user = request.user
+    try:
+        club_to_view = Club.objects.get(id = club_id)
+    except ObjectDoesNotExist:
+        #Club matching id does not exist. 
+        return redirect('show_clubs')
+    
+    if not(Member.objects.filter(club=club_to_view, user=current_user, isOwner=True).exists()):
+        # Access denied
+        return redirect('show_clubs')
+
+    applications = Application.objects.all().filter(club = club_to_view)
+    return render(request, 'application_list.html', {'applications': applications})
+
+@login_required
+def accept_application(request, app_id):
+    current_user = request.user
+    try:
+        application = Application.objects.get(id = app_id)
+    except ObjectDoesNotExist:
+        #Application matching id does not exist. 
+        return redirect('show_clubs')
+        
+    if not(Member.objects.filter(club=application.club, user=current_user, isOwner=True).exists()):
+        # Access denied
+        return redirect('show_clubs')
+
+    Member.objects.create(
+        user = application.user,
+        club = application.club
+    )
+
+    application.delete() # Remains local python object while in scope.
+    applications = Application.objects.all().filter(club = application.club)
+    return render(request, 'application_list.html', {'applications': applications})
+  
+@login_required
 def change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)

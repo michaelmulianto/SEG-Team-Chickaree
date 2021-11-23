@@ -55,9 +55,6 @@ class Club(models.Model):
     class Meta:
         ordering = ['-created_on']
 
-    def apply(self):
-        pass
-
 
 class Member(models.Model):
     """Model representing a member of some single chess club"""
