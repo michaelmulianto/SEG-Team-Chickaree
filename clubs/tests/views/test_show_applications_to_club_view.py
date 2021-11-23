@@ -7,7 +7,7 @@ from clubs.models import User, Club, Member
 from clubs.forms import CreateClubForm
 from clubs.tests.helpers import reverse_with_next
 
-class ApplyToClubViewTestCase(TestCase):
+class ShowApplicationsToClubTestCase(TestCase):
     """Test all aspects of the show applications to club view"""
 
     fixtures = ['clubs/tests/fixtures/default_user.json']
@@ -19,13 +19,12 @@ class ApplyToClubViewTestCase(TestCase):
             location = 'Kings College',
             description = 'best club in the world'
         )
-        self.membership = Member.objects.create(
+        self.application = Application.objects.create(
             club = self.club,
             user = self.user,
-            isOwner = True
+            experience = 2,
+            personalStatement = 'I love chess!' 
         )
-
-        self.url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id})
 
     def test_url_of_show_applications_to_club(self):
         self.assertEqual(self.url, '/club/' + str(self.club.id) + '/applications')
@@ -41,7 +40,7 @@ class ApplyToClubViewTestCase(TestCase):
 
         self.client.login(username=self.user.username, password="Password123")
         response = self.client.get(self.url, follow=True)
-        
+
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
