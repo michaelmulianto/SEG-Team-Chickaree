@@ -183,8 +183,13 @@ def change_password(request):
 @login_required
 def club_details(request, club_id):
     #find the appropriate club
+    current_user = request.user
     club = Club.objects.get(id = club_id)
     members = Member.objects.filter(club = club_id)
     numberOfMembers = members.count()
+    checkUserisMember = members.filter(user = current_user)
+    isMember = False
+    if checkUserisMember.count() > 0:
+        isMember = True
 
-    return render(request, 'club_details.html', {'club': club, 'members': numberOfMembers})
+    return render(request, 'club_details.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember})

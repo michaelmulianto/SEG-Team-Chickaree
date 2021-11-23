@@ -10,7 +10,9 @@
         <P><B>Location: </b> {{club.location}}</p>
         <p><b>Description: </b> {{club.description}} </p>
         <p><b>Number of Members: </b> {{members}} </p>
-        <td><a href='{% url 'apply_to_club' club.id %}'>Apply to club</a></td>
+        {%if userIsMember == False%}
+          <td><a href='{% url 'apply_to_club' club.id %}'>Apply to club</a></td>
+        {%endif%}
       </div>
     </div>
   </div>
