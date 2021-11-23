@@ -153,3 +153,24 @@ def show_applications_to_club(request, club_id):
     applications = Application.objects.all().filter(club = club_to_view)
     return render(request, 'application_list.html', {'applications': applications})
 
+@login_required
+def accept_application(request, application_id):
+    current_user = request.user
+    try:
+        application = Application.objects.get(id = application_id)
+    except ObjectDoesNotExist:
+        #Application matching id does not exist. 
+        return redirect('show_clubs')
+        
+    if not(Member.objects.filter(club=application.club, user=current_user, isOwner=True).exists()):
+        # Access denied
+        return redirect('show_clubs')
+
+    Member.objects.create(
+        user = application.user,
+        club = application.club
+    )
+
+    applications = Application.objects.all().filter(club = application.club)
+    application.delete()
+    return render(request, 'application_list.html', {'applications': applications})
