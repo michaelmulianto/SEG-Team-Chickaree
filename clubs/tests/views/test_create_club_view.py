@@ -66,9 +66,17 @@ class CreateClubViewTest(TestCase):
 
     def test_unsuccessful_create_club(self):
         self.client.login(username='johndoe', password='Password123')
+        
         club_count_before = Club.objects.count()
+        member_count_before = Member.objects.count()
+        
         self.data['name'] = ""
         response = self.client.post(self.url, self.data, follow=True)
+        
         club_count_after = Club.objects.count()
+        member_count_after = Member.objects.count()
+
         self.assertEqual(club_count_after, club_count_before)
+        self.assertEqual(member_count_after, member_count_before)
+        
         self.assertTemplateUsed(response, 'create_club.html')
