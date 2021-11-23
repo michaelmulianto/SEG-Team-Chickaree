@@ -58,18 +58,28 @@ class AcceptApplicationTestCase(TestCase):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
     
-    def test_show_application_to_club_redirects_when_invalid_application_id_entered(self):
-        self.url = reverse('show_applications_to_club', kwargs = {'club_id': 0})
-        self.client.login(username=self.user.username, password="Password123")
+    def test_accept_application_redirects_when_invalid_application_id_entered(self):
+        self.url = reverse('show_applications_to_club', kwargs = {'app_id': 0})
+        self.client.login(username=self.ownerUser.username, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
 
-    def test_successful_show_applications_to_club(self):
-        self.client.login(username=self.user.username, password="Password123")
+    def test_successful_accept_application_to_club(self):
+        self.client.login(username=self.ownerUser.username, password="Password123")
+
+        member_count_before = Member.objects.count()
+        application_count_before = Application.objects.count()
+
         response = self.client.get(self.url, follow=True)
 
-        response_url = self.url
+        member_count_after = Member.objects.count()
+        application_count_after = Application.objects.count()
+
+        self.assertEqual(member_count_before, member_count_after+1)
+        self.assertEqual(application_count_before, application_count_after-1)
+
+        response_url = reverse('show_applications_to_club', kwargs={'club_id':self.club.id})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'application_list.html')
