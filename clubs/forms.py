@@ -80,6 +80,7 @@ class CreateClubForm(forms.ModelForm):
             location = self.cleaned_data.get('location'),
             description = self.cleaned_data.get('description'),
         )
+        return club
 
 class ApplyToClubForm(forms.ModelForm):
     class Meta:
