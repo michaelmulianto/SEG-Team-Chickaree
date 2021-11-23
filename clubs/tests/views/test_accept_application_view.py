@@ -37,7 +37,10 @@ class AcceptApplicationTestCase(TestCase):
             personalStatement = 'I love chess!' 
         )
 
-        self.url = reverse('accept_application', kwargs = {'app_id': 0})
+        self.url = reverse('accept_application', kwargs = {'app_id': self.application.id})
+
+    def test_accept_app_url(self):
+        self.assertEqual(self.url, '/accept_application/' + self.application.id)
 
     def test_accept_application_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
