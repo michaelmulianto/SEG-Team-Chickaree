@@ -35,6 +35,14 @@ class ApplyToClubViewTestCase(TestCase):
         redirect_url = reverse_with_next('log_in', self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
+    def test_show_application_to_club_redirects_when_not_owner_of_club(self):
+        self.membership.isOwner = False
+        self.client.login(username=self.user.username, password="Password123")
+        response = self.client.get(self.url)
+        redirect_url = reverse('show_clubs')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'show_clubs.html')
+
     def test_successful_show_applications_to_club(self):
         self.client.login(username=self.user.username, password="Password123")
         response = self.client.get(self.url, follow=True)
