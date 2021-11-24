@@ -165,6 +165,14 @@ def show_club(request, club_id):
     else:
         return render(request, 'show_club.html', {'club': club})
 
+def show_members_of_club(request, club_id):
+    try:
+        members = Member.objects.filter(id = club_id)
+    except ObjectDoesNotExist:
+        return redirect('club_details')
+    else:
+        return render(request, 'members_list', {'members': members})
+
 def log_out(request):
     logout(request)
     return redirect('home')
@@ -175,9 +183,9 @@ def show_applications_to_club(request, club_id):
     try:
         club_to_view = Club.objects.get(id = club_id)
     except ObjectDoesNotExist:
-        #Club matching id does not exist. 
+        #Club matching id does not exist.
         return redirect('show_clubs')
-    
+
     if not(Member.objects.filter(club=club_to_view, user=current_user, isOwner=True).exists()):
         # Access denied
         return redirect('show_clubs')
@@ -191,9 +199,9 @@ def accept_application(request, app_id):
     try:
         application = Application.objects.get(id = app_id)
     except ObjectDoesNotExist:
-        #Application matching id does not exist. 
+        #Application matching id does not exist.
         return redirect('show_clubs')
-        
+
     if not(Member.objects.filter(club=application.club, user=current_user, isOwner=True).exists()):
         # Access denied
         return redirect('show_clubs')
@@ -206,7 +214,7 @@ def accept_application(request, app_id):
     application.delete() # Remains local python object while in scope.
     applications = Application.objects.all().filter(club = application.club)
     return render(request, 'application_list.html', {'applications': applications})
-  
+
 @login_required
 def change_password(request):
     if request.method == 'POST':
