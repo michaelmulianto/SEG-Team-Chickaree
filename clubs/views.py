@@ -165,13 +165,14 @@ def show_club(request, club_id):
     else:
         return render(request, 'show_club.html', {'club': club})
 
-def show_members_of_club(request, club_id):
+def members_list(request, club_id):
     try:
-        members = Member.objects.filter(id = club_id)
+        club = Club.objects.get(id = club_id)
+        members = Member.objects.filter(club = club)
     except ObjectDoesNotExist:
         return redirect('club_details')
     else:
-        return render(request, 'members_list', {'members': members})
+        return render(request, 'members_list', {'members': members, 'club': club})
 
 def log_out(request):
     logout(request)

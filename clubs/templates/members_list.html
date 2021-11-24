@@ -3,15 +3,13 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <h1>Clubs</h1>
+        <h1>{{club.name}} Members</h1>
         <a href="{% url 'create_club' %}" class="btn btn-secondary">Create New Club</a>
         <table class="table">
-        {% for club in my_clubs %}
+        {% for member in members %}
         <tr>
-          <td><b>{{ club.name }}</b></td>
+          <td><b>{{ member.user }}</b></td>
           <td><i></i></td>
-          <td><a href='{% url 'apply_to_club' club.id %}'>Apply to club</a></td>
-          <td><a href='{% url 'club_details' club.id%}'>Show Details</a></td>
         </tr>
         {% endfor %}
         </table>
