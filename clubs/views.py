@@ -83,6 +83,8 @@ def account(request):
     else:
         return render(request, 'account.html', {'user': user})
 
+
+
 @login_required
 def edit_account(request):
     current_user = request.user
@@ -221,3 +223,17 @@ def change_password(request):
     return render(request, 'change_password.html', {
         'form': form
     })
+
+@login_required
+def club_details(request, club_id):
+    #find the appropriate club
+    current_user = request.user
+    club = Club.objects.get(id = club_id)
+    members = Member.objects.filter(club = club_id)
+    numberOfMembers = members.count()
+    checkUserisMember = members.filter(user = current_user)
+    isMember = False
+    if checkUserisMember.count() > 0:
+        isMember = True
+
+    return render(request, 'club_details.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember})
