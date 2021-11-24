@@ -165,15 +165,6 @@ def show_club(request, club_id):
     else:
         return render(request, 'show_club.html', {'club': club})
 
-def members_list(request, club_id):
-    try:
-        club = Club.objects.get(id = club_id)
-        members = Member.objects.filter(club = club)
-    except ObjectDoesNotExist:
-        return redirect('club_details')
-    else:
-        return render(request, 'members_list', {'members': members, 'club': club})
-
 def log_out(request):
     logout(request)
     return redirect('home')
@@ -246,3 +237,12 @@ def club_details(request, club_id):
         isMember = True
 
     return render(request, 'club_details.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember})
+
+def members_list(request, club_id):
+    try:
+        club = Club.objects.get(id = club_id)
+        members = Member.objects.filter(club = club)
+    except ObjectDoesNotExist:
+        return redirect('club_details')
+    else:
+        return render(request, 'members_list.html', {'members': members, 'club': club})

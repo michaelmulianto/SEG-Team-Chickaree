@@ -13,7 +13,7 @@
         {%if userIsMember == False%}
           <td><a href='{% url 'apply_to_club' club.id %}'>Apply to club</a></td>
         {%else%}
-          <td><a href='#'>Show Members</a></td>
+          <td><a href='{% url 'members_list' club.id %}'>Show Members</a></td>
         {%endif%}
       </div>
     </div>
