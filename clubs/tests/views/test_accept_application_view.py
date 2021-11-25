@@ -40,10 +40,10 @@ class RespondToApplicationViewTestCase(TestCase):
             personalStatement = 'I love chess!' 
         )
 
-        self.url = reverse('respond_to_application', kwargs = {'app_id': self.application.id, 'is_accepted': True})
+        self.url = reverse('respond_to_application', kwargs = {'app_id': self.application.id, 'is_accepted': 1})
 
     def test_respond_to_app_url(self):
-        self.assertEqual(self.url, '/application/' + str(self.application.id) + "/respond/True")
+        self.assertEqual(self.url, '/application/' + str(self.application.id) + "/respond/1")
 
     def test_respond_to_application_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
@@ -62,7 +62,7 @@ class RespondToApplicationViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'show_clubs.html')
     
     def test_respond_to_application_redirects_when_invalid_application_id_entered(self):
-        self.url = reverse('accept_application', kwargs = {'app_id': 0})
+        self.url = reverse('respond_to_application', kwargs = {'app_id': 0, 'is_accepted':1})
         self.client.login(username=self.ownerUser.username, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
