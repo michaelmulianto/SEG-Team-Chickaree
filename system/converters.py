@@ -4,7 +4,13 @@ class BooleanPathConverter:
     regex = '[0-1]{1}'
 
     def to_python(self, value):
-        return bool(value)
+        if value == '1':
+            return True
+        else:
+            return False
 
     def to_url(self, value):
-        return value
+        if value:
+            return '1'
+        else:
+            return '0'
