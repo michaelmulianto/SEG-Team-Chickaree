@@ -121,36 +121,22 @@ def create_club(request):
 
 @login_required
 def apply_to_club(request, club_id):
-    desired_club = Club.objects.get(id = club_id)
-    current_user = request.user
-    # Ensure that the user does not have an existing application or membership to the club.
-    if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
-        Application.objects.create(
-            user = current_user,
-            club = desired_club,
-        )
-    return redirect('show_clubs')
-
-def apply_to_club(request, club_id):
     if request.method == 'POST':
-        if request.user.is_authenticated:
-            desired_club = Club.objects.get(id = club_id)
-            current_user = request.user
-            form = forms.ApplyToClubForm(request.POST)
-            if form.is_valid():
-                if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
-                    application = Application.objects.create(
-                        club = desired_club,
-                        user = current_user,
-                        experience = form.cleaned_data.get('experience'),
-                        personalStatement = form.cleaned_data.get('personalStatement'),
-                    )
-                    return redirect('show_clubs')
-            # Next line executes if one of the last 2 conditionals fail.
-            return render(request, 'apply_to_club.html', {'form': form, 'club':desired_club})
-        else:
-            return redirect('log_in')
-    else:
+        desired_club = Club.objects.get(id = club_id)
+        current_user = request.user
+        form = forms.ApplyToClubForm(request.POST)
+        if form.is_valid():
+            if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
+                application = Application.objects.create(
+                    club = desired_club,
+                    user = current_user,
+                    experience = form.cleaned_data.get('experience'),
+                    personalStatement = form.cleaned_data.get('personalStatement'),
+                )
+            return redirect('show_clubs')
+        # Invalid form
+        return render(request, 'apply_to_club.html', {'form': form, 'club':desired_club})
+    else: # GET
         return render(request, 'apply_to_club.html', {'form': forms.ApplyToClubForm(), 'club':Club.objects.get(id = club_id)})
 
 def show_clubs(request):
