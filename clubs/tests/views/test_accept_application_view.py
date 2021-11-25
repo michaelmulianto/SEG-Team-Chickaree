@@ -1,4 +1,4 @@
-"""Test backend implementation of the ability to accept applications."""
+"""Test backend implementation of the ability to accept/reject applications."""
 
 from django.test import TestCase
 from django.urls import reverse
@@ -6,8 +6,8 @@ from django.contrib.auth.hashers import check_password
 from clubs.models import User, Club, Member, Application
 from clubs.tests.helpers import reverse_with_next
 
-class AcceptApplicationTestCase(TestCase):
-    """Test all aspects of the show applications to club view"""
+class RespondToApplicationViewTestCase(TestCase):
+    """Test all aspects of the respond to applications view"""
 
     fixtures = ['clubs/tests/fixtures/default_user.json']
 
@@ -40,17 +40,17 @@ class AcceptApplicationTestCase(TestCase):
             personalStatement = 'I love chess!' 
         )
 
-        self.url = reverse('accept_application', kwargs = {'app_id': self.application.id})
+        self.url = reverse('respond_to_application', kwargs = {'app_id': self.application.id, 'is_accepted': True})
 
-    def test_accept_app_url(self):
-        self.assertEqual(self.url, '/accept_application/' + str(self.application.id))
+    def test_respond_to_app_url(self):
+        self.assertEqual(self.url, '/application/' + str(self.application.id) + "/respond/True")
 
-    def test_accept_application_redirects_when_not_logged_in(self):
+    def test_respond_to_application_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
         redirect_url = reverse_with_next('log_in', self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
-    def test_accept_application_redirects_when_not_owner_of_club(self):
+    def test_respond_to_application_redirects_when_not_owner_of_club(self):
         self.ownerMember.isOwner = False
         self.ownerMember.save(update_fields=['isOwner'])
 
@@ -61,7 +61,7 @@ class AcceptApplicationTestCase(TestCase):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
     
-    def test_accept_application_redirects_when_invalid_application_id_entered(self):
+    def test_respond_to_application_redirects_when_invalid_application_id_entered(self):
         self.url = reverse('accept_application', kwargs = {'app_id': 0})
         self.client.login(username=self.ownerUser.username, password="Password123")
         response = self.client.get(self.url, follow=True)
