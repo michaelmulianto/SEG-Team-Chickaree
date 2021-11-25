@@ -119,18 +119,6 @@ def create_club(request):
     else:
         return render(request, 'create_club.html', {'form': CreateClubForm()})
 
-@login_required
-def apply_to_club(request, club_id):
-    desired_club = Club.objects.get(id = club_id)
-    current_user = request.user
-    # Ensure that the user does not have an existing application or membership to the club.
-    if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
-        Application.objects.create(
-            user = current_user,
-            club = desired_club,
-        )
-    return redirect('show_clubs')
-
 def apply_to_club(request, club_id):
     if request.method == 'POST':
         if request.user.is_authenticated:
