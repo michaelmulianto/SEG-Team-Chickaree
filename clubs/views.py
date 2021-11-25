@@ -124,8 +124,8 @@ def apply_to_club(request, club_id):
     if request.method == 'POST':
         desired_club = Club.objects.get(id = club_id)
         current_user = request.user
-         form = forms.ApplyToClubForm(request.POST)
-         if form.is_valid():
+        form = forms.ApplyToClubForm(request.POST)
+        if form.is_valid():
             if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
                 application = Application.objects.create(
                     club = desired_club,
