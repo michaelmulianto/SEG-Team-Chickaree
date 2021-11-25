@@ -220,9 +220,7 @@ def change_password(request):
             messages.error(request, 'Please correct the error below.')
     else:
         form = PasswordChangeForm(request.user)
-    return render(request, 'change_password.html', {
-        'form': form
-    })
+    return render(request, 'change_password.html', {'form': form})
 
 @login_required
 def club_details(request, club_id):
