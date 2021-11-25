@@ -186,7 +186,7 @@ def show_applications_to_club(request, club_id):
     return render(request, 'application_list.html', {'applications': applications})
 
 @login_required
-def accept_application(request, app_id):
+def respond_to_application(request, app_id, is_accepted):
     current_user = request.user
     try:
         application = Application.objects.get(id = app_id)
@@ -198,10 +198,12 @@ def accept_application(request, app_id):
         # Access denied
         return redirect('show_clubs')
 
-    Member.objects.create(
-        user = application.user,
-        club = application.club
-    )
+    # Create member object iff application is accepted
+    if is_accepted:
+        Member.objects.create(
+            user = application.user,
+            club = application.club
+        )
 
     application.delete() # Remains local python object while in scope.
     applications = Application.objects.all().filter(club = application.club)
