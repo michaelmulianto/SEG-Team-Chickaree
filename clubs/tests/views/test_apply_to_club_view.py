@@ -32,7 +32,7 @@ class ApplyToClubViewTestCase(TestCase):
 
     def test_get_apply_to_club_redirects_when_not_logged_in(self):
         app_count_before = Application.objects.count()
-        redirect_url = reverse('log_in')
+        redirect_url = reverse_with_next('log_in', self.url)
         response = self.client.post(self.url, self.data, follow=True)
         self.assertRedirects(response, redirect_url,
             status_code=302, target_status_code=200, fetch_redirect_response=True
