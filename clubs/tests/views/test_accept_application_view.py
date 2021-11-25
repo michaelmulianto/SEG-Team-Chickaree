@@ -86,3 +86,22 @@ class RespondToApplicationViewTestCase(TestCase):
         response_url = reverse('show_applications_to_club', kwargs={'club_id':self.club.id})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'application_list.html')
+
+    def test_successful_reject_application_to_club(self):
+        self.url = reverse('respond_to_application', kwargs = {'app_id': self.application.id, 'is_accepted':0})
+        self.client.login(username=self.ownerUser.username, password="Password123")
+
+        member_count_before = Member.objects.count()
+        application_count_before = Application.objects.count()
+
+        response = self.client.get(self.url, follow=True)
+
+        member_count_after = Member.objects.count()
+        application_count_after = Application.objects.count()
+
+        self.assertEqual(member_count_before, member_count_after)
+        self.assertEqual(application_count_before, application_count_after+1)
+
+        response_url = reverse('show_applications_to_club', kwargs={'club_id':self.club.id})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'application_list.html')
