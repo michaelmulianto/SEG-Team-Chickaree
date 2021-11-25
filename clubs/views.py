@@ -239,3 +239,22 @@ def club_details(request, club_id):
         isMember = True
 
     return render(request, 'club_details.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember})
+
+@login_required
+def promote_member_to_officer(request, club_id, member_id):
+    current_user = request.user
+    try:
+        member = Member.objects.get(id = member_id)
+    except ObjectDoesNotExist:
+        #Member matching id does not exist. 
+        #MAKE THIS MEMBERLIST
+        return redirect('show_clubs')
+        
+    if not(Member.objects.filter(club=application.club, user=current_user, isOwner=True).exists()):
+        # Access denied
+        return redirect('club_details', kwargs={'club_id':club_id})
+        
+    member.isOfficer = True 
+    member.save()
+    
+    return redirect('club_details', kwargs={'club_id':club_id})
