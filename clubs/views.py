@@ -236,6 +236,7 @@ def club_details(request, club_id):
 
     return render(request, 'club_details.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember})
 
+@login_required
 def members_list(request, club_id):
     current_user = request.user
     try:
