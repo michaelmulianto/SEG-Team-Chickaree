@@ -13,8 +13,8 @@ class ChangePasswordViewTestCase(TestCase, LogInTester):
         self.user = User.objects.create(
             first_name = "John",
             last_name = "Doe",
-            email = "johndoe@example.org"
-
+            email = "johndoe@example.org",
+            password = 'Password123'
         )
         self.url = reverse('change_password')
         self.form_input = {
@@ -39,11 +39,11 @@ class ChangePasswordViewTestCase(TestCase, LogInTester):
         response = self.client.get(self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
-    def test_succesful_password_change(self):
-        self.client.login(username=self.user.username, password='Password123')
-        response = self.client.post(self.url, self.form_input, follow=True)
-        response_url = reverse('change_password')
-        #self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
+    # def test_succesful_password_change(self):
+    #     self.client.login(username=self.user.username, password='Password123')
+    #     response = self.client.post(self.url, self.form_input, follow=True)
+    #     response_url = reverse('change_password')
+    #     self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
         # self.assertTemplateUsed(response, 'account.html')
         # self.user.refresh_from_db()
         # is_password_correct = check_password('NewPassword123', self.user.password)
