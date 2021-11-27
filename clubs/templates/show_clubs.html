@@ -11,7 +11,7 @@
           <td><b>{{ club.name }}</b></td>
           <td><i></i></td>
           <td><a href='{% url 'apply_to_club' club.id %}'>Apply to club</a></td>
-          <td><a href='{% url 'club_details' club.id%}'>Show Details</a></td>
+          <td><a href='{% url 'show_club' club.id%}'>Show Details</a></td>
         </tr>
         {% endfor %}
         </table>

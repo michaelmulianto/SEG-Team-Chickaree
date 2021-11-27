@@ -6,7 +6,7 @@ Currently implemented views:
     - sign_up
     - log_in
     - account
-    - create clubs
+    - create_club
     - show_clubs
     - show_club
 """
@@ -142,14 +142,6 @@ def show_clubs(request):
     clubs = Club.objects.all()
     return render(request, 'show_clubs.html', {'my_clubs': clubs})
 
-def show_club(request, club_id):
-    try:
-        club = Club.objects.get(id = club_id)
-    except ObjectDoesNotExist:
-        return redirect('show_clubs')
-    else:
-        return render(request, 'show_club.html', {'club': club})
-
 def log_out(request):
     logout(request)
     return redirect('home')
@@ -212,15 +204,19 @@ def change_password(request):
     })
 
 @login_required
-def club_details(request, club_id):
+def show_club(request, club_id):
     #find the appropriate club
-    current_user = request.user
-    club = Club.objects.get(id = club_id)
-    members = Member.objects.filter(club = club_id)
-    numberOfMembers = members.count()
-    checkUserisMember = members.filter(user = current_user)
-    isMember = False
-    if checkUserisMember.count() > 0:
-        isMember = True
+    try:
+        club = Club.objects.get(id = club_id)
+    except ObjectDoesNotExist:
+        return redirect('show_clubs')
+    else:
+        current_user = request.user
 
-    return render(request, 'club_details.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember})
+        members = Member.objects.filter(club = club_id)
+        numberOfMembers = members.count()
+        checkUserisMember = members.filter(user = current_user)
+        isMember = False
+        if checkUserisMember.count() > 0:
+            isMember = True
+        return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember})

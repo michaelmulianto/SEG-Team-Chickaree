@@ -11,7 +11,7 @@ class ShowClubTest(TestCase):
         self.club = Club.objects.create(
             name = 'Kings Knight',
             location = 'Kings College',
-            description = 'best club in the world'
+            description = 'Best club in the world'
         )
         self.url = reverse('show_club', kwargs={'club_id': self.club.id})
 
@@ -27,7 +27,7 @@ class ShowClubTest(TestCase):
         self.assertContains(response, "best club in the world")
 
     def test_get_show_club_with_invalid_id(self):
-        url = reverse('show_club', kwargs={'club_id': self.club.id+1})
+        url = reverse('show_club', kwargs={'club_id': self.club.id})
         response = self.client.get(url, follow=True)
         response_url = reverse('show_clubs')
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
