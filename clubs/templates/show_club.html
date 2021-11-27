@@ -3,9 +3,16 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <h1>{{ club.name }}</h1>
-        <h3>{{ club.location }}</h3>
-        <p>{{ club.description }}</p>
+        {%csrf_token%}
+        <h1><b>{{club.name}}</b></h1>
+        <P><B>Location: </b> {{club.location}}</p>
+        <p><b>Description: </b> {{club.description}} </p>
+        <p><b>Number of Members: </b> {{members}} </p>
+        {% if userIsMember == False %}
+          <td><a href='{% url 'apply_to_club' club.id %}' class="btn btn-primary">Apply to club</a></td>
+        {% else %}
+          <td><a href='#'>Show Members</a></td>
+        {%endif%}
       </div>
     </div>
   </div>
