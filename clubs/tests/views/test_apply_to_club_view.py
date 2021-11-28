@@ -10,16 +10,14 @@ from clubs.tests.helpers import reverse_with_next
 class ApplyToClubViewTestCase(TestCase):
     """Test all aspects of the apply to club view"""
 
-    fixtures = ['clubs/tests/fixtures/default_user.json']
+    fixtures = [
+        'clubs/tests/fixtures/default_user.json',
+        'clubs/tests/fixtures/default_club.json'
+    ]
 
     def setUp(self):
         self.user = User.objects.get(username='johndoe')
-        self.club = Club.objects.create(
-            name = 'Kings Knight',
-            location = 'Kings College',
-            description = 'best club in the world'
-        )
-
+        self.club = Club.objects.get(name='King\'s Knights')
         self.data = {
             'experience':1,
             'personalStatement':'Hello',
@@ -32,7 +30,7 @@ class ApplyToClubViewTestCase(TestCase):
 
     def test_get_apply_to_club_redirects_when_not_logged_in(self):
         app_count_before = Application.objects.count()
-        redirect_url = reverse('log_in')
+        redirect_url = reverse_with_next('log_in', self.url)
         response = self.client.post(self.url, self.data, follow=True)
         self.assertRedirects(response, redirect_url,
             status_code=302, target_status_code=200, fetch_redirect_response=True

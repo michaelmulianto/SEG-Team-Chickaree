@@ -9,16 +9,14 @@ from clubs.tests.helpers import reverse_with_next
 class ShowApplicationsToClubTestCase(TestCase):
     """Test all aspects of the show applications to club view"""
 
-    fixtures = ['clubs/tests/fixtures/default_user.json']
-
+    fixtures = [
+        'clubs/tests/fixtures/default_user.json',
+        'clubs/tests/fixtures/default_club.json'
+    ]
     def setUp(self):
         self.user = User.objects.get(username='johndoe')
-        self.club = Club.objects.create(
-            name = 'Kings Knight',
-            location = 'Kings College',
-            description = 'best club in the world'
-        )
-        
+        self.club = Club.objects.get(name='King\'s Knights')
+
         self.membership = Member.objects.create(
             club = self.club,
             user = self.user,
@@ -45,7 +43,7 @@ class ShowApplicationsToClubTestCase(TestCase):
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
-    
+
     def test_show_application_to_club_redirects_when_invalid_club_id_entered(self):
         self.url = reverse('show_applications_to_club', kwargs = {'club_id': 0})
         self.client.login(username=self.user.username, password="Password123")

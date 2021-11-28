@@ -1,12 +1,15 @@
 {% extends 'base.html' %}
 {% block body %}
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <h1>Chess Clubs</h1>
-        <p><b>UNDER CONSTRUCTION</b></p>
-        <p><a href='{% url 'sign_up' %}'>Sign Up</a></p>
-        <p><a href='{% url 'log_in' %}'>Log In</a></p>
+  <div id="cover-image">
+    <div class="container vh-100">
+      <div class="row h-100">
+        <div class="col-12 my-auto">
+          <div class="card cover-card offset-sm-2 offset-md-4 offset-lg-4">
+          <h1 class="cover-heading">Chess Clubs</h1>
+            <h2 class="cover-text"><a href='{% url 'sign_up' %}' class="offset-3 button btn btn-lg btn-secondary">Sign Up</a></h2>
+            <h2 class="cover-text"><a href='{% url 'log_in' %}' class="offset-3 button btn btn-lg btn-secondary">Log In</a></h2>
+          </div>
+        </div>
       </div>
     </div>
   </div>
