@@ -32,6 +32,8 @@ class ShowClubTest(TestCase):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
 
-
     def test_get_show_club_with_valid_id(self):
-        pass
+        self.client.login(username=self.user.username, password="Password123")
+        response = self.client.get(self.url, follow=True)
+        self.assertEqual(response.status_code, 200) #OK
+        self.assertTemplateUsed(response, 'show_club.html')
