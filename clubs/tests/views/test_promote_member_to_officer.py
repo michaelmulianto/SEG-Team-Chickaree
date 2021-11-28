@@ -83,18 +83,11 @@ class RespondToApplicationViewTestCase(TestCase):
     def test_successful_promotion(self):
         self.client.login(username=self.ownerUser.username, password="Password123")
 
-        member_count_before = Member.objects.count()
-        application_count_before = Application.objects.count()
-
         response = self.client.get(self.url, follow=True)
 
-        member_count_after = Member.objects.count()
-        application_count_after = Application.objects.count()
+        self.assertEqual(targetMember.isOfficer, True)
 
-        self.assertEqual(member_count_before, member_count_after-1)
-        self.assertEqual(application_count_before, application_count_after+1)
-
-        response_url = reverse('show_applications_to_club', kwargs={'club_id':self.club.id})
+        response_url = reverse('show_clubs')
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'application_list.html')
+        self.assertTemplateUsed(response, 'show_clubs.html')
 
