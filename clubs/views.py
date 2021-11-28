@@ -142,9 +142,20 @@ def apply_to_club(request, club_id):
     else: # GET
         return render(request, 'apply_to_club.html', {'form': forms.ApplyToClubForm(), 'club':Club.objects.get(id = club_id)})
 
+
 def show_clubs(request):
     clubs = Club.objects.all()
+    user = request.user
+    # applied_clubs = []
+    # member_clubs = []
+    # for club in clubs:
+    #     if Application.objects.filter(club=desired_club, user = current_user).exists():
+    #         applied_clubs.append(club)
+    #     elif Member.objects.filter(club=desired_club, user = current_user).exists():
+    #         member_clubs.append(club)
+
     return render(request, 'show_clubs.html', {'my_clubs': clubs})
+
 
 def log_out(request):
     logout(request)
