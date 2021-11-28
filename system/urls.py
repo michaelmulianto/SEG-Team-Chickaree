@@ -35,4 +35,5 @@ urlpatterns = [
     path('club/<int:club_id>', views.show_club, name='show_club'),
     path('club/<int:club_id>/applications', views.show_applications_to_club, name='show_applications_to_club'),
     path('application/<int:app_id>/respond/<bool:is_accepted>', views.respond_to_application, name='respond_to_application'),
+    path('club/<int:club_id>/promote_member/<int:member_id>', views.promote_member_to_officer, name='promote_member_to_officer'),
 ]
