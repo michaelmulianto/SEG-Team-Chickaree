@@ -30,11 +30,7 @@ class RespondToApplicationViewTestCase(TestCase):
             club = self.club,
             user = self.applyingUser,
             experience = 2,
-<<<<<<< HEAD
-            personal_statement = 'I love chess!' 
-=======
-            personalStatement = 'I love chess!'
->>>>>>> main
+            personal_statement = 'I love chess!'
         )
 
         self.url = reverse('respond_to_application', kwargs = {'app_id': self.application.id, 'is_accepted': 1})

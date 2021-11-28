@@ -53,11 +53,11 @@ class UserModelTestCase(TestCase):
 
     # Test personalStatement
     def test_name_must_not_be_blank(self):
-        self.app.personalStatement = None
+        self.app.personal_statement = None
         with self.assertRaises(ValidationError):
             self.app.full_clean()
 
     def test_name_must_not_be_overlong(self):
-        self.app.personalStatement = 'x' * 581
+        self.app.personal_statement = 'x' * 581
         with self.assertRaises(ValidationError):
             self.app.full_clean()
