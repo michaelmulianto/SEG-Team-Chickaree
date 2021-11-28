@@ -41,23 +41,23 @@ class UserModelTestCase(TestCase):
             self.app.full_clean()
 
     # Test experience
-    def test_name_must_not_be_blank(self):
+    def test_exp_must_not_be_blank(self):
         self.app.experience = None
         with self.assertRaises(ValidationError):
             self.app.full_clean()
 
-    def test_name_must_not_be_other_than_options_given(self):
+    def test_exp_must_not_be_other_than_options_given(self):
         self.app.experience = 4
         with self.assertRaises(ValidationError):
             self.app.full_clean()
 
     # Test personalStatement
-    def test_name_must_not_be_blank(self):
+    def test_ps_must_not_be_blank(self):
         self.app.personal_statement = None
         with self.assertRaises(ValidationError):
             self.app.full_clean()
 
-    def test_name_must_not_be_overlong(self):
+    def test_ps_must_not_be_overlong(self):
         self.app.personal_statement = 'x' * 581
         with self.assertRaises(ValidationError):
             self.app.full_clean()
