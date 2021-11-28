@@ -110,7 +110,7 @@ def create_club(request):
             Member.objects.create(
                 club = new_club,
                 user = current_user,
-                isOwner = True
+                is_owner = True
             )
             return redirect('show_clubs')
         else:
@@ -130,10 +130,14 @@ def apply_to_club(request, club_id):
                     club = desired_club,
                     user = current_user,
                     experience = form.cleaned_data.get('experience'),
-                    personalStatement = form.cleaned_data.get('personalStatement'),
+                    personal_statement = form.cleaned_data.get('personal_statement'),
                 )
-            return redirect('show_clubs')
+                return redirect('show_clubs')
         # Invalid form
+        if Application.objects.filter(club=desired_club, user = current_user).exists():
+            messages.add_message(request, messages.ERROR, "You have already applied for this club")
+        elif Member.objects.filter(club=desired_club, user = current_user).exists():
+            messages.add_message(request, messages.ERROR, "You are already a member in this club")
         return render(request, 'apply_to_club.html', {'form': form, 'club':desired_club})
     else: # GET
         return render(request, 'apply_to_club.html', {'form': forms.ApplyToClubForm(), 'club':Club.objects.get(id = club_id)})
@@ -155,7 +159,7 @@ def show_applications_to_club(request, club_id):
         #Club matching id does not exist.
         return redirect('show_clubs')
 
-    if not(Member.objects.filter(club=club_to_view, user=current_user, isOwner=True).exists()):
+    if not(Member.objects.filter(club=club_to_view, user=current_user, is_owner=True).exists()):
         # Access denied
         return redirect('show_clubs')
 
@@ -171,7 +175,7 @@ def respond_to_application(request, app_id, is_accepted):
         #Application matching id does not exist
         return redirect('show_clubs')
 
-    if not(Member.objects.filter(club=application.club, user=current_user, isOwner=True).exists()):
+    if not(Member.objects.filter(club=application.club, user=current_user, is_owner=True).exists()):
         # Access denied
         return redirect('show_clubs')
 
@@ -226,26 +230,26 @@ def promote_member_to_officer(request, club_id, member_id):
     try:
         member = Member.objects.get(id = member_id)
     except ObjectDoesNotExist:
-        #Member matching id does not exist. 
+        #Member matching id does not exist.
         #MAKE THIS MEMBERLIST
         return redirect('show_clubs')
 
     if not(Club.objects.filter(id=club_id).exists()):
         # Club doesnt exist
         return redirect('show_clubs')
-        
+
     if member.club.id != club_id:
         # Member and club ids do not correspond
         #MAKE THIS MEMBERLIST
         return redirect('show_clubs')
 
-    if not(Member.objects.filter(club=member.club, user=current_user, isOwner=True).exists()):
+    if not(Member.objects.filter(club=member.club, user=current_user, is_owner=True).exists()):
         # Access denied
         # If club doesnt exist, show_club should handle the exception.
         return redirect('show_club', club_id=club_id)
-        
-    member.isOfficer = True 
+
+    member.is_officer = True
     member.save() # Or database won't update.
-    
+
     #MAKE THIS MEMBERLIST
     return redirect('show_clubs')

@@ -15,7 +15,7 @@ class ApplyToClubFormTestCase(TestCase):
     def setUp(self):
         self.input = {
             'experience' : 1,
-            'personalStatement' : 'I love chess!',
+            'personal_statement' : 'I love chess!',
         }
 
     def test_valid_apply_to_club_form(self):
@@ -23,7 +23,7 @@ class ApplyToClubFormTestCase(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_form_uses_model_validation(self):
-        self.input['personalStatement'] = ''
+        self.input['personal_statement'] = ''
         form = ApplyToClubForm(data=self.input)
         self.assertFalse(form.is_valid())
 
@@ -32,7 +32,7 @@ class ApplyToClubFormTestCase(TestCase):
 
         # Existence of fields
         self.assertIn('experience', form.fields)
-        self.assertIn('personalStatement', form.fields)
+        self.assertIn('personal_statement', form.fields)
 
         # Correct field for experience
         exp_field = form.fields['experience']

@@ -2,17 +2,15 @@
 Define the forms for the system. Forms take data and utilise it for a certain
 purpose like loggin in a user with the correct username and password.
 
-Currently implemented forms:
-    - SignUpForm
-    - LogInForm
 """
 
 from django import forms
 from clubs.models import User, Club, Application
 from django.core.validators import RegexValidator
 
-"""Form to grant access to a returning user's personalised content"""
+
 class LogInForm(forms.Form):
+    """Form to grant access to a returning user's personalised content"""
     username = forms.CharField(label='Username')
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
 
@@ -30,19 +28,19 @@ class SignUpForm(forms.ModelForm):
         label='Password',
         widget=forms.PasswordInput,
         validators=[RegexValidator(
-            regex=r'[A-Z]',
-            message='Password must contain an uppercase character.'
+                regex=r'[A-Z]',
+                message='Password must contain an uppercase character.'
             ),
             RegexValidator(
-            regex=r'[a-z]',
-            message='Password must contain a lowercase character.'
+                regex=r'[a-z]',
+                message='Password must contain a lowercase character.'
             ),
             RegexValidator(
-            regex=r'[0-9]',
-            message='Password must contain a number.'
+                regex=r'[0-9]',
+                message='Password must contain a number.'
             ),
-            ]
-        )
+        ]
+    )
     password_confirmation = forms.CharField(label='Confirm Password', widget=forms.PasswordInput)
 
     # Verify our custom fields are valid.
@@ -83,10 +81,11 @@ class CreateClubForm(forms.ModelForm):
         return club
 
 class ApplyToClubForm(forms.ModelForm):
+
     class Meta:
         model = Application
-        fields = ['experience', 'personalStatement']
-        widgets = {'personalStatement': forms.Textarea()}
+        fields = ['experience', 'personal_statement']
+        widgets = {'personal_statement': forms.Textarea()}
 
         def save(self):
             # We do not want this to save a new object.

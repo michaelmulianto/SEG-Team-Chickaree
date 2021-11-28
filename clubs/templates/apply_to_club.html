@@ -1,13 +1,53 @@
 {% extends 'base_content.html' %}
 {% block content %}
   <div class="container">
-    <div class="row">
-      <div class="col-sm-12 col-md-6 col-lg-4">
-        <h2>{{ club.name }}</h2>
+    <div class="row d-flex justify-content-center">
+      <div class="col-sm-12 col-md-8 col-lg-6">
+        <h2>Apply to: {{ club.name }}</h2>
         <form action="{% url 'apply_to_club' club.id %}" method="post">
           {% csrf_token %}
-          {% include 'partials/bootstrap_form.html' with form=form %}
+          <div class="mb-3">
+            <label for="experience" class="form-label">Experience:</label>
+            <select class="form-select" name="experience">
+              <option value=1>Beginner</option>
+              <option value=2>Intermediate</option>
+              <option value=3>Advanced</option>
+            </select>
+            <div class="form-text">Choose Your Experience Level</div>
+          </div>
+
+          <script>
+            function validate(max_length){
+              const areatextarea = document.querySelector("#personal_statement");
+              const areatext = document.querySelector("#personal_statement").value.length;
+              const textcount = document.querySelector("#textcount");
+              const wordcount = document.querySelector("#words_count");
+              textcount.innerHTML = areatext;
+
+
+              if(areatext > max_length){
+              textcount.classList.add("text-danger");
+              areatextarea.classList.add("textarea_danger");
+              }else{
+              textcount.classList.remove("text-danger");
+              areatextarea.classList.remove("textarea_danger");
+            }
+
+            if(areatext < 1){ wordcount.classList.add("d-none"); }else{ wordcount.classList.remove("d-none"); } }
+          </script>
+
+          <div class="mb-3">
+            <label for="personal_statement" class="form-label">Personal Statement:</label>
+            <textarea class="form-control iis-invalid" name="personal_statement" id="personal_statement" onkeyup="validate(580)" rows="5" required></textarea>
+            <span id="words_count" class="d-none">Character count: <span id="textcount"></span></span>
+            <div class="form-text">Let the club know why you are worthy of them!</div>
+            <div class="invalid-feedback">
+              Please write a personal statement.
+            </div>
+          </div>
+
           <input type="submit" value="Apply" class="btn btn-secondary">
+
         </form>
       </div>
     </div>

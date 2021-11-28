@@ -20,7 +20,7 @@ class ShowApplicationsToClubTestCase(TestCase):
         self.membership = Member.objects.create(
             club = self.club,
             user = self.user,
-            isOwner = True
+            is_owner = True
         )
 
         self.url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id})
@@ -34,8 +34,8 @@ class ShowApplicationsToClubTestCase(TestCase):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_show_application_to_club_redirects_when_not_owner_of_club(self):
-        self.membership.isOwner = False
-        self.membership.save(update_fields=['isOwner'])
+        self.membership.is_owner = False
+        self.membership.save(update_fields=['is_owner'])
 
         self.client.login(username=self.user.username, password="Password123")
         response = self.client.get(self.url, follow=True)
