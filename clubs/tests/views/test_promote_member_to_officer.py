@@ -52,6 +52,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         response = self.client.get(self.url)
         redirect_url = reverse_with_next('log_in', self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertEqual(Member.objects.get(id=self.targetMember.id).isOfficer, False)
 
     def test_promote_redirects_when_not_owner_of_club(self):
         self.ownerMember.isOwner = False
@@ -63,6 +64,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         redirect_url = reverse('show_club', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_club.html')
+        self.assertEqual(Member.objects.get(id=self.targetMember.id).isOfficer, False)
     
     def test_promote_redirects_when_invalid_member_id_entered(self):
         self.url = reverse('promote_member_to_officer', kwargs = {'club_id': self.club.id, 'member_id':int(self.targetMember.id-1)})
@@ -71,6 +73,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertEqual(Member.objects.get(id=self.targetMember.id).isOfficer, False)
 
     def test_promote_redirects_when_invalid_club_id_entered(self):
         self.url = reverse('promote_member_to_officer', kwargs = {'club_id': self.club.id-1, 'member_id':self.targetMember.id})
@@ -79,13 +82,14 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertEqual(Member.objects.get(id=self.targetMember.id).isOfficer, False)
 
     def test_successful_promotion(self):
         self.client.login(username=self.ownerUser.username, password="Password123")
 
         response = self.client.get(self.url, follow=True)
-
-        self.assertEqual(self.targetMember.isOfficer, True)
+        
+        self.assertEqual(Member.objects.get(id=self.targetMember.id).isOfficer, True)
 
         response_url = reverse('show_clubs')
         self.assertEqual(response.status_code, 200)

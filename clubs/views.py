@@ -265,7 +265,7 @@ def promote_member_to_officer(request, club_id, member_id):
         return redirect('show_club', club_id=club_id)
         
     member.isOfficer = True 
-    member.save(update_fields=['isOfficer']) # Or database won't update.
+    member.save() # Or database won't update.
     
     #MAKE THIS MEMBERLIST
     return redirect('show_clubs')
