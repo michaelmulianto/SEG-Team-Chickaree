@@ -6,14 +6,14 @@ from clubs.models import User
 from clubs.tests.helpers import LogInTester
 
 class LogOutViewTestCase(TestCase, LogInTester):
-
+    #
     fixtures = ['clubs/tests/fixtures/default_user.json']
 
     def setUp(self):
         self.url = reverse('log_out')
         self.user = User.objects.get(username='johndoe')
 
-    def test_get_log_in_url(self):
+    def test_get_log_out_url(self):
         self.assertEqual('/log_out/', self.url)
 
     def test_get_log_out(self):
