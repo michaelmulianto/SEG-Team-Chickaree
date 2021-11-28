@@ -60,8 +60,8 @@ class Member(models.Model):
     """Model representing a member of some single chess club"""
     club = models.ForeignKey('Club', on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey('User', on_delete=models.CASCADE, unique=False, blank=False)
-    isOfficer = models.BooleanField(default=False)
-    isOwner = models.BooleanField(default=False)
+    is_officer = models.BooleanField(default=False)
+    is_owner = models.BooleanField(default=False)
     class Meta:
         ordering = ['club']
 

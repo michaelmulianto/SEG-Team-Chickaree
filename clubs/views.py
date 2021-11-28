@@ -110,7 +110,7 @@ def create_club(request):
             Member.objects.create(
                 club = new_club,
                 user = current_user,
-                isOwner = True
+                is_owner = True
             )
             return redirect('show_clubs')
         else:
@@ -155,7 +155,7 @@ def show_applications_to_club(request, club_id):
         #Club matching id does not exist.
         return redirect('show_clubs')
 
-    if not(Member.objects.filter(club=club_to_view, user=current_user, isOwner=True).exists()):
+    if not(Member.objects.filter(club=club_to_view, user=current_user, is_owner=True).exists()):
         # Access denied
         return redirect('show_clubs')
 
@@ -171,7 +171,7 @@ def respond_to_application(request, app_id, is_accepted):
         #Application matching id does not exist
         return redirect('show_clubs')
 
-    if not(Member.objects.filter(club=application.club, user=current_user, isOwner=True).exists()):
+    if not(Member.objects.filter(club=application.club, user=current_user, is_owner=True).exists()):
         # Access denied
         return redirect('show_clubs')
 

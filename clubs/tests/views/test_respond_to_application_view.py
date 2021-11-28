@@ -23,7 +23,7 @@ class RespondToApplicationViewTestCase(TestCase):
         self.ownerMember = Member.objects.create(
             club = self.club,
             user = self.ownerUser,
-            isOwner = True
+            is_owner = True
         )
 
         self.application = Application.objects.create(
@@ -44,8 +44,8 @@ class RespondToApplicationViewTestCase(TestCase):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_respond_to_application_redirects_when_not_owner_of_club(self):
-        self.ownerMember.isOwner = False
-        self.ownerMember.save(update_fields=['isOwner'])
+        self.ownerMember.is_owner = False
+        self.ownerMember.save(update_fields=['is_owner'])
 
         self.client.login(username=self.ownerUser.username, password="Password123")
         response = self.client.get(self.url, follow=True)

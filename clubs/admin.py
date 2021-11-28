@@ -27,5 +27,5 @@ class applicationAdmin(admin.ModelAdmin):
 class applicationAdmin(admin.ModelAdmin):
     """Configuration of the admin interface for members"""
     list_display = [
-        'club', 'user', 'isOfficer', 'isOwner'
+        'club', 'user', 'is_officer', 'is_owner'
     ]
