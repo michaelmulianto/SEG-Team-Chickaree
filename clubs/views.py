@@ -205,12 +205,12 @@ def change_password(request):
 
 @login_required
 def show_club(request, club_id):
-    #find the appropriate club
     current_user = request.user
     try:
         club = Club.objects.get(id = club_id)
     except ObjectDoesNotExist:
         return redirect('show_clubs')
+        
     members = Member.objects.filter(club = club_id)
     numberOfMembers = members.count()
     checkUserisMember = members.filter(user = current_user)
