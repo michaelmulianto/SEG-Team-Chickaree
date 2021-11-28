@@ -219,3 +219,33 @@ def show_club(request, club_id):
         isMember = True
 
     return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember})
+
+@login_required
+def promote_member_to_officer(request, club_id, member_id):
+    current_user = request.user
+    try:
+        member = Member.objects.get(id = member_id)
+    except ObjectDoesNotExist:
+        #Member matching id does not exist. 
+        #MAKE THIS MEMBERLIST
+        return redirect('show_clubs')
+
+    if not(Club.objects.filter(id=club_id).exists()):
+        # Club doesnt exist
+        return redirect('show_clubs')
+        
+    if member.club.id != club_id:
+        # Member and club ids do not correspond
+        #MAKE THIS MEMBERLIST
+        return redirect('show_clubs')
+
+    if not(Member.objects.filter(club=member.club, user=current_user, isOwner=True).exists()):
+        # Access denied
+        # If club doesnt exist, show_club should handle the exception.
+        return redirect('show_club', club_id=club_id)
+        
+    member.isOfficer = True 
+    member.save() # Or database won't update.
+    
+    #MAKE THIS MEMBERLIST
+    return redirect('show_clubs')
