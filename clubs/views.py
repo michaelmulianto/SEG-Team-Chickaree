@@ -253,7 +253,7 @@ def promote_member_to_officer(request, club_id, member_id):
     if not(Member.objects.filter(club=member.club, user=current_user, isOwner=True).exists()):
         # Access denied
         # If club doesnt exist, show_club should handle the exception.
-        return redirect('show_club', kwargs={'club_id':club_id})
+        return redirect('show_club', club_id=club_id)
         
     member.isOfficer = True 
     member.save() # Or database won't update.
