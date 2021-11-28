@@ -10,16 +10,14 @@ from clubs.tests.helpers import reverse_with_next
 class ApplyToClubViewTestCase(TestCase):
     """Test all aspects of the apply to club view"""
 
-    fixtures = ['clubs/tests/fixtures/default_user.json']
+    fixtures = [
+        'clubs/tests/fixtures/default_user.json',
+        'clubs/tests/fixtures/default_club.json'
+    ]
 
     def setUp(self):
         self.user = User.objects.get(username='johndoe')
-        self.club = Club.objects.create(
-            name = 'Kings Knight',
-            location = 'Kings College',
-            description = 'best club in the world'
-        )
-
+        self.club = Club.objects.get(name='King\'s Knights')
         self.data = {
             'experience':1,
             'personalStatement':'Hello',

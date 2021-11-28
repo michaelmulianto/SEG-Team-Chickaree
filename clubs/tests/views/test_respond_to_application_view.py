@@ -9,23 +9,16 @@ from clubs.tests.helpers import reverse_with_next
 class RespondToApplicationViewTestCase(TestCase):
     """Test all aspects of the respond to applications view"""
 
-    fixtures = ['clubs/tests/fixtures/default_user.json']
+    fixtures = [
+        'clubs/tests/fixtures/default_user.json',
+        'clubs/tests/fixtures/second_user.json',
+        'clubs/tests/fixtures/default_club.json'
+    ]
 
     def setUp(self):
         self.ownerUser = User.objects.get(username='johndoe')
-        self.applyingUser = User.objects.create(
-            username = 'janedoe',
-            first_name = 'Jane',
-            last_name = 'Doe',
-            email = 'janedoe@example.com',
-            password='Password123'
-        )
-
-        self.club = Club.objects.create(
-            name = 'Kings Knight',
-            location = 'Kings College',
-            description = 'best club in the world'
-        )
+        self.applyingUser = User.objects.get(username='johndoe')
+        self.club = Club.objects.get(name='King\'s Knights')
 
         self.ownerMember = Member.objects.create(
             club = self.club,
@@ -37,7 +30,7 @@ class RespondToApplicationViewTestCase(TestCase):
             club = self.club,
             user = self.applyingUser,
             experience = 2,
-            personalStatement = 'I love chess!' 
+            personalStatement = 'I love chess!'
         )
 
         self.url = reverse('respond_to_application', kwargs = {'app_id': self.application.id, 'is_accepted': 1})
@@ -56,11 +49,11 @@ class RespondToApplicationViewTestCase(TestCase):
 
         self.client.login(username=self.ownerUser.username, password="Password123")
         response = self.client.get(self.url, follow=True)
-        
+
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
-    
+
     def test_respond_to_application_redirects_when_invalid_application_id_entered(self):
         self.url = reverse('respond_to_application', kwargs = {'app_id': 0, 'is_accepted':1})
         self.client.login(username=self.ownerUser.username, password="Password123")

@@ -7,12 +7,10 @@ from clubs.models import Club
 class ShowClubTest(TestCase):
     """Test aspects of show club view"""
 
+    fixtures = ['clubs/tests/fixtures/default_club.json']
+
     def setUp(self):
-        self.club = Club.objects.create(
-            name = 'Kings Knight',
-            location = 'Kings College',
-            description = 'Best club in the world'
-        )
+        self.club = Club.objects.get(name='King\'s Knights')
         self.url = reverse('show_club', kwargs={'club_id': self.club.id})
 
     def test_show_club_url(self):
