@@ -32,6 +32,14 @@ class MemberModelTestCase(TestCase):
         with self.assertRaises(ValueError):
             self.membership.club = self.user
 
+    def test_member_deletes_when_club_is_deleted(self):
+        self.club.delete()
+        self.assertFalse(Member.objects.filter(id=self.membership.id).exists())
+
+    def test_club_does_not_delete_when_member_is_deleted(self):
+        self.membership.delete()
+        self.assertTrue(Club.objects.filter(id=self.club.id).exists())
+
     # User field tests
     def test_user_field_cannot_be_blank(self):
         self.membership.user = None
@@ -40,6 +48,14 @@ class MemberModelTestCase(TestCase):
     def test_user_field_cannot_contain_non_user_object(self):
         with self.assertRaises(ValueError):
             self.membership.user = self.club
+
+    def test_member_deletes_when_user_is_deleted(self):
+        self.user.delete()
+        self.assertFalse(Member.objects.filter(id=self.membership.id).exists())
+
+    def test_user_does_not_delete_when_member_is_deleted(self):
+        self.membership.delete()
+        self.assertTrue(User.objects.filter(id=self.user.id).exists())
 
     #assertions
     def _assert_member_is_valid(self):
