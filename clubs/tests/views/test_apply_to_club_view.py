@@ -10,19 +10,17 @@ from clubs.tests.helpers import reverse_with_next
 class ApplyToClubViewTestCase(TestCase):
     """Test all aspects of the apply to club view"""
 
-    fixtures = ['clubs/tests/fixtures/default_user.json']
+    fixtures = [
+        'clubs/tests/fixtures/default_user.json',
+        'clubs/tests/fixtures/default_club.json'
+    ]
 
     def setUp(self):
         self.user = User.objects.get(username='johndoe')
-        self.club = Club.objects.create(
-            name = 'Kings Knight',
-            location = 'Kings College',
-            description = 'best club in the world'
-        )
-
+        self.club = Club.objects.get(name='King\'s Knights')
         self.data = {
             'experience':1,
-            'personalStatement':'Hello',
+            'personal_statement':'Hello',
         }
 
         self.url = reverse('apply_to_club', kwargs = {'club_id': self.club.id})
@@ -57,7 +55,7 @@ class ApplyToClubViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'show_clubs.html')
 
     def test_apply_with_invalid_form_input(self):
-        self.data['personalStatement'] = ''
+        self.data['personal_statement'] = ''
         self.client.login(username=self.user.username, password="Password123")
 
         app_count_before = Application.objects.count()

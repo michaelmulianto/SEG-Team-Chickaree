@@ -76,4 +76,4 @@ class Application(models.Model):
         (3, 'Advanced'),
     )
     experience = models.IntegerField(default = 1, choices = LEVELS)
-    personalStatement = models.CharField(max_length=580, blank=False, default = "")
+    personal_statement = models.CharField(max_length=580, blank=False, default = "")

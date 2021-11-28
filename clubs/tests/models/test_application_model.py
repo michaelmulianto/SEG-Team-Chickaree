@@ -23,7 +23,7 @@ class UserModelTestCase(TestCase):
             club = self.club,
             user = self.user,
             experience = 2,
-            personalStatement = "I am the best applicant you can ever get."
+            personal_statement = "I am the best applicant you can ever get."
         )
 
     def test_valid_app(self):

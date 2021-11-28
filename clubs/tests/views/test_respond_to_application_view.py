@@ -37,7 +37,7 @@ class RespondToApplicationViewTestCase(TestCase):
             club = self.club,
             user = self.applyingUser,
             experience = 2,
-            personalStatement = 'I love chess!' 
+            personal_statement = 'I love chess!' 
         )
 
         self.url = reverse('respond_to_application', kwargs = {'app_id': self.application.id, 'is_accepted': 1})
@@ -56,11 +56,11 @@ class RespondToApplicationViewTestCase(TestCase):
 
         self.client.login(username=self.ownerUser.username, password="Password123")
         response = self.client.get(self.url, follow=True)
-        
+
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
-    
+
     def test_respond_to_application_redirects_when_invalid_application_id_entered(self):
         self.url = reverse('respond_to_application', kwargs = {'app_id': 0, 'is_accepted':1})
         self.client.login(username=self.ownerUser.username, password="Password123")

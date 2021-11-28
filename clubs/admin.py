@@ -20,7 +20,7 @@ class ClubAdmin(admin.ModelAdmin):
 class applicationAdmin(admin.ModelAdmin):
     """Configuration of the admin interface for applications"""
     list_display = [
-        'club', 'user', 'experience', 'personalStatement'
+        'club', 'user', 'experience', 'personal_statement'
     ]
 
 @admin.register(Member)

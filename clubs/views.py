@@ -130,7 +130,7 @@ def apply_to_club(request, club_id):
                     club = desired_club,
                     user = current_user,
                     experience = form.cleaned_data.get('experience'),
-                    personalStatement = form.cleaned_data.get('personalStatement'),
+                    personal_statement = form.cleaned_data.get('personal_statement'),
                 )
             return redirect('show_clubs')
         # Invalid form

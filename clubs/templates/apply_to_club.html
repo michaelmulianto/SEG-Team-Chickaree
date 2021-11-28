@@ -3,7 +3,7 @@
   <div class="container">
     <div class="row">
       <div class="col-sm-12 col-md-6 col-lg-4">
-        <h2>{{ club.name }}</h2>
+        <h2>Apply to: {{ club.name }}</h2>
         <form action="{% url 'apply_to_club' club.id %}" method="post">
           {% csrf_token %}
           {% include 'partials/bootstrap_form.html' with form=form %}
