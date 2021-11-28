@@ -9,22 +9,23 @@ class MemberModelTestCase(TestCase):
     """Test all aspects of a club."""
 
     fixtures = ['clubs/tests/fixtures/default_club.json',
-    'clubs/tests/fixtures/default_club.json']
+    'clubs/tests/fixtures/default_user.json']
 
     # Test setup
     def setUp(self):
         self.club = Club.objects.get(name="King\'s Knights")
         self.user = User.objects.get(username="johndoe")
         self.membership = Member.objects.create(
-            user = self.user
-            club = self.club
+            user = self.user,
+            club = self.club,
         )
 
     def test_valid_member_object(self):
         self._assert_member_is_valid()
 
     def test_club_field_cannot_be_blank(self):
-        self._assert_member_is_valid()
+        self.membership.club = None
+        self._assert_member_is_invalid()
 
     #assertions
     def _assert_member_is_valid(self):
