@@ -15,12 +15,12 @@ class SignUpViewTestCase(TestCase, LogInTester):
     def setUp(self):
         self.url = reverse('sign_up')
         self.form_input = {
-        'first_name': 'Jane',
-        'last_name': 'Doe',
-        'username': 'janedoe',
-        'email': 'janedoe@example.org',
-        'new_password': 'Password123',
-        'password_confirmation': 'Password123'
+            'first_name': 'Jane',
+            'last_name': 'Doe',
+            'username': 'janedoe',
+            'email': 'janedoe@example.org',
+            'new_password': 'Password123',
+            'password_confirmation': 'Password123'
         }
 
     def test_sign_up_url(self):

@@ -9,23 +9,16 @@ from clubs.tests.helpers import reverse_with_next
 class RespondToApplicationViewTestCase(TestCase):
     """Test all aspects of the respond to applications view"""
 
-    fixtures = ['clubs/tests/fixtures/default_user.json']
+    fixtures = [
+        'clubs/tests/fixtures/default_user.json',
+        'clubs/tests/fixtures/second_user.json',
+        'clubs/tests/fixtures/default_club.json'
+    ]
 
     def setUp(self):
         self.ownerUser = User.objects.get(username='johndoe')
-        self.applyingUser = User.objects.create(
-            username = 'janedoe',
-            first_name = 'Jane',
-            last_name = 'Doe',
-            email = 'janedoe@example.com',
-            password='Password123'
-        )
-
-        self.club = Club.objects.create(
-            name = 'Kings Knight',
-            location = 'Kings College',
-            description = 'best club in the world'
-        )
+        self.applyingUser = User.objects.get(username='johndoe')
+        self.club = Club.objects.get(name='King\'s Knights')
 
         self.ownerMember = Member.objects.create(
             club = self.club,
@@ -37,7 +30,11 @@ class RespondToApplicationViewTestCase(TestCase):
             club = self.club,
             user = self.applyingUser,
             experience = 2,
+<<<<<<< HEAD
             personal_statement = 'I love chess!' 
+=======
+            personalStatement = 'I love chess!'
+>>>>>>> main
         )
 
         self.url = reverse('respond_to_application', kwargs = {'app_id': self.application.id, 'is_accepted': 1})
