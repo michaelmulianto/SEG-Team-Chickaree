@@ -11,7 +11,7 @@ class EditAccountViewTest(TestCase):
 
     fixtures = [
         'clubs/tests/fixtures/default_user.json',
-        'clubs/tests/fixtures/other_user.json'
+        'clubs/tests/fixtures/second_user.json'
     ]
 
     def setUp(self):
@@ -23,6 +23,7 @@ class EditAccountViewTest(TestCase):
             'email' : 'johndoe2@example.org',
         }
         self.user = User.objects.get(username='johndoe')
+        self.second_user = User.objects.get(username='janedoe')
 
     def test_edit_account_url(self):
         self.assertEqual(self.url, '/edit_account/')
@@ -62,8 +63,7 @@ class EditAccountViewTest(TestCase):
 
     def test_unsuccessful_edit_account_update_due_to_duplicate_username(self):
         self.client.login(username=self.user.username, password='Password123')
-        second_user = User.objects.get(username='janedoe')
-        self.form_input['username'] = second_user.username
+        self.form_input['username'] = self.second_user.username
         before_count = User.objects.count()
         response = self.client.post(self.url, self.form_input)
         after_count = User.objects.count()
@@ -81,8 +81,7 @@ class EditAccountViewTest(TestCase):
 
     def test_unsuccessful_edit_account_update_due_to_duplicate_email(self):
         self.client.login(username=self.user.username, password='Password123')
-        second_user = User.objects.get(username='janedoe')
-        self.form_input['email'] = second_user.email
+        self.form_input['email'] = self.second_user.email
         before_count = User.objects.count()
         response = self.client.post(self.url, self.form_input)
         after_count = User.objects.count()
