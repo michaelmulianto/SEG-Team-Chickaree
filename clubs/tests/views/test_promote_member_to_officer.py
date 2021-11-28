@@ -12,23 +12,16 @@ from clubs.tests.helpers import reverse_with_next
 class PromoteMemberToOfficerViewTestCase(TestCase):
     """Test all aspects of the backend implementation of promoting members"""
 
-    fixtures = ['clubs/tests/fixtures/default_user.json']
+    fixtures = [
+        'clubs/tests/fixtures/default_user.json',
+        'clubs/tests/fixtures/second_user.json',
+        'clubs/tests/fixtures/default_club.json'
+    ]
 
     def setUp(self):
         self.ownerUser = User.objects.get(username='johndoe')
-        self.targetUser = User.objects.create(
-            username = 'janedoe',
-            first_name = 'Jane',
-            last_name = 'Doe',
-            email = 'janedoe@example.com',
-            password='Password123'
-        )
-
-        self.club = Club.objects.create(
-            name = 'Kings Knight',
-            location = 'Kings College',
-            description = 'best club in the world'
-        )
+        self.targetUser = User.objects.get(username='janedoe')
+        self.club = Club.objects.get(name='King\'s Knights')
 
         self.ownerMember = Member.objects.create(
             club = self.club,
