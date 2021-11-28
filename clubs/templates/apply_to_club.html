@@ -1,8 +1,8 @@
 {% extends 'base_content.html' %}
 {% block content %}
   <div class="container">
-    <div class="row">
-      <div class="col-sm-12 col-md-6 col-lg-4">
+    <div class="row d-flex justify-content-center">
+      <div class="col-sm-12 col-md-8 col-lg-6">
         <h2>Apply to: {{ club.name }}</h2>
         <form action="{% url 'apply_to_club' club.id %}" method="post">
           {% csrf_token %}
@@ -38,13 +38,16 @@
 
           <div class="mb-3">
             <label for="personal_statement" class="form-label">Personal Statement:</label>
-            <textarea class="form-control" name="personal_statement" id="personal_statement" onkeyup="validate(580)" rows="5"></textarea>
+            <textarea class="form-control iis-invalid" name="personal_statement" id="personal_statement" onkeyup="validate(580)" rows="5" required></textarea>
             <span id="words_count" class="d-none">Character count: <span id="textcount"></span></span>
             <div class="form-text">Let the club know why you are worthy of them!</div>
+            <div class="invalid-feedback">
+              Please write a personal statement.
+            </div>
           </div>
 
-
           <input type="submit" value="Apply" class="btn btn-secondary">
+
         </form>
       </div>
     </div>
