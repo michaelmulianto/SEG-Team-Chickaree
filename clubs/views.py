@@ -249,14 +249,23 @@ def promote_member_to_officer(request, club_id, member_id):
         #Member matching id does not exist. 
         #MAKE THIS MEMBERLIST
         return redirect('show_clubs')
+
+    if not(Club.objects.filter(id=club_id).exists()):
+        # Club doesnt exist
+        return redirect('show_clubs')
         
+    if member.club.id != club_id:
+        # Member and club ids do not correspond
+        #MAKE THIS MEMBERLIST
+        return redirect('show_clubs')
+
     if not(Member.objects.filter(club=member.club, user=current_user, isOwner=True).exists()):
         # Access denied
         # If club doesnt exist, show_club should handle the exception.
         return redirect('show_club', club_id=club_id)
         
     member.isOfficer = True 
-    member.save() # Or database won't update.
+    member.save(update_fields=['isOfficer']) # Or database won't update.
     
     #MAKE THIS MEMBERLIST
     return redirect('show_clubs')

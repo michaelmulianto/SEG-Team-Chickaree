@@ -65,7 +65,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'show_club.html')
     
     def test_promote_redirects_when_invalid_member_id_entered(self):
-        self.url = reverse('promote_member_to_officer', kwargs = {'club_id': self.club.id, 'member_id':self.targetMember.id-1})
+        self.url = reverse('promote_member_to_officer', kwargs = {'club_id': self.club.id, 'member_id':int(self.targetMember.id-1)})
         self.client.login(username=self.ownerUser.username, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
