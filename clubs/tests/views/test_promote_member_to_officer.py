@@ -1,5 +1,5 @@
 """
-Test backend implementation of the ability for owners to promote members of 
+Test backend implementation of the ability for owners to promote members of
 their club to an officer of said club.
 """
 
@@ -33,14 +33,14 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         self.ownerMember = Member.objects.create(
             club = self.club,
             user = self.ownerUser,
-            isOwner = True
+            is_owner = True
         )
 
         self.targetMember = Member.objects.create(
             club = self.club,
             user = self.ownerUser,
-            isOwner = False,
-            isOfficer = False,
+            is_owner = False,
+            is_officer = False,
         )
 
         self.url = reverse('promote_member_to_officer', kwargs = {'club_id': self.club.id, 'member_id': self.targetMember.id})
@@ -52,20 +52,20 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         response = self.client.get(self.url)
         redirect_url = reverse_with_next('log_in', self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertEqual(Member.objects.get(id=self.targetMember.id).isOfficer, False)
+        self.assertEqual(Member.objects.get(id=self.targetMember.id).is_officer, False)
 
     def test_promote_redirects_when_not_owner_of_club(self):
-        self.ownerMember.isOwner = False
-        self.ownerMember.save(update_fields=['isOwner'])
+        self.ownerMember.is_owner = False
+        self.ownerMember.save(update_fields=['is_owner'])
 
         self.client.login(username=self.ownerUser.username, password="Password123")
         response = self.client.get(self.url, follow=True)
-        
+
         redirect_url = reverse('show_club', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_club.html')
-        self.assertEqual(Member.objects.get(id=self.targetMember.id).isOfficer, False)
-    
+        self.assertEqual(Member.objects.get(id=self.targetMember.id).is_officer, False)
+
     def test_promote_redirects_when_invalid_member_id_entered(self):
         self.url = reverse('promote_member_to_officer', kwargs = {'club_id': self.club.id, 'member_id':int(self.targetMember.id-1)})
         self.client.login(username=self.ownerUser.username, password="Password123")
@@ -73,7 +73,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
-        self.assertEqual(Member.objects.get(id=self.targetMember.id).isOfficer, False)
+        self.assertEqual(Member.objects.get(id=self.targetMember.id).is_officer, False)
 
     def test_promote_redirects_when_invalid_club_id_entered(self):
         self.url = reverse('promote_member_to_officer', kwargs = {'club_id': self.club.id-1, 'member_id':self.targetMember.id})
@@ -82,16 +82,15 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
-        self.assertEqual(Member.objects.get(id=self.targetMember.id).isOfficer, False)
+        self.assertEqual(Member.objects.get(id=self.targetMember.id).is_officer, False)
 
     def test_successful_promotion(self):
         self.client.login(username=self.ownerUser.username, password="Password123")
 
         response = self.client.get(self.url, follow=True)
-        
-        self.assertEqual(Member.objects.get(id=self.targetMember.id).isOfficer, True)
+
+        self.assertEqual(Member.objects.get(id=self.targetMember.id).is_officer, True)
 
         response_url = reverse('show_clubs')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'show_clubs.html')
-
