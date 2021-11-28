@@ -132,8 +132,12 @@ def apply_to_club(request, club_id):
                     experience = form.cleaned_data.get('experience'),
                     personal_statement = form.cleaned_data.get('personal_statement'),
                 )
-            return redirect('show_clubs')
+                return redirect('show_clubs')
         # Invalid form
+        if Application.objects.filter(club=desired_club, user = current_user).exists():
+            messages.add_message(request, messages.ERROR, "You have already applied for this club")
+        elif Member.objects.filter(club=desired_club, user = current_user).exists():
+            messages.add_message(request, messages.ERROR, "You are already a member in this club")
         return render(request, 'apply_to_club.html', {'form': form, 'club':desired_club})
     else: # GET
         return render(request, 'apply_to_club.html', {'form': forms.ApplyToClubForm(), 'club':Club.objects.get(id = club_id)})
