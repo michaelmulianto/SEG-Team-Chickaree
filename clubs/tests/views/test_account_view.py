@@ -1,4 +1,4 @@
-"""Unit test for the feed view"""
+"""Unit test for the account view"""
 
 from django.test import TestCase
 from django.urls import reverse
