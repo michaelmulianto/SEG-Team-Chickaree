@@ -233,10 +233,6 @@ def promote_member_to_officer(request, club_id, member_id):
         #Member matching id does not exist.
         return redirect('members_list', club_id=club_id)
 
-    if not(Club.objects.filter(id=club_id).exists()):
-        # Club doesnt exist
-        return redirect('show_clubs')
-
     if member.club.id != club_id:
         # Member and club ids do not correspond
         return redirect('members_list', club_id=club_id)
@@ -258,9 +254,8 @@ def members_list(request, club_id):
     try:
         club = Club.objects.get(id = club_id)
         members = Member.objects.filter(club = club)
-        current_user = members.get(user = current_user)
-        is_officer = current_user.is_officer
+        is_officer = Member.objects.get(user=current_user,club=club_id).is_officer
     except ObjectDoesNotExist:
         return redirect('show_club', club_id=club_id)
     else:
-        return render(request, 'members_list.html', {'members': members, 'club': club, 'is_officer': is_officer})
+        return render(request, 'members_list.html', {'members': members, 'club': club, 'curr_user_is_officer': is_officer})
