@@ -231,8 +231,7 @@ def promote_member_to_officer(request, club_id, member_id):
         member = Member.objects.get(id = member_id)
     except ObjectDoesNotExist:
         #Member matching id does not exist.
-        #MAKE THIS MEMBERLIST
-        return redirect('show_clubs')
+        return redirect('members_list', club_id=club_id)
 
     if not(Club.objects.filter(id=club_id).exists()):
         # Club doesnt exist
@@ -240,8 +239,8 @@ def promote_member_to_officer(request, club_id, member_id):
 
     if member.club.id != club_id:
         # Member and club ids do not correspond
-        #MAKE THIS MEMBERLIST
-        return redirect('show_clubs')
+        return redirect('members_list', club_id=club_id)
+        # I realise this is the same above, but we might want to change where this goes eventually.
 
     if not(Member.objects.filter(club=member.club, user=current_user, is_owner=True).exists()):
         # Access denied
@@ -251,8 +250,7 @@ def promote_member_to_officer(request, club_id, member_id):
     member.is_officer = True
     member.save() # Or database won't update.
 
-    #MAKE THIS MEMBERLIST
-    return redirect('show_clubs')
+    return redirect('members_list', club_id=club_id)
 
 @login_required
 def members_list(request, club_id):
@@ -265,4 +263,4 @@ def members_list(request, club_id):
     except ObjectDoesNotExist:
         return redirect('show_club', club_id=club_id)
     else:
-        return render(request, 'members_list.html', {'members': members, 'club': club, 'isOfficer': is_officer})
+        return render(request, 'members_list.html', {'members': members, 'club': club, 'is_officer': is_officer})
