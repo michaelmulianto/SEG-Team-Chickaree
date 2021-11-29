@@ -10,7 +10,7 @@ from clubs.tests.helpers import LogInTester
 
 
 class SignUpViewTestCase(TestCase, LogInTester):
-    """Test all aspects of the sign up view"""
+    """Test all aspects of the sign up view."""
 
     fixtures = ['clubs/tests/fixtures/default_user.json']
 

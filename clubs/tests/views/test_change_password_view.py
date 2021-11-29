@@ -9,9 +9,9 @@ from django.urls import reverse
 from clubs.models import User
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.hashers import check_password
-from clubs.tests.helpers import LogInTester
+from clubs.tests.helpers import reverse_with_next
 
-class ChangePasswordViewTestCase(TestCase, LogInTester):
+class ChangePasswordViewTestCase(TestCase):
     """Test all aspects of change password view."""
     fixtures = [
         'clubs/tests/fixtures/default_user.json',
@@ -28,6 +28,11 @@ class ChangePasswordViewTestCase(TestCase, LogInTester):
 
     def test_change_password_url(self):
         self.assertEqual(self.url, '/change_password/')
+
+    def test_get_password_redirects_when_not_logged_in(self):
+        redirect_url = reverse_with_next('log_in', self.url)
+        response = self.client.get(self.url)
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_get_change_password_form(self):
         self.client.login(username="johndoe", password="Password123")
