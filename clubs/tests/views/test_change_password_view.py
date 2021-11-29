@@ -1,4 +1,4 @@
-"""Test user-facing implementation of the sign up form."""
+"""Test backend implementation of password changing."""
 
 from django.test import TestCase
 from django.urls import reverse
@@ -8,4 +8,6 @@ from django.contrib.auth.hashers import check_password
 from clubs.tests.helpers import LogInTester
 
 class ChangePasswordViewTestCase(TestCase, LogInTester):
-    pass
+    fixtures = [
+        'clubs/tests/fixtures/default_user.json',
+    ]

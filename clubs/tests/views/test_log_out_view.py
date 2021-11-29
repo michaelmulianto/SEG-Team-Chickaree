@@ -1,4 +1,4 @@
-"""Unit test for the log out view"""
+"""Test the user's ability to log out."""
 
 from django.test import TestCase
 from django.urls import reverse
@@ -6,7 +6,7 @@ from clubs.models import User
 from clubs.tests.helpers import LogInTester
 
 class LogOutViewTestCase(TestCase, LogInTester):
-    #
+    """Test log out view."""
     fixtures = ['clubs/tests/fixtures/default_user.json']
 
     def setUp(self):
