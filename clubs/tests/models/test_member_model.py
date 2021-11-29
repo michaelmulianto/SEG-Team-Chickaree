@@ -1,4 +1,8 @@
-"""Tests for Member model, found in clubs/models.py"""
+"""
+Tests for Member model, found in clubs/models.py
+
+The model effectively represents a many-to-many relationship, however we test a single relationship.
+"""
 
 from django.test import TestCase
 from clubs.models import Club, User, Member
@@ -6,7 +10,7 @@ from django.core.exceptions import ValidationError
 
 
 class MemberModelTestCase(TestCase):
-    """Test all aspects of a club."""
+    """Test all aspects of a Membership to a club."""
 
     fixtures = ['clubs/tests/fixtures/default_club.json',
     'clubs/tests/fixtures/default_user.json']
@@ -62,7 +66,7 @@ class MemberModelTestCase(TestCase):
         try:
             self.membership.full_clean()
         except (ValidationError):
-            self.fail("Test Application should be valid")
+            self.fail("Test Member should be valid")
 
     def _assert_member_is_invalid(self):
         with self.assertRaises(ValidationError):

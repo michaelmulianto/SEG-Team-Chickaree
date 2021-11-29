@@ -1,6 +1,11 @@
 """
 Define the models for the system.
 
+Implemented:
+    - User
+    - Club
+    - Application: many clubs to many users
+    - Member: many clubs to many users
 """
 
 from django.db import models
@@ -8,7 +13,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 
 class User(AbstractUser):
-    """Model for a generic user, independent of any clubs"""
+    """Model for a registered user, independent of any clubs"""
     username = models.CharField(
         max_length=32,
         unique=True,
@@ -68,7 +73,7 @@ class Member(models.Model):
 
 
 class Application(models.Model):
-    """Model for an application to a club"""
+    """Model for an application to a club by some user."""
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
     LEVELS = (
