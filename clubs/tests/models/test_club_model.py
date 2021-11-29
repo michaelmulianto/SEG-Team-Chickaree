@@ -17,32 +17,25 @@ class ClubModelTestCase(TestCase):
         self.second_club = Club.objects.get(name="Queen\'s Rooks")
 
     def test_valid_message(self):
-        try:
-            self.club.full_clean()
-        except ValidationError:
-            self.fail("Test message should be valid")
+        self._assert_club_is_valid()
 
     # Test name
     def test_name_must_not_be_blank(self):
         self.club.name = None
-        with self.assertRaises(ValidationError):
-            self.club.full_clean()
+        self._assert_club_is_invalid()
 
     def test_name_must_be_unique(self):
         self.club.name = self.second_club.name
-        with self.assertRaises(ValidationError):
-            self.club.full_clean()
+        self._assert_club_is_invalid()
 
     def test_name_must_not_be_over_50_characters(self):
         self.club.name = 'x' * 51
-        with self.assertRaises(ValidationError):
-            self.club.full_clean()
+        self._assert_club_is_invalid()
 
     # Test location
     def test_location_must_not_be_blank(self):
         self.club.location = None
-        with self.assertRaises(ValidationError):
-            self.club.full_clean()
+        self._assert_club_is_invalid()
 
     def test_location_is_not_unique(self):
         self.club.location = self.second_club.location
@@ -50,19 +43,16 @@ class ClubModelTestCase(TestCase):
 
     def test_location_must_not_be_over_50_characters(self):
         self.club.location = 'x' * 51
-        with self.assertRaises(ValidationError):
-            self.club.full_clean()
+        self._assert_club_is_invalid()
 
     # Test description
     def test_description_must_not_be_blank(self):
         self.club.description = None
-        with self.assertRaises(ValidationError):
-            self.club.full_clean()
+        self._assert_club_is_invalid()
 
     def test_description_must_not_be_over_280_characters(self):
         self.club.description = 'x' * 281
-        with self.assertRaises(ValidationError):
-            self.club.full_clean()
+        self._assert_club_is_invalid()
 
     def test_description_is_not_unique(self):
         self.club.description = self.second_club.description
