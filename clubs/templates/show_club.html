@@ -14,6 +14,12 @@
           <p><b>Owner: </b> {{owner.user}} </p>
           <td><a href='#'>Show Members</a></td>
         {%endif%}
+        {% if userIsOwner == True%}
+          <td><a href='#'>Manage Club</a></td>
+        {%endif%}
+        {% if userIsOfficer == True%}
+          <td><a href='#'>Manage Club</a></td>
+        {%endif%}
       </div>
     </div>
   </div>

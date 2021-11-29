@@ -223,10 +223,15 @@ def show_club(request, club_id):
     numberOfMembers = members.count()
     checkUserisMember = members.filter(user = current_user)
     isMember = False
+    isOwner = False
+    isOfficer = False
+    if checkUserisMember.filter(is_owner = True).count() > 0:
+        isOwner = True
     if checkUserisMember.count() > 0:
         isMember = True
-
-    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner})
+    if checkUserisMember.filter(is_officer = True).count() > 0:
+        isOfficer = True
+    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner, 'userIsOwner': isOwner, 'userIsOfficer': isOfficer})
 
 @login_required
 def promote_member_to_officer(request, club_id, member_id):
