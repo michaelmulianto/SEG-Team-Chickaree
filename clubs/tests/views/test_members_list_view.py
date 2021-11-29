@@ -8,21 +8,18 @@ from clubs.tests.helpers import reverse_with_next
 class MembersTestCase(TestCase):
     """Test aspects of account view"""
 
-    fixtures = ['clubs/tests/fixtures/default_user.json']
+    fixtures = ['clubs/tests/fixtures/default_user.json',
+    'clubs/tests/fixtures/default_club.json']
 
     def setUp(self):
         self.user = User.objects.get(username='johndoe')
-        self.club = Club.objects.create(
-            name = 'Kings Knight',
-            location = 'Kings College',
-            description = 'best club in the world'
-        )
+        self.club = Club.objects.get(name='King\'s Knights')
 
         self.member = Member.objects.create(
             user = self.user,
             club = self.club,
-            isOfficer = False,
-            isOwner = False,
+            is_officer = False,
+            is_owner = False,
         )
         self.url = reverse('members_list', kwargs={'club_id': self.club.id})
 
@@ -60,6 +57,6 @@ class MembersTestCase(TestCase):
             Member.objects.create(
                 user = users,
                 club = self.club,
-                isOfficer = False,
-                isOwner = False,
+                is_officer = False,
+                is_owner = False,
             )
