@@ -13,7 +13,7 @@
     "model": "clubs.club",
     "pk": 3,
     "fields": {
-      "name" : "Queen's Rooks",
+      "name" : "Nice Chess Club",
       "location" : "New York",
       "description" : "In the club the good vibes flow like a virus, but a good one. There's love in the air, all hyped up and ready to give us a good time.",
       "created_on" : "2021-11-22T03:04:05+00:00"
