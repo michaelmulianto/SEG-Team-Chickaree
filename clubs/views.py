@@ -15,6 +15,7 @@ from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
 from clubs.models import User, Club, Application, Member
 from clubs.helpers import login_prohibited
+#from django.contrib.auth.mixins import LoginRequiredMixin
 
 @login_prohibited
 def home(request):
@@ -68,7 +69,14 @@ def account(request):
 @login_required
 def my_clubs_list(request):
     current_user = request.user
-    clubs = Club.objects.all()
+    my_clubs = []
+    for club in Club.objects.all():
+        if Application.objects.filter(club=club, user=current_user).exists():
+            my_clubs.append(club)
+        if Member.objects.filter(club=club, user=current_user).exists():
+            my_clubs.append(club)
+
+    return render(request, 'my_clubs_list.html', {'clubs': my_clubs, 'current_user':current_user})
 
 @login_required
 def edit_account(request):
