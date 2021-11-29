@@ -14,6 +14,7 @@ class ClubModelTestCase(TestCase):
     # Test setup
     def setUp(self):
         self.club = Club.objects.get(name="King\'s Knights")
+        self.second_club = Club.objects.get(name="Queen\'s Rooks")
 
     def test_valid_message(self):
         try:
@@ -28,7 +29,7 @@ class ClubModelTestCase(TestCase):
             self.club.full_clean()
 
     def test_name_must_be_unique(self):
-        self.club.name = "Queen\'s Rooks"
+        self.club.name = self.second_club.name
         with self.assertRaises(ValidationError):
             self.club.full_clean()
 
@@ -44,7 +45,7 @@ class ClubModelTestCase(TestCase):
             self.club.full_clean()
 
     def test_location_is_not_unique(self):
-        self.club.location = "Camden"
+        self.club.location = self.second_club.location
         self._assert_club_is_valid()
 
     def test_location_must_not_be_over_50_characters(self):
@@ -62,6 +63,10 @@ class ClubModelTestCase(TestCase):
         self.club.description = 'x' * 281
         with self.assertRaises(ValidationError):
             self.club.full_clean()
+
+    def test_description_is_not_unique(self):
+        self.club.description = self.second_club.description
+        self._assert_club_is_valid()
 
     # Helper functions.
     # Generic assertions.
