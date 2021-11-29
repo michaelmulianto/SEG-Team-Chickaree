@@ -38,6 +38,15 @@ class ApplyToClubViewTestCase(TestCase):
         app_count_after = Application.objects.count()
         self.assertEqual(app_count_after, app_count_before)
 
+    def test_get_sign_up(self):
+        self.client.login(username=self.user.username, password="Password123")
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200) #OK
+        self.assertTemplateUsed(response, 'apply_to_club.html')
+        form = response.context['form']
+        self.assertTrue(isinstance(form, ApplyToClubForm))
+        self.assertFalse(form.is_bound)
+
     def test_unsuccessful_application_when_already_applied(self):
         self.client.login(username=self.user.username, password="Password123")
         self.application = Application.objects.create(

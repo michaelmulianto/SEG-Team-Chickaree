@@ -1,14 +1,6 @@
 """
 Define the views for the system.
 
-Currently implemented views:
-    - home
-    - sign_up
-    - log_in
-    - account
-    - create_club
-    - show_clubs
-    - show_club
 """
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -17,20 +9,16 @@ from django.shortcuts import render, redirect
 from clubs import forms
 from django.http import HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 
 from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
 from clubs.models import User, Club, Application, Member
-from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.forms import PasswordChangeForm
 from clubs.helpers import login_prohibited
 
 @login_prohibited
 def home(request):
-    # Default view for visitors.
-    if request.user.is_authenticated:
-        return redirect('account')
-
     return render(request, 'home.html')
 
 @login_prohibited
@@ -42,7 +30,7 @@ def sign_up(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('account')
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
     # If not POST, visitor is trying to view the form e.g. via home
     else:
@@ -72,17 +60,8 @@ def log_in(request):
 
 @login_required
 def account(request):
-    try:
-        #find the appropriate user
-        user = request.user
-    except ObjectDoesNotExist:
-         return redirect('no_account_found')
-
-         #if found show their information
-    else:
-        return render(request, 'account.html', {'user': user})
-
-
+    user = request.user
+    return render(request, 'account.html', {'user': user})
 
 @login_required
 def edit_account(request):
@@ -97,7 +76,6 @@ def edit_account(request):
         #make form with the current user information
         form = EditAccountForm(instance = current_user)
     return render(request, 'edit_account.html', {'form': form})
-
 
 
 @login_required
@@ -126,14 +104,9 @@ def apply_to_club(request, club_id):
         form = forms.ApplyToClubForm(request.POST)
         if form.is_valid():
             if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
-                application = Application.objects.create(
-                    club = desired_club,
-                    user = current_user,
-                    experience = form.cleaned_data.get('experience'),
-                    personal_statement = form.cleaned_data.get('personal_statement'),
-                )
+                form.save(desired_club, current_user)
                 return redirect('show_clubs')
-        # Invalid form
+        # Else: Invalid form/Already applied/Already member
         if Application.objects.filter(club=desired_club, user = current_user).exists():
             messages.add_message(request, messages.ERROR, "You have already applied for this club")
         elif Member.objects.filter(club=desired_club, user = current_user).exists():
@@ -142,9 +115,28 @@ def apply_to_club(request, club_id):
     else: # GET
         return render(request, 'apply_to_club.html', {'form': forms.ApplyToClubForm(), 'club':Club.objects.get(id = club_id)})
 
+@login_required
+def withdraw_application_to_club(request, club_id):
+    current_user = request.user
+    applied_club = Club.objects.get(id=club_id)
+    if Application.objects.filter(club=applied_club, user = current_user).exists() and not(Member.objects.filter(club=applied_club, user = current_user).exists()):
+        Application.objects.get(club=applied_club, user=current_user).delete()
+        return redirect('show_clubs')
+    return redirect('show_clubs')
+
+@login_required
+def leave_club(request, club_id):
+    current_user = request.user
+    applied_club = Club.objects.get(id=club_id)
+    if Member.objects.filter(club=applied_club, user = current_user).exists():
+        Member.objects.get(club=applied_club, user=current_user).delete()
+        return redirect('show_clubs')
+    return redirect('show_clubs')
+
+@login_required
 def show_clubs(request):
     clubs = Club.objects.all()
-    return render(request, 'show_clubs.html', {'my_clubs': clubs})
+    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user})
 
 def log_out(request):
     logout(request)
@@ -203,9 +195,7 @@ def change_password(request):
             messages.error(request, 'Please correct the error below.')
     else:
         form = PasswordChangeForm(request.user)
-    return render(request, 'change_password.html', {
-        'form': form
-    })
+    return render(request, 'change_password.html', { 'form': form })
 
 @login_required
 def show_club(request, club_id):
@@ -217,12 +207,9 @@ def show_club(request, club_id):
         return redirect('show_clubs')
     members = Member.objects.filter(club = club_id)
     numberOfMembers = members.count()
-    checkUserisMember = members.filter(user = current_user)
-    isMember = False
-    if checkUserisMember.count() > 0:
-        isMember = True
+    userIsMember = members.filter(user = current_user).exists()
 
-    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember})
+    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': userIsMember})
 
 @login_required
 def promote_member_to_officer(request, club_id, member_id):

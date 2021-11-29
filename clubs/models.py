@@ -62,6 +62,7 @@ class Member(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE, unique=False, blank=False)
     is_officer = models.BooleanField(default=False)
     is_owner = models.BooleanField(default=False)
+
     class Meta:
         ordering = ['club']
 
