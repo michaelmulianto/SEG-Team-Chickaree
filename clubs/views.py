@@ -1,14 +1,6 @@
 """
 Define the views for the system.
 
-Currently implemented views:
-    - home
-    - sign_up
-    - log_in
-    - account
-    - create_club
-    - show_clubs
-    - show_club
 """
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -17,12 +9,12 @@ from django.shortcuts import render, redirect
 from clubs import forms
 from django.http import HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 
 from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
 from clubs.models import User, Club, Application, Member
-from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.forms import PasswordChangeForm
 from clubs.helpers import login_prohibited
 
 @login_prohibited
@@ -82,8 +74,6 @@ def account(request):
     else:
         return render(request, 'account.html', {'user': user})
 
-
-
 @login_required
 def edit_account(request):
     current_user = request.user
@@ -97,7 +87,6 @@ def edit_account(request):
         #make form with the current user information
         form = EditAccountForm(instance = current_user)
     return render(request, 'edit_account.html', {'form': form})
-
 
 
 @login_required
@@ -142,6 +131,11 @@ def apply_to_club(request, club_id):
     else: # GET
         return render(request, 'apply_to_club.html', {'form': forms.ApplyToClubForm(), 'club':Club.objects.get(id = club_id)})
 
+@login_required
+def withdraw_application_to_club(request, club_id):
+    club = Club.objects.get(id=club_id)
+    Application.objects.get(club=club, user=request.user).delete()
+    return redirect('show_clubs')
 
 def show_clubs(request):
     clubs = Club.objects.all()
