@@ -67,7 +67,7 @@
           </script>
 
           {% if has_applied %}
-            <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'withdraw_application_to_club' club.id %}' class="btn btn-warning">Withdraw application</a></td>
+            <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmWithdrawApplication()" class="btn btn-warning">Withdraw application</a></td>
           {% elif is_member %}
 
             {% check_is_owner club current_user as is_owner %}
@@ -77,8 +77,7 @@
 
             {% endif%}
           {% else %}
-            {% url 'apply_to_club' club.id %}'
-            <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'apply_to_club' club.id %}' onclick="confirmWithdrawApplication()" class="btn btn-success">Apply to club</a></td>
+            <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success">Apply to club</a></td>
           {% endif %}
         </tr>
         {% endfor %}
