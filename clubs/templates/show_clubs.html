@@ -36,7 +36,7 @@
 
         {% load static %}
         {% load define_action %}
-        {% for club in my_clubs %}
+        {% for club in clubs %}
 
         <tr onclick="window.location = '{% url 'show_club' club.id%}'">
           <td style="width:0.1%; white-space: nowrap"><img src={% static 'images/pawn.jpeg' %} style="max-width: 150px" alt="Club image, default pawn"<td>
@@ -54,7 +54,23 @@
               </tr>
             </table>
           </td>
-          <td><a href='{% url 'apply_to_club' club.id %}' class="btn btn-sm btn-dark">Apply to club</a></td>
+          {% check_has_applied club current_user as has_applied %}
+          {% check_is_member club current_user as is_member %}
+
+
+          {% if has_applied %}
+
+          {% elif is_member %}
+
+            {% check_is_owner club current_user as is_owner %}
+            {% if is_owner %}
+
+            {% else %}
+
+            {% endif%}
+          {% else %}
+          <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success">Apply to club</a></td>
+          {% endif %}
         </tr>
         {% endfor %}
         </table>
