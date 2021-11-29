@@ -133,8 +133,11 @@ def apply_to_club(request, club_id):
 
 @login_required
 def withdraw_application_to_club(request, club_id):
-    club = Club.objects.get(id=club_id)
-    Application.objects.get(club=club, user=request.user).delete()
+    current_user = request.user
+    applied_club = Club.objects.get(id=club_id)
+    if Application.objects.filter(club=applied_club, user = current_user).exists() and not(Member.objects.filter(club=applied_club, user = current_user).exists()):
+        Application.objects.get(club=applied_club, user=current_user).delete()
+        return redirect('show_clubs')
     return redirect('show_clubs')
 
 def show_clubs(request):
