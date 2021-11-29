@@ -14,8 +14,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, register_converter
 from clubs import views
+from . import converters
+
+register_converter(converters.BooleanPathConverter, 'bool')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,9 +28,16 @@ urlpatterns = [
     path('log_out/', views.log_out, name='log_out'),
     path('create_club/', views.create_club, name='create_club'),
     path('account/', views.account, name = 'account'),
+    path('account/my_clubs', views.my_clubs_list, name = 'my_clubs_list'),
     path('edit_account/', views.edit_account, name = 'edit_account'),
     path('change_password/', views.change_password, name = 'change_password'),
-    path('clubs/', views.show_clubs, name = 'show_clubs'),
+    path('show_clubs/', views.show_clubs, name = 'show_clubs'),
     path('apply_to_club/<int:club_id>', views.apply_to_club, name = 'apply_to_club'),
+    path('leave_club/<int:club_id>', views.leave_club, name = 'leave_club'),
+    path('withdraw_application_to_club/<int:club_id>', views.withdraw_application_to_club, name = 'withdraw_application_to_club'),
+    path('members_list/<int:club_id>', views.members_list, name='members_list'),
     path('club/<int:club_id>', views.show_club, name='show_club'),
+    path('club/<int:club_id>/applications', views.show_applications_to_club, name='show_applications_to_club'),
+    path('application/<int:app_id>/respond/<bool:is_accepted>', views.respond_to_application, name='respond_to_application'),
+    path('club/<int:club_id>/promote_member/<int:member_id>', views.promote_member_to_officer, name='promote_member_to_officer'),
 ]

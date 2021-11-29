@@ -1,22 +1,16 @@
-<html>
-<head>
-    <title>Chess Clubs</title>
-</head>
-<body>
-    <h1>Edit Account</h1>
+{% extends 'base_content.html' %}
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12 col-md-6 offset-md-3">
+        <h1>Change Profile</h1>
 
-    <p>Account details</p>
-    <!-- {%csrf_token%}
-     <p><b>{{user}}</b></p>
-    <p><b>Name: </b> {{user.first_name}} {{" "}} {{user.last_name}}</p>
-    <P><B>Username: </b> {{user.username}}</p>
-    <p><b>Email: </b> {{user.email}} </p> -->
-
-
-    <form action="{% url 'edit_account' %}" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-
-        <input type="submit" value="Update">
-</body>
-</html>
+        <form action="{% url 'edit_account' %}" method="post">
+          {% csrf_token %}
+          {% include 'partials/bootstrap_form.html' with form=form %}
+          <input type="submit" value="Update" class="btn btn-primary">
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}

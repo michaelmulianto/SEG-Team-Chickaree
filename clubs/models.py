@@ -1,8 +1,11 @@
 """
 Define the models for the system.
 
-Currently implemented models:
+Implemented:
     - User
+    - Club
+    - Application: many clubs to many users
+    - Member: many clubs to many users
 """
 
 from django.db import models
@@ -10,7 +13,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 
 class User(AbstractUser):
-    """Model for a generic user, independent of any clubs"""
+    """Model for a registered user, independent of any clubs"""
     username = models.CharField(
         max_length=32,
         unique=True,
@@ -57,22 +60,20 @@ class Club(models.Model):
     class Meta:
         ordering = ['-created_on']
 
-    def apply(self):
-        pass
-
 
 class Member(models.Model):
-    """Model representing a member of some single chess club"""
+    """Model representing a membership of some single chess club by some single user"""
     club = models.ForeignKey('Club', on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey('User', on_delete=models.CASCADE, unique=False, blank=False)
-    isOfficer = models.BooleanField(default=False)
-    isOwner = models.BooleanField(default=False)
+    is_officer = models.BooleanField(default=False)
+    is_owner = models.BooleanField(default=False)
+
     class Meta:
         ordering = ['club']
 
 
 class Application(models.Model):
-    """Model for an application to a club"""
+    """Model for an application to a club by some user."""
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
     LEVELS = (
@@ -81,4 +82,4 @@ class Application(models.Model):
         (3, 'Advanced'),
     )
     experience = models.IntegerField(default = 1, choices = LEVELS)
-    personalStatement = models.CharField(max_length=580, blank=False, default = "")
+    personal_statement = models.CharField(max_length=580, blank=False, default = "")
