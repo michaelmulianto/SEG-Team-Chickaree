@@ -3,22 +3,17 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
+        <h1>Club Details</h1>
+        <p><b>Club details displayed here</b></p>
         {%csrf_token%}
-        <h1><b>{{club.name}}</b></h1>
+        <p><b>Name: </b> {{club.name}}</p>
         <P><B>Location: </b> {{club.location}}</p>
         <p><b>Description: </b> {{club.description}} </p>
         <p><b>Number of Members: </b> {{members}} </p>
-        {% if userIsMember == False %}
-          <td><a href='{% url 'apply_to_club' club.id %}' class="btn btn-primary">Apply to club</a></td>
-        {% else %}
-          <p><b>Owner: </b> {{owner.user}} </p>
+        {%if userIsMember == False%}
+          <td><a href='{% url 'apply_to_club' club.id %}'>Apply to club</a></td>
+        {%else%}
           <td><a href='{% url 'members_list' club.id %}'>Show Members</a></td>
-        {%endif%}
-        {% if userIsOwner == True%}
-          <td><a href='#'>Manage Club</a></td>
-        {%endif%}
-        {% if userIsOfficer == True%}
-          <td><a href='#'>Manage Club</a></td>
         {%endif%}
       </div>
     </div>
