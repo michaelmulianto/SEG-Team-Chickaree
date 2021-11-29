@@ -11,6 +11,7 @@
         {% if userIsMember == False %}
           <td><a href='{% url 'apply_to_club' club.id %}' class="btn btn-primary">Apply to club</a></td>
         {% else %}
+          <p><b>Owner: </b> {{owner.user}} </p>
           <td><a href='#'>Show Members</a></td>
         {%endif%}
       </div>
