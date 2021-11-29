@@ -11,7 +11,6 @@ from django.http import HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
-
 from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
 from clubs.models import User, Club, Application, Member
