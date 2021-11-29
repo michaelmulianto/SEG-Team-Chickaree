@@ -57,7 +57,7 @@ class Club(models.Model):
 
 
 class Member(models.Model):
-    """Model representing a member of some single chess club"""
+    """Model representing a membership of some single chess club by some single user"""
     club = models.ForeignKey('Club', on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey('User', on_delete=models.CASCADE, unique=False, blank=False)
     is_officer = models.BooleanField(default=False)

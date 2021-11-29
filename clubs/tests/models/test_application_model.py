@@ -9,6 +9,7 @@ from clubs.models import User, Club, Application
 from django.core.exceptions import ValidationError
 
 class ApplicationModelTestCase(TestCase):
+    """Test all attributes included in the application model"""
 
     fixtures = [
         'clubs/tests/fixtures/default_user.json',
