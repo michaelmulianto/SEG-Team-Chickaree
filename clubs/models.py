@@ -52,9 +52,6 @@ class Club(models.Model):
     #Automatically use current time as the club creation date
     created_on = models.DateTimeField(auto_now_add=True, blank=False)
 
-    def get_number_of_members(self):
-        return count(Member.objects.filter(club=self))
-
     class Meta:
         ordering = ['-created_on']
 

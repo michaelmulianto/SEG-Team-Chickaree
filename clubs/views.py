@@ -137,12 +137,11 @@ def leave_club(request, club_id):
         return redirect('show_clubs')
     return redirect('show_clubs')
 
-
+@login_required
 def show_clubs(request):
     clubs = Club.objects.all()
     user = request.user
     return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': user})
-
 
 def log_out(request):
     logout(request)
