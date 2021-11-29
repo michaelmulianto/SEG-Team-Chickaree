@@ -66,6 +66,11 @@ def account(request):
     return render(request, 'account.html', {'user': user})
 
 @login_required
+def my_clubs_list(request):
+    current_user = request.user
+    clubs = Club.objects.all()
+
+@login_required
 def edit_account(request):
     """Edit the details for the currently logged in user."""
     current_user = request.user
