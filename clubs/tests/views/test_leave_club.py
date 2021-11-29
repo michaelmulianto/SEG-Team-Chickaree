@@ -3,7 +3,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
-from clubs.models import User, Club, Application, Member
+from clubs.models import User, Club, Member
 from clubs.tests.helpers import reverse_with_next
 
 class LeaveClubTestCase(TestCase):

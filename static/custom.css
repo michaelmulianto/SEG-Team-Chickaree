@@ -124,22 +124,6 @@ h3.profile-title {
   padding-right: 50px;
 }
 
-/*
- * Post
- */
-.post-author {
-  margin-bottom: 0px;
-
-}
-
-.post-author-fullname {
-  font-weight: bold;
-}
-
-.post-author-user-details {
-  margin-left: 10px;
-  color: #777777;
-}
 
 /*
  * Hyperlinks
@@ -151,15 +135,6 @@ h3.profile-title {
 .content a:hover {
   text-decoration: underline;
   color: #0d6efd;
-}
-
-.post-author a {
-  text-decoration: none;
-  color: black;
-}
-.post-author a:hover {
-  text-decoration: underline;
-  color: black;
 }
 
 /*
