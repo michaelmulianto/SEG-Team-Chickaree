@@ -141,4 +141,4 @@ MESSAGE_TAGS = {
 
 LOGIN_URL = 'log_in'
 
-REDIRECT_URL_WHEN_LOGGED_IN = 'account'
+REDIRECT_URL_WHEN_LOGGED_IN = 'show_clubs'

@@ -34,7 +34,7 @@ def sign_up(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('account')
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
     # If not POST, visitor is trying to view the form e.g. via home
     else:
@@ -64,15 +64,8 @@ def log_in(request):
 
 @login_required
 def account(request):
-    try:
-        #find the appropriate user
-        user = request.user
-    except ObjectDoesNotExist:
-         return redirect('no_account_found')
-
-         #if found show their information
-    else:
-        return render(request, 'account.html', {'user': user})
+    user = request.user
+    return render(request, 'account.html', {'user': user})
 
 @login_required
 def edit_account(request):
