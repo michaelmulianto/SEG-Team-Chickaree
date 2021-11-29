@@ -223,10 +223,19 @@ def show_club(request, club_id):
     except ObjectDoesNotExist:
         return redirect('show_clubs')
     members = Member.objects.filter(club = club_id)
+    getOwner = members.get(is_owner = True)
     numberOfMembers = members.count()
-    userIsMember = members.filter(user = current_user).exists()
-
-    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': userIsMember})
+    checkUserisMember = members.filter(user = current_user)
+    isMember = False
+    isOwner = False
+    isOfficer = False
+    if checkUserisMember.filter(is_owner = True).count() > 0:
+        isOwner = True
+    if checkUserisMember.count() > 0:
+        isMember = True
+    if checkUserisMember.filter(is_officer = True).count() > 0:
+        isOfficer = True
+    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner, 'userIsOwner': isOwner, 'userIsOfficer': isOfficer})
 
 @login_required
 def promote_member_to_officer(request, club_id, member_id):
@@ -259,8 +268,9 @@ def members_list(request, club_id):
     try:
         club = Club.objects.get(id = club_id)
         members = Member.objects.filter(club = club)
-        is_officer = Member.objects.filter(club=club, user=current_user, is_owner=True).exists()
+        is_officer = Member.objects.filter(club=club, user=current_user, is_officer=True).exists()
+        is_owner = Member.objects.filter(club=club, user=current_user, is_owner=True).exists()
     except ObjectDoesNotExist:
         return redirect('show_club', club_id=club_id)
     else:
-        return render(request, 'members_list.html', {'members': members, 'club': club, 'curr_user_is_officer': is_officer})
+        return render(request, 'members_list.html', {'members': members, 'club': club, 'curr_user_is_officer': is_officer, 'curr_user_is_owner': is_owner})

@@ -9,9 +9,12 @@
         <tr>
           <td><b>{{ member.user.last_name }}</b></td>
           <td><a>{{ member.user.first_name }}</a></td>
-          { % if curr_user_is_officer % }
+          {% if curr_user_is_officer %}
             <td><a>{{ member.user.email }}</a></td>
-          { % endif % }
+          {% endif %}
+          {% if curr_user_is_owner %}
+            <td><a>{{ member.user.email }}</a></td>
+          {% endif %}
           <td><i></i></td>
         </tr>
         {% endfor %}
