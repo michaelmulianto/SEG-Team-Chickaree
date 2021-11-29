@@ -56,7 +56,15 @@
           </td>
           {% check_has_applied club current_user as has_applied %}
           {% check_is_member club current_user as is_member %}
-
+          <script>
+            function confirmWithdrawApplication(){
+              if(confirm('Are you sure you want to withdraw your application?')){
+                return true;
+              }else{
+                event.stopPropagation(); event.preventDefault();
+              }
+            }
+          </script>
 
           {% if has_applied %}
             <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'withdraw_application_to_club' club.id %}' class="btn btn-warning">Withdraw application</a></td>
@@ -69,7 +77,8 @@
 
             {% endif%}
           {% else %}
-            <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success">Apply to club</a></td>
+            {% url 'apply_to_club' club.id %}'
+            <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'apply_to_club' club.id %}' onclick="confirmWithdrawApplication()" class="btn btn-success">Apply to club</a></td>
           {% endif %}
         </tr>
         {% endfor %}
