@@ -136,8 +136,7 @@ def leave_club(request, club_id):
 @login_required
 def show_clubs(request):
     clubs = Club.objects.all()
-    user = request.user
-    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': user})
+    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user})
 
 def log_out(request):
     logout(request)
@@ -196,9 +195,7 @@ def change_password(request):
             messages.error(request, 'Please correct the error below.')
     else:
         form = PasswordChangeForm(request.user)
-    return render(request, 'change_password.html', {
-        'form': form
-    })
+    return render(request, 'change_password.html', { 'form': form })
 
 @login_required
 def show_club(request, club_id):
@@ -210,12 +207,9 @@ def show_club(request, club_id):
         return redirect('show_clubs')
     members = Member.objects.filter(club = club_id)
     numberOfMembers = members.count()
-    checkUserisMember = members.filter(user = current_user)
-    isMember = False
-    if checkUserisMember.count() > 0:
-        isMember = True
+    userIsMember = members.filter(user = current_user).exists()
 
-    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember})
+    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': userIsMember})
 
 @login_required
 def promote_member_to_officer(request, club_id, member_id):
