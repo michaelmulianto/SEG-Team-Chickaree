@@ -252,4 +252,17 @@ def promote_member_to_officer(request, club_id, member_id):
     member.save() # Or database won't update.
 
     #MAKE THIS MEMBERLIST
-    return redirect('show_clubs')
+    return redirect('show_club', club_id=club_id)
+
+@login_required
+def members_list(request, club_id):
+    current_user = request.user
+    try:
+        club = Club.objects.get(id = club_id)
+        members = Member.objects.filter(club = club)
+        currentUser = members.get(user = current_user)
+        isOfficer = currentUser.isOfficer
+    except ObjectDoesNotExist:
+        return redirect('show_club', club_id=club_id)
+    else:
+        return render(request, 'members_list.html', {'members': members, 'club': club, 'isOfficer': isOfficer})

@@ -4,6 +4,7 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
+<<<<<<< HEAD
         <h1 style=font-size:85px> Chess Clubs </h1>
         <p> Welcome to chess clubs, a place to share your love for chess. Join a club from the list below to play with fellow chess enthusiasts. </p>
         <p> Can't find a club that is right for you? Create your own club for free! </p>
@@ -85,6 +86,16 @@
           {% else %}
             <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success">Apply to club</a></td>
           {% endif %}
+=======
+        <h1>Clubs</h1>
+        <a href="{% url 'create_club' %}" class="btn btn-secondary">Create New Club</a>
+        <table class="table">
+        {% for club in my_clubs %}
+        <tr>
+          <td><b>{{ club.name }}</b></td>
+          <td><i></i></td>
+          <td><a href='{% url 'club_details' club.id%}'>Show Details</a></td>
+>>>>>>> 018-memberslist
         </tr>
         {% endfor %}
         </table>
