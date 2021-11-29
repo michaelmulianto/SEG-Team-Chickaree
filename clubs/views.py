@@ -254,7 +254,7 @@ def members_list(request, club_id):
     try:
         club = Club.objects.get(id = club_id)
         members = Member.objects.filter(club = club)
-        is_officer = Member.objects.get(user=current_user,club=club).is_officer
+        is_officer = Member.objects.filter(club=club, user=current_user, is_owner=True).exists()
     except ObjectDoesNotExist:
         return redirect('show_club', club_id=club_id)
     else:

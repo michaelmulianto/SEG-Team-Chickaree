@@ -38,14 +38,16 @@ class MembersTestCase(TestCase):
         self.assertTemplateUsed(response, 'members_list.html')
 
     def _create_test_users(self, user_count=10):
+        users = []
         for user_id in range(user_count):
-            users = User.objects.create_user(
+            new_user = User.objects.create_user(
                 f'@user{user_id}',
                 email=f'user{user_id}@test.org',
                 password='Password123',
                 first_name=f'First{user_id}',
                 last_name=f'Last{user_id}',
             )
+            users.append(new_user)
             Member.objects.create(
                 user = users,
                 club = self.club,

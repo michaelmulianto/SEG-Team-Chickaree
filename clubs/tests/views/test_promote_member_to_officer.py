@@ -26,7 +26,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         self.ownerMember = Member.objects.create(
             club = self.club,
             user = self.ownerUser,
-            is_owner = True
+            is_owner = True,
         )
 
         self.targetMember = Member.objects.create(
