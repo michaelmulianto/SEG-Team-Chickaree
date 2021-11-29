@@ -48,5 +48,41 @@ class ChangePasswordViewTestCase(TestCase, LogInTester):
         self.assertEqual(response.status_code, 200) #OK
         self.assertTemplateUsed(response, 'account.html')
 
+    # Test invalid inputs
+    def test_password_validation_used(self):
+        self.data['new_password1'] = 'badpass'
+        self.data['new_password2'] = 'badpass'
+        self.client.login(username="johndoe", password="Password123")
+        old_pass = self.user.password
+        response = self.client.post(self.url, self.data, follow=True)
+        self.user = self._get_updated_self_user()
+        new_pass = self.user.password
+        self.assertEqual(old_pass,new_pass)
+        self.assertEqual(response.status_code, 200) #OK
+        self.assertTemplateUsed(response, 'change_password.html')
+
+    def test_password_confirmation_must_equal_new_password(self):
+        self.data['new_password2'] = 'NotSame1'
+        self.client.login(username="johndoe", password="Password123")
+        old_pass = self.user.password
+        response = self.client.post(self.url, self.data, follow=True)
+        self.user = self._get_updated_self_user()
+        new_pass = self.user.password
+        self.assertEqual(old_pass,new_pass)
+        self.assertEqual(response.status_code, 200) #OK
+        self.assertTemplateUsed(response, 'change_password.html')
+
+    def test_password_change_fails_when_old_password_is_wrong(self):
+        self.data['old_password'] = 'Fail!'
+        self.client.login(username="johndoe", password="Password123")
+        old_pass = self.user.password
+        response = self.client.post(self.url, self.data, follow=True)
+        self.user = self._get_updated_self_user()
+        new_pass = self.user.password
+        self.assertEqual(old_pass,new_pass)
+        self.assertEqual(response.status_code, 200) #OK
+        self.assertTemplateUsed(response, 'change_password.html')
+
+    # Helper
     def _get_updated_self_user(self):
         return User.objects.get(username=self.user.username)
