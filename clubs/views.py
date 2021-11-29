@@ -19,11 +19,12 @@ from clubs.helpers import login_prohibited
 
 @login_prohibited
 def home(request):
+    """Generic splash page view for non-logged in user."""
     return render(request, 'home.html')
 
 @login_prohibited
 def sign_up(request):
-    # View to allow user to create account.
+    """View to allow user to create an account, and thus a corresponding user object."""
     # If POST, form has been submitted.
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -40,6 +41,7 @@ def sign_up(request):
 
 @login_prohibited
 def log_in(request):
+    """View to allow an already registered user to log in."""
     if request.method == 'POST':
         form = LogInForm(request.POST)
         next = request.POST.get('next') or ''
@@ -60,11 +62,13 @@ def log_in(request):
 
 @login_required
 def account(request):
+    """Render a page displaying the attributes of the currently logged in user."""
     user = request.user
     return render(request, 'account.html', {'user': user})
 
 @login_required
 def edit_account(request):
+    """Edit the details for the currently logged in user."""
     current_user = request.user
     if request.method == 'POST':
         form = EditAccountForm(instance = current_user, data=request.POST)
@@ -80,6 +84,7 @@ def edit_account(request):
 
 @login_required
 def create_club(request):
+    """Create a new chess club. Handles club creation form."""
     if request.method == 'POST':
         current_user = request.user
         form = CreateClubForm(request.POST)
@@ -98,6 +103,7 @@ def create_club(request):
 
 @login_required
 def apply_to_club(request, club_id):
+    """Have currently logged in user create an application to a specified club."""
     if request.method == 'POST':
         desired_club = Club.objects.get(id = club_id)
         current_user = request.user
@@ -117,6 +123,7 @@ def apply_to_club(request, club_id):
 
 @login_required
 def withdraw_application_to_club(request, club_id):
+    """Have currently logged in user delete an application to the specified club, if it exists."""
     current_user = request.user
     applied_club = Club.objects.get(id=club_id)
     if Application.objects.filter(club=applied_club, user = current_user).exists() and not(Member.objects.filter(club=applied_club, user = current_user).exists()):
@@ -126,6 +133,7 @@ def withdraw_application_to_club(request, club_id):
 
 @login_required
 def leave_club(request, club_id):
+    """Delete the member object linking the current user to the specified club, iff it exists."""
     current_user = request.user
     applied_club = Club.objects.get(id=club_id)
     if Member.objects.filter(club=applied_club, user = current_user).exists():
@@ -135,15 +143,18 @@ def leave_club(request, club_id):
 
 @login_required
 def show_clubs(request):
+    """Return a list of every club created on the website"""
     clubs = Club.objects.all()
     return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user})
 
 def log_out(request):
+    """If a user is logged in, log them out."""
     logout(request)
     return redirect('home')
 
 @login_required
 def show_applications_to_club(request, club_id):
+    """Allow the owner of a club to view all applications to said club."""
     current_user = request.user
     try:
         club_to_view = Club.objects.get(id = club_id)
@@ -160,6 +171,7 @@ def show_applications_to_club(request, club_id):
 
 @login_required
 def respond_to_application(request, app_id, is_accepted):
+    """Allow the owner of a club to accept or reject some application to said club."""
     current_user = request.user
     try:
         application = Application.objects.get(id = app_id)
@@ -184,6 +196,7 @@ def respond_to_application(request, app_id, is_accepted):
 
 @login_required
 def change_password(request):
+    """Allow currently logged in user to change their password."""
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
@@ -199,7 +212,7 @@ def change_password(request):
 
 @login_required
 def show_club(request, club_id):
-    #find the appropriate club
+    """View details of a club."""
     current_user = request.user
     try:
         club = Club.objects.get(id = club_id)
@@ -213,6 +226,7 @@ def show_club(request, club_id):
 
 @login_required
 def promote_member_to_officer(request, club_id, member_id):
+    """Allow the owner of a club to promote some member of said club to officer."""
     current_user = request.user
     try:
         member = Member.objects.get(id = member_id)
