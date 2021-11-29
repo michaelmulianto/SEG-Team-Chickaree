@@ -3,17 +3,23 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <h1>{{club.name}} Members</h1>
+        <h1>{{club.name}} Members: </h1>
         <table class="table">
+          <tr>
+            <th></th>
+            <th> Name</th>
+            <th> </th>
+          </tr>
         {% for member in members %}
-        <tr>
-          <td><b>{{ member.user.last_name }}</b></td>
-          <td><a>{{ member.user.first_name }}</a></td>
-          { % if curr_user_is_officer % }
-            <td><a>{{ member.user.email }}</a></td>
-          { % endif % }
-          <td><i></i></td>
-        </tr>
+          <tr>
+            <td> {{ forloop.counter }} <td>
+            <td> {{ member.user.first_name }} {{ member.user.last_name }} </td>
+            <td><b></b></td>
+            {% if curr_user_is_officer %}
+              <td><a>{{ member.user.email }}</a></td>
+            {% endif %}
+            <td><i></i></td>
+          </tr>
         {% endfor %}
         </table>
       </div>
