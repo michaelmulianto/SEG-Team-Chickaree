@@ -48,10 +48,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         self.assertEqual(Member.objects.get(id=self.targetMember.id).is_officer, False)
 
     def test_promote_redirects_when_not_owner_of_club(self):
-        self.ownerMember.is_owner = False
-        self.ownerMember.save(update_fields=['is_owner'])
-
-        self.client.login(username=self.ownerUser.username, password="Password123")
+        self.client.login(username=self.targetUser.username, password="Password123")
         response = self.client.get(self.url, follow=True)
 
         redirect_url = reverse('show_club', kwargs = {'club_id': self.club.id})
