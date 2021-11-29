@@ -2,6 +2,7 @@
 
 from django.test import TestCase
 from django.urls import reverse
+from django.conf import settings
 
 class ShowClubsViewTestCase(TestCase):
     """Test aspects of account view"""
@@ -9,4 +10,4 @@ class ShowClubsViewTestCase(TestCase):
         self.url = reverse('show_clubs')
 
     def test_get_show_clubs_url(self):
-        self.assertEqual('/clubs/', self.url)
+        self.assertEqual('/show_clubs/' , self.url)
