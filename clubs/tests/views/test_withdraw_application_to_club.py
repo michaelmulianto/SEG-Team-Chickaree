@@ -61,8 +61,7 @@ class WithdrawApplicationToClubTestCase(TestCase):
         self.client.login(username=self.user.username, password="Password123")
         self.membership = Member.objects.create(
             club = self.club,
-            user = self.user,
-            is_owner = False
+            user = self.user
         )
 
         app_count_before = Application.objects.count()
@@ -78,7 +77,7 @@ class WithdrawApplicationToClubTestCase(TestCase):
         )
         self.assertTemplateUsed(response, 'show_clubs.html')
 
-    def test_successful_application(self):
+    def test_successful_withdrawal(self):
         self.client.login(username=self.user.username, password="Password123")
         app_count_before = Application.objects.count()
         response = self.client.post(self.url, follow=True)
