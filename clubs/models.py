@@ -1,6 +1,11 @@
 """
 Define the models for the system.
 
+Implemented:
+    - User
+    - Club
+    - Application: many clubs to many users
+    - Member: many clubs to many users
 """
 
 from django.db import models
@@ -8,7 +13,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 
 class User(AbstractUser):
-    """Model for a generic user, independent of any clubs"""
+    """Model for a registered user, independent of any clubs"""
     username = models.CharField(
         max_length=32,
         unique=True,
@@ -52,15 +57,12 @@ class Club(models.Model):
     #Automatically use current time as the club creation date
     created_on = models.DateTimeField(auto_now_add=True, blank=False)
 
-    def get_number_of_members(self):
-        return count(Member.objects.filter(club=self))
-
     class Meta:
         ordering = ['-created_on']
 
 
 class Member(models.Model):
-    """Model representing a member of some single chess club"""
+    """Model representing a membership of some single chess club by some single user"""
     club = models.ForeignKey('Club', on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey('User', on_delete=models.CASCADE, unique=False, blank=False)
     is_officer = models.BooleanField(default=False)
@@ -71,7 +73,7 @@ class Member(models.Model):
 
 
 class Application(models.Model):
-    """Model for an application to a club"""
+    """Model for an application to a club by some user."""
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
     LEVELS = (

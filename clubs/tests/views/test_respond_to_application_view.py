@@ -17,7 +17,7 @@ class RespondToApplicationViewTestCase(TestCase):
 
     def setUp(self):
         self.ownerUser = User.objects.get(username='johndoe')
-        self.applyingUser = User.objects.get(username='johndoe')
+        self.applyingUser = User.objects.get(username='janedoe')
         self.club = Club.objects.get(name='King\'s Knights')
 
         self.ownerMember = Member.objects.create(

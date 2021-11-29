@@ -1,4 +1,4 @@
-"""Test user-facing implementation of the create club form."""
+"""Test backend of the create club form."""
 
 from django.test import TestCase
 from django.urls import reverse

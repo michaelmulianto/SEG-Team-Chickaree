@@ -1,4 +1,4 @@
-"""Unit test for the feed view"""
+"""Unit test for the home view"""
 
 from django.test import TestCase
 from django.urls import reverse
@@ -6,7 +6,7 @@ from django.conf import settings
 from clubs.models import User
 
 class AccountViewTestCase(TestCase):
-    """Test aspects of account view"""
+    """Test all aspects of home view"""
 
     fixtures = ['clubs/tests/fixtures/default_user.json']
 
