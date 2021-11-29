@@ -19,6 +19,11 @@ class ChangePasswordViewTestCase(TestCase, LogInTester):
 
     def setUp(self):
         self.user = User.objects.get(username="johndoe")
+        self.data = {
+            'old_password': 'Password123',
+            'new_password1': 'NewPass12',
+            'new_password2': 'NewPass12',
+        }
         self.url = reverse('change_password')
 
     def test_change_password_url(self):
@@ -34,4 +39,14 @@ class ChangePasswordViewTestCase(TestCase, LogInTester):
         self.assertFalse(form.is_bound)
 
     def test_successful_password_change(self):
-        pass
+        self.client.login(username="johndoe", password="Password123")
+        old_pass = self.user.password
+        response = self.client.post(self.url, self.data, follow=True)
+        self.user = self._get_updated_self_user()
+        new_pass = self.user.password
+        self.assertNotEqual(old_pass,new_pass)
+        self.assertEqual(response.status_code, 200) #OK
+        self.assertTemplateUsed(response, 'account.html')
+
+    def _get_updated_self_user(self):
+        return User.objects.get(username=self.user.username)
