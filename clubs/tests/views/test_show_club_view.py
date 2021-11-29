@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 from django.urls import reverse
-from clubs.models import Club
+from clubs.models import Club, Member, User
 from clubs.tests.helpers import reverse_with_next
 
 class ShowClubViewTestCase(TestCase):
@@ -14,6 +14,12 @@ class ShowClubViewTestCase(TestCase):
     def setUp(self):
         self.club = Club.objects.get(name='King\'s Knights')
         self.url = reverse('show_club', kwargs={'club_id': self.club.id})
+        self.member = Member.objects.create(
+            user = User.objects.get(username='johndoe'),
+            club = self.club,
+            is_owner = True,
+            is_officer = False
+        )
 
     def test_show_club_url(self):
         self.assertEqual(self.url,f'/club/{self.club.id}')

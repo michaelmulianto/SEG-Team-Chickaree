@@ -9,7 +9,7 @@ class ClubModelTestCase(TestCase):
     """Test all aspects of a club."""
 
     fixtures = ['clubs/tests/fixtures/default_club.json',
-    'clubs/tests/fixtures/second_club.json']
+    'clubs/tests/fixtures/other_clubs.json']
 
     # Test setup
     def setUp(self):
