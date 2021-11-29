@@ -32,6 +32,10 @@ class ClubModelTestCase(TestCase):
         self.club.name = 'x' * 51
         self._assert_club_is_invalid()
 
+    def test_name_can_be_50_characters(self):
+        self.club.name = 'x' * 50
+        self._assert_club_is_valid()
+
     # Test location
     def test_location_must_not_be_blank(self):
         self.club.location = None
@@ -45,6 +49,10 @@ class ClubModelTestCase(TestCase):
         self.club.location = 'x' * 51
         self._assert_club_is_invalid()
 
+    def test_location_can_be_50_characters(self):
+        self.club.location = 'x' * 50
+        self._assert_club_is_valid()
+
     # Test description
     def test_description_must_not_be_blank(self):
         self.club.description = None
@@ -53,6 +61,10 @@ class ClubModelTestCase(TestCase):
     def test_description_must_not_be_over_280_characters(self):
         self.club.description = 'x' * 281
         self._assert_club_is_invalid()
+
+    def test_description_can_be_280_characters(self):
+        self.club.description = 'x' * 280
+        self._assert_club_is_valid()
 
     def test_description_is_not_unique(self):
         self.club.description = self.second_club.description
