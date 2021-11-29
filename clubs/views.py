@@ -19,10 +19,6 @@ from clubs.helpers import login_prohibited
 
 @login_prohibited
 def home(request):
-    # Default view for visitors.
-    if request.user.is_authenticated:
-        return redirect('account')
-
     return render(request, 'home.html')
 
 @login_prohibited
