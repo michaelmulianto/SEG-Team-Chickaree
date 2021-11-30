@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from clubs import forms
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, request
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
@@ -15,7 +15,9 @@ from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
 from clubs.models import User, Club, Application, Member
 from clubs.helpers import login_prohibited
-#from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 @login_prohibited
 def home(request):
@@ -76,7 +78,33 @@ def my_clubs_list(request):
         if Member.objects.filter(club=club, user=current_user).exists():
             my_clubs.append(club)
 
-    return render(request, 'my_clubs_list.html', {'clubs': my_clubs, 'current_user':current_user})
+    paginator = Paginator(my_clubs, settings.CLUBS_PER_PAGE) # Show 25 contacts per page
+
+    page = request.GET.get('page')
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj  = paginator.page(1)
+    except EmptyPage:
+        page_obj  = paginator.page(paginator.num_pages)
+
+    return render(request, 'my_clubs_list.html', {'clubs': my_clubs, 'current_user':current_user, 'page_obj':page_obj})
+
+# class MyClubsListView(LoginRequiredMixin, ListView):
+#     model = Club
+#     template_name = "my_clubs_list.html"
+#     context_object_name = "my_clubs"
+#     paginate_by = settings.CLUBS_PER_PAGE
+
+#     current_user = request.user
+
+#     def get_context_data(self, *args, **kwargs):
+#         """Generate content to be displayed on the template"""
+
+#         context = super().get_context_data(*args, **kwargs)
+#         context["clubs"] = Application.objects.filter(user=current_user) + Member.objects.filter(user=user)
+#         context['current_user'] = current_user
+
 
 @login_required
 def edit_account(request):
