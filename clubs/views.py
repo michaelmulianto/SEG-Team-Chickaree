@@ -12,7 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.conf import settings
-from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
+from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm, EditClubInfoForm
 from clubs.models import User, Club, Application, Member
 from clubs.helpers import login_prohibited
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -294,3 +294,22 @@ def members_list(request, club_id):
         return redirect('show_club', club_id=club_id)
     else:
         return render(request, 'members_list.html', {'members': members, 'club': club, 'curr_user_is_officer': is_officer, 'curr_user_is_owner': is_owner})
+
+@login_required
+def edit_club_info(request, club_id):
+    """Edit the details for the club as an owner."""
+    current_user = request.user
+    try:
+        club = Club.objects.get(id = club_id)
+    except ObjectDoesNotExist:
+        return redirect('show_clubs')
+    if request.method == 'POST':
+        form = EditClubInfoForm(instance = club, data=request.POST)
+        if form.is_valid():
+            messages.add_message(request, messages.SUCCESS, "Account Details updated!")
+            form.save()
+            return redirect('show_club')
+    else:
+        #make form with the current user information
+        form = EditClubInfoForm(instance = club)
+    return render(request, 'edit_club_info.html', {'form': form})

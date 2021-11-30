@@ -37,6 +37,7 @@ urlpatterns = [
     path('withdraw_application_to_club/<int:club_id>', views.withdraw_application_to_club, name = 'withdraw_application_to_club'),
     path('members_list/<int:club_id>', views.members_list, name='members_list'),
     path('club/<int:club_id>', views.show_club, name='show_club'),
+    path('club/<int:club_id>/edit', views.edit_club_info, name='edit_club_info'),
     path('club/<int:club_id>/applications', views.show_applications_to_club, name='show_applications_to_club'),
     path('application/<int:app_id>/respond/<bool:is_accepted>', views.respond_to_application, name='respond_to_application'),
     path('club/<int:club_id>/promote_member/<int:member_id>', views.promote_member_to_officer, name='promote_member_to_officer'),
