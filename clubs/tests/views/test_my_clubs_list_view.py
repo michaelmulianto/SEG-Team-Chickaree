@@ -56,7 +56,7 @@ class MembersTestCase(TestCase):
         clubs = response.context['clubs']
         self.assertEqual(len(clubs), 0)
 
-        application = Application.objects.create(
+        Application.objects.create(
             club = self.club,
             user = self.user,
             experience = 2,
@@ -111,7 +111,7 @@ class MembersTestCase(TestCase):
         clubs = response.context['clubs']
         self.assertEqual(len(clubs), 0)
 
-
+    #make a new membership for a user to a club
     def _make_new_membership(self, clubIn, userIn):
         membership = Member.objects.create(
         club = clubIn,

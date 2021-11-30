@@ -90,22 +90,6 @@ def my_clubs_list(request):
 
     return render(request, 'my_clubs_list.html', {'clubs': my_clubs, 'current_user':current_user, 'page_obj':page_obj})
 
-# class MyClubsListView(LoginRequiredMixin, ListView):
-#     model = Club
-#     template_name = "my_clubs_list.html"
-#     context_object_name = "my_clubs"
-#     paginate_by = settings.CLUBS_PER_PAGE
-
-#     current_user = request.user
-
-#     def get_context_data(self, *args, **kwargs):
-#         """Generate content to be displayed on the template"""
-
-#         context = super().get_context_data(*args, **kwargs)
-#         context["clubs"] = Application.objects.filter(user=current_user) + Member.objects.filter(user=user)
-#         context['current_user'] = current_user
-
-
 @login_required
 def edit_account(request):
     """Edit the details for the currently logged in user."""
