@@ -4,7 +4,7 @@ from typing import List
 from django.core.paginator import Page
 from django.test import TestCase
 from django.urls import reverse
-from clubs.models import User, Club, Member
+from clubs.models import User, Club, Member, Application
 from clubs.tests.helpers import reverse_with_next
 from django.db.models.base import ObjectDoesNotExist 
 
@@ -49,17 +49,77 @@ class MembersTestCase(TestCase):
         self.assertTemplateUsed(response, 'my_clubs_list.html')
 
     def test_club_user_has_applied_is_on_list(self):
-        pass
-
-    def test_club_user_has_not_applied_not_on_list(self):
         self.client.login(username=self.user.username, password='Password123')
-        self.user
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
+        clubs = response.context['clubs']
+        self.assertEqual(len(clubs), 0)
 
-    
-    
+        application = Application.objects.create(
+            club = self.club,
+            user = self.user,
+            experience = 2,
+            personal_statement = 'I love chess!'
+        )
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        clubs = response.context['clubs']
+        self.assertEqual(len(clubs), 1)
+
+    def test_club_user_has_not_applied_not_on_list(self):
+        self.client.login(username=self.user.username, password='Password123')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        clubs = response.context['clubs']
+        self.assertEqual(len(clubs), 0)
+
+    def test_make_new_application_makes_it_onto_the_list(self):
+        self.client.login(username=self.user.username, password='Password123')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        clubs = response.context['clubs']
+        self.assertEqual(len(clubs), 0)
+
+        self._make_new_membership(self.club, self.user)  
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        clubs = response.context['clubs']
+        self.assertEqual(len(clubs), 1)
+
+    def test_withdraw_application_makes_club_not_on_list(self):
+        self.client.login(username=self.user.username, password='Password123')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        clubs = response.context['clubs']
+        self.assertEqual(len(clubs), 0)
+
+        membership = self._make_new_membership(self.club, self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        clubs = response.context['clubs']
+        self.assertEqual(len(clubs), 1)
+
+        Member.objects.all().delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        clubs = response.context['clubs']
+        self.assertEqual(len(clubs), 0)
+
+
+    def _make_new_membership(self, clubIn, userIn):
+        membership = Member.objects.create(
+        club = clubIn,
+        user = userIn,
+        is_officer = False,
+        is_owner = False
+        )
+        return membership
 
     #check a club can be on the list
     def _is_on_list(self):
