@@ -11,7 +11,7 @@
       <table class="table">
         {% for club in clubs %}
         <tr onclick=window.location="{% url 'show_club' club.id %}">
-          <td style="width:0.1%; white-space: nowrap"><img src={% static 'images/pawn.jpeg' %} style="max-width: 150px" alt="Club image, default pawn"<td>
+          <td style="width:0.1%; white-space: nowrap"><img src={% static 'images/pawn.jpg' %} style="max-width: 150px" alt="Club image, default pawn"<td>
           <td>
             <table>
               <tr>
@@ -34,7 +34,7 @@
               if(confirm('Are you sure you want to withdraw your application?')){
                 return true;
               }else{
-                event.stopPropagation(); 
+                event.stopPropagation();
                 event.preventDefault();
               }
             }
@@ -42,7 +42,7 @@
               if(confirm('Are you sure you want to leave the club?')){
                 return true;
               }else{
-                event.stopPropagation(); 
+                event.stopPropagation();
                 event.preventDefault();
               }
             }
