@@ -115,6 +115,23 @@ class UserModelTestCase(TestCase):
         self.user.email = 'johndoe@example!.com'
         self._assert_user_is_invalid()
 
+    #Test bio
+    def test_bio_may_be_blank(self):
+        self.user.bio = ''
+        self._assert_user_is_valid()
+
+    def test_bio_may_not_be_unique(self):
+        self.user.bio = 'Jane here. I like chess.'
+        self._assert_user_is_valid()
+
+    def test_bio_may_be_520_characters_long(self):
+        self.user.bio = 'x' * 520
+        self._assert_user_is_valid()
+
+    def test_bio_must_not_be_over_520_characters_long(self):
+        self.user.bio = 'x' * 521
+        self._assert_user_is_invalid()
+
     # Helper functions.
     # Generic assertions.
     def _assert_user_is_valid(self):
