@@ -289,6 +289,6 @@ def members_list(request, club_id):
     try:
         club = Club.objects.get(id = club_id)
     except ObjectDoesNotExist:
-        return redirect('show_club', club_id=club_id)
+        return redirect('show_clubs')
     members = Member.objects.filter(club = club)
     return render(request, 'members_list.html', {'members': members, 'club': club, 'current_user': current_user })

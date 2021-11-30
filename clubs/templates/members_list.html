@@ -1,5 +1,8 @@
 {% extends 'base_content.html' %}
 {% block content %}
+{% load define_action %}
+{% check_is_owner club current_user as is_owner %}
+{% check_is_officer club current_user as is_officer %}
   <div class="container">
     <div class="row">
       <div class="col-12">
@@ -15,11 +18,20 @@
             <th></th>
             <th></th>
             <th></th>
-            <th> Name</th>
-            <th> Username</th>
-            <th> Bio</th>
-            {% chec%}
+            <th>Name</th>
+            <th>Username</th>
+
+            {% if is_owner or is_officer %}
+            <th>Email</th>
+            {% endif %}
+
+            <th>Bio</th>
+
+            {% if is_owner or is_officer %}
             <th></th>
+            <th></th>
+            {% endif %}
+
           </tr>
         {% for member in members %}
           <tr>
@@ -27,11 +39,38 @@
             <td> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
             <td> @{{ member.user.username }} </td>
             <td> {{ member.user.first_name }} {{ member.user.last_name }} </td>
-            <td> {{ member.user.bio }} </td>
-            {% if True %}
-              <td><a>{{ member.user.email }}</a></td>
+
+
+            {% if is_owner or is_officer %}
+            <td> {{ member.user.email }} </td>
+            <!-- <td> {{member.user.level}}<td> -->
             {% endif %}
-            <td><i></i></td>
+
+            <td> {{ member.user.bio }} </td>
+
+            <script>
+              function confirmKick(){
+                if(confirm('Are you sure you want to kick them from the club?')){
+                  return true;
+                }else{
+                  event.stopPropagation(); event.preventDefault();
+                }
+              }
+              function confirmBan(){
+                if(confirm('Are you sure you want to ban them from the club?')){
+                  return true;
+                }else{
+                  event.stopPropagation(); event.preventDefault();
+                }
+              }
+              </script>
+
+            {% if is_owner or is_officer %}
+            <td><a href='#' onclick="confirmKick()" class="btn btn-danger">Kick</a></td>
+            <td><a href='#' onclick="confirmBan()" class="btn btn-danger">Ban</a></td>
+            {% endif %}
+
+
           </tr>
         {% endfor %}
         </table>
