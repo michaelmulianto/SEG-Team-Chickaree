@@ -7,7 +7,10 @@ from django.core.exceptions import ValidationError
 class UserModelTestCase(TestCase):
     """Test all aspects of a user."""
 
-    fixtures = ['clubs/tests/fixtures/default_user.json']
+    fixtures = [
+        'clubs/tests/fixtures/default_user.json',
+        'clubs/tests/fixtures/second_user.json'
+    ]
 
     # Test setup
     def setUp(self):
@@ -30,13 +33,6 @@ class UserModelTestCase(TestCase):
         self._assert_user_is_invalid()
 
     def test_username_must_be_unique(self):
-        User.objects.create_user(
-            'janedoe',
-            first_name='Jane',
-            last_name='Doe',
-            email='janedoe@example.com',
-            password='Password123',
-        )
         self.user.username = 'janedoe'
         self._assert_user_is_invalid()
 
@@ -58,13 +54,6 @@ class UserModelTestCase(TestCase):
         self._assert_user_is_invalid()
 
     def test_first_name_can_already_exist(self):
-        User.objects.create_user(
-            'janedoe',
-            first_name='Jane',
-            last_name='Doe',
-            email='janedoe@example.com',
-            password='Password123',
-        )
         self.user.first_name = 'Jane'
         self._assert_user_is_valid()
 
@@ -86,13 +75,6 @@ class UserModelTestCase(TestCase):
         self._assert_user_is_invalid()
 
     def test_last_name_can_already_exist(self):
-        User.objects.create_user(
-            'janedoe',
-            first_name='Jane',
-            last_name='Doe',
-            email='janedoe@example.com',
-            password='Password123',
-        )
         self.user.last_name = 'Doe'
         self._assert_user_is_valid()
 
@@ -110,14 +92,7 @@ class UserModelTestCase(TestCase):
 
     # Test email
     def test_email_must_be_unique(self):
-        User.objects.create_user(
-            'janedoe',
-            first_name='Jane',
-            last_name='Doe',
-            email='janedoe@example.com',
-            password='Password123',
-        )
-        self.user.email= 'janedoe@example.com'
+        self.user.email= 'janedoe@example.org'
         self._assert_user_is_invalid()
 
     def test_email_cannot_have_no_at_symbol(self):

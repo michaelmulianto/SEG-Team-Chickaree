@@ -49,6 +49,20 @@ class User(AbstractUser):
         blank=False,
     )
 
+    bio = models.CharField(max_length=520, blank = True, default = '')
+
+    def gravatar(self, size=120):
+        """Return a URL to the user's gravatar."""
+        gravatar_object = Gravatar(self.email)
+        gravatar_url = gravatar_object.get_image(size=size, default='mp')
+        return gravatar_url
+
+    def mini_gravatar(self, size=50):
+        """Return a URL to the user's small gravatar."""
+        gravatar_object = Gravatar(self.email)
+        gravatar_url = gravatar_object.get_image(size=size, default='mp')
+        return gravatar_url
+
 class Club(models.Model):
     """Model representing a single chess club."""
     name = models.CharField(max_length=50, blank=False, unique = True)
