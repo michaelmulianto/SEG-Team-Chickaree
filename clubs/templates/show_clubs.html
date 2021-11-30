@@ -1,37 +1,25 @@
 {% extends 'base_content.html' %}
-
+{% block title %}
+| Clubs
+{% endblock %}
 {% block content %}
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <h1 style=font-size:85px> Chess Clubs </h1>
-        <p> Welcome to chess clubs, a place to share your love for chess. Join a club from the list below to play with fellow chess enthusiasts. </p>
-        <p> Can't find a club that is right for you? Create your own club for free! </p>
-        <br>
-        <div class="d-flex justify-content-center">
-          <a href="{% url 'create_club' %}" class="btn btn-primary btn-lg">Create New Club</a>
-        </div>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h1 style=font-size:85px> Chess Clubs </h1>
+      <p> Welcome to chess clubs, a place to share your love for chess. Join a club from the list below to play with fellow chess enthusiasts. </p>
+      <p> Can't find a club that is right for you? Create your own club for free! </p>
+      <br>
+      <div class="d-flex justify-content-center">
+        <a href="{% url 'create_club' %}" class="btn btn-primary btn-lg">Create New Club</a>
       </div>
     </div>
-    <br>
-    <div class="row">
-      <div class="col-12">
-        <hr>
-        <div class="container">
-          <div class="row">
-            <div class="col-md-9">
-              <div class="search">
-                <i class="fa fa-search"></i>
-                <input type="text" class="form-control" placeholder="Search for a club">
-              </div>
-            </div>
-            <div class="col-md-3">
-              <button class="btn btn-primary">Search</button>
-            </div>
-          </div>
-        </div>
-        <br>
+  </div>
+
+    {% include 'partials/searchbar.html' %}
+
         <table class="table table-hover">
+
         <hr style="opacity: 0.15">
 
         {% load static %}
@@ -39,7 +27,7 @@
         {% for club in clubs %}
 
         <tr onclick=window.location="{% url 'show_club' club.id %}">
-          <td style="width:0.1%; white-space: nowrap"><img src={% static 'images/pawn.jpeg' %} style="max-width: 150px" alt="Club image, default pawn"<td>
+          <td style="width:0.1%; white-space: nowrap"><img src={% static 'images/pawn.jpg' %} style="max-width: 150px" alt="Club image, default pawn"<td>
           <td>
             <table>
               <tr>
@@ -71,24 +59,24 @@
                 event.stopPropagation(); event.preventDefault();
               }
             }
-          </script>
+            </script>
 
-          {% if has_applied %}
+            {% if has_applied %}
             <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmWithdrawApplication()" class="btn btn-warning">Withdraw application</a></td>
-          {% elif is_member %}
+            {% elif is_member %}
             {% check_is_owner club current_user as is_owner %}
             {% if is_owner %}
-              <td style="text-align: center; vertical-align: bottom; padding: 25px"> You are the owner. </td>
+            <td style="text-align: center; vertical-align: bottom; padding: 25px"> You are the owner. </td>
             {% else %}
-              <td style="vertical-align: bottom; padding: 25px"><a href='{% url 'leave_club' club.id %}' onclick="confirmLeaveClub()" class="btn btn-danger">Leave club</a></td>
+            <td style="vertical-align: bottom; padding: 25px"><a href='{% url 'leave_club' club.id %}' onclick="confirmLeaveClub()" class="btn btn-danger">Leave club</a></td>
             {% endif%}
-          {% else %}
+            {% else %}
             <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success">Apply to club</a></td>
-          {% endif %}
-        </tr>
+            {% endif %}
+          </tr>
         {% endfor %}
-        </table>
-      </div>
+      </table>
     </div>
   </div>
+</div>
 {% endblock %}

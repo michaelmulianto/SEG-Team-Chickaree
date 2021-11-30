@@ -1,4 +1,7 @@
 {% extends 'base_content.html' %}
+{% block title %}
+| Create Club
+{% endblock %}
 {% block content %}
   <div class="container">
     <div class="row">
@@ -7,7 +10,7 @@
         <form action="{% url 'create_club' %}" method="post">
           {% csrf_token %}
           {% include 'partials/bootstrap_form.html' with form=form %}
-          <input type="submit" value="Create Club" class="btn btn-primary">
+          <input type="submit" value="Create" class="btn btn-primary">
         </form>
       </div>
     </div>

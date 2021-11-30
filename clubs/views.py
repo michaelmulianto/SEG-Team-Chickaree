@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from clubs import forms
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, request
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
@@ -15,7 +15,9 @@ from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
 from clubs.models import User, Club, Application, Member
 from clubs.helpers import login_prohibited
-#from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 @login_prohibited
 def home(request):
@@ -76,7 +78,17 @@ def my_clubs_list(request):
         if Member.objects.filter(club=club, user=current_user).exists():
             my_clubs.append(club)
 
-    return render(request, 'my_clubs_list.html', {'clubs': my_clubs, 'current_user':current_user})
+    paginator = Paginator(my_clubs, settings.CLUBS_PER_PAGE)
+
+    page = request.GET.get('page')
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj  = paginator.page(1)
+    except EmptyPage:
+        page_obj  = paginator.page(paginator.num_pages)
+
+    return render(request, 'my_clubs_list.html', {'clubs': my_clubs, 'current_user':current_user, 'page_obj':page_obj})
 
 @login_required
 def edit_account(request):
@@ -231,6 +243,7 @@ def show_club(request, club_id):
     except ObjectDoesNotExist:
         return redirect('show_clubs')
     members = Member.objects.filter(club = club_id)
+    officers = members.filter(is_officer = True)
     getOwner = members.get(is_owner = True)
     numberOfMembers = members.count()
     checkUserisMember = members.filter(user = current_user)
@@ -243,7 +256,7 @@ def show_club(request, club_id):
         isMember = True
     if checkUserisMember.filter(is_officer = True).count() > 0:
         isOfficer = True
-    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner, 'userIsOwner': isOwner, 'userIsOfficer': isOfficer})
+    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner, 'userIsOwner': isOwner, 'userIsOfficer': isOfficer, 'officers': officers})
 
 @login_required
 def promote_member_to_officer(request, club_id, member_id):
