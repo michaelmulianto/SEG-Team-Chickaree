@@ -15,5 +15,9 @@ def check_is_member(club_to_check, current_user):
   return Member.objects.filter(club=club_to_check, user=current_user).exists()
 
 @register.simple_tag
+def check_is_officer(club_to_check, current_user):
+  return Member.objects.filter(club=club_to_check, user=current_user, is_officer=True).exists()
+
+@register.simple_tag
 def check_is_owner(club_to_check, current_user):
   return Member.objects.filter(club=club_to_check, user=current_user, is_owner=True).exists()

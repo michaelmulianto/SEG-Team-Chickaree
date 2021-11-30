@@ -288,10 +288,7 @@ def members_list(request, club_id):
     current_user = request.user
     try:
         club = Club.objects.get(id = club_id)
-        members = Member.objects.filter(club = club)
-        is_officer = Member.objects.filter(club=club, user=current_user, is_officer=True).exists()
-        is_owner = Member.objects.filter(club=club, user=current_user, is_owner=True).exists()
     except ObjectDoesNotExist:
         return redirect('show_club', club_id=club_id)
-    else:
-        return render(request, 'members_list.html', {'members': members, 'club': club, 'curr_user_is_officer': is_officer, 'curr_user_is_owner': is_owner})
+    members = Member.objects.filter(club = club)
+    return render(request, 'members_list.html', {'members': members, 'club': club, 'current_user': current_user })
