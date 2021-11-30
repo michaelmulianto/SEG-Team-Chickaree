@@ -7,18 +7,23 @@
   <div class="row">
     <div class="col-12">
         <h1>My Clubs</h1>
-
-      <table class="table">
+        
+        {% include 'partials/searchbar.html' %}
+        
+        {% bootstrap_paginate page_obj range=6 show_first_last="true" %}
+        <table class="table table-hover">
+          <hr style="opacity: 0.15;">
         {% for club in clubs %}
         <tr onclick=window.location="{% url 'show_club' club.id %}">
           <td style="width:0.1%; white-space: nowrap"><img src={% static 'images/pawn.jpg' %} style="max-width: 150px" alt="Club image, default pawn"<td>
+
           <td>
             <table>
               <tr>
                 <td style="font-size: 35px" ><b>{{ club.name }}</b></td>
               </tr>
               <tr>
-                <td><div style="max-height:60px; max-width: 775px; overflow:hidden; text-overflow: ellipsis; overflow-y:auto;">{{ club.description }}</div></td>
+                <td><div style="max-height:60px; max-width:max-content; overflow:hidden; text-overflow: ellipsis; overflow-y:auto;white-space: nowrap">{{ club.description }}</div></td>
               </tr>
               <tr>
                 {% count_members club as members %}
@@ -64,6 +69,7 @@
 
         {% endfor %}
         </table>
+        {% bootstrap_paginate page_obj range=6 show_first_last="true" %}
     </div>
   </div>
 </div>

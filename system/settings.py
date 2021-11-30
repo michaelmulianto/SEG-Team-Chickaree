@@ -145,4 +145,4 @@ LOGIN_URL = 'log_in'
 REDIRECT_URL_WHEN_LOGGED_IN = 'show_clubs'
 
 #Page lengths
-CLUB123S_PER_PAGE = 10
+CLUBS_PER_PAGE = 10
