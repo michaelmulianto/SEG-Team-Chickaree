@@ -30,6 +30,7 @@
             {% if is_owner or is_officer %}
             <th></th>
             <th></th>
+            <th></th>
             {% endif %}
 
           </tr>
@@ -64,12 +65,28 @@
                 }
               }
               </script>
+            {% if not member.user == current_user %}
+              {% if is_owner %}
+                {% check_is_officer club member.user as is_member_an_officer %}
+                {% if is_member_an_officer %}
+            <td><a href='#' class="btn btn-warning">Demote</a></td>
+                {% else %}
+            <td><a href='{% url 'promote_member_to_officer' club.id member.id %}' class="btn btn-success">Promote</a></td>
 
-            {% if is_owner or is_officer %}
-            <td><a href='#' onclick="confirmKick()" class="btn btn-danger">Kick</a></td>
+                {% endif %}
+              {% endif %}
+
+              {% if is_owner or is_officer %}
+            <td><a href='{% url 'kick_member' club.id member.id %}' onclick="confirmKick()" class="btn btn-danger">Kick</a></td>
             <td><a href='#' onclick="confirmBan()" class="btn btn-danger">Ban</a></td>
+              {% endif %}
+            {% else %}
+              {% if is_owner %}
+            <td style="text-align: center" colspan="3"><b> This is you! <b></td>
+              {% elif is_officer %}
+            <td style="text-align: center" colspan="2"><b> This is you! <b></td>
+              {% endif %}
             {% endif %}
-
 
           </tr>
         {% endfor %}
