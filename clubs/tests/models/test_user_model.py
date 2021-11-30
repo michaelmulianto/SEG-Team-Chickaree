@@ -132,6 +132,20 @@ class UserModelTestCase(TestCase):
         self.user.bio = 'x' * 521
         self._assert_user_is_invalid()
 
+    #Test gravatar
+    def test_default_gravatar(self):
+        expected = "https://www.gravatar.com/avatar/363c1b0cd64dadffb867236a00e62986?size=120&default=mp"
+        self.assertEqual(self.user.gravatar(), expected)
+
+    def test_gravatar_custom_size(self):
+        size = 500
+        expected = "https://www.gravatar.com/avatar/363c1b0cd64dadffb867236a00e62986?size=" + str(size) + "&default=mp"
+        self.assertEqual(self.user.gravatar(size), expected)
+
+    def test_mini_gravatar(self):
+        expected = "https://www.gravatar.com/avatar/363c1b0cd64dadffb867236a00e62986?size=50&default=mp"
+        self.assertEqual(self.user.mini_gravatar(), expected)
+
     # Helper functions.
     # Generic assertions.
     def _assert_user_is_valid(self):

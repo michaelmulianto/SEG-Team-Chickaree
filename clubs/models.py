@@ -8,6 +8,7 @@ Implemented:
     - Member: many clubs to many users
 """
 
+from libgravatar import Gravatar
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
