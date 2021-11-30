@@ -87,10 +87,15 @@ class ApplyToClubForm(forms.ModelForm):
         fields = ['experience', 'personal_statement']
         widgets = {'personal_statement': forms.Textarea()}
 
-        def save(self):
-            # We do not want this to save a new object.
-            # The view for applying will handle this.
-            return
+    def save(self, desired_club, current_user):
+        super().save(commit=False)
+        application = Application.objects.create(
+            club = desired_club,
+            user = current_user,
+            experience = self.cleaned_data.get('experience'),
+            personal_statement = self.cleaned_data.get('personal_statement'),
+        )
+        return application
 
 class EditAccountForm(forms.ModelForm):
     class Meta:

@@ -1,14 +1,16 @@
-"""Test user-facing implementation of the sign up form."""
+"""Test backend implementation of the sign up form."""
 
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth.hashers import check_password
+from django.conf import settings
 from clubs.models import User
 from clubs.forms import SignUpForm
-from django.contrib.auth.hashers import check_password
 from clubs.tests.helpers import LogInTester
 
+
 class SignUpViewTestCase(TestCase, LogInTester):
-    """Test all aspects of the sign up view"""
+    """Test all aspects of the sign up view."""
 
     fixtures = ['clubs/tests/fixtures/default_user.json']
 
@@ -37,9 +39,9 @@ class SignUpViewTestCase(TestCase, LogInTester):
     def test_get_sign_up_redirects_when_logged_in(self):
         self.client.login(username='johndoe', password="Password123")
         response = self.client.get(self.url, follow=True)
-        redirect_url = reverse('account')
+        redirect_url = reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'account.html')
+        self.assertTemplateUsed(response, 'show_clubs.html')
 
     def test_unsuccessful_sign_up(self):
         before_count = User.objects.count()
@@ -56,13 +58,13 @@ class SignUpViewTestCase(TestCase, LogInTester):
 
     def test_successful_sign_up(self):
         before_count = User.objects.count()
-        response_url = reverse('account')
+        response_url = reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         response = self.client.post(self.url, self.form_input, follow=True)
         after_count = User.objects.count()
         self.assertEqual(after_count, before_count+1)
         self.assertRedirects(response, response_url, status_code=302,
         target_status_code=200) #REDIRECT
-        self.assertTemplateUsed(response, 'account.html')
+        self.assertTemplateUsed(response, 'show_clubs.html')
         user = User.objects.get(username='janedoe')
         self.assertEqual(user.first_name, 'Jane')
         self.assertEqual(user.last_name, 'Doe')

@@ -1,0 +1,70 @@
+{% extends 'base_content.html' %}
+{% load static %}
+{% load define_action %}
+{% load bootstrap_pagination %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+        <h1>My Clubs</h1>
+
+      <table class="table">
+        {% for club in clubs %}
+        <tr onclick=window.location="{% url 'show_club' club.id %}">
+          <td style="width:0.1%; white-space: nowrap"><img src={% static 'images/pawn.jpeg' %} style="max-width: 150px" alt="Club image, default pawn"<td>
+          <td>
+            <table>
+              <tr>
+                <td style="font-size: 35px" ><b>{{ club.name }}</b></td>
+              </tr>
+              <tr>
+                <td><div style="max-height:60px; max-width: 775px; overflow:hidden; text-overflow: ellipsis; overflow-y:auto;">{{ club.description }}</div></td>
+              </tr>
+              <tr>
+                {% count_members club as members %}
+                <td><i class="bi bi-people-fill"></i> {{ members }} </td>
+              </tr>
+            </table>
+          </td>
+
+          {% check_has_applied club current_user as has_applied %}
+          {% check_is_member club current_user as is_member %}
+          <script>
+            function confirmWithdrawApplication(){
+              if(confirm('Are you sure you want to withdraw your application?')){
+                return true;
+              }else{
+                event.stopPropagation(); 
+                event.preventDefault();
+              }
+            }
+            function confirmLeaveClub(){
+              if(confirm('Are you sure you want to leave the club?')){
+                return true;
+              }else{
+                event.stopPropagation(); 
+                event.preventDefault();
+              }
+            }
+          </script>
+
+          {% if has_applied %}
+            <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmWithdrawApplication()" class="btn btn-warning">Withdraw application</a></td>
+          {% elif is_member %}
+            {% check_is_owner club current_user as is_owner %}
+            {% if is_owner %}
+              <td style="text-align: center; vertical-align: bottom; padding: 25px"> You are the owner. </td>
+            {% else %}
+              <td style="vertical-align: bottom; padding: 25px"><a href='{% url 'leave_club' club.id %}' onclick="confirmLeaveClub()" class="btn btn-danger">Leave club</a></td>
+            {% endif%}
+          {% else %}
+            <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success">Apply to club</a></td>
+          {% endif %}
+        </tr>
+
+        {% endfor %}
+        </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,4 +1,4 @@
-"""Unit test for the feed view"""
+"""Unit test for the account view"""
 
 from django.test import TestCase
 from django.urls import reverse
@@ -6,7 +6,7 @@ from clubs.models import User
 from clubs.tests.helpers import reverse_with_next
 
 class AccountViewTestCase(TestCase):
-    """To be implemented, code stolen from clucker, change feed for account and edit"""
+    """Test all aspects of the account view"""
 
     fixtures = ['clubs/tests/fixtures/default_user.json']
 

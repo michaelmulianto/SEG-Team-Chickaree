@@ -11,30 +11,27 @@ from django.http import HttpResponseForbidden
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
-
 from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
 from clubs.models import User, Club, Application, Member
 from clubs.helpers import login_prohibited
+#from django.contrib.auth.mixins import LoginRequiredMixin
 
 @login_prohibited
 def home(request):
-    # Default view for visitors.
-    if request.user.is_authenticated:
-        return redirect('account')
-
+    """Generic splash page view for non-logged in user."""
     return render(request, 'home.html')
 
 @login_prohibited
 def sign_up(request):
-    # View to allow user to create account.
+    """View to allow user to create an account, and thus a corresponding user object."""
     # If POST, form has been submitted.
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('account')
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
     # If not POST, visitor is trying to view the form e.g. via home
     else:
@@ -44,6 +41,7 @@ def sign_up(request):
 
 @login_prohibited
 def log_in(request):
+    """View to allow an already registered user to log in."""
     if request.method == 'POST':
         form = LogInForm(request.POST)
         next = request.POST.get('next') or ''
@@ -64,18 +62,25 @@ def log_in(request):
 
 @login_required
 def account(request):
-    try:
-        #find the appropriate user
-        user = request.user
-    except ObjectDoesNotExist:
-         return redirect('no_account_found')
+    """Render a page displaying the attributes of the currently logged in user."""
+    user = request.user
+    return render(request, 'account.html', {'user': user})
 
-         #if found show their information
-    else:
-        return render(request, 'account.html', {'user': user})
+@login_required
+def my_clubs_list(request):
+    current_user = request.user
+    my_clubs = []
+    for club in Club.objects.all():
+        if Application.objects.filter(club=club, user=current_user).exists():
+            my_clubs.append(club)
+        if Member.objects.filter(club=club, user=current_user).exists():
+            my_clubs.append(club)
+
+    return render(request, 'my_clubs_list.html', {'clubs': my_clubs, 'current_user':current_user})
 
 @login_required
 def edit_account(request):
+    """Edit the details for the currently logged in user."""
     current_user = request.user
     if request.method == 'POST':
         form = EditAccountForm(instance = current_user, data=request.POST)
@@ -91,6 +96,7 @@ def edit_account(request):
 
 @login_required
 def create_club(request):
+    """Create a new chess club. Handles club creation form."""
     if request.method == 'POST':
         current_user = request.user
         form = CreateClubForm(request.POST)
@@ -109,20 +115,16 @@ def create_club(request):
 
 @login_required
 def apply_to_club(request, club_id):
+    """Have currently logged in user create an application to a specified club."""
     if request.method == 'POST':
         desired_club = Club.objects.get(id = club_id)
         current_user = request.user
         form = forms.ApplyToClubForm(request.POST)
         if form.is_valid():
             if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
-                application = Application.objects.create(
-                    club = desired_club,
-                    user = current_user,
-                    experience = form.cleaned_data.get('experience'),
-                    personal_statement = form.cleaned_data.get('personal_statement'),
-                )
+                form.save(desired_club, current_user)
                 return redirect('show_clubs')
-        # Invalid form
+        # Else: Invalid form/Already applied/Already member
         if Application.objects.filter(club=desired_club, user = current_user).exists():
             messages.add_message(request, messages.ERROR, "You have already applied for this club")
         elif Member.objects.filter(club=desired_club, user = current_user).exists():
@@ -133,6 +135,7 @@ def apply_to_club(request, club_id):
 
 @login_required
 def withdraw_application_to_club(request, club_id):
+    """Have currently logged in user delete an application to the specified club, if it exists."""
     current_user = request.user
     applied_club = Club.objects.get(id=club_id)
     if Application.objects.filter(club=applied_club, user = current_user).exists() and not(Member.objects.filter(club=applied_club, user = current_user).exists()):
@@ -142,6 +145,7 @@ def withdraw_application_to_club(request, club_id):
 
 @login_required
 def leave_club(request, club_id):
+    """Delete the member object linking the current user to the specified club, iff it exists."""
     current_user = request.user
     applied_club = Club.objects.get(id=club_id)
     if Member.objects.filter(club=applied_club, user = current_user).exists():
@@ -149,19 +153,20 @@ def leave_club(request, club_id):
         return redirect('show_clubs')
     return redirect('show_clubs')
 
-
+@login_required
 def show_clubs(request):
+    """Return a list of every club created on the website"""
     clubs = Club.objects.all()
-    user = request.user
-    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': user})
-
+    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user})
 
 def log_out(request):
+    """If a user is logged in, log them out."""
     logout(request)
     return redirect('home')
 
 @login_required
 def show_applications_to_club(request, club_id):
+    """Allow the owner of a club to view all applications to said club."""
     current_user = request.user
     try:
         club_to_view = Club.objects.get(id = club_id)
@@ -178,6 +183,7 @@ def show_applications_to_club(request, club_id):
 
 @login_required
 def respond_to_application(request, app_id, is_accepted):
+    """Allow the owner of a club to accept or reject some application to said club."""
     current_user = request.user
     try:
         application = Application.objects.get(id = app_id)
@@ -202,6 +208,7 @@ def respond_to_application(request, app_id, is_accepted):
 
 @login_required
 def change_password(request):
+    """Allow currently logged in user to change their password."""
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
         if form.is_valid():
@@ -213,45 +220,45 @@ def change_password(request):
             messages.error(request, 'Please correct the error below.')
     else:
         form = PasswordChangeForm(request.user)
-    return render(request, 'change_password.html', {
-        'form': form
-    })
+    return render(request, 'change_password.html', { 'form': form })
 
 @login_required
 def show_club(request, club_id):
-    #find the appropriate club
+    """View details of a club."""
     current_user = request.user
     try:
         club = Club.objects.get(id = club_id)
     except ObjectDoesNotExist:
         return redirect('show_clubs')
     members = Member.objects.filter(club = club_id)
+    getOwner = members.get(is_owner = True)
     numberOfMembers = members.count()
     checkUserisMember = members.filter(user = current_user)
     isMember = False
+    isOwner = False
+    isOfficer = False
+    if checkUserisMember.filter(is_owner = True).count() > 0:
+        isOwner = True
     if checkUserisMember.count() > 0:
         isMember = True
-
-    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember})
+    if checkUserisMember.filter(is_officer = True).count() > 0:
+        isOfficer = True
+    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner, 'userIsOwner': isOwner, 'userIsOfficer': isOfficer})
 
 @login_required
 def promote_member_to_officer(request, club_id, member_id):
+    """Allow the owner of a club to promote some member of said club to officer."""
     current_user = request.user
     try:
         member = Member.objects.get(id = member_id)
     except ObjectDoesNotExist:
         #Member matching id does not exist.
-        #MAKE THIS MEMBERLIST
-        return redirect('show_clubs')
-
-    if not(Club.objects.filter(id=club_id).exists()):
-        # Club doesnt exist
-        return redirect('show_clubs')
+        return redirect('members_list', club_id=club_id)
 
     if member.club.id != club_id:
         # Member and club ids do not correspond
-        #MAKE THIS MEMBERLIST
-        return redirect('show_clubs')
+        return redirect('members_list', club_id=club_id)
+        # I realise this is the same above, but we might want to change where this goes eventually.
 
     if not(Member.objects.filter(club=member.club, user=current_user, is_owner=True).exists()):
         # Access denied
@@ -261,5 +268,17 @@ def promote_member_to_officer(request, club_id, member_id):
     member.is_officer = True
     member.save() # Or database won't update.
 
-    #MAKE THIS MEMBERLIST
-    return redirect('show_clubs')
+    return redirect('members_list', club_id=club_id)
+
+@login_required
+def members_list(request, club_id):
+    current_user = request.user
+    try:
+        club = Club.objects.get(id = club_id)
+        members = Member.objects.filter(club = club)
+        is_officer = Member.objects.filter(club=club, user=current_user, is_officer=True).exists()
+        is_owner = Member.objects.filter(club=club, user=current_user, is_owner=True).exists()
+    except ObjectDoesNotExist:
+        return redirect('show_club', club_id=club_id)
+    else:
+        return render(request, 'members_list.html', {'members': members, 'club': club, 'curr_user_is_officer': is_officer, 'curr_user_is_owner': is_owner})

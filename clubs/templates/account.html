@@ -6,10 +6,14 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-        {%csrf_token%}
-        <p><b>{{user}}</b></p>
+        <p style="font-size: 30px"><b>{{user}}</b></p><br>
         <p><b>Name: </b> {{user.first_name}} {{" "}} {{user.last_name}}</p>
         <p><b>Email: </b> {{user.email}} </p>
+        <p>
+          <a href='{% url 'edit_account' %}' class="btn btn-secondary">Edit info</a>
+          <a href='{% url 'change_password' %}' class="btn btn-secondary">Change Password</a>
+        </p>
+
       </div>
     </div>
   </div>
