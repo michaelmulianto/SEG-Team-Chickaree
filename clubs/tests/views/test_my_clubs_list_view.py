@@ -1,9 +1,12 @@
 """Unit test for the show my clubs list"""
 
+from typing import List
+from django.core.paginator import Page
 from django.test import TestCase
 from django.urls import reverse
 from clubs.models import User, Club, Member
 from clubs.tests.helpers import reverse_with_next
+from django.db.models.base import ObjectDoesNotExist 
 
 class MembersTestCase(TestCase):
     """Test aspects of my clubs view"""
@@ -12,50 +15,57 @@ class MembersTestCase(TestCase):
     'clubs/tests/fixtures/default_club.json']
 
     def setUp(self):
-        # self.user = User.objects.get(username='johndoe')
-        # self.club = Club.objects.get(name='King\'s Knights')
+        self.url = reverse('my_clubs_list')
+        self.user = User.objects.get(username='johndoe')
+        self.club = Club.objects.get(name='King\'s Knights')
 
-        # self.member = Member.objects.create(
-        #     user = self.user,
-        #     club = self.club,
-        #     is_officer = False,
-        #     is_owner = False,
-        # )
-        # self.url = reverse('members_list', kwargs={'club_id': self.club.id})
-        pass
+    def test_my_clubs_list_url(self):
+        self.assertEqual(self.url, '/account/my_clubs/')
 
-    def test_members_list_url(self):
-        # self.assertEqual('/members_list/'+ str(self.club.id), self.url)
-        pass
+    def test_get_my_clubs_list(self):
+        self.client.login(username=self.user.username, password = 'Password123')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        clubs = response.context['clubs']
+        current_user = response.context['current_user']
+        page_obj = response.context['page_obj']
+        self.assertTrue(isinstance(clubs, List))
+        self.assertEqual(self.user, current_user)
+        self.assertTrue(isinstance(page_obj, Page))
 
     def test_get_user_list_redirects_when_not_logged_in(self):
-        # response = self.client.get(self.url)
-        # redirect_url = reverse_with_next('log_in', self.url)
-        # self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        response = self.client.get(self.url)
+        redirect_url = reverse_with_next('log_in', self.url)
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+
+    def test_inexistent_club_is_cannot_be_on_list(self):
+        self.club.name = "@@@BADCLUBNAME"
+        self.assertFalse(self._is_on_list())
+
+    def test_get_my_clubs_on_list(self):
+        self.client.login(username=self.user.username, password='Password123')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+
+    def test_club_user_has_applied_is_on_list(self):
         pass
 
-    def test_get_members_list(self):
-        # self.client.login(username=self.user.username, password='Password123')
-        # response = self.client.get(self.url)
-        # self.assertEqual(response.status_code, 200)
-        # self.assertTemplateUsed(response, 'members_list.html')
-        pass
+    def test_club_user_has_not_applied_not_on_list(self):
+        self.client.login(username=self.user.username, password='Password123')
+        self.user
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
 
-    def _create_test_users(self, user_count=10):
-        # users = []
-        # for user_id in range(user_count):
-        #     new_user = User.objects.create_user(
-        #         f'@user{user_id}',
-        #         email=f'user{user_id}@test.org',
-        #         password='Password123',
-        #         first_name=f'First{user_id}',
-        #         last_name=f'Last{user_id}',
-        #     )
-        #     users.append(new_user)
-        #     Member.objects.create(
-        #         user = users,
-        #         club = self.club,
-        #         is_officer = False,
-        #         is_owner = False,
-        #     )
-        pass
+    
+    
+
+    #check a club can be on the list
+    def _is_on_list(self):
+        try:
+            Club.objects.get(name = self.club.name)
+        except ObjectDoesNotExist:
+            return 
+        else:
+            return True
