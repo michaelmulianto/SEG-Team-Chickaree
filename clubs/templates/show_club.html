@@ -15,7 +15,13 @@
           <td><a href='{% url 'apply_to_club' club.id %}' class="btn btn-primary">Apply to club</a></td>
         {% else %}
           <p><b>Owner: </b> {{owner.user}} </p>
-          <td><a href='{% url 'members_list' club.id %}'>Show Members</a></td>
+          <b>Officers: </b>
+          {% for officer in officers %}
+            <td><a>"</a></td>
+            <td><a>{{ officer.user }}</a></td>
+            <td><a>"</a></td>
+          {%endfor%}
+          <p><td><a href='{% url 'members_list' club.id %}'>Show Members</a></td></p>
         {%endif%}
         {% if userIsOwner == True%}
           <td><a href='#'>Manage Club</a></td>
