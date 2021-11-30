@@ -78,7 +78,7 @@ def my_clubs_list(request):
         if Member.objects.filter(club=club, user=current_user).exists():
             my_clubs.append(club)
 
-    paginator = Paginator(my_clubs, settings.CLUBS_PER_PAGE) # Show 25 contacts per page
+    paginator = Paginator(my_clubs, settings.CLUBS_PER_PAGE)
 
     page = request.GET.get('page')
     try:
