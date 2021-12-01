@@ -164,15 +164,14 @@ def leave_club(request, club_id):
     return redirect('show_clubs')
 
 @login_required
-@club_exists
 @membership_exists
-def kick_member(request, club_id, member_id):
+def kick_member(request, member_id):
     current_user = request.user
     member = Member.objects.get(id=member_id)
     club = member.club
     if is_user_owner_of_club(current_user, club) or is_user_officer_of_club(current_user, club):
         Member.objects.filter(id=member_id).delete()
-    return redirect('members_list', club_id=club_id)
+    return redirect('members_list', club_id=club.id)
 
 @login_required
 def show_clubs(request):
