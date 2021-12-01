@@ -10,6 +10,7 @@ class Command(BaseCommand):
         self.faker = Faker('en_GB')
 
     def handle(self, *args, **options):
+
         for i in range(100):
             first_name = self.faker.first_name()
             last_name = self.faker.last_name()
@@ -31,7 +32,7 @@ class Command(BaseCommand):
             user.save()
 
         for i in range(12):
-            name = self.faker.unique.name()
+            name = self.faker.unique.company()
             location = self.faker.country()
             description = self.faker.paragraph(nb_sentences=3)
 
@@ -71,3 +72,5 @@ class Command(BaseCommand):
                 )
                 a.full_clean()
                 a.save()
+
+        User.objects.create_superuser('admin', 'Password123')

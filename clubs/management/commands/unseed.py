@@ -4,6 +4,7 @@ from clubs.models import User, Club
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        User.objects.exclude(username = 'admin').delete()
+        # User.objects.exclude(username = 'admin').delete()
+        User.objects.all().delete()
         Club.objects.all().delete()
         # Cascading will handle other deletions
