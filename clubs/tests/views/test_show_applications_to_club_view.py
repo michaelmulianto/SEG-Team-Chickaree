@@ -59,3 +59,12 @@ class ShowApplicationsToClubTestCase(TestCase):
         response_url = self.url
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'application_list.html')
+
+    def test_template_does_not_show_header_fields_when_there_are_no_aplications(self):
+        pass
+
+    def test_template_shows_header_fields_when_there_is_at_least_one_aplication(self):
+        pass
+
+    def test_template_shows_header_fields_when_there_are_more_than_one_aplicationa(self):
+        pass
