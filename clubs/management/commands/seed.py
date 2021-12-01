@@ -12,9 +12,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for i in range(100):
             first_name = self.faker.first_name()
-            last_name = self.faker.unique.last_name()
-            email = f"{first_name}.{last_name}@example.org"
-            username = f"{first_name}{last_name}"
+            last_name = self.faker.last_name()
+            email = f"{first_name}.{last_name}{i}@example.org"
+            username = f"{first_name}{last_name}{i}"
             bio = self.faker.paragraph(nb_sentences=3)
 
             user = User.objects.create_user(
@@ -45,22 +45,29 @@ class Command(BaseCommand):
 
             members = sample(list(User.objects.all()), (i%5)+6)
             
-            Member.objects.create(
+            owner = Member.objects.create(
                 club = club,
                 user = members[0],
                 is_owner = True,
             )
 
-            for i in range(1,members.length-3):
-                Member.objects.create(
+            owner.full_clean()
+            owner.save()
+
+            for i in range(1,len(members)-3):
+                m = Member.objects.create(
                     club = club,
                     user = members[i],
                     is_officer = not(bool(i%4)),
                 )
+                m.full_clean()
+                m.save()
 
-            for i in range(members.length-3,members.length):
-                Application.objects.create(
+            for i in range(len(members)-3,len(members)):
+                a = Application.objects.create(
                     club = club,
                     user = members[i],
                     personal_statement = self.faker.paragraph(nb_sentences=3),
                 )
+                a.full_clean()
+                a.save()
