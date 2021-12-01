@@ -9,10 +9,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for i in range(100):
-            first_name = self.faker.unique.first_name()
+            first_name = self.faker.first_name()
             last_name = self.faker.unique.last_name()
             email = f"{first_name}.{last_name}@example.org"
             username = f"{first_name}{last_name}"
+            bio = self.faker.paragraph(nb_sentences=3)
 
             user = User.objects.create_user(
                 username = username,
@@ -28,9 +29,9 @@ class Command(BaseCommand):
         for i in range(20):
             name = self.faker.unique.name()
             location = self.faker.country()
-            description = self.faker.text(max_nb_chars=280)
+            description = self.faker.paragraph(nb_sentences=3)
 
-            club = Club(
+            club = Club.objects.create(
                 name = name,
                 location = location,
                 description = description

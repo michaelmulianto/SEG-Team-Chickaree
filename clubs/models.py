@@ -52,6 +52,13 @@ class User(AbstractUser):
 
     bio = models.CharField(max_length=520, blank = True, default = '')
 
+    LEVELS = (
+        (1,'Beginner'),
+        (2, 'Intermediate'),
+        (3, 'Advanced'),
+    )
+    experience = models.IntegerField(default = 1, choices = LEVELS)
+
     def gravatar(self, size=120):
         """Return a URL to the user's gravatar."""
         gravatar_object = Gravatar(self.email)
@@ -91,10 +98,4 @@ class Application(models.Model):
     """Model for an application to a club by some user."""
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
-    LEVELS = (
-        (1,'Beginner'),
-        (2, 'Intermediate'),
-        (3, 'Advanced'),
-    )
-    experience = models.IntegerField(default = 1, choices = LEVELS)
     personal_statement = models.CharField(max_length=580, blank=False, default = "")

@@ -8,6 +8,7 @@
       "username": "janedoe",
       "email": "janedoe@example.org",
       "bio": "Jane here. I like chess.",
+      "experience": 2,
       "password": "pbkdf2_sha256$260000$7FuLCy6i6tRTsm2GgebFWh$gSV4zo0N7chWhcBheeWMXRIE4pyc3kIQnzpoH90lliI=",
       "is_active": true
     }

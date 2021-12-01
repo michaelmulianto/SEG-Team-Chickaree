@@ -21,6 +21,8 @@ class SignUpViewTestCase(TestCase, LogInTester):
             'last_name': 'Doe',
             'username': 'janedoe',
             'email': 'janedoe@example.org',
+            'bio': 'hi',
+            'experience': 2,
             'new_password': 'Password123',
             'password_confirmation': 'Password123'
         }
