@@ -75,7 +75,6 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         Application.objects.create(
             club = self.club,
             user = second_user,
-            experience = 2,
             personal_statement = 'I love chess!'
         )
 
@@ -91,7 +90,6 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         Application.objects.create(
             club = self.club,
             user = second_user,
-            experience = 2,
             personal_statement = 'I love chess!'
         )
 
