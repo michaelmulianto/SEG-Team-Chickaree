@@ -8,7 +8,7 @@ from clubs.models import User, Club, Member, Application
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 from django.db.models.base import ObjectDoesNotExist 
 
-class MyClubsListTestCase(TestCase):
+class MyClubsListTestCase(TestCase, MenuTesterMixin):
 
     """Test aspects of my clubs view"""
 

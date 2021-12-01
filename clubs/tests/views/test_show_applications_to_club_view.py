@@ -97,7 +97,6 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         Application.objects.create(
             club = self.club,
             user = third_user,
-            experience = 3,
             personal_statement = "Cool club you've got there"
         )
 
