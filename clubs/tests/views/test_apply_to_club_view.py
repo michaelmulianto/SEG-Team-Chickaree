@@ -19,7 +19,6 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
         self.user = User.objects.get(username='johndoe')
         self.club = Club.objects.get(name='King\'s Knights')
         self.data = {
-            'experience':1,
             'personal_statement':'Hello',
         }
 
@@ -53,7 +52,6 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
         self.application = Application.objects.create(
             club = self.club,
             user = self.user,
-            experience = 2,
             personal_statement = 'I love chess!'
         )
 

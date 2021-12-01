@@ -8,7 +8,8 @@ from clubs.models import User, Club, Member, Application
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 from django.db.models.base import ObjectDoesNotExist 
 
-class MembersTestCase(TestCase, MenuTesterMixin):
+class MyClubsListTestCase(TestCase, MenuTesterMixin):
+
     """Test aspects of my clubs view"""
 
     fixtures = ['clubs/tests/fixtures/default_user.json',
@@ -60,7 +61,6 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         Application.objects.create(
             club = self.club,
             user = self.user,
-            experience = 2,
             personal_statement = 'I love chess!'
         )
 

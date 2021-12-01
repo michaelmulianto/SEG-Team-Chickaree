@@ -29,7 +29,6 @@ class RespondToApplicationViewTestCase(TestCase):
         self.application = Application.objects.create(
             club = self.club,
             user = self.applyingUser,
-            experience = 2,
             personal_statement = 'I love chess!'
         )
 

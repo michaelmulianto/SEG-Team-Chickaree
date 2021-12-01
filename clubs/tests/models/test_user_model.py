@@ -132,6 +132,17 @@ class UserModelTestCase(TestCase):
         self.user.bio = 'x' * 521
         self._assert_user_is_invalid()
 
+    # Test experience
+    def test_exp_must_not_be_blank(self):
+        self.user.experience = None
+        with self.assertRaises(ValidationError):
+            self.user.full_clean()
+
+    def test_exp_must_not_be_other_than_options_given(self):
+        self.user.experience = 4
+        with self.assertRaises(ValidationError):
+            self.user.full_clean()
+
     #Test gravatar
     def test_default_gravatar(self):
         expected = "https://www.gravatar.com/avatar/363c1b0cd64dadffb867236a00e62986?size=120&default=mp"
