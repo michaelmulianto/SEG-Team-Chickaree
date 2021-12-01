@@ -43,7 +43,7 @@ class Command(BaseCommand):
             club.full_clean()
             club.save()
 
-            members = list(User.objects.all()).sample(items, (i%5)+6)
+            members = sample(list(User.objects.all()), (i%5)+6)
             
             Member.objects.create(
                 club = club,
