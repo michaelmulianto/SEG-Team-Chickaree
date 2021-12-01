@@ -31,7 +31,7 @@ class User(AbstractUser):
         blank=False,
         validators=[
             # Ensure only letters are used.
-            RegexValidator(regex=r'^[a-zA-Z]{1,}$'),
+            RegexValidator(regex=r'^[a-zA-Z\'\-]{1,}$'),
         ],
     )
 
