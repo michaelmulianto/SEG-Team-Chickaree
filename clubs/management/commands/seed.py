@@ -44,7 +44,7 @@ class Command(BaseCommand):
             club.full_clean()
             club.save()
 
-            members = sample(list(User.objects.all()), (i%5)+6)
+            members = sample(list(User.objects.exclude(is_staff=True)), (i%5)+6)
             
             owner = Member.objects.create(
                 club = club,
@@ -72,5 +72,3 @@ class Command(BaseCommand):
                 )
                 a.full_clean()
                 a.save()
-
-        User.objects.create_superuser('admin', 'Password123').save()
