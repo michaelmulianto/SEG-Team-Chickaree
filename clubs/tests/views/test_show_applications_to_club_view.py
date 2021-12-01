@@ -4,9 +4,10 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
 from clubs.models import User, Club, Member
-from clubs.tests.helpers import reverse_with_next
+from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
+from with_asserts.mixin import AssertHTMLMixin
 
-class ShowApplicationsToClubTestCase(TestCase):
+class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
     """Test all aspects of the show applications to club view"""
 
     fixtures = [
@@ -56,9 +57,9 @@ class ShowApplicationsToClubTestCase(TestCase):
         self.client.login(username=self.user.username, password="Password123")
         response = self.client.get(self.url, follow=True)
 
-        response_url = self.url
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'application_list.html')
+        self.assert_menu(response)
 
     def test_template_does_not_show_header_fields_when_there_are_no_aplications(self):
         pass

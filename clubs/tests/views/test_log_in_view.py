@@ -6,9 +6,9 @@ from django.urls import reverse
 from django.conf import settings
 from clubs.forms import LogInForm
 from clubs.models import User
-from clubs.tests.helpers import LogInTester, reverse_with_next
+from clubs.tests.helpers import LogInTester, reverse_with_next, MenuTesterMixin
 
-class LogInViewTestCase(TestCase, LogInTester):
+class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
     """Test all aspects of log in view"""
 
     fixtures = ['clubs/tests/fixtures/default_user.json']
@@ -33,6 +33,7 @@ class LogInViewTestCase(TestCase, LogInTester):
         self.assertFalse(form.is_bound)
         messages_list = list(response.context['messages'])
         self.assertEqual(len(messages_list), 0)
+        self.assert_no_menu(response)
 
     def test_get_log_in_with_redirect(self):
         destination_url = reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)

@@ -3,9 +3,9 @@
 from django.test import TestCase
 from django.urls import reverse
 from clubs.models import User, Club, Member
-from clubs.tests.helpers import reverse_with_next
+from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 
-class MembersTestCase(TestCase):
+class MembersTestCase(TestCase, MenuTesterMixin):
     """Test aspects of account view"""
 
     fixtures = ['clubs/tests/fixtures/default_user.json',
@@ -36,6 +36,7 @@ class MembersTestCase(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'members_list.html')
+        self.assert_menu(response)
 
     def _create_test_users(self, user_count=10):
         users = []
