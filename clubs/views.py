@@ -269,6 +269,19 @@ def promote_member_to_officer(request, member_id):
     return redirect('members_list', club_id=club.id)
 
 @login_required
+@membership_exists
+def demote_officer_to_member(request, member_id):
+    """Allow the owner of a club to promote some member of said club to officer."""
+    member = Member.objects.get(id = member_id)
+    club = member.club
+    if not(Member.objects.filter(club=club, user=request.user, is_owner=True).exists()):
+        # Access denied, member isn't owner
+        return redirect('show_clubs')
+    member.is_officer = False
+    member.save() # Or database won't update.
+    return redirect('members_list', club_id=club.id)
+
+@login_required
 @club_exists
 def members_list(request, club_id):
     """Display a list of the members in a club"""

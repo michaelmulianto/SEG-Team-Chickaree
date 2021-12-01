@@ -69,15 +69,14 @@
               {% if is_owner %}
                 {% check_is_officer club member.user as is_member_an_officer %}
                 {% if is_member_an_officer %}
-            <td><a href='#' class="btn btn-warning">Demote</a></td>
+            <td><a href='{% url 'demote_officer_to_member' member.id %}' class="btn btn-warning">Demote</a></td>
                 {% else %}
-            <td><a href='{% url 'promote_member_to_officer' club.id member.id %}' class="btn btn-success">Promote</a></td>
-
+            <td><a href='{% url 'promote_member_to_officer' member.id %}' class="btn btn-success">Promote</a></td>
                 {% endif %}
               {% endif %}
 
               {% if is_owner or is_officer %}
-            <td><a href='{% url 'kick_member' club.id member.id %}' onclick="confirmKick()" class="btn btn-danger">Kick</a></td>
+            <td><a href='{% url 'kick_member' member.id %}' onclick="confirmKick()" class="btn btn-danger">Kick</a></td>
             <td><a href='#' onclick="confirmBan()" class="btn btn-danger">Ban</a></td>
               {% endif %}
             {% else %}
@@ -87,7 +86,6 @@
             <td style="text-align: center" colspan="2"><b> This is you! <b></td>
               {% endif %}
             {% endif %}
-
           </tr>
         {% endfor %}
         </table>
