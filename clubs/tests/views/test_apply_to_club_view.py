@@ -12,16 +12,24 @@ class ApplyToClubViewTestCase(TestCase):
 
     fixtures = [
         'clubs/tests/fixtures/default_user.json',
+        'clubs/tests/fixtures/second_user.json',
         'clubs/tests/fixtures/default_club.json'
     ]
 
     def setUp(self):
         self.user = User.objects.get(username='johndoe')
+        self.club_owner = User.objects.get(username='janedoe')
         self.club = Club.objects.get(name='King\'s Knights')
+        Member.objects.create(
+            user = self.club_owner,
+            club = self.club,
+            is_owner = True
+        )
         self.data = {
             'experience':1,
             'personal_statement':'Hello',
         }
+
 
         self.url = reverse('apply_to_club', kwargs = {'club_id': self.club.id})
 
