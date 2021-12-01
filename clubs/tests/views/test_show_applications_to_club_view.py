@@ -3,7 +3,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
-from clubs.models import User, Club, Member
+from clubs.models import User, Club, Member, Application
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 from with_asserts.mixin import AssertHTMLMixin
 
@@ -12,7 +12,8 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
 
     fixtures = [
         'clubs/tests/fixtures/default_user.json',
-        'clubs/tests/fixtures/default_club.json'
+        'clubs/tests/fixtures/default_club.json',
+        'clubs/tests/fixtures/second_user.json',
     ]
     def setUp(self):
         self.user = User.objects.get(username='johndoe')
@@ -62,10 +63,49 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assert_menu(response)
 
     def test_template_does_not_show_header_fields_when_there_are_no_aplications(self):
-        pass
+        self.client.login(username=self.user.username, password="Password123")
+        response = self.client.get(self.url)
+
+        with self.assertHTML(response) as html:
+            noTableTextContainer = html.find('body/div/div/div/table/tr/p')
+            self.assertEqual(noTableTextContainer.text, ' No more applications ')
 
     def test_template_shows_header_fields_when_there_is_at_least_one_aplication(self):
-        pass
+        second_user = User.objects.get(username='janedoe')
+        Application.objects.create(
+            club = self.club,
+            user = second_user,
+            experience = 2,
+            personal_statement = 'I love chess!'
+        )
+
+
+        self.client.login(username=self.user.username, password="Password123")
+        response = self.client.get(self.url)
+        with self.assertHTML(response) as html:
+            TableTextContainer = html.find('body/div/div/div/table/table/tr/th')
+            self.assertEqual(TableTextContainer.text, 'Name')
 
     def test_template_shows_header_fields_when_there_are_more_than_one_aplicationa(self):
-        pass
+        second_user = User.objects.get(username='janedoe')
+        Application.objects.create(
+            club = self.club,
+            user = second_user,
+            experience = 2,
+            personal_statement = 'I love chess!'
+        )
+
+        third_user = User.objects.get(username='mariadandy')
+        Application.objects.create(
+            club = self.club,
+            user = third_user,
+            experience = 3,
+            personal_statement = "Cool club you've got there"
+        )
+
+
+        self.client.login(username=self.user.username, password="Password123")
+        response = self.client.get(self.url)
+        with self.assertHTML(response) as html:
+            TableTextContainer = html.find('body/div/div/div/table/table/tr/th')
+            self.assertEqual(TableTextContainer.text, 'Name')
