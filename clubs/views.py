@@ -13,7 +13,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
 from clubs.models import User, Club, Application, Member, Ban
-from clubs.helpers import login_prohibited, club_exists, application_exists, membership_exists, is_user_officer_of_club, is_user_owner_of_club
+from clubs.helpers import login_prohibited, club_exists, application_exists, membership_exists, not_banned, is_user_officer_of_club, is_user_owner_of_club
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -123,6 +123,7 @@ def create_club(request):
 
 @login_required
 @club_exists
+@not_banned
 def apply_to_club(request, club_id):
     """Have currently logged in user create an application to a specified club."""
     if request.method == 'POST':
