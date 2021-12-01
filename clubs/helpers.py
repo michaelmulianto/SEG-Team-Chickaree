@@ -20,13 +20,12 @@ def club_exists(view_function):
 
     return modified_view_fuction
 
-def membership_to_club_exists(view_function):
-    def modified_view_fuction(request, club_id, member_id, **kwargs):
-        if (not Member.objects.filter(id=member_id).exists() or
-                not Club.objects.get(id=club_id).id == Member.objects.get(id=member_id).club.id):
-            return redirect("members_list", club_id=club_id)
+def membership_exists(view_function):
+    def modified_view_fuction(request, member_id, **kwargs):
+        if not Member.objects.filter(id=member_id).exists():
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         else:
-            return view_function(request, club_id, member_id, **kwargs)
+            return view_function(request, member_id, **kwargs)
 
     return modified_view_fuction
 

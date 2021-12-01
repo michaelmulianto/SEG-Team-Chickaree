@@ -36,48 +36,41 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
             is_officer = False,
         )
 
-        self.url = reverse('promote_member_to_officer', kwargs = {'club_id': self.club.id, 'member_id': self.targetMember.id})
+        self.url = reverse('promote_member_to_officer', kwargs = {'member_id': self.targetMember.id})
 
     def test_promote_url(self):
-        self.assertEqual(self.url, '/club/' + str(self.club.id) + '/promote_member/' + str(self.targetMember.id))
+        self.assertEqual(self.url, '/promote_member/' + str(self.targetMember.id))
 
     def test_promote_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
         redirect_url = reverse_with_next('log_in', self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertEqual(Member.objects.get(id=self.targetMember.id).is_officer, False)
+        self.assertFalse(self._has_member_been_promoted())
 
     def test_promote_redirects_when_not_owner_of_club(self):
         self.client.login(username=self.targetUser.username, password="Password123")
         response = self.client.get(self.url, follow=True)
-
-        redirect_url = reverse('show_club', kwargs = {'club_id': self.club.id})
+        redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_club.html')
-        self.assertEqual(Member.objects.get(id=self.targetMember.id).is_officer, False)
+        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertFalse(self._has_member_been_promoted())
 
     def test_promote_redirects_when_invalid_member_id_entered(self):
-        self.url = reverse('promote_member_to_officer', kwargs = {'club_id': self.club.id, 'member_id':int(self.targetMember.id-1)})
-        self.client.login(username=self.ownerUser.username, password="Password123")
-        response = self.client.get(self.url, follow=True)
-        redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
-        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
-        self.assertEqual(Member.objects.get(id=self.targetMember.id).is_officer, False)
-
-    def test_promote_redirects_when_invalid_club_id_entered(self):
-        self.url = reverse('promote_member_to_officer', kwargs = {'club_id': self.club.id-1, 'member_id':self.targetMember.id})
+        self.url = reverse('promote_member_to_officer', kwargs = {'member_id': 999})
         self.client.login(username=self.ownerUser.username, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
-        self.assertEqual(Member.objects.get(id=self.targetMember.id).is_officer, False)
+        self.assertFalse(self._has_member_been_promoted())
 
     def test_successful_promotion(self):
         self.client.login(username=self.ownerUser.username, password="Password123")
         response = self.client.get(self.url, follow=True)
-        self.assertEqual(Member.objects.get(id=self.targetMember.id).is_officer, True)
+        self.assertTrue(self._has_member_been_promoted())
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'members_list.html')
+
+    def _has_member_been_promoted(self):
+        return Member.objects.get(id=self.targetMember.id).is_officer

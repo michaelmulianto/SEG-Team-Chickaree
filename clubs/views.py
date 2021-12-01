@@ -13,7 +13,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
 from clubs.models import User, Club, Application, Member
-from clubs.helpers import login_prohibited, club_exists, application_exists, membership_to_club_exists, is_user_officer_of_club, is_user_owner_of_club
+from clubs.helpers import login_prohibited, club_exists, application_exists, membership_exists, is_user_officer_of_club, is_user_owner_of_club
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -165,7 +165,7 @@ def leave_club(request, club_id):
 
 @login_required
 @club_exists
-@membership_to_club_exists
+@membership_exists
 def kick_member(request, club_id, member_id):
     current_user = request.user
     member = Member.objects.get(id=member_id)
@@ -257,17 +257,17 @@ def show_club(request, club_id):
     return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner, 'userIsOwner': isOwner, 'userIsOfficer': isOfficer, 'officers': officers})
 
 @login_required
-@club_exists
-@membership_to_club_exists
-def promote_member_to_officer(request, club_id, member_id):
+@membership_exists
+def promote_member_to_officer(request, member_id):
     """Allow the owner of a club to promote some member of said club to officer."""
     member = Member.objects.get(id = member_id)
-    if not(Member.objects.filter(club=member.club, user=request.user, is_owner=True).exists()):
+    club = member.club
+    if not(Member.objects.filter(club=club, user=request.user, is_owner=True).exists()):
         # Access denied, member isn't owner
-        return redirect('show_club', club_id=club_id)
+        return redirect('show_clubs')
     member.is_officer = True
     member.save() # Or database won't update.
-    return redirect('members_list', club_id=club_id)
+    return redirect('members_list', club_id=club.id)
 
 @login_required
 @club_exists
