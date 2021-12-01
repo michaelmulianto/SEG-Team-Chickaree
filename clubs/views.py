@@ -14,7 +14,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
 from clubs.models import User, Club, Application, Member
-from clubs.helpers import login_prohibited
+from clubs.helpers import login_prohibited, is_user_officer_of_club, is_user_owner_of_club
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -162,7 +162,18 @@ def leave_club(request, club_id):
     applied_club = Club.objects.get(id=club_id)
     if Member.objects.filter(club=applied_club, user = current_user).exists():
         Member.objects.get(club=applied_club, user=current_user).delete()
-        return redirect('show_clubs')
+    return redirect('show_clubs')
+
+@login_required
+def kick_member(request, club_id, member_id):
+    current_user = request.user
+    if Club.objects.filter(id=club_id).exists():
+        club = Club.objects.get(id=club_id)
+        if Member.objects.filter(id=member_id).exists():
+            #print(Member.objects.get(user=current_user, club=club).is_owner)
+            if is_user_owner_of_club(current_user, club) or is_user_officer_of_club(current_user, club):
+                Member.objects.filter(id=member_id).delete()
+        return redirect('members_list', club_id=club_id)
     return redirect('show_clubs')
 
 @login_required
@@ -285,13 +296,11 @@ def promote_member_to_officer(request, club_id, member_id):
 
 @login_required
 def members_list(request, club_id):
+    """Display a list of the members in a club"""
     current_user = request.user
     try:
         club = Club.objects.get(id = club_id)
-        members = Member.objects.filter(club = club)
-        is_officer = Member.objects.filter(club=club, user=current_user, is_officer=True).exists()
-        is_owner = Member.objects.filter(club=club, user=current_user, is_owner=True).exists()
     except ObjectDoesNotExist:
-        return redirect('show_club', club_id=club_id)
-    else:
-        return render(request, 'members_list.html', {'members': members, 'club': club, 'curr_user_is_officer': is_officer, 'curr_user_is_owner': is_owner})
+        return redirect('show_clubs')
+    members = Member.objects.filter(club = club)
+    return render(request, 'members_list.html', {'members': members, 'club': club, 'current_user': current_user })

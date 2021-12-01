@@ -1,5 +1,6 @@
 from django.shortcuts import redirect
 from django.conf import settings
+from clubs.models import User, Club, Member
 
 def login_prohibited(view_function):
     def modified_view_fuction(request):
@@ -9,3 +10,9 @@ def login_prohibited(view_function):
             return view_function(request)
 
     return modified_view_fuction
+
+def is_user_officer_of_club(user, club):
+    return Member.objects.get(user=user, club=club).is_officer
+
+def is_user_owner_of_club(user, club):
+    return Member.objects.get(user=user, club=club).is_owner

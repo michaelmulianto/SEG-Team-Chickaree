@@ -1,32 +1,94 @@
 {% extends 'base_content.html' %}
 {% block content %}
+{% load define_action %}
+{% check_is_owner club current_user as is_owner %}
+{% check_is_officer club current_user as is_officer %}
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <h1>{{club.name}} Members</h1>
-        <table class="table">
-          <td><b>Username</b></td>
-          <td><b>Last Name</b></td>
-          <td><b>First Name</b></td>
-          {% if curr_user_is_officer%}
-          <td><b>Email</b></td>
-          {%endif%}
-          {% if curr_user_is_owner%}
-          <td><b>Email</b></td>
-          {%endif%}
+        <h1>{{club.name}} Members: </h1>
+        <style>
+          .standard-table-spacing{
+            vertical-align: middle;
+            border-spacing: 10px 2px;
+          }
+        </style>
+        <table class="table standard-table-spacing">
+          <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>Name</th>
+            <th>Username</th>
+
+            {% if is_owner or is_officer %}
+            <th>Email</th>
+            {% endif %}
+
+            <th>Bio</th>
+
+            {% if is_owner or is_officer %}
+            <th></th>
+            <th></th>
+            <th></th>
+            {% endif %}
+
+          </tr>
         {% for member in members %}
-        <tr>
-          <td><a>{{ member.user }}</a></td>
-          <td><a>{{ member.user.last_name }}</a></td>
-          <td><a>{{ member.user.first_name }}</a></td>
-          {% if curr_user_is_officer %}
-            <td><a>{{ member.user.email }}</a></td>
-          {% endif %}
-          {% if curr_user_is_owner %}
-            <td><a>{{ member.user.email }}</a></td>
-          {% endif %}
-          <td><i></i></td>
-        </tr>
+          <tr>
+            <td> {{ forloop.counter }} <td>
+            <td> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
+            <td> @{{ member.user.username }} </td>
+            <td> {{ member.user.first_name }} {{ member.user.last_name }} </td>
+
+
+            {% if is_owner or is_officer %}
+            <td> {{ member.user.email }} </td>
+            <!-- <td> {{member.user.level}}<td> -->
+            {% endif %}
+
+            <td> {{ member.user.bio }} </td>
+
+            <script>
+              function confirmKick(){
+                if(confirm('Are you sure you want to kick them from the club?')){
+                  return true;
+                }else{
+                  event.stopPropagation(); event.preventDefault();
+                }
+              }
+              function confirmBan(){
+                if(confirm('Are you sure you want to ban them from the club?')){
+                  return true;
+                }else{
+                  event.stopPropagation(); event.preventDefault();
+                }
+              }
+              </script>
+            {% if not member.user == current_user %}
+              {% if is_owner %}
+                {% check_is_officer club member.user as is_member_an_officer %}
+                {% if is_member_an_officer %}
+            <td><a href='#' class="btn btn-warning">Demote</a></td>
+                {% else %}
+            <td><a href='{% url 'promote_member_to_officer' club.id member.id %}' class="btn btn-success">Promote</a></td>
+
+                {% endif %}
+              {% endif %}
+
+              {% if is_owner or is_officer %}
+            <td><a href='{% url 'kick_member' club.id member.id %}' onclick="confirmKick()" class="btn btn-danger">Kick</a></td>
+            <td><a href='#' onclick="confirmBan()" class="btn btn-danger">Ban</a></td>
+              {% endif %}
+            {% else %}
+              {% if is_owner %}
+            <td style="text-align: center" colspan="3"><b> This is you! <b></td>
+              {% elif is_officer %}
+            <td style="text-align: center" colspan="2"><b> This is you! <b></td>
+              {% endif %}
+            {% endif %}
+
+          </tr>
         {% endfor %}
         </table>
       </div>
