@@ -27,7 +27,7 @@ class KickMemberViewTestCase(TestCase):
             club = self.club,
             user = self.user_kicking,
             is_officer = False,
-            is_owner = True,
+            is_owner = False,
         )
 
         self.member_being_kicked = Member.objects.create(
@@ -76,6 +76,7 @@ class KickMemberViewTestCase(TestCase):
 
     def test_successful_promotion_as_officer(self):
         self.member_kicking.is_officer = True
+        self.member_kicking.save()
         self.client.login(username=self.user_kicking.username, password="Password123")
         response = self.client.get(self.url, follow=True)
         self.assertTrue(self._has_member_been_kicked())
@@ -85,6 +86,7 @@ class KickMemberViewTestCase(TestCase):
 
     def test_successful_promotion_as_owner(self):
         self.member_kicking.is_owner = True
+        self.member_kicking.save()
         self.client.login(username=self.user_kicking.username, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})

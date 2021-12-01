@@ -11,6 +11,26 @@ def login_prohibited(view_function):
 
     return modified_view_fuction
 
+def club_exists(view_function):
+    def modified_view_fuction(request, club_id, **kwargs):
+        if not Club.objects.filter(id=club_id).exists():
+            return redirect("show_clubs")
+        else:
+            return view_function(request, club_id, **kwargs)
+
+    return modified_view_fuction
+
+def membership_to_club_exists(view_function):
+    def modified_view_fuction(request, club_id, member_id, **kwargs):
+        if (not Member.objects.filter(id=member_id).exists()
+            or not Club.objects.get(id=club_id).id == Member.objects.get(id=member_id).club.id):
+            return redirect("members_list", club_id=club_id)
+        else:
+            return view_function(request, club_id, member_id, **kwargs)
+
+    return modified_view_fuction
+
+
 def is_user_officer_of_club(user, club):
     return Member.objects.get(user=user, club=club).is_officer
 
