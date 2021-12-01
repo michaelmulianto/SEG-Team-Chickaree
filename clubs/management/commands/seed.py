@@ -14,7 +14,7 @@ class Command(BaseCommand):
             first_name = self.faker.first_name()
             last_name = self.faker.last_name()
             email = f"{first_name}.{last_name}{i}@example.org"
-            username = f"{first_name}{last_name}{i}"
+            username = f"{first_name}{i}"
             bio = self.faker.paragraph(nb_sentences=3)
 
             user = User.objects.create_user(
@@ -90,7 +90,7 @@ class Command(BaseCommand):
         kerbal.save()
 
         jeb = User.objects.create(
-            username = "Jebediah12",
+            username = "Jebediah142",
             first_name = "Jebediah",
             last_name = "Kerman",
             email = "jeb@example.org",
@@ -114,7 +114,7 @@ class Command(BaseCommand):
         val.save()
 
         billie = User.objects.create(
-            username = "Billie1",
+            username = "Billie444",
             first_name = "Billie",
             last_name = "Kerman",
             email = "billie@example.org",
