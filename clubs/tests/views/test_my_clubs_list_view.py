@@ -5,10 +5,11 @@ from django.core.paginator import Page
 from django.test import TestCase
 from django.urls import reverse
 from clubs.models import User, Club, Member, Application
-from clubs.tests.helpers import reverse_with_next
+from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 from django.db.models.base import ObjectDoesNotExist 
 
 class MyClubsListTestCase(TestCase):
+
     """Test aspects of my clubs view"""
 
     fixtures = ['clubs/tests/fixtures/default_user.json',
@@ -32,6 +33,7 @@ class MyClubsListTestCase(TestCase):
         self.assertTrue(isinstance(clubs, List))
         self.assertEqual(self.user, current_user)
         self.assertTrue(isinstance(page_obj, Page))
+        self.assert_menu(response)
 
     def test_get_user_list_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)

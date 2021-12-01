@@ -4,9 +4,9 @@ from django.test import TestCase
 from django.urls import reverse
 from django.conf import settings
 from clubs.models import User
-from clubs.tests.helpers import reverse_with_next
+from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 
-class ShowClubsViewTestCase(TestCase):
+class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
     """Test aspects of the view that lists all clubs and acts as a home page"""
 
     fixtures = ['clubs/tests/fixtures/default_user.json']
@@ -24,6 +24,7 @@ class ShowClubsViewTestCase(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assert_menu(response)
 
     def test_get_show_clubs_redirects_when_not_logged_in(self):
         redirect_url = reverse_with_next('log_in', self.url)

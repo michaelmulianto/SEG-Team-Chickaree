@@ -6,10 +6,10 @@ from django.contrib.auth.hashers import check_password
 from django.conf import settings
 from clubs.models import User
 from clubs.forms import SignUpForm
-from clubs.tests.helpers import LogInTester
+from clubs.tests.helpers import LogInTester, MenuTesterMixin
 
 
-class SignUpViewTestCase(TestCase, LogInTester):
+class SignUpViewTestCase(TestCase, LogInTester, MenuTesterMixin):
     """Test all aspects of the sign up view."""
 
     fixtures = ['clubs/tests/fixtures/default_user.json']
@@ -37,6 +37,7 @@ class SignUpViewTestCase(TestCase, LogInTester):
         form = response.context['form']
         self.assertTrue(isinstance(form, SignUpForm))
         self.assertFalse(form.is_bound)
+        self.assert_no_menu(response)
 
     def test_get_sign_up_redirects_when_logged_in(self):
         self.client.login(username='johndoe', password="Password123")

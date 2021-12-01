@@ -5,9 +5,9 @@ from django.urls import reverse
 from django.contrib.auth.hashers import check_password
 from clubs.models import User, Club, Application, Member
 from clubs.forms import ApplyToClubForm
-from clubs.tests.helpers import reverse_with_next
+from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 
-class ApplyToClubViewTestCase(TestCase):
+class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
     """Test all aspects of the apply to club view"""
 
     fixtures = [
@@ -45,6 +45,7 @@ class ApplyToClubViewTestCase(TestCase):
         form = response.context['form']
         self.assertTrue(isinstance(form, ApplyToClubForm))
         self.assertFalse(form.is_bound)
+        self.assert_menu(response)
 
     def test_unsuccessful_application_when_already_applied(self):
         self.client.login(username=self.user.username, password="Password123")

@@ -12,5 +12,18 @@
       "password": "pbkdf2_sha256$260000$7FuLCy6i6tRTsm2GgebFWh$gSV4zo0N7chWhcBheeWMXRIE4pyc3kIQnzpoH90lliI=",
       "is_active": true
     }
+  },
+  {
+    "model": "clubs.user",
+    "pk": 3,
+    "fields": {
+      "first_name": "Maria",
+      "last_name": "Dandy",
+      "username": "mariadandy",
+      "email": "mariadandy@example.org",
+      "bio": "Maria here. I like chess.",
+      "password": "pbkdf2_sha256$260000$7FuLCy6i6tRTsm2GgebFWh$gSV4zo0N7chWhcBheeWMXRIE4pyc3kIQnzpoH90lliI=",
+      "is_active": true
+    }
   }
 ]

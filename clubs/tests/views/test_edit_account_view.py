@@ -4,9 +4,9 @@ from django.test import TestCase
 from django.urls import reverse
 from clubs.forms import EditAccountForm
 from clubs.models import User
-from clubs.tests.helpers import reverse_with_next
+from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 
-class EditAccountViewTest(TestCase):
+class EditAccountViewTest(TestCase, MenuTesterMixin):
     """Test suite for the edit_account view."""
 
     fixtures = [
@@ -36,6 +36,7 @@ class EditAccountViewTest(TestCase):
         form = response.context['form']
         self.assertTrue(isinstance(form, EditAccountForm))
         self.assertEqual(form.instance, self.user)
+        self.assert_menu(response)
 
     def test_get_edit_account_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
