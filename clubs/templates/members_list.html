@@ -77,7 +77,7 @@
 
               {% if is_owner or is_officer %}
             <td><a href='{% url 'kick_member' member.id %}' onclick="confirmKick()" class="btn btn-danger">Kick</a></td>
-            <td><a href='#' onclick="confirmBan()" class="btn btn-danger">Ban</a></td>
+            <td><a href='{% url 'ban_member' member.id %}' onclick="confirmBan()" class="btn btn-danger">Ban</a></td>
               {% endif %}
             {% else %}
               {% if is_owner %}
