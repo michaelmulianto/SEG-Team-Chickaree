@@ -8,13 +8,12 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from clubs import forms
 from django.http import HttpResponseForbidden, request
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
 from clubs.models import User, Club, Application, Member
-from clubs.helpers import login_prohibited, club_exists, membership_to_club_exists, is_user_officer_of_club, is_user_owner_of_club
+from clubs.helpers import login_prohibited, club_exists, application_exists, membership_to_club_exists, is_user_officer_of_club, is_user_owner_of_club
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -149,7 +148,7 @@ def withdraw_application_to_club(request, club_id):
     """Have currently logged in user delete an application to the specified club, if it exists."""
     current_user = request.user
     applied_club = Club.objects.get(id=club_id)
-    if Application.objects.filter(club=applied_club, user = current_user).exists() and not(Member.objects.filter(club=applied_club, user = current_user).exists()):
+    if Application.objects.filter(club=applied_club, user = current_user).exists():
         Application.objects.get(club=applied_club, user=current_user).delete()
         return redirect('show_clubs')
     return redirect('show_clubs')
@@ -169,7 +168,8 @@ def leave_club(request, club_id):
 @membership_to_club_exists
 def kick_member(request, club_id, member_id):
     current_user = request.user
-    club = Club.objects.get(id=club_id)
+    member = Member.objects.get(id=member_id)
+    club = member.club
     if is_user_owner_of_club(current_user, club) or is_user_officer_of_club(current_user, club):
         Member.objects.filter(id=member_id).delete()
     return redirect('members_list', club_id=club_id)
@@ -189,10 +189,8 @@ def log_out(request):
 @club_exists
 def show_applications_to_club(request, club_id):
     """Allow the owner of a club to view all applications to said club."""
-    current_user = request.user
     club_to_view = Club.objects.get(id = club_id)
-
-    if not(Member.objects.filter(club=club_to_view, user=current_user, is_owner=True).exists()):
+    if not(Member.objects.filter(club=club_to_view, user=request.user, is_owner=True).exists()):
         # Access denied
         return redirect('show_clubs')
 
@@ -200,19 +198,15 @@ def show_applications_to_club(request, club_id):
     return render(request, 'application_list.html', {'applications': applications})
 
 @login_required
+@application_exists
 def respond_to_application(request, app_id, is_accepted):
     """Allow the owner of a club to accept or reject some application to said club."""
-    try:
-        application = Application.objects.get(id = app_id)
-    except ObjectDoesNotExist:
-        #Application matching id does not exist
-        return redirect('show_clubs')
-
+    application = Application.objects.get(id = app_id)
     if not(Member.objects.filter(club=application.club, user=request.user, is_owner=True).exists()):
         # Access denied
         return redirect('show_clubs')
-
     # Create member object iff application is accepted
+    
     if is_accepted:
         Member.objects.create(
             user = application.user,

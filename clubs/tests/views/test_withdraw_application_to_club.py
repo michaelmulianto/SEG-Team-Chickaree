@@ -55,28 +55,7 @@ class WithdrawApplicationToClubTestCase(TestCase):
             fetch_redirect_response=True
         )
         self.assertTemplateUsed(response, 'show_clubs.html')
-
-
-    def test_unsuccessful_withdrawal_when_already_member(self):
-        self.client.login(username=self.user.username, password="Password123")
-        self.membership = Member.objects.create(
-            club = self.club,
-            user = self.user
-        )
-
-        app_count_before = Application.objects.count()
-        response = self.client.post(self.url, follow=True)
-        app_count_after = Application.objects.count()
-        self.assertEqual(app_count_after, app_count_before)
-
-        response_url = reverse('show_clubs')
-        self.assertRedirects(
-            response, response_url,
-            status_code=302, target_status_code=200,
-            fetch_redirect_response=True
-        )
-        self.assertTemplateUsed(response, 'show_clubs.html')
-
+        
     def test_successful_withdrawal(self):
         self.client.login(username=self.user.username, password="Password123")
         app_count_before = Application.objects.count()
