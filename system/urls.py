@@ -41,4 +41,5 @@ urlpatterns = [
     path('club/<int:club_id>/applications', views.show_applications_to_club, name='show_applications_to_club'),
     path('kick_member/<int:member_id>', views.kick_member, name='kick_member'),
     path('promote_member/<int:member_id>', views.promote_member_to_officer, name='promote_member_to_officer'),
+    path('demote_officer/<int:member_id>', views.demote_officer_to_member, name='demote_officer_to_member'),
 ]
