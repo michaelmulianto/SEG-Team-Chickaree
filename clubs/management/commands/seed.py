@@ -143,7 +143,9 @@ class Command(BaseCommand):
 
         m3 = Member.objects.create(
             club = kerbal,
-            user = jeb,val_owner
+            user = billie,
+            is_owner = True
+        )
         # Other memberships
         other_clubs = sample(list(Club.objects.exclude(id = kerbal.id)),3)
 
