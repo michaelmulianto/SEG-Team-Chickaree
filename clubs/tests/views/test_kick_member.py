@@ -27,7 +27,7 @@ class KickMemberViewTestCase(TestCase):
             club = self.club,
             user = self.user_kicking,
             is_officer = False,
-            is_owner = True,
+            is_owner = False,
         )
 
         self.member_being_kicked = Member.objects.create(
@@ -37,15 +37,24 @@ class KickMemberViewTestCase(TestCase):
             is_officer = False,
         )
 
-        self.url = reverse('kick_member', kwargs = {'club_id': self.club.id, 'member_id': self.member_being_kicked.id})
+        self.url = reverse('kick_member', kwargs = {'member_id': self.member_being_kicked.id})
 
     def test_kick_url(self):
-        self.assertEqual(self.url, '/club/' + str(self.club.id) + '/kick_member/' + str(self.member_being_kicked.id))
+        self.assertEqual(self.url, '/kick_member/' + str(self.member_being_kicked.id))
 
     def test_promote_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
         redirect_url = reverse_with_next('log_in', self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertFalse(self._has_member_been_kicked())
+
+    def test_promote_redirects_when_invalid_member_id_entered(self):
+        self.url = reverse('kick_member', kwargs = {'member_id': 999})
+        self.client.login(username=self.user_kicking.username, password="Password123")
+        response = self.client.get(self.url, follow=True)
+        redirect_url = reverse('show_clubs')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'show_clubs.html')
         self.assertFalse(self._has_member_been_kicked())
 
     def test_promote_redirects_when_not_owner_of_club(self):
@@ -56,26 +65,9 @@ class KickMemberViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'members_list.html')
         self.assertFalse(self._has_member_been_kicked())
 
-    def test_promote_redirects_when_invalid_member_id_entered(self):
-        self.url = reverse('kick_member', kwargs = {'club_id': self.club.id, 'member_id': 999})
-        self.client.login(username=self.user_kicking.username, password="Password123")
-        response = self.client.get(self.url, follow=True)
-        redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
-        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
-        self.assertFalse(self._has_member_been_kicked())
-
-    def test_promote_redirects_when_invalid_club_id_entered(self):
-        self.url = reverse('kick_member', kwargs = {'club_id': 999, 'member_id':self.member_being_kicked.id})
-        self.client.login(username=self.user_kicking.username, password="Password123")
-        response = self.client.get(self.url, follow=True)
-        redirect_url = reverse('show_clubs')
-        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
-        self.assertFalse(self._has_member_been_kicked())
-
-    def test_successful_promotion_as_officer(self):
+    def test_successful_kick_as_officer(self):
         self.member_kicking.is_officer = True
+        self.member_kicking.save()
         self.client.login(username=self.user_kicking.username, password="Password123")
         response = self.client.get(self.url, follow=True)
         self.assertTrue(self._has_member_been_kicked())
@@ -83,8 +75,9 @@ class KickMemberViewTestCase(TestCase):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'members_list.html')
 
-    def test_successful_promotion_as_owner(self):
+    def test_successful_kick_as_owner(self):
         self.member_kicking.is_owner = True
+        self.member_kicking.save()
         self.client.login(username=self.user_kicking.username, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
