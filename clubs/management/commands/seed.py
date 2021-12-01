@@ -43,11 +43,24 @@ class Command(BaseCommand):
             club.full_clean()
             club.save()
 
-            members = list(User.objects.all()).sample(items, (i%5)+3)
+            members = list(User.objects.all()).sample(items, (i%5)+6)
             
-            for user in members:
+            Member.objects.create(
+                club = club,
+                user = members[0],
+                is_owner = True,
+            )
+
+            for i in range(1,members.length-3):
                 Member.objects.create(
                     club = club,
-                    user = user,
+                    user = members[i],
                     is_officer = not(bool(i%4)),
+                )
+
+            for i in range(members.length-3,members.length):
+                Application.objects.create(
+                    club = club,
+                    user = members[i],
+                    personal_statement = self.faker.paragraph(nb_sentences=3),
                 )

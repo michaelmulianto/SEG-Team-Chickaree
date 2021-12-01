@@ -6,3 +6,4 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         User.objects.exclude(username = 'admin').delete()
         Club.objects.all().delete()
+        # Cascading will handle other deletions
