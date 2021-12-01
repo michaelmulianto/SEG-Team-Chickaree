@@ -47,6 +47,7 @@ class BanMemberViewTestCase(TestCase):
         redirect_url = reverse_with_next('log_in', self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertFalse(self._has_member_been_banned())
+        self.assertFalse(self._has_member_been_kicked())
 
     def test_promote_redirects_when_invalid_member_id_entered(self):
         self.url = reverse('ban_member', kwargs = {'member_id': 999})
@@ -56,6 +57,7 @@ class BanMemberViewTestCase(TestCase):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
         self.assertFalse(self._has_member_been_banned())
+        self.assertFalse(self._has_member_been_kicked())
 
     def test_promote_redirects_when_not_owner_or_officer_of_club(self):
         self.client.login(username=self.user_banning.username, password="Password123")
@@ -64,6 +66,7 @@ class BanMemberViewTestCase(TestCase):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'members_list.html')
         self.assertFalse(self._has_member_been_banned())
+        self.assertFalse(self._has_member_been_kicked())
 
     def test_successful_kick_as_officer(self):
         self.member_banning.is_officer = True
@@ -71,6 +74,7 @@ class BanMemberViewTestCase(TestCase):
         self.client.login(username=self.user_banning.username, password="Password123")
         response = self.client.get(self.url, follow=True)
         self.assertTrue(self._has_member_been_banned())
+        self.assertTrue(self._has_member_been_kicked())
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'members_list.html')
@@ -84,6 +88,10 @@ class BanMemberViewTestCase(TestCase):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'members_list.html')
         self.assertTrue(self._has_member_been_banned())
+        self.assertTrue(self._has_member_been_kicked())
 
     def _has_member_been_banned(self):
         return Ban.objects.filter(user=self.user_being_banned, club=self.club).exists()
+
+    def _has_member_been_kicked(self):
+        return (not Member.objects.filter(id=self.member_being_banned.id).exists())
