@@ -98,3 +98,8 @@ class Application(models.Model):
     )
     experience = models.IntegerField(default = 1, choices = LEVELS)
     personal_statement = models.CharField(max_length=580, blank=False, default = "")
+
+class Ban(models.Model):
+    "Medel for a ban to a club for some user"
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
