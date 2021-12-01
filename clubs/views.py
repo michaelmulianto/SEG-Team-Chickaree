@@ -259,7 +259,7 @@ def show_club(request, club_id):
 @club_exists
 def manage_club(request, club_id):
     club = Club.objects.get(id=club_id)
-    return render(request, 'manage_club.html', {club: club})
+    return render(request, 'manage_club.html', {'club': club})
 
 @login_required
 @membership_exists

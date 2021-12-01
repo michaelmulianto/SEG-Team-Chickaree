@@ -3,9 +3,9 @@
 from django.test import TestCase
 from django.urls import reverse
 from clubs.models import Club, Member, User
-from clubs.tests.helpers import reverse_with_next
+from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 
-class ShowClubViewTestCase(TestCase):
+class ShowClubViewTestCase(TestCase, MenuTesterMixin):
     """Test aspects of show club view"""
 
     fixtures = ['clubs/tests/fixtures/default_club.json',
@@ -29,6 +29,7 @@ class ShowClubViewTestCase(TestCase):
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "show_club.html")
         self.assertEqual(response.status_code, 200) #OK
+        self.assert_menu(response)
 
     def test_promote_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)

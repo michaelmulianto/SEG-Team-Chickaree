@@ -4,5 +4,5 @@ from clubs.models import User, Club
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        User.objects.exclude(username = 'admin').delete()
-        Club.objects.delete()
+        User.objects.exclude(is_staff=True).delete()
+        Club.objects.all().delete()

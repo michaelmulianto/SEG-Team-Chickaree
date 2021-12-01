@@ -5,10 +5,10 @@ from django.urls import reverse
 from django.contrib.auth.hashers import check_password
 from clubs.models import User, Club, Member
 from clubs.forms import CreateClubForm
-from clubs.tests.helpers import reverse_with_next
+from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 
 
-class CreateClubViewTest(TestCase):
+class CreateClubViewTest(TestCase, MenuTesterMixin):
     """Test all aspects of the create club view"""
 
     fixtures = ['clubs/tests/fixtures/default_user.json']
@@ -29,6 +29,7 @@ class CreateClubViewTest(TestCase):
         self.client.login(username=self.user.username, password="Password123")
         club_count_before = Club.objects.count()
         response = self.client.get(self.url, follow=True)
+        self.assert_menu(response)
         club_count_after = Club.objects.count()
         self.assertEqual(club_count_after, club_count_before)
         self.assertEqual(response.status_code, 200)
