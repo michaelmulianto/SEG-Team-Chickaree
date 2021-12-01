@@ -14,7 +14,6 @@ class Command(BaseCommand):
         for i in range(100):
             first_name = self.faker.first_name()
             last_name = self.faker.last_name()
-            print(last_name)
             email = f"{first_name}.{last_name}{i}@example.org"
             username = f"{first_name}{last_name}{i}"
             bio = self.faker.paragraph(nb_sentences=3)
