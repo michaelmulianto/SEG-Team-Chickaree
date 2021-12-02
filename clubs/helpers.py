@@ -1,6 +1,7 @@
+from django.contrib import messages
 from django.shortcuts import redirect
 from django.conf import settings
-from clubs.models import User, Club, Member, Application
+from clubs.models import User, Club, Member, Application, Ban
 
 def login_prohibited(view_function):
     def modified_view_fuction(request):
@@ -35,6 +36,18 @@ def application_exists(view_function):
             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         else:
             return view_function(request, app_id, **kwargs)
+
+    return modified_view_fuction
+
+def not_banned(view_function):
+    def modified_view_fuction(request, club_id, **kwargs):
+        club = Club.objects.get(id=club_id) #Must be used with @club_exists
+        if Ban.objects.filter(club=club, user=request.user).exists():
+            member = Member.objects.get(club=club, is_owner=True)
+            messages.error(request, 'You are banned from ' + club.name + '. Contact the owner ' + member.user.first_name + ' ' + member.user.last_name + ' for details by email at ' + member.user.email + '.')
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+        else:
+            return view_function(request, club_id, **kwargs)
 
     return modified_view_fuction
 
