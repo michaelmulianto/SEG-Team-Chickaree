@@ -1,9 +1,12 @@
 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+  <ul class="navbar-nav me-auto">
     <li class="nav-item">
       <a class="nav-link" href="{% url 'show_clubs' %}">Clubs</a>
     </li>
   </ul>
+
+  {% include "partials/my_clubs_combobox.html" %}
+
   <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
     <li class="nav-item dropdown">
       <a class="nav-link" href="#" id="user-account-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
