@@ -316,7 +316,7 @@ def transfer_ownership_to_officer(request, member_id):
     club = member.club
     if not(Member.objects.filter(club=club, user=request.user, is_owner=True).exists()):
         # Access denied, member isn't owner
-        return redirect('show_clubs')
+        return redirect('members_list', club_id=club.id)
 
     curr_owner = Member.objects.get(club=club, user=request.user)
     if not(member.is_officer):
