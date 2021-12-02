@@ -29,7 +29,6 @@ class RespondToApplicationViewTestCase(TestCase):
         self.application = Application.objects.create(
             club = self.club,
             user = self.applyingUser,
-            experience = 2,
             personal_statement = 'I love chess!'
         )
 
@@ -69,15 +68,14 @@ class RespondToApplicationViewTestCase(TestCase):
         application_count_before = Application.objects.count()
 
         response = self.client.get(self.url, follow=True)
-
         member_count_after = Member.objects.count()
         application_count_after = Application.objects.count()
 
         self.assertEqual(member_count_before, member_count_after-1)
         self.assertEqual(application_count_before, application_count_after+1)
 
-        response_url = reverse('show_applications_to_club', kwargs={'club_id':self.club.id})
-        self.assertEqual(response.status_code, 200)
+        redirect_url = reverse('show_applications_to_club', kwargs={'club_id':self.club.id})
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'application_list.html')
 
     def test_successful_reject_application_to_club(self):

@@ -14,7 +14,6 @@ class ApplyToClubFormTestCase(TestCase):
 
     def setUp(self):
         self.input = {
-            'experience' : 1,
             'personal_statement' : 'I love chess!',
         }
 
@@ -31,9 +30,4 @@ class ApplyToClubFormTestCase(TestCase):
         form = ApplyToClubForm()
 
         # Existence of fields
-        self.assertIn('experience', form.fields)
         self.assertIn('personal_statement', form.fields)
-
-        # Correct field for experience
-        exp_field = form.fields['experience']
-        self.assertTrue(isinstance(exp_field, forms.ChoiceField))

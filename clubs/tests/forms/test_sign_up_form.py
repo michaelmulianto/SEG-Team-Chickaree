@@ -15,6 +15,8 @@ class SignUpFormTestCase(TestCase):
             'last_name': 'Doe',
             'username': 'johndoe',
             'email': 'johndoe@example.com',
+            'bio': 'Hi I am John',
+            'experience': 2,
             'new_password': 'Password123',
             'password_confirmation': 'Password123'
         }
@@ -31,10 +33,16 @@ class SignUpFormTestCase(TestCase):
         self.assertIn('last_name', form.fields)
         self.assertIn('username', form.fields)
         self.assertIn('email', form.fields)
+        self.assertIn('experience', form.fields)
+        self.assertIn('bio', form.fields)
 
         # Correct field for email
         email_field = form.fields['email']
         self.assertTrue(isinstance(email_field, forms.EmailField))
+
+        # Correct field for experience
+        exp_field = form.fields['experience']
+        self.assertTrue(isinstance(exp_field, forms.ChoiceField))
 
         # Check password fields are present and censor the input.
         self.assertIn('new_password', form.fields)
