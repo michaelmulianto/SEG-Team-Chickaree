@@ -75,9 +75,11 @@
                 {% endif %}
               {% endif %}
 
-              {% if is_owner or is_officer %}
-            <td><a href='{% url 'kick_member' member.id %}' onclick="confirmKick()" class="btn btn-danger">Kick</a></td>
-            <td><a href='{% url 'ban_member' member.id %}' onclick="confirmBan()" class="btn btn-danger">Ban</a></td>
+              {% if is_owner and member.is_officer %}
+                <td><a href='{% url 'transfer_ownership_to_officer' member.id %}' onclick="confirmKick()" class="btn btn-warning">Kick</a></td>
+              {%elif is_owner or is_officer%}
+                <td><a href='{% url 'kick_member' member.id %}' onclick="confirmKick()" class="btn btn-danger">Kick</a></td>
+                <td><a href='{% url 'ban_member' member.id %}' onclick="confirmBan()" class="btn btn-danger">Ban</a></td>
               {% endif %}
             {% else %}
               {% if is_owner %}
