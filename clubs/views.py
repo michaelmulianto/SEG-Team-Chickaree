@@ -307,3 +307,27 @@ def members_list(request, club_id):
     club = Club.objects.get(id = club_id)
     members = Member.objects.filter(club = club)
     return render(request, 'members_list.html', {'members': members, 'club': club, 'current_user': current_user })
+
+@login_required
+@membership_exists
+def transfer_ownership_to_officer(request, member_id):
+    """Allow the owner of a club to promote some member of said club to officer."""
+    member = Member.objects.get(id = member_id)
+    club = member.club
+    if not(Member.objects.filter(club=club, user=request.user, is_owner=True).exists()):
+        # Access denied, member isn't owner
+        return redirect('members_list', club_id=club.id)
+
+    curr_owner = Member.objects.get(club=club, user=request.user)
+    if not(member.is_officer):
+        # Targetted member should be an officer
+        return redirect('members_list', club_id=club.id)
+
+    member.is_owner = True
+    member.is_officer = False
+    member.save() # Or database won't update.
+
+    curr_owner.is_owner = False
+    curr_owner.is_officer = True
+    curr_owner.save()
+    return redirect('members_list', club_id=club.id)
