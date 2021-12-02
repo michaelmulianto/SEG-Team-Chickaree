@@ -21,7 +21,8 @@ class SignUpForm(forms.ModelForm):
         model = User
         # If we do not specify fields, it will use all of them.
         # We don't want to include password as we use 2 fields
-        fields = ['first_name', 'last_name', 'username', 'email']
+        fields = ['first_name', 'last_name', 'username', 'email', 'experience', 'bio']
+        widgets = {'bio': forms.Textarea()}
 
     # Define fields excluded in Meta
     new_password = forms.CharField(
@@ -84,7 +85,7 @@ class ApplyToClubForm(forms.ModelForm):
 
     class Meta:
         model = Application
-        fields = ['experience', 'personal_statement']
+        fields = ['personal_statement']
         widgets = {'personal_statement': forms.Textarea()}
 
     def save(self, desired_club, current_user):
@@ -92,7 +93,6 @@ class ApplyToClubForm(forms.ModelForm):
         application = Application.objects.create(
             club = desired_club,
             user = current_user,
-            experience = self.cleaned_data.get('experience'),
             personal_statement = self.cleaned_data.get('personal_statement'),
         )
         return application

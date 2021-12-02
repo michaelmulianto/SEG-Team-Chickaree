@@ -268,6 +268,12 @@ def show_club(request, club_id):
     return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner, 'userIsOwner': isOwner, 'userIsOfficer': isOfficer, 'officers': officers})
 
 @login_required
+@club_exists
+def manage_club(request, club_id):
+    club = Club.objects.get(id=club_id)
+    return render(request, 'manage_club.html', {'club': club})
+
+@login_required
 @membership_exists
 def promote_member_to_officer(request, member_id):
     """Allow the owner of a club to promote some member of said club to officer."""

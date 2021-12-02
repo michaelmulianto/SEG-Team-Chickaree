@@ -38,6 +38,7 @@ urlpatterns = [
     path('application/<int:app_id>/respond/<bool:is_accepted>', views.respond_to_application, name='respond_to_application'),
     path('members_list/<int:club_id>', views.members_list, name='members_list'),
     path('club/<int:club_id>', views.show_club, name='show_club'),
+    path('manage_club/<int:club_id>', views.manage_club, name='manage_club'),
     path('club/<int:club_id>/applications', views.show_applications_to_club, name='show_applications_to_club'),
     path('kick_member/<int:member_id>', views.kick_member, name='kick_member'),
     path('ban_member/<int:member_id>', views.ban_member, name='ban_member'),
