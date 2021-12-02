@@ -4,7 +4,7 @@ from random import sample, choice
 from clubs.models import User, Club, Member, Application
 
 class Command(BaseCommand):
-    """Fill the database with pseudorandom data"""
+    """Fill the database with pseudorandom data and some mandated test cases."""
     def __init__(self):
         super().__init__()
         self.faker = Faker('en_GB')
@@ -89,7 +89,7 @@ class Command(BaseCommand):
         kerbal.full_clean()
         kerbal.save()
 
-        jeb = User.objects.create(
+        jeb = User.objects.create_user(
             username = "Jebediah142",
             first_name = "Jebediah",
             last_name = "Kerman",
@@ -101,7 +101,7 @@ class Command(BaseCommand):
         jeb.full_clean()
         jeb.save()
 
-        val = User.objects.create(
+        val = User.objects.create_user(
             username = "Valentina123",
             first_name = "Valentina",
             last_name = "Kerman",
@@ -113,7 +113,7 @@ class Command(BaseCommand):
         val.full_clean()
         val.save()
 
-        billie = User.objects.create(
+        billie = User.objects.create_user(
             username = "Billie444",
             first_name = "Billie",
             last_name = "Kerman",
@@ -174,7 +174,61 @@ class Command(BaseCommand):
         billie_member.full_clean()
         billie_member.save()
 
+    def generate_edge_cases(self):
+        """Generate data required to debug the user interface properly"""
+        # Again this depends on data already existing.
+        # Generates club with only an owner
+        # Generates a club with an owner and 1 member
+
+        # We hard code this so it can be logged in to.
+        owner_user = User.objects.create_user(
+            username = "testuser1",
+                first_name = "Test",
+                last_name = "Testson",
+                email = "test@example.org",
+                bio = "",
+                experience = 1,
+                password = "Password123",
+        )
+        owner_user.full_clean()
+        owner_user.save()
+
+        lonely_club = Club.objects.create(
+            name="Lonely Chess Club",
+            location="Some Dark Basement",
+            description="Short desc."
+        )
+        lonely_club.full_clean()
+        lonely_club.save()
+
+        (Member.objects.create(
+            user = owner_user,
+            club = lonely_club,
+            is_owner = True
+        )).save()
+
+        less_lonely_club = Club.objects.create(
+            name="Club 123",
+            location="Aldwych",
+            description="Very long desc: " + "x"*264
+        )
+        less_lonely_club.full_clean()
+        less_lonely_club.save()
+
+        (Member.objects.create(
+            user = owner_user,
+            club = less_lonely_club,
+            is_owner = True
+        )).save()
+
+        (Member.objects.create(
+            user = choice(list(User.objects.exclude(username="testuser1"))),
+            club = less_lonely_club,
+        )).save()
+
+
     def handle(self, *args, **options):
         # It is VERY important that random data is generated first, so we can fully control the memberships of the mandated users
         self.generate_random_data()
         self.generate_required_data()
+        self.generate_edge_cases()
