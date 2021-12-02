@@ -3,6 +3,7 @@
     My Clubs
     </button>
     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        {%csrf_token%}
         {% for club in clubs %}
             <li><a class="dropdown-item" href="{% url 'show_club' club.id %}">{{ club.name }}</a> </li>
             {% if club != clubs[-1]  %}
