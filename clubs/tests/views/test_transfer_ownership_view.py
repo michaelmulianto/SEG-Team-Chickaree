@@ -10,7 +10,7 @@ from clubs.models import User, Club, Member
 from clubs.tests.helpers import reverse_with_next
 
 class PromoteMemberToOfficerViewTestCase(TestCase):
-    """Test all aspects of the backend implementation of transfering"""
+    """Test all aspects of the backend implementation of transfering ownership."""
 
     fixtures = [
         'clubs/tests/fixtures/default_user.json',
