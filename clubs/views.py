@@ -298,18 +298,13 @@ def members_list(request, club_id):
 @login_required
 def edit_club_info(request, club_id):
     """Edit the details for the club as an owner."""
+    club = Club.objects.get(id = club_id)
     current_user = request.user
-    try:
-        club = Club.objects.get(id = club_id)
-    except ObjectDoesNotExist:
-        return redirect('show_clubs')
     if request.method == 'POST':
-        form = EditClubInfoForm(instance = club, data=request.POST)
+        form = forms.EditClubInfoForm(instance = club, data=request.POST)
         if form.is_valid():
-            messages.add_message(request, messages.SUCCESS, "Account Details updated!")
-            form.save()
-            return redirect('show_club')
+                form.save()
+                return redirect('show_clubs')
     else:
-        #make form with the current user information
         form = EditClubInfoForm(instance = club)
-    return render(request, 'edit_club_info.html', {'form': form})
+    return render(request, 'edit_club_info.html', {'form': form, 'club':Club.objects.get(id = club_id)})

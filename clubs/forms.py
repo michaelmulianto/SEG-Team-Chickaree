@@ -107,3 +107,4 @@ class EditClubInfoForm(forms.ModelForm):
     class Meta:
         model = Club
         fields = ['name', 'location', 'description']
+        widgets = {'description': forms.Textarea()}
