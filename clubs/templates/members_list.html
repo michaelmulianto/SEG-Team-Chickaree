@@ -50,15 +50,8 @@
             <td> {{ member.user.bio }} </td>
 
             <script>
-              function confirmKick(){
-                if(confirm('Are you sure you want to kick them from the club?')){
-                  return true;
-                }else{
-                  event.stopPropagation(); event.preventDefault();
-                }
-              }
-              function confirmBan(){
-                if(confirm('Are you sure you want to ban them from the club?')){
+              function confirmMsg(msg){
+                if(confirm(msg)){
                   return true;
                 }else{
                   event.stopPropagation(); event.preventDefault();
@@ -76,10 +69,10 @@
               {% endif %}
 
               {% if is_owner and member.is_officer %}
-                <td><a href='{% url 'transfer_ownership_to_officer' member.id %}' onclick="confirmKick()" class="btn btn-warning">Kick</a></td>
-              {%elif is_owner or is_officer%}
-                <td><a href='{% url 'kick_member' member.id %}' onclick="confirmKick()" class="btn btn-danger">Kick</a></td>
-                <td><a href='{% url 'ban_member' member.id %}' onclick="confirmBan()" class="btn btn-danger">Ban</a></td>
+                <td><a href='{% url 'transfer_ownership_to_officer' member.id %}' onclick="confirmMsg('Are you sure you want to give up ownership?')" class="btn btn-warning">Transfer Ownership</a></td>
+              {% elif is_owner or is_officer %}
+                <td><a href='{% url 'kick_member' member.id %}' onclick="confirmMsg('Are you sure you want to kick them from the club?')" class="btn btn-danger">Kick</a></td>
+                <td><a href='{% url 'ban_member' member.id %}' onclick="confirmMsg('Are you sure you want to ban them from the club?')" class="btn btn-danger">Ban</a></td>
               {% endif %}
             {% else %}
               {% if is_owner %}
