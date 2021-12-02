@@ -1,0 +1,13 @@
+<div class="dropdown ms-auto dropdown-menu-right">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
+    My Clubs
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        {% for club in clubs %}
+            <li><a class="dropdown-item" href="{% url 'show_club' club.id %}">{{ club.name }}</a> </li>
+            {% if club != clubs[-1]  %}
+                <li><hr class="dropdown-divider" style="margin:2px"></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>
