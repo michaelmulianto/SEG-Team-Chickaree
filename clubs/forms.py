@@ -102,3 +102,9 @@ class EditAccountForm(forms.ModelForm):
         model = User
         #only want to make these 4 fields editable
         fields = ['username', 'first_name', 'last_name', 'email']
+
+class EditClubInfoForm(forms.ModelForm):
+    class Meta:
+        model = Club
+        fields = ['name', 'location', 'description']
+        widgets = {'description': forms.Textarea()}

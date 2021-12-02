@@ -11,7 +11,7 @@ from django.http import HttpResponseForbidden, request
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.conf import settings
-from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
+from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm, EditClubInfoForm
 from clubs.models import User, Club, Application, Member, Ban
 from clubs.helpers import login_prohibited, club_exists, application_exists, membership_exists, not_banned, is_user_officer_of_club, is_user_owner_of_club
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -331,3 +331,18 @@ def transfer_ownership_to_officer(request, member_id):
     curr_owner.is_officer = True
     curr_owner.save()
     return redirect('members_list', club_id=club.id)
+
+@login_required
+@club_exists
+def edit_club_info(request, club_id):
+    """Edit the details for the club as an owner."""
+    club = Club.objects.get(id = club_id)
+    current_user = request.user
+    if request.method == 'POST':
+        form = forms.EditClubInfoForm(instance = club, data=request.POST)
+        if form.is_valid():
+                form.save()
+                return redirect('show_clubs')
+    else:
+        form = EditClubInfoForm(instance = club)
+    return render(request, 'edit_club_info.html', {'form': form, 'club':Club.objects.get(id = club_id)})
