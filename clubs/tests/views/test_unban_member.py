@@ -14,8 +14,7 @@ class UnbanMemberViewTestCase(TestCase):
 
     fixtures = [
         'clubs/tests/fixtures/default_user.json',
-        'clubs/tests/fixtures/second_user.json',
-        'clubs/tests/fixtures/third_user.json',
+        'clubs/tests/fixtures/other_users.json',
         'clubs/tests/fixtures/default_club.json'
     ]
 
