@@ -44,7 +44,7 @@ class Command(BaseCommand):
             club.save()
 
             members = sample(list(User.objects.exclude(is_staff=True)), (i%5)+6)
-            
+
             owner = Member.objects.create(
                 club = club,
                 user = members[0],
@@ -183,12 +183,12 @@ class Command(BaseCommand):
         # We hard code this so it can be logged in to.
         owner_user = User.objects.create_user(
             username = "testuser1",
-                first_name = "Test",
-                last_name = "Testson",
-                email = "test@example.org",
-                bio = "",
-                experience = 1,
-                password = "Password123",
+            first_name = "Test",
+            last_name = "Testson",
+            email = "test@example.org",
+            bio = "",
+            experience = 1,
+            password = "Password123",
         )
         owner_user.full_clean()
         owner_user.save()

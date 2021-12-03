@@ -11,7 +11,7 @@ class EditAccountViewTest(TestCase, MenuTesterMixin):
 
     fixtures = [
         'clubs/tests/fixtures/default_user.json',
-        'clubs/tests/fixtures/second_user.json'
+        'clubs/tests/fixtures/other_users.json'
     ]
 
     def setUp(self):

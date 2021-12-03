@@ -15,6 +15,7 @@ def login_prohibited(view_function):
 def club_exists(view_function):
     def modified_view_fuction(request, club_id, **kwargs):
         if not Club.objects.filter(id=club_id).exists():
+            messages.error(request, 'No club with id ' + str(club_id) + ' exists.')
             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         else:
             return view_function(request, club_id, **kwargs)
@@ -24,6 +25,7 @@ def club_exists(view_function):
 def membership_exists(view_function):
     def modified_view_fuction(request, member_id, **kwargs):
         if not Member.objects.filter(id=member_id).exists():
+            messages.error(request, 'No user with membership id ' + str(member_id) + ' exists.')
             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         else:
             return view_function(request, member_id, **kwargs)
@@ -33,9 +35,20 @@ def membership_exists(view_function):
 def application_exists(view_function):
     def modified_view_fuction(request, app_id, **kwargs):
         if not Application.objects.filter(id=app_id).exists():
+            messages.error(request, 'No user with application id ' + str(app_id) + ' exists.')
             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         else:
             return view_function(request, app_id, **kwargs)
+
+    return modified_view_fuction
+
+def ban_exists(view_function):
+    def modified_view_fuction(request, ban_id, **kwargs):
+        if not Ban.objects.filter(id=ban_id).exists():
+            messages.error(request, 'No user with ban id ' + str(ban_id) + ' exists.')
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+        else:
+            return view_function(request, ban_id, **kwargs)
 
     return modified_view_fuction
 
@@ -53,10 +66,10 @@ def not_banned(view_function):
 
 
 def is_user_officer_of_club(user, club):
-    return Member.objects.get(user=user, club=club).is_officer
+    return Member.objects.filter(user=user, club=club, is_officer=True).exists()
 
 def is_user_owner_of_club(user, club):
-    return Member.objects.get(user=user, club=club).is_owner
+    return Member.objects.filter(user=user, club=club, is_owner=True).exists()
 
 def get_clubs_of_user(userIn):
     my_clubs = []
