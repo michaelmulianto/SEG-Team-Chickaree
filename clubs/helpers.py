@@ -66,7 +66,7 @@ def not_banned(view_function):
 
 
 def is_user_officer_of_club(user, club):
-    return Member.objects.get(user=user, club=club).is_officer
+    return Member.objects.filter(user=user, club=club, is_officer=True).exists()
 
 def is_user_owner_of_club(user, club):
-    return Member.objects.get(user=user, club=club).is_owner
+    return Member.objects.filter(user=user, club=club, is_owner=True).exists()
