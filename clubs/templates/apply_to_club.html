@@ -9,16 +9,6 @@
         <h2>Apply to: {{ club.name }}</h2>
         <form action="{% url 'apply_to_club' club.id %}" method="post">
           {% csrf_token %}
-          <div class="mb-3">
-            <label for="experience" class="form-label">Experience:</label>
-            <select class="form-select" name="experience">
-              <option value=1>Beginner</option>
-              <option value=2>Intermediate</option>
-              <option value=3>Advanced</option>
-            </select>
-            <div class="form-text">Choose Your Experience Level</div>
-          </div>
-
           <script>
             function validate(max_length){
               const areatextarea = document.querySelector("#personal_statement");

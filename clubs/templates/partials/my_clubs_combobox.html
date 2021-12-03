@@ -1,0 +1,18 @@
+<div class="dropdown ms-auto dropdown-menu-right">
+    <button class="btn btn-dark bg-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
+    My Clubs
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        {%csrf_token%}
+        {% for club in my_clubs %}
+            {% if clubs.count == 0 %}
+            <li><a class="dropdown-item">No Clubs!</a></li>
+            {% else %}
+                <li><a class="dropdown-item" href="{% url 'show_club' club.id %}">{{ club.name }}</a> </li>
+                {% if not forloop.last %}
+                    <li><hr class="dropdown-divider" style="margin:2px"></li>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>

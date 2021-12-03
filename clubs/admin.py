@@ -6,7 +6,7 @@ from .models import User, Club, Application, Member, Ban
 class UserAdmin(admin.ModelAdmin):
     """Configuration of the admin interface for users"""
     list_display = [
-        'username', 'first_name', 'last_name', 'email', 'is_active'
+        'username', 'first_name', 'last_name', 'email', 'is_active', 'experience', 'bio'
     ]
 
 @admin.register(Club)
@@ -20,7 +20,7 @@ class ClubAdmin(admin.ModelAdmin):
 class applicationAdmin(admin.ModelAdmin):
     """Configuration of the admin interface for applications"""
     list_display = [
-        'club', 'user', 'experience', 'personal_statement'
+        'club', 'user', 'personal_statement'
     ]
 
 @admin.register(Member)

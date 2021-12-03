@@ -7,6 +7,7 @@
       "last_name": "Doe",
       "username": "johndoe",
       "email": "johndoe@example.org",
+      "experience": 2,
       "bio": "John here. I like chess.",
       "password": "pbkdf2_sha256$260000$7FuLCy6i6tRTsm2GgebFWh$gSV4zo0N7chWhcBheeWMXRIE4pyc3kIQnzpoH90lliI=",
       "is_active": true
