@@ -32,7 +32,7 @@ def sign_up(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN, {'my_clubs':get_clubs_of_user(request.user)})
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
 
     # If not POST, visitor is trying to view the form e.g. via home
     else:
@@ -53,7 +53,7 @@ def log_in(request):
             if user is not None:
                 login(request, user)
                 redirect_url = next or settings.REDIRECT_URL_WHEN_LOGGED_IN
-                return redirect(redirect_url, {'my_clubs':get_clubs_of_user(request.user)})
+                return redirect(redirect_url)
         messages.add_message(request, messages.ERROR, "The credentials provided are invalid!")
     else:
         next = request.GET.get('next') or ''
@@ -117,7 +117,7 @@ def create_club(request):
                 user = current_user,
                 is_owner = True
             )
-            return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
+            return redirect('show_clubs')
         return render(request, 'create_club.html', {'form': form, 'my_clubs':get_clubs_of_user(request.user)})
     return render(request, 'create_club.html', {'form': CreateClubForm(), 'my_clubs':get_clubs_of_user(request.user)})
 
@@ -132,7 +132,7 @@ def apply_to_club(request, club_id):
         if form.is_valid():
             if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
                 form.save(desired_club, current_user)
-                return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
+                return redirect('show_clubs')
         # Else: Invalid form/Already applied/Already member
         if Application.objects.filter(club=desired_club, user = current_user).exists():
             messages.add_message(request, messages.ERROR, "You have already applied for this club")
@@ -150,8 +150,8 @@ def withdraw_application_to_club(request, club_id):
     applied_club = Club.objects.get(id=club_id)
     if Application.objects.filter(club=applied_club, user = current_user).exists():
         Application.objects.get(club=applied_club, user=current_user).delete()
-        return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
-    return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
+        return redirect('show_clubs')
+    return redirect('show_clubs')
 
 @login_required
 @club_exists
@@ -161,7 +161,7 @@ def leave_club(request, club_id):
     applied_club = Club.objects.get(id=club_id)
     if Member.objects.filter(club=applied_club, user = current_user).exists():
         Member.objects.get(club=applied_club, user=current_user).delete()
-    return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
+    return redirect('show_clubs')
 
 @login_required
 @membership_exists
@@ -191,7 +191,8 @@ def show_applications_to_club(request, club_id):
     club_to_view = Club.objects.get(id = club_id)
     if not(Member.objects.filter(club=club_to_view, user=request.user, is_owner=True).exists()):
         # Access denied
-        return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
+        #return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
+        return redirect('show_clubs')
 
     applications = Application.objects.all().filter(club = club_to_view)
     return render(request, 'application_list.html', {'applications': applications, 'my_clubs':get_clubs_of_user(request.user)})
@@ -204,7 +205,7 @@ def respond_to_application(request, app_id, is_accepted):
     club_applied = application.club
     if not(Member.objects.filter(club=application.club, user=request.user, is_owner=True).exists()):
         # Access denied
-        return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
+        return redirect('show_clubs')
     # Create member object iff application is accepted
 
     if is_accepted:
@@ -226,7 +227,7 @@ def change_password(request):
             user = form.save()
             update_session_auth_hash(request, user)  # Important!
             messages.success(request, 'Your password was successfully updated!')
-            return redirect('account', {'my_clubs':get_clubs_of_user(request.user)})
+            return redirect('account')
         else:
             messages.error(request, 'Please correct the error below.')
     else:
