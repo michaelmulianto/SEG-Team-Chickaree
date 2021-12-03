@@ -180,7 +180,7 @@ def ban_member(request, member_id):
     current_user = request.user
     member = Member.objects.get(id=member_id)
     club = member.club
-    if is_user_owner_of_club(current_user, club): #Only owners can ban members, not officers.
+    if is_user_owner_of_club(current_user, club) and not is_user_officer_of_club(member.user, club): #Only owners can ban members, not officers.
         Ban.objects.create(club=club, user=member.user)
         Member.objects.filter(id=member_id).delete()
     return redirect('members_list', club_id=club.id)
