@@ -11,9 +11,9 @@ from django.http import HttpResponseForbidden, request
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.conf import settings
-from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm
-from clubs.models import User, Club, Application, Member
-from clubs.helpers import login_prohibited, club_exists, application_exists, membership_exists, is_user_officer_of_club, is_user_owner_of_club, get_clubs_of_user
+from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm, EditClubInfoForm
+from clubs.models import User, Club, Application, Member, Ban
+from clubs.helpers import login_prohibited, club_exists, application_exists, membership_exists, not_banned, is_user_officer_of_club, is_user_owner_of_club, get_clubs_of_user
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -123,6 +123,7 @@ def create_club(request):
 
 @login_required
 @club_exists
+@not_banned
 def apply_to_club(request, club_id):
     """Have currently logged in user create an application to a specified club."""
     if request.method == 'POST':
@@ -170,6 +171,17 @@ def kick_member(request, member_id):
     member = Member.objects.get(id=member_id)
     club = member.club
     if is_user_owner_of_club(current_user, club) or is_user_officer_of_club(current_user, club):
+        Member.objects.filter(id=member_id).delete()
+    return redirect('members_list', club_id=club.id)
+
+@login_required
+@membership_exists
+def ban_member(request, member_id):
+    current_user = request.user
+    member = Member.objects.get(id=member_id)
+    club = member.club
+    if is_user_owner_of_club(current_user, club) or is_user_officer_of_club(current_user, club):
+        Ban.objects.create(club=club, user=member.user)
         Member.objects.filter(id=member_id).delete()
     return redirect('members_list', club_id=club.id)
 
@@ -296,3 +308,43 @@ def members_list(request, club_id):
     club = Club.objects.get(id = club_id)
     members = Member.objects.filter(club = club)
     return render(request, 'members_list.html', {'members': members, 'club': club, 'current_user': current_user , 'my_clubs':get_clubs_of_user(request.user)})
+
+
+@login_required
+@membership_exists
+def transfer_ownership_to_officer(request, member_id):
+    """Allow the owner of a club to promote some member of said club to officer."""
+    member = Member.objects.get(id = member_id)
+    club = member.club
+    if not(Member.objects.filter(club=club, user=request.user, is_owner=True).exists()):
+        # Access denied, member isn't owner
+        return redirect('members_list', club_id=club.id)
+
+    curr_owner = Member.objects.get(club=club, user=request.user)
+    if not(member.is_officer):
+        # Targetted member should be an officer
+        return redirect('members_list', club_id=club.id)
+
+    member.is_owner = True
+    member.is_officer = False
+    member.save() # Or database won't update.
+
+    curr_owner.is_owner = False
+    curr_owner.is_officer = True
+    curr_owner.save()
+    return redirect('members_list', club_id=club.id)
+
+@login_required
+@club_exists
+def edit_club_info(request, club_id):
+    """Edit the details for the club as an owner."""
+    club = Club.objects.get(id = club_id)
+    current_user = request.user
+    if request.method == 'POST':
+        form = forms.EditClubInfoForm(instance = club, data=request.POST)
+        if form.is_valid():
+                form.save()
+                return redirect('show_clubs')
+    else:
+        form = EditClubInfoForm(instance = club)
+    return render(request, 'edit_club_info.html', {'form': form, 'club':Club.objects.get(id = club_id)})
