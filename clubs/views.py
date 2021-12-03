@@ -54,7 +54,10 @@ def log_in(request):
                 login(request, user)
                 redirect_url = next or settings.REDIRECT_URL_WHEN_LOGGED_IN
                 return redirect(redirect_url)
-        messages.add_message(request, messages.ERROR, "The credentials provided are invalid!")
+            elif User.objects.filter(username=username).exists():
+                messages.add_message(request, messages.ERROR, "Wrong password")
+        else:
+            messages.add_message(request, messages.ERROR, "The credentials provided are invalid!")
     else:
         next = request.GET.get('next') or ''
     form = LogInForm()
