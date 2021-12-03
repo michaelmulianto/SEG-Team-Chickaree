@@ -68,7 +68,7 @@
             {% if member.user == current_user %}
 
               {% if is_owner %}
-            <td style="text-align: center" colspan="3"><b> This is you! <b></td>
+            <td style="text-align: center; width: 200px" colspan="3"><b> This is you! <b></td>
               {% elif is_officer %}
             <td style="text-align: center" ><b> This is you! <b></td>
               {% endif %}
@@ -89,12 +89,12 @@
                 {% endif %}
               {% elif is_officer %}
                 {% if is_member_an_owner %}
-            <td style="text-align: center" ><b> Club owner <b></td>
+            <td style="text-align: center; width: 100px" ><b> Club owner <b></td>
                 {% elif is_member_an_officer %}
-            <td style="text-align: center" ><b> Club officer <b></td>
+            <td style="text-align: center; width: 100px" ><b> Club officer <b></td>
               <!-- style="width: 15px" -->
                 {% else %}
-            <td><a href='{% url 'kick_member' member.id %}' onclick="confirmMsg('Are you sure you want to kick them from the club?')" class="btn btn-danger">Kick</a></td>
+            <td style="width: 100px"><a style="width: 100px" href='{% url 'kick_member' member.id %}' onclick="confirmMsg('Are you sure you want to kick them from the club?')" class="btn btn-danger">Kick</a></td>
                 {% endif %}
               {% endif %}
             {% endif %}
