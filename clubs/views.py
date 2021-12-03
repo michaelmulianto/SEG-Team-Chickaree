@@ -13,7 +13,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm, EditClubInfoForm
 from clubs.models import User, Club, Application, Member, Ban
-from clubs.helpers import login_prohibited, club_exists, application_exists, membership_exists, not_banned, is_user_officer_of_club, is_user_owner_of_club
+from clubs.helpers import login_prohibited, club_exists, application_exists, membership_exists, not_banned, is_user_officer_of_club, is_user_owner_of_club, get_clubs_of_user
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -64,16 +64,16 @@ def log_in(request):
 @login_required
 def account(request):
     """Render a page displaying the attributes of the currently logged in user."""
-    return render(request, 'account.html', {'user': request.user})
+    return render(request, 'account.html', {'user': request.user, 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
 def my_clubs_list(request):
     current_user = request.user
     my_clubs = []
     for club in Club.objects.all():
-        if Application.objects.filter(club=club, user=current_user).exists():
+        if Application.objects.filter(club=club, user=current_user):
             my_clubs.append(club)
-        if Member.objects.filter(club=club, user=current_user).exists():
+        if Member.objects.filter(club=club, user=current_user):
             my_clubs.append(club)
 
     paginator = Paginator(my_clubs, settings.CLUBS_PER_PAGE)
@@ -86,7 +86,7 @@ def my_clubs_list(request):
     except EmptyPage:
         page_obj  = paginator.page(paginator.num_pages)
 
-    return render(request, 'my_clubs_list.html', {'clubs': my_clubs, 'current_user':current_user, 'page_obj':page_obj})
+    return render(request, 'my_clubs_list.html', {'clubs': my_clubs, 'current_user':current_user, 'page_obj':page_obj, 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
 def edit_account(request):
@@ -101,7 +101,7 @@ def edit_account(request):
     else:
         #make form with the current user information
         form = EditAccountForm(instance = current_user)
-    return render(request, 'edit_account.html', {'form': form})
+    return render(request, 'edit_account.html', {'form': form, 'my_clubs':get_clubs_of_user(request.user)})
 
 
 @login_required
@@ -118,8 +118,8 @@ def create_club(request):
                 is_owner = True
             )
             return redirect('show_clubs')
-        return render(request, 'create_club.html', {'form': form})
-    return render(request, 'create_club.html', {'form': CreateClubForm()})
+        return render(request, 'create_club.html', {'form': form, 'my_clubs':get_clubs_of_user(request.user)})
+    return render(request, 'create_club.html', {'form': CreateClubForm(), 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
 @club_exists
@@ -139,9 +139,9 @@ def apply_to_club(request, club_id):
             messages.add_message(request, messages.ERROR, "You have already applied for this club")
         elif Member.objects.filter(club=desired_club, user = current_user).exists():
             messages.add_message(request, messages.ERROR, "You are already a member in this club")
-        return render(request, 'apply_to_club.html', {'form': form, 'club':desired_club})
+        return render(request, 'apply_to_club.html', {'form': form, 'club':desired_club, 'my_clubs':get_clubs_of_user(request.user)})
     else: # GET
-        return render(request, 'apply_to_club.html', {'form': forms.ApplyToClubForm(), 'club':Club.objects.get(id = club_id)})
+        return render(request, 'apply_to_club.html', {'form': forms.ApplyToClubForm(), 'club':Club.objects.get(id = club_id), 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
 @club_exists
@@ -189,7 +189,7 @@ def ban_member(request, member_id):
 def show_clubs(request):
     """Return a list of every club created on the website"""
     clubs = Club.objects.all()
-    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user})
+    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user, 'my_clubs':get_clubs_of_user(request.user)})
 
 def log_out(request):
     """If a user is logged in, log them out."""
@@ -203,10 +203,11 @@ def show_applications_to_club(request, club_id):
     club_to_view = Club.objects.get(id = club_id)
     if not(Member.objects.filter(club=club_to_view, user=request.user, is_owner=True).exists()):
         # Access denied
+        #return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
         return redirect('show_clubs')
 
     applications = Application.objects.all().filter(club = club_to_view)
-    return render(request, 'application_list.html', {'applications': applications})
+    return render(request, 'application_list.html', {'applications': applications, 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
 @application_exists
@@ -243,7 +244,7 @@ def change_password(request):
             messages.error(request, 'Please correct the error below.')
     else:
         form = PasswordChangeForm(request.user)
-    return render(request, 'change_password.html', { 'form': form })
+    return render(request, 'change_password.html', { 'form': form , 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
 @club_exists
@@ -265,13 +266,13 @@ def show_club(request, club_id):
         isMember = True
     if checkUserisMember.filter(is_officer = True).count() > 0:
         isOfficer = True
-    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner, 'userIsOwner': isOwner, 'userIsOfficer': isOfficer, 'officers': officers})
+    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner, 'userIsOwner': isOwner, 'userIsOfficer': isOfficer, 'officers': officers, 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
 @club_exists
 def manage_club(request, club_id):
     club = Club.objects.get(id=club_id)
-    return render(request, 'manage_club.html', {'club': club})
+    return render(request, 'manage_club.html', {'club': club, 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
 @membership_exists
@@ -306,7 +307,8 @@ def members_list(request, club_id):
     current_user = request.user
     club = Club.objects.get(id = club_id)
     members = Member.objects.filter(club = club)
-    return render(request, 'members_list.html', {'members': members, 'club': club, 'current_user': current_user })
+    return render(request, 'members_list.html', {'members': members, 'club': club, 'current_user': current_user , 'my_clubs':get_clubs_of_user(request.user)})
+
 
 @login_required
 @membership_exists
