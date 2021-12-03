@@ -51,7 +51,7 @@ class BanMemberViewTestCase(TestCase):
 
         self.url = reverse('ban_member', kwargs = {'member_id': self.member_being_banned.id})
 
-    def test_kick_url(self):
+    def test_ban_url(self):
         self.assertEqual(self.url, '/ban_member/' + str(self.member_being_banned.id))
 
     def test_ban_redirects_when_not_logged_in(self):
@@ -89,7 +89,7 @@ class BanMemberViewTestCase(TestCase):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'members_list.html')
 
-    def test_successful_kick_as_owner(self):
+    def test_successful_ban_as_owner(self):
         self.client.login(username=self.user_club_owner.username, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
