@@ -4,11 +4,9 @@
     </button>
     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         {%csrf_token%}
-        {% for club in clubs %}
+        {% for club in my_clubs %}
             <li><a class="dropdown-item" href="{% url 'show_club' club.id %}">{{ club.name }}</a> </li>
-            {% if club != clubs[-1]  %}
-                <li><hr class="dropdown-divider" style="margin:2px"></li>
-            {% endif %}
+            <li><hr class="dropdown-divider" style="margin:2px"></li>
         {% endfor %}
     </ul>
 </div>

@@ -44,3 +44,11 @@ def is_user_officer_of_club(user, club):
 
 def is_user_owner_of_club(user, club):
     return Member.objects.get(user=user, club=club).is_owner
+
+def get_clubs_of_user(userIn):
+    my_clubs = []
+    for club in Club.objects.all():
+        if Application.objects.filter(club=club, user=userIn).exists():
+            my_clubs.append(club)
+        if Member.objects.filter(club=club, user=userIn).exists():
+            my_clubs.append(club)
