@@ -49,22 +49,22 @@ class BanMemberViewTestCase(TestCase):
             is_officer = False,
         )
 
-        self.url = reverse('ban_member', kwargs = {'member_id': self.member_being_banned.id})
+        self.url_ban = reverse('ban_member', kwargs = {'member_id': self.member_being_banned.id})
 
     def test_ban_url(self):
-        self.assertEqual(self.url, '/ban_member/' + str(self.member_being_banned.id))
+        self.assertEqual(self.url_ban, '/ban_member/' + str(self.member_being_banned.id))
 
     def test_ban_redirects_when_not_logged_in(self):
-        response = self.client.get(self.url)
-        redirect_url = reverse_with_next('log_in', self.url)
+        response = self.client.get(self.url_ban)
+        redirect_url = reverse_with_next('log_in', self.url_ban)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertFalse(self._has_member_been_banned())
         self.assertFalse(self._has_member_been_kicked())
 
     def test_ban_redirects_when_invalid_member_id_entered(self):
-        self.url = reverse('ban_member', kwargs = {'member_id': 999})
+        self.url_ban = reverse('ban_member', kwargs = {'member_id': 999})
         self.client.login(username=self.user_club_owner.username, password="Password123")
-        response = self.client.get(self.url, follow=True)
+        response = self.client.get(self.url_ban, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
@@ -73,7 +73,7 @@ class BanMemberViewTestCase(TestCase):
 
     def test_ban_redirects_when_not_owner_or_officer(self): #Utilises the user bieng ban for test (a user being ban will never be an owner or ofificer)
         self.client.login(username=self.user_being_banned.username, password="Password123")
-        response = self.client.get(self.url, follow=True)
+        response = self.client.get(self.url_ban, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'members_list.html')
@@ -82,16 +82,25 @@ class BanMemberViewTestCase(TestCase):
 
     def test_ban_redirects_as_officer(self):
         self.client.login(username=self.user_club_officer.username, password="Password123")
-        response = self.client.get(self.url, follow=True)
+        response = self.client.get(self.url_ban, follow=True)
         self.assertFalse(self._has_member_been_banned())
         self.assertFalse(self._has_member_been_kicked())
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'members_list.html')
+    # 
+    # def test_ban_redirects_if_member_is_officer(self):
+    #     self.client.login(username=self.user_club_owner.username, password="Password123")
+    #     response = self.client.get(self.url_ban, follow=True)
+    #     self.assertFalse(self._has_member_been_banned())
+    #     self.assertFalse(self._has_member_been_kicked())
+    #     redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
+    #     self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+    #     self.assertTemplateUsed(response, 'members_list.html')
 
     def test_successful_ban_as_owner(self):
         self.client.login(username=self.user_club_owner.username, password="Password123")
-        response = self.client.get(self.url, follow=True)
+        response = self.client.get(self.url_ban, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'members_list.html')
