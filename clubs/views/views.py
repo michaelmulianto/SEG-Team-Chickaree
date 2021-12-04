@@ -208,22 +208,6 @@ def respond_to_application(request, app_id, is_accepted):
     return redirect("show_applications_to_club", club_id=club_applied.id)
 
 @login_required
-def change_password(request):
-    """Allow currently logged in user to change their password."""
-    if request.method == 'POST':
-        form = PasswordChangeForm(request.user, request.POST)
-        if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)  # Important!
-            messages.success(request, 'Your password was successfully updated!')
-            return redirect('account')
-        else:
-            messages.error(request, 'Please correct the error below.')
-    else:
-        form = PasswordChangeForm(request.user)
-    return render(request, 'change_password.html', { 'form': form , 'my_clubs':get_clubs_of_user(request.user)})
-
-@login_required
 @club_exists
 def show_club(request, club_id):
     """View details of a club."""
