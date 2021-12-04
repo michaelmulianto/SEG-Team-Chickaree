@@ -52,8 +52,14 @@
             <td> {{ member.user.bio }} </td>
 
             <script>
-              function confirmMsg(msg){
-                if(confirm(msg)){
+              var messages_dic = {
+                "kick": "Are you sure you want to kick this user from the club?",
+                "ban": "Are you sure you want to ban this user from the club?",
+                "ownership": "Are you sure you want to give up ownership?"
+              }
+              function confirmMsg(msgtype){
+
+                if(confirm(messages_dic)){
                   return true;
                 }else{
                   event.stopPropagation(); event.preventDefault();
@@ -82,10 +88,10 @@
             <td><a href='{% url 'promote_member_to_officer' member.id %}' class="btn btn-success">Promote</a></td>
                 {% endif %}
                 {%if member.is_officer %}
-            <td colspan="3" ><a href='{% url 'transfer_ownership_to_officer' member.id %}' onclick="confirmMsg('Are you sure you want to give up ownership?')" class="btn btn-warning">Transfer Ownership</a></td>
+            <td colspan="3" ><a href='{% url 'transfer_ownership_to_officer' member.id %}' onclick="confirmMsg('ownership')" class="btn btn-warning">Transfer Ownership</a></td>
                 {% else %}
-            <td><a href='{% url 'kick_member' member.id %}' onclick="confirmMsg('Are you sure you want to kick them from the club?')" class="btn btn-danger">Kick</a></td>
-            <td><a href='{% url 'ban_member' member.id %}' onclick="confirmMsg('Are you sure you want to ban them from the club?')" class="btn btn-danger">Ban</a></td>
+            <td><a href='{% url 'kick_member' member.id %}' onclick="confirmMsg('kick')" class="btn btn-danger">Kick</a></td>
+            <td><a href='{% url 'ban_member' member.id %}' onclick="confirmMsg('ban')" class="btn btn-danger">Ban</a></td>
                 {% endif %}
               {% elif is_officer %}
                 {% if is_member_an_owner %}
@@ -94,7 +100,7 @@
             <td style="text-align: center; width: 100px" ><b> Club officer <b></td>
               <!-- style="width: 15px" -->
                 {% else %}
-            <td style="width: 100px"><a style="width: 100px" href='{% url 'kick_member' member.id %}' onclick="confirmMsg('Are you sure you want to kick them from the club?')" class="btn btn-danger">Kick</a></td>
+            <td style="width: 100px"><a style="width: 100px" href='{% url 'kick_member' member.id %}' onclick="confirmMsg('kick')" class="btn btn-danger">Kick</a></td>
                 {% endif %}
               {% endif %}
             {% endif %}
