@@ -92,6 +92,7 @@ class Member(models.Model):
 
     class Meta:
         ordering = ['club']
+        unique_together = ("club", "user") #Contraint: No user is twice in the same club.
 
 
 class Application(models.Model):
