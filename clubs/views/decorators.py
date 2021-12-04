@@ -1,3 +1,5 @@
+"""Decorators representing requirements of views to be accessed"""
+
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.conf import settings

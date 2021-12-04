@@ -1,3 +1,4 @@
+"""Functions to aid functionality of the views"""
 from clubs.models import User, Club, Member, Application, Ban
 
 def is_user_officer_of_club(user, club):
