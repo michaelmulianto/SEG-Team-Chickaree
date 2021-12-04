@@ -13,16 +13,11 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm, EditClubInfoForm
 from clubs.models import User, Club, Application, Member, Ban
-from clubs.helpers import login_prohibited, club_exists, application_exists, membership_exists, ban_exists, not_banned, is_user_officer_of_club, is_user_owner_of_club, get_clubs_of_user
+from .helpers import login_prohibited, club_exists, application_exists, membership_exists, ban_exists, not_banned, is_user_officer_of_club, is_user_owner_of_club, get_clubs_of_user
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.views import View
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator    
-
-@login_prohibited
-def home(request):
-    """Generic splash page view for non-logged in user."""
-    return render(request, 'home.html')
 
 @login_prohibited
 def sign_up(request):
