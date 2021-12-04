@@ -19,3 +19,8 @@ def show_clubs(request):
     clubs = Club.objects.all()
     return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user, 'my_clubs':get_clubs_of_user(request.user)})
 
+@login_required
+@club_exists
+def manage_club(request, club_id):
+    club = Club.objects.get(id=club_id)
+    return render(request, 'manage_club.html', {'club': club, 'my_clubs':get_clubs_of_user(request.user)})

@@ -155,12 +155,6 @@ def respond_to_application(request, app_id, is_accepted):
     return redirect("show_applications_to_club", club_id=club_applied.id)
 
 @login_required
-@club_exists
-def manage_club(request, club_id):
-    club = Club.objects.get(id=club_id)
-    return render(request, 'manage_club.html', {'club': club, 'my_clubs':get_clubs_of_user(request.user)})
-
-@login_required
 @membership_exists
 def promote_member_to_officer(request, member_id):
     """Allow the owner of a club to promote some member of said club to officer."""
@@ -195,42 +189,3 @@ def members_list(request, club_id):
     members = Member.objects.filter(club = club)
     return render(request, 'members_list.html', {'members': members, 'club': club, 'current_user': current_user , 'my_clubs':get_clubs_of_user(request.user)})
 
-
-@login_required
-@membership_exists
-def transfer_ownership_to_officer(request, member_id):
-    """Allow the owner of a club to promote some member of said club to officer."""
-    member = Member.objects.get(id = member_id)
-    club = member.club
-    if not(Member.objects.filter(club=club, user=request.user, is_owner=True).exists()):
-        # Access denied, member isn't owner
-        return redirect('members_list', club_id=club.id)
-
-    curr_owner = Member.objects.get(club=club, user=request.user)
-    if not(member.is_officer):
-        # Targetted member should be an officer
-        return redirect('members_list', club_id=club.id)
-
-    member.is_owner = True
-    member.is_officer = False
-    member.save() # Or database won't update.
-
-    curr_owner.is_owner = False
-    curr_owner.is_officer = True
-    curr_owner.save()
-    return redirect('members_list', club_id=club.id)
-
-@login_required
-@club_exists
-def edit_club_info(request, club_id):
-    """Edit the details for the club as an owner."""
-    club = Club.objects.get(id = club_id)
-    current_user = request.user
-    if request.method == 'POST':
-        form = forms.EditClubInfoForm(instance = club, data=request.POST)
-        if form.is_valid():
-                form.save()
-                return redirect('show_clubs')
-    else:
-        form = EditClubInfoForm(instance = club)
-    return render(request, 'edit_club_info.html', {'form': form, 'club':Club.objects.get(id = club_id)})
