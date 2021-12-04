@@ -4,7 +4,7 @@ from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 
 from .helpers import get_clubs_of_user
-from .decorators import club_exists
+from .decorators import club_exists, membership_exists, club_exists
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
@@ -83,17 +83,37 @@ def transfer_ownership_to_officer(request, member_id):
     curr_owner.save()
     return redirect('members_list', club_id=club.id)
 
-@login_required
-@club_exists
-def edit_club_info(request, club_id):
-    """Edit the details for the club as an owner."""
-    club = Club.objects.get(id = club_id)
-    current_user = request.user
-    if request.method == 'POST':
-        form = forms.EditClubInfoForm(instance = club, data=request.POST)
-        if form.is_valid():
-                form.save()
-                return redirect('show_clubs')
-    else:
-        form = EditClubInfoForm(instance = club)
-    return render(request, 'edit_club_info.html', {'form': form, 'club':Club.objects.get(id = club_id)})
+class EditClubInfoView(UpdateView):
+    """Edit the details of a given club."""
+
+    model = Club
+    template_name = "edit_account.html"
+    form_class = EditClubInfoForm
+
+    @method_decorator(login_required)
+    def dispatch(self, request):
+        return super().dispatch(request)
+
+    def get_object(self):
+        """Return the object (club) to be updated."""
+        return Club.objects.get(id=self.kwargs['club_id'])
+
+    def get_success_url(self):
+        """Return redirect URL after successful update."""
+        messages.add_message(self.request, messages.SUCCESS, "Club Details updated!")
+        return reverse('account')
+
+# @login_required
+# @club_exists
+# def edit_club_info(request, club_id):
+#     """Edit the details for the club as an owner."""
+#     club = Club.objects.get(id = club_id)
+#     current_user = request.user
+#     if request.method == 'POST':
+#         form = forms.EditClubInfoForm(instance = club, data=request.POST)
+#         if form.is_valid():
+#                 form.save()
+#                 return redirect('show_clubs')
+#     else:
+#         form = EditClubInfoForm(instance = club)
+#     return render(request, 'edit_club_info.html', {'form': form, 'club':Club.objects.get(id = club_id)})

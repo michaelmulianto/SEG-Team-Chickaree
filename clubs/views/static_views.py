@@ -1,7 +1,7 @@
 """Various small views."""
 
 from .helpers import get_clubs_of_user
-from .decorators import login_prohibited
+from .decorators import login_prohibited, club_exists
 from django.contrib.auth.decorators import login_required
 
 from clubs.models import Club
