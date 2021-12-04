@@ -9,7 +9,7 @@ from django.utils.decorators import method_decorator
 from clubs.forms import LogInForm
 
 from django.contrib import messages
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render, redirect
