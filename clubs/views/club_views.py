@@ -8,11 +8,12 @@ from .decorators import club_exists, membership_exists, club_exists
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from clubs.forms import CreateClubForm
+from clubs.forms import CreateClubForm, EditClubInfoForm
 from clubs.models import Member, Club
 
+from django.contrib import messages
 from django.urls import reverse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 class CreateClubView(FormView):
     """Create a new club."""
@@ -87,11 +88,12 @@ class EditClubInfoView(UpdateView):
     """Edit the details of a given club."""
 
     model = Club
-    template_name = "edit_account.html"
+    template_name = "edit_club_info.html"
     form_class = EditClubInfoForm
 
     @method_decorator(login_required)
-    def dispatch(self, request):
+    @method_decorator(club_exists)
+    def dispatch(self, request, club_id):
         return super().dispatch(request)
 
     def get_object(self):
@@ -101,19 +103,4 @@ class EditClubInfoView(UpdateView):
     def get_success_url(self):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Club Details updated!")
-        return reverse('account')
-
-# @login_required
-# @club_exists
-# def edit_club_info(request, club_id):
-#     """Edit the details for the club as an owner."""
-#     club = Club.objects.get(id = club_id)
-#     current_user = request.user
-#     if request.method == 'POST':
-#         form = forms.EditClubInfoForm(instance = club, data=request.POST)
-#         if form.is_valid():
-#                 form.save()
-#                 return redirect('show_clubs')
-#     else:
-#         form = EditClubInfoForm(instance = club)
-#     return render(request, 'edit_club_info.html', {'form': form, 'club':Club.objects.get(id = club_id)})
+        return reverse('show_clubs')
