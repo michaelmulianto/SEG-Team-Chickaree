@@ -3,7 +3,7 @@
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 
-from .helpers import login_prohibited
+from .helpers import login_prohibited, get_clubs_of_user
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
@@ -14,7 +14,7 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.urls import reverse
 from django.conf import settings
-from django.shortcuts import redirect
+from django.shortcuts import render
 
 @login_required
 def account(request):
@@ -57,5 +57,5 @@ class EditAccountView(UpdateView):
     def get_success_url(self):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Account Details updated!")
-        return redirect('account')
+        return reverse('account')
 
