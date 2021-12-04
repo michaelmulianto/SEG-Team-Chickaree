@@ -229,16 +229,16 @@ def show_applications_to_club(request, club_id):
 
 @login_required
 @club_exists
-def ban_members(request, club_id):
+def banned_members(request, club_id):
     """Allow the owner of a club to view all applications to said club."""
     club_to_view = Club.objects.get(id = club_id)
-    if not is_user_owner_of_club(user.request, club_to_view):
+    if not is_user_owner_of_club(request.user, club_to_view):
         # Access denied
-        #return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
+        messages.error(request, "Only the club owner can view banned members")
         return redirect('show_clubs')
 
-    applications = Ban.objects.filter(club = club_to_view)
-    return render(request, 'application_list.html', {'applications': applications, 'my_clubs':get_clubs_of_user(request.user)})
+    banned_members = Ban.objects.filter(club = club_to_view)
+    return render(request, 'banned_member_list.html', {'club': club_to_view, 'banned_members': banned_members, 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
 @application_exists
