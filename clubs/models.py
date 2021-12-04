@@ -103,6 +103,7 @@ class Application(models.Model):
 
     class Meta:
         ordering = ['club']
+        unique_together = ("club", "user")
 
 class Ban(models.Model):
     "Medel for a ban to a club for some user"
