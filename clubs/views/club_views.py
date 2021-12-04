@@ -31,20 +31,3 @@ class CreateClubView(FormView):
 
     def get_success_url(self):
         return reverse('show_clubs')
-
-# @login_required
-# def create_club(request):
-#     """Create a new chess club. Handles club creation form."""
-#     if request.method == 'POST':
-#         current_user = request.user
-#         form = CreateClubForm(request.POST)
-#         if form.is_valid():
-#             new_club = form.save()
-#             Member.objects.create(
-#                 club = new_club,
-#                 user = current_user,
-#                 is_owner = True
-#             )
-#             return redirect('show_clubs')
-#         return render(request, 'create_club.html', {'form': form, 'my_clubs':get_clubs_of_user(request.user)})
-#     return render(request, 'create_club.html', {'form': CreateClubForm(), 'my_clubs':get_clubs_of_user(request.user)})
