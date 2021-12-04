@@ -103,7 +103,7 @@ class Application(models.Model):
 
     class Meta:
         ordering = ['club']
-        unique_together = ("club", "user")
+        unique_together = ("club", "user") #Contraint: No user can apply twice to the same club.
 
 class Ban(models.Model):
     "Model for a ban to a club for some user"
@@ -112,4 +112,4 @@ class Ban(models.Model):
 
     class Meta:
         ordering = ['club']
-        unique_together = ("club", "user")
+        unique_together = ("club", "user") #Contraint: No user is banned twice from the same club.
