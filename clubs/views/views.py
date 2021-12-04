@@ -144,11 +144,6 @@ def show_clubs(request):
     clubs = Club.objects.all()
     return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user, 'my_clubs':get_clubs_of_user(request.user)})
 
-def log_out(request):
-    """If a user is logged in, log them out."""
-    logout(request)
-    return redirect('home')
-
 @login_required
 @club_exists
 def show_applications_to_club(request, club_id):
