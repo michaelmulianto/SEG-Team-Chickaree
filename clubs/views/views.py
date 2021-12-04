@@ -20,23 +20,6 @@ from django.views import View
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator    
 
 @login_prohibited
-def sign_up(request):
-    """View to allow user to create an account, and thus a corresponding user object."""
-    # If POST, form has been submitted.
-    if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
-
-    # If not POST, visitor is trying to view the form e.g. via home
-    else:
-        form = SignUpForm()
-
-    return render(request, 'sign_up.html', {'form': form})
-
-@login_prohibited
 def log_in(request):
     """View to allow an already registered user to log in."""
     if request.method == 'POST':
@@ -61,11 +44,6 @@ def log_in(request):
     #return render(request, 'log_in.html', {'title': title+"| Log In", 'form': form}) when title is ready
 
 @login_required
-def account(request):
-    """Render a page displaying the attributes of the currently logged in user."""
-    return render(request, 'account.html', {'user': request.user, 'my_clubs':get_clubs_of_user(request.user)})
-
-@login_required
 def my_clubs_list(request):
     current_user = request.user
     my_clubs = []
@@ -86,22 +64,6 @@ def my_clubs_list(request):
         page_obj  = paginator.page(paginator.num_pages)
 
     return render(request, 'my_clubs_list.html', {'clubs': my_clubs, 'current_user':current_user, 'page_obj':page_obj, 'my_clubs':get_clubs_of_user(request.user)})
-
-@login_required
-def edit_account(request):
-    """Edit the details for the currently logged in user."""
-    current_user = request.user
-    if request.method == 'POST':
-        form = EditAccountForm(instance = current_user, data=request.POST)
-        if form.is_valid():
-            messages.add_message(request, messages.SUCCESS, "Account Details updated!")
-            form.save()
-            return redirect('account')
-    else:
-        #make form with the current user information
-        form = EditAccountForm(instance = current_user)
-    return render(request, 'edit_account.html', {'form': form, 'my_clubs':get_clubs_of_user(request.user)})
-
 
 @login_required
 def create_club(request):
