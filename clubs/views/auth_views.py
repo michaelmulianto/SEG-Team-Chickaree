@@ -51,3 +51,9 @@ class LogInView(View):
 
         form = LogInForm()
         return render(self.request, 'log_in.html', {'form': form, 'next': self.next})
+
+
+def log_out(request):
+    """If a user is logged in, log them out."""
+    logout(request)
+    return redirect('home')
