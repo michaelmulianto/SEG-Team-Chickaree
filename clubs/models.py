@@ -109,3 +109,6 @@ class Ban(models.Model):
     "Medel for a ban to a club for some user"
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
+
+    class Meta:
+        ordering = ['club']
