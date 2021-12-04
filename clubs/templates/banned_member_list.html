@@ -12,6 +12,13 @@
           }
         </style>
         <table class="table standard-table-spacing">
+
+        {% if banned_members.count == 0 %}
+          <br>
+          <tr>
+            <b><p style="font-size: 250%;"> No banned members </p> </b>
+          </tr>
+        {% else %}
           <tr>
             <th></th>
             <th></th>
@@ -23,7 +30,7 @@
             <th></th>
 
           </tr>
-        {% for ban_member in banned_members %}
+          {% for ban_member in banned_members %}
           <tr>
             <td> {{ forloop.counter }} <td>
             <td> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
@@ -34,7 +41,8 @@
             <td> {{ ban_member.user.bio }} </td>
             <td style="width: 100px"><a style="width: 100px" href='{% url 'unban_member' ban_member.id %}' class="btn btn-danger">Unban</a></td>
           </tr>
-        {% endfor %}
+          {% endfor %}
+        {% endif %}
         </table>
       </div>
     </div>
