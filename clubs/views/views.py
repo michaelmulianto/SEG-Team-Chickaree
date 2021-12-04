@@ -20,30 +20,6 @@ from django.views.generic import ListView
 from django.views import View
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator    
 
-@login_prohibited
-def log_in(request):
-    """View to allow an already registered user to log in."""
-    if request.method == 'POST':
-        form = LogInForm(request.POST)
-        next = request.POST.get('next') or ''
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                redirect_url = next or settings.REDIRECT_URL_WHEN_LOGGED_IN
-                return redirect(redirect_url)
-            elif User.objects.filter(username=username).exists():
-                messages.add_message(request, messages.ERROR, "Wrong password")
-        else:
-            messages.add_message(request, messages.ERROR, "The credentials provided are invalid!")
-    else:
-        next = request.GET.get('next') or ''
-    form = LogInForm()
-    return render(request, 'log_in.html', {'form': form, 'next' : next})
-    #return render(request, 'log_in.html', {'title': title+"| Log In", 'form': form}) when title is ready
-
 @login_required
 def my_clubs_list(request):
     current_user = request.user
