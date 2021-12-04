@@ -43,23 +43,6 @@ def my_clubs_list(request):
     return render(request, 'my_clubs_list.html', {'clubs': my_clubs, 'current_user':current_user, 'page_obj':page_obj, 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
-def create_club(request):
-    """Create a new chess club. Handles club creation form."""
-    if request.method == 'POST':
-        current_user = request.user
-        form = CreateClubForm(request.POST)
-        if form.is_valid():
-            new_club = form.save()
-            Member.objects.create(
-                club = new_club,
-                user = current_user,
-                is_owner = True
-            )
-            return redirect('show_clubs')
-        return render(request, 'create_club.html', {'form': form, 'my_clubs':get_clubs_of_user(request.user)})
-    return render(request, 'create_club.html', {'form': CreateClubForm(), 'my_clubs':get_clubs_of_user(request.user)})
-
-@login_required
 @club_exists
 @not_banned
 def apply_to_club(request, club_id):
@@ -136,13 +119,6 @@ def unban_member(request, ban_id):
         member = Member.objects.get(club=club, is_owner=True)
         messages.error(request, 'Only the owner can unban users. Please ask ' + member.user.first_name + ' ' + member.user.last_name + ' to perform this action for you.')
     return redirect('members_list', club_id=club.id)
-
-
-@login_required
-def show_clubs(request):
-    """Return a list of every club created on the website"""
-    clubs = Club.objects.all()
-    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user, 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
 @club_exists
