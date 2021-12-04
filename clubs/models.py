@@ -112,3 +112,4 @@ class Ban(models.Model):
 
     class Meta:
         ordering = ['club']
+        unique_together = ("club", "user")
