@@ -1,0 +1,67 @@
+{% extends 'base_content.html' %}
+{% block content %}
+{% load define_action %}
+{% check_is_owner club current_user as is_owner %}
+{% check_is_officer club current_user as is_officer %}
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1>{{club.name}} Members: </h1>
+        <style>
+          .standard-table-spacing{
+            vertical-align: middle;
+            border-spacing: 10px 2px;
+          }
+        </style>
+        <table class="table standard-table-spacing">
+          <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>Name</th>
+            <th>Username</th>
+
+            {% if is_owner or is_officer %}
+            <th>Email</th>
+            {% endif %}
+
+            <th>Bio</th>
+            <th></th>
+
+          </tr>
+        {% for ban_member in banned_members %}
+          <tr>
+            <td> {{ forloop.counter }} <td>
+            <td> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
+            <td> @{{ ban_member.user.username }} </td>
+            <td> {{ ban_member.user.first_name }} {{ ban_member.user.last_name }} </td>
+
+
+            {% if is_owner or is_officer %}
+            <td> {{ ban_member.user.email }} </td>
+            <!-- <td> {{ban_member.user.level}}<td> -->
+            {% endif %}
+
+            <td> {{ ban_member.user.bio }} </td>
+
+            {% check_is_officer club ban_member.user as is_member_an_officer %}
+            {% check_is_owner club ban_ban_member.user as is_member_an_owner %}
+
+            {% if ban_member.user == current_user %}
+
+              {% if is_owner %}
+            <td style="text-align: center; width: 200px" colspan="3"><b> This is you! <b></td>
+              {% elif is_officer %}
+            <td style="text-align: center" ><b> This is you! <b></td>
+              {% endif %}
+
+            {% else %}
+            <td style="width: 100px"><a style="width: 100px" href='{% url 'unban_member' ban_member.id %}' class="btn btn-danger">Unban</a></td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

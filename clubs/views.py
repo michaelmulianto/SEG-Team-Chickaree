@@ -224,7 +224,20 @@ def show_applications_to_club(request, club_id):
         #return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
         return redirect('show_clubs')
 
-    applications = Application.objects.all().filter(club = club_to_view)
+    applications = Application.objects.filter(club = club_to_view)
+    return render(request, 'application_list.html', {'applications': applications, 'my_clubs':get_clubs_of_user(request.user)})
+
+@login_required
+@club_exists
+def ban_members(request, club_id):
+    """Allow the owner of a club to view all applications to said club."""
+    club_to_view = Club.objects.get(id = club_id)
+    if not is_user_owner_of_club(user.request, club_to_view):
+        # Access denied
+        #return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
+        return redirect('show_clubs')
+
+    applications = Ban.objects.filter(club = club_to_view)
     return render(request, 'application_list.html', {'applications': applications, 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
