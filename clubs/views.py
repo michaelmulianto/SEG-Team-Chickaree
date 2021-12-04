@@ -13,7 +13,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm, EditClubInfoForm
 from clubs.models import User, Club, Application, Member, Ban
-from clubs.helpers import login_prohibited, club_exists, application_exists, membership_exists, not_banned, is_user_officer_of_club, is_user_owner_of_club
+from clubs.helpers import login_prohibited, club_exists, application_exists, membership_exists, not_banned, is_user_officer_of_club, is_user_owner_of_club, sort_clubs
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -188,28 +188,12 @@ def ban_member(request, member_id):
 @login_required
 def show_clubs(request, param=None, order=None):
     """Return a list of every club created on the website"""
-    if order == None:
-        clubs = Club.objects.all()
-    elif order == "asc":
-        clubs = Club.objects.order_by(param)
-        order = "des"
-    elif order == "des":
-        clubs = Club.objects.order_by("-" + param)
-        order = "asc"
-    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user, 'order': order})
-
-@login_required
-def search_clubs(request):
-    """Return a list of clubs based on search result"""
     if request.method == "POST":
         searched = request.POST.get('searched')
-        if searched:
-            clubs = Club.objects.filter(name__contains=searched)
-            return render(request, 'search_clubs.html', {'searched': searched, 'clubs': clubs, 'current_user': request.user})
-        else:
-            return redirect('show_clubs')
-    else:
-        return render(request, 'search_clubs.html', {})
+        clubs = Club.objects.filter(name__contains=searched)
+        return render(request, 'show_clubs.html', {'searched': searched, 'clubs': clubs, 'current_user': request.user})
+    clubs = sort_clubs(param, order)
+    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user, 'order': order})
 
 def log_out(request):
     """If a user is logged in, log them out."""
