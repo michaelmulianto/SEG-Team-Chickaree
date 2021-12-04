@@ -186,20 +186,30 @@ def ban_member(request, member_id):
     return redirect('members_list', club_id=club.id)
 
 @login_required
-def show_clubs(request, order=None):
+def show_clubs(request, param=None, order=None):
     """Return a list of every club created on the website"""
-    symbol = "↑"
     if order == None:
         clubs = Club.objects.all()
-        order = "asc"
     elif order == "asc":
-        clubs = Club.objects.order_by('name')
+        clubs = Club.objects.order_by(param)
         order = "des"
-        symbol = "↓"
     elif order == "des":
-        clubs = Club.objects.order_by('-name')
+        clubs = Club.objects.order_by("-" + param)
         order = "asc"
-    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user, 'order': order, 'symbol': symbol})
+    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user, 'order': order})
+
+@login_required
+def search_clubs(request):
+    """Return a list of clubs based on search result"""
+    if request.method == "POST":
+        searched = request.POST.get('searched')
+        if searched:
+            clubs = Club.objects.filter(name__contains=searched)
+            return render(request, 'search_clubs.html', {'searched': searched, 'clubs': clubs, 'current_user': request.user})
+        else:
+            return redirect('show_clubs')
+    else:
+        return render(request, 'search_clubs.html', {})
 
 def log_out(request):
     """If a user is logged in, log them out."""
