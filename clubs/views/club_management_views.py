@@ -3,6 +3,7 @@
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 
+from .helpers import is_user_owner_of_club
 from .decorators import club_exists, membership_exists
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -42,7 +43,7 @@ def transfer_ownership_to_officer(request, member_id):
     """Allow the owner of a club to promote some member of said club to officer."""
     member = Member.objects.get(id = member_id)
     club = member.club
-    if not(Member.objects.filter(club=club, user=request.user, is_owner=True).exists()):
+    if not(is_user_owner_of_club(request.user, club)):
         # Access denied, member isn't owner
         return redirect('members_list', club_id=club.id)
 
