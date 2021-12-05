@@ -3,16 +3,17 @@
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 
-from .decorators import club_exists, membership_exists
+from .helpers import get_clubs_of_user
+from .decorators import club_exists, membership_exists, not_banned
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from clubs.forms import CreateClubForm, EditClubInfoForm
-from clubs.models import Member, Club
+from clubs.forms import ApplyToClubForm
+from clubs.models import Member, Club, Application
 
 from django.contrib import messages
 from django.urls import reverse
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
 
 @login_required
 @club_exists
@@ -22,7 +23,7 @@ def apply_to_club(request, club_id):
     if request.method == 'POST':
         desired_club = Club.objects.get(id = club_id)
         current_user = request.user
-        form = forms.ApplyToClubForm(request.POST)
+        form = ApplyToClubForm(request.POST)
         if form.is_valid():
             if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
                 form.save(desired_club, current_user)
@@ -34,7 +35,7 @@ def apply_to_club(request, club_id):
             messages.add_message(request, messages.ERROR, "You are already a member in this club")
         return render(request, 'apply_to_club.html', {'form': form, 'club':desired_club, 'my_clubs':get_clubs_of_user(request.user)})
     else: # GET
-        return render(request, 'apply_to_club.html', {'form': forms.ApplyToClubForm(), 'club':Club.objects.get(id = club_id), 'my_clubs':get_clubs_of_user(request.user)})
+        return render(request, 'apply_to_club.html', {'form': ApplyToClubForm(), 'club':Club.objects.get(id = club_id), 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
 @club_exists
