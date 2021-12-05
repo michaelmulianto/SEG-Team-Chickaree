@@ -12,17 +12,27 @@ from django.core.exceptions import ValidationError
 class MemberModelTestCase(TestCase):
     """Test all aspects of a Membership to a club."""
 
-    fixtures = ['clubs/tests/fixtures/default_club.json',
-    'clubs/tests/fixtures/default_user.json']
+    fixtures = [
+        'clubs/tests/fixtures/default_club.json',
+        'clubs/tests/fixtures/default_user.json',
+        'clubs/tests/fixtures/other_users.json'
+    ]
 
     # Test setup
     def setUp(self):
         self.club = Club.objects.get(name="King\'s Knights")
         self.user = User.objects.get(username="johndoe")
+        self.user_club_owner = User.objects.get(username="janedoe")
         self.membership = Member.objects.create(
             user = self.user,
-            club = self.club,
+            club = self.club
         )
+        self.member_club_owner = Member.objects.create(
+            user = self.user_club_owner,
+            club = self.club,
+            is_owner = True
+        )
+
 
     def test_valid_member_object(self):
         self._assert_member_is_valid()
@@ -67,6 +77,10 @@ class MemberModelTestCase(TestCase):
             user = self.user,
             club = self.club,
         )
+        self._assert_member_is_invalid()
+
+    def test_club_only_has_one_owner(self):
+        self.membership.is_owner = True
         self._assert_member_is_invalid()
 
     #assertions
