@@ -61,6 +61,14 @@ class MemberModelTestCase(TestCase):
         self.membership.delete()
         self.assertTrue(User.objects.filter(id=self.user.id).exists())
 
+    #Constraints:
+    def test_user_and_club_together_are_unique(self):
+        Member.objects.create(
+            user = self.user,
+            club = self.club,
+        )
+        self._assert_member_is_invalid()
+
     #assertions
     def _assert_member_is_valid(self):
         try:
