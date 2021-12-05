@@ -285,6 +285,7 @@ def show_club(request, club_id):
     club = Club.objects.get(id=club_id)
     members = Member.objects.filter(club = club_id)
     officers = members.filter(is_officer = True)
+    officerCount = officers.count()
     getOwner = members.get(is_owner = True)
     numberOfMembers = members.count()
     checkUserisMember = members.filter(user = current_user)
@@ -297,13 +298,7 @@ def show_club(request, club_id):
         isMember = True
     if checkUserisMember.filter(is_officer = True).count() > 0:
         isOfficer = True
-    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner, 'userIsOwner': isOwner, 'userIsOfficer': isOfficer, 'officers': officers, 'my_clubs':get_clubs_of_user(request.user)})
-
-@login_required
-@club_exists
-def manage_club(request, club_id):
-    club = Club.objects.get(id=club_id)
-    return render(request, 'manage_club.html', {'club': club, 'my_clubs':get_clubs_of_user(request.user)})
+    return render(request, 'show_club.html', {'current_user': request.user, 'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner, 'userIsOwner': isOwner, 'userIsOfficer': isOfficer, 'officers': officers, 'my_clubs':get_clubs_of_user(request.user), 'officerCount': officerCount})
 
 @login_required
 @membership_exists
