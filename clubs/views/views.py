@@ -180,12 +180,3 @@ def demote_officer_to_member(request, member_id):
     member.save() # Or database won't update.
     return redirect('members_list', club_id=club.id)
 
-@login_required
-@club_exists
-def members_list(request, club_id):
-    """Display a list of the members in a club"""
-    current_user = request.user
-    club = Club.objects.get(id = club_id)
-    members = Member.objects.filter(club = club)
-    return render(request, 'members_list.html', {'members': members, 'club': club, 'current_user': current_user , 'my_clubs':get_clubs_of_user(request.user)})
-
