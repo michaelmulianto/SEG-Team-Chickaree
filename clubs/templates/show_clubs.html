@@ -9,75 +9,96 @@
       <h1 style=font-size:85px> Chess Clubs </h1>
       <p> Welcome to chess clubs, a place to share your love for chess. Join a club from the list below to play with fellow chess enthusiasts. </p>
       <p> Can't find a club that is right for you? Create your own club for free! </p>
-      <br>
-      <div class="d-flex justify-content-center">
-        <a href="{% url 'create_club' %}" class="btn btn-primary btn-lg">Create New Club</a>
-      </div>
-      {% include 'partials/searchbar.html' %}
-      <a class="btn btn-secondary" href="#" id="sort-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Sort By
-      </a>
-      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="sort-dropdown">
-        <li><a class="dropdown-item" href="{% url 'show_clubs' "name" "asc" %}">Name (A-Z)</a></li>
-        <li><a class="dropdown-item" href="{% url 'show_clubs' "name" "des" %}">Name (Z-A)</a></li>
-      </ul>
-      {% if searched %}
-      <h1>You searched for {{ searched }}</h1>
-      {% endif %}
-
-      <table class="table table-hover">
-        {% load static %}
-        {% load define_action %}
-        {% for club in clubs %}
-        <tr onclick=window.location="{% url 'show_club' club.id %}">
-          <td style="width:0.1%; white-space: nowrap"><img src={% static 'images/pawn.jpg' %} style="max-width: 150px" alt="Club image, default pawn"></td>
-          <td>
-            <table>
-              <tr>
-                <td style="font-size: 35px"><b>{{ club.name }}</b></td>
-              </tr>
-              <tr>
-                <td><div style="max-height:60px; max-width: 775px; overflow:hidden; text-overflow: ellipsis; white-space: nowrap">{{ club.description }}</div></td>
-              </tr>
-              <tr>
-                {% count_members club as members %}
-                <td><i class="bi bi-people-fill"></i> {{ members }} </td>
-              </tr>
-            </table>
-          </td>
-
-          {% check_has_applied club current_user as has_applied %}
-          {% check_is_member club current_user as is_member %}
-          <script>
-          function confirmWithdrawApplication(){
-            if(confirm('Are you sure you want to withdraw your application?')){
-              return true;
-            }else{
-              event.stopPropagation(); event.preventDefault();
-            }
-          }
-          function confirmLeaveClub(){
-            if(confirm('Are you sure you want to leave the club?')){
-              return true;
-            }else{
-              event.stopPropagation(); event.preventDefault();
-            }
-          }
-          </script>
-          {% if has_applied %}
-          <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmWithdrawApplication()" class="btn btn-warning">Withdraw application</a></td>
-          {% elif is_member %}
-          {% check_is_owner club current_user as is_owner %}
-          {% if is_owner %}
-          <td style="text-align: center; vertical-align: bottom; padding: 25px"> You are the owner. </td>
-          {% else %}
-          <td style="vertical-align: bottom; padding: 25px"><a href='{% url 'leave_club' club.id %}' onclick="confirmLeaveClub()" class="btn btn-danger">Leave club</a></td>
-          {% endif%}
-          {% else %}
-          <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success">Apply to club</a></td>
-          {% endif %}
-        </tr>
-        {% endfor %}
-      </table>
+    </div>
   </div>
-  {% endblock %}
+  <div class="row">
+    <div class="col-md-3">
+      <a href="{% url 'create_club' %}" class="btn btn-primary btn-lg">Create New Club
+      </a>
+    </div>
+    <div class="col-md-9">
+      <div class="row">
+        <div class="col-md-12">
+          {% include 'partials/searchbar.html' %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-8"></div>
+        <div class="col-md-4">
+          <a class="btn btn-secondary" href="#" id="sort-dropdown" style="width:30%; margin:3%; float: right;" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Sort By
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="sort-dropdown">
+            <li><a class="dropdown-item" href="{% url 'show_clubs' "name" "asc" %}">Name (A-Z)</a></li>
+            <li><a class="dropdown-item" href="{% url 'show_clubs' "name" "des" %}">Name (Z-A)</a></li>
+          </ul>
+          <a class="btn btn-secondary" href="#" id="filter-dropdown" style="width:30%; margin:3%; float: right;" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Filter
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filter-dropdown">
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if searched %}
+  <h1>You searched for {{ searched }}</h1>
+  {% endif %}
+
+  <table class="table table-hover">
+    {% load static %}
+    {% load define_action %}
+    {% for club in clubs %}
+    <tr onclick=window.location="{% url 'show_club' club.id %}">
+      <td style="width:0.1%; white-space: nowrap"><img src={% static 'images/pawn.jpg' %} style="max-width: 150px" alt="Club image, default pawn"></td>
+      <td>
+        <table>
+          <tr>
+            <td style="font-size: 35px"><b>{{ club.name }}</b></td>
+          </tr>
+          <tr>
+            <td><div style="max-height:60px; max-width: 775px; overflow:hidden; text-overflow: ellipsis; white-space: nowrap">{{ club.description }}</div></td>
+          </tr>
+          <tr>
+            {% count_members club as members %}
+            <td><i class="bi bi-people-fill"></i> {{ members }} </td>
+          </tr>
+        </table>
+      </td>
+
+      {% check_has_applied club current_user as has_applied %}
+      {% check_is_member club current_user as is_member %}
+      <script>
+      function confirmWithdrawApplication(){
+        if(confirm('Are you sure you want to withdraw your application?')){
+          return true;
+        }else{
+          event.stopPropagation(); event.preventDefault();
+        }
+      }
+      function confirmLeaveClub(){
+        if(confirm('Are you sure you want to leave the club?')){
+          return true;
+        }else{
+          event.stopPropagation(); event.preventDefault();
+        }
+      }
+      </script>
+      {% if has_applied %}
+      <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmWithdrawApplication()" class="btn btn-warning">Withdraw application</a></td>
+      {% elif is_member %}
+      {% check_is_owner club current_user as is_owner %}
+      {% if is_owner %}
+      <td style="text-align: center; vertical-align: bottom; padding: 25px"> You are the owner. </td>
+      {% else %}
+      <td style="vertical-align: bottom; padding: 25px"><a href='{% url 'leave_club' club.id %}' onclick="confirmLeaveClub()" class="btn btn-danger">Leave club</a></td>
+      {% endif%}
+      {% else %}
+      <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success">Apply to club</a></td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

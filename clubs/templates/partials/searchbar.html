@@ -1,5 +1,5 @@
 <form class="d-flex" method=POST action="{% url 'show_clubs' %}">
   {% csrf_token %}
-  <input class="form-control" type="search" placeholder="Search Clubs" aria-label="Search" name="searched">
-  <button class="btn btn-secondary" type="submit">Search</button>
+  <span style="font-size:1.5em;">&#x1F50D;&nbsp;</span> <input class="form-control" type="search" placeholder="Search Clubs" aria-label="Search" name="searched">
+  <button class="btn btn-secondary" style="margin: 0 1%; width: 15%;" type="submit">Search</button>
 </form>
