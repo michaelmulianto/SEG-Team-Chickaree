@@ -69,13 +69,16 @@
           </table>
 
 
-          <p><td><a href='{% url 'members_list' club.id %}'>Show Members</a></td></p>
+          <td><a href='{% url 'members_list' club.id %}' class="btn btn-primary">Show Members</a></td>
         {%endif%}
         {% if userIsOwner == True%}
-          <td><a href='{% url 'manage_club' club.id %}'>Manage Club</a></td>
+          <td><a href='{% url 'banned_members' club.id %}' class="btn btn-primary">Banned Members</a></td>
+          <td><a href='#' class="btn btn-primary">Edit</a></td>
+          <td><a href='#' class="btn btn-primary">Show Applications</a></td>
         {%endif%}
         {% if userIsOfficer == True%}
-          <td><a href='{% url 'manage_club' club.id %}'>Manage Club</a></td>
+          <td><a href='{% url 'banned_members' club.id %}' class="btn btn-primary">Banned Members</a></td>
+          <td><a href='#' class="btn btn-primary">Show Applications</a></td>
         {%endif%}
       </div>
     </div>
