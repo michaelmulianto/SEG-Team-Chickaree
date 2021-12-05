@@ -26,9 +26,14 @@ class ApplyToClubView(FormView):
     def dispatch(self, request, club_id):
         return super().dispatch(request)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['club'] = Club.objects.get(id=self.kwargs['club_id'])
+        return context
+
     def form_valid(self, form):
         current_user = self.request.user
-        desired_club = Club.objects.get(id=self.kwargs['club_id'])
+        desired_club = self.get_context_data()['club']
 
         if Application.objects.filter(club=desired_club, user = current_user).exists():
             messages.add_message(self.request, messages.ERROR, "You have already applied for this club")
@@ -39,14 +44,9 @@ class ApplyToClubView(FormView):
             return super().form_valid(form)
 
         return self.form_invalid(form)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['club'] = Club.objects.get(id=self.kwargs['club_id'])
-        return context
 
     def get_success_url(self):
-        messages.add_message(self.request, messages.SUCCESS, f"Applied to {Club.objects.get(id=self.kwargs['club_id']).name}!")
+        messages.add_message(self.request, messages.SUCCESS, f"Applied to {self.get_context_data()['club'].name}!")
         return reverse('show_clubs')
 
 
