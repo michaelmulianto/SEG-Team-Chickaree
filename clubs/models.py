@@ -10,6 +10,7 @@ Implemented:
 
 from libgravatar import Gravatar
 from django.db import models
+from django.db.models import UniqueConstraint, CheckConstraint
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 
@@ -92,7 +93,12 @@ class Member(models.Model):
 
     class Meta:
         ordering = ['club']
-        unique_together = ("club", "user") #Contraint: No user is twice in the same club.
+        constraints = [
+            UniqueConstraint(
+                name='user_in_club_unique',
+                fields=['club', 'user'],
+            )
+        ]
 
 
 class Application(models.Model):
@@ -103,7 +109,12 @@ class Application(models.Model):
 
     class Meta:
         ordering = ['club']
-        unique_together = ("club", "user") #Contraint: No user can apply twice to the same club.
+        constraints = [
+            UniqueConstraint(
+                name='application_to_club_unique',
+                fields=['club', 'user'],
+            )
+        ]
 
 class Ban(models.Model):
     "Model for a ban to a club for some user"
@@ -112,4 +123,9 @@ class Ban(models.Model):
 
     class Meta:
         ordering = ['club']
-        unique_together = ("club", "user") #Contraint: No user is banned twice from the same club.
+        constraints = [
+            UniqueConstraint(
+                name='user_ban_from_club_unique',
+                fields=['club', 'user'],
+            ) 
+        ]
