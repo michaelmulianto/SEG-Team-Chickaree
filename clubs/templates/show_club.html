@@ -7,7 +7,6 @@
     <div class="row">
       <div class="col-12">
         {%csrf_token%}
-        <td><a href='{{request.META.HTTP_REFERER}}' class="btn btn-primary">Back</a></td>
         <h1><b>{{club.name}}</b></h1>
         <P><B>Location: </b> {{club.location}}</p>
         <p><b>Description: </b> {{club.description}} </p>
@@ -35,7 +34,6 @@
             <td><i></i></td>
           </tr>
           </table>
-          <td><a href='{% url 'apply_to_club' club.id %}' class="btn btn-primary">Apply to club</a></td>
         {% else %}
           <b>Officers: </b>
           {%if officerCount == 0%}
@@ -82,6 +80,39 @@
           <td><a href='{% url 'banned_members' club.id %}' class="btn btn-primary">Banned Members</a></td>
           <td><a href='{% url 'show_applications_to_club' club.id %}' class="btn btn-primary">Show Applications</a></td>
         {%endif%}
+
+
+        {% load static %}
+        {% load define_action %}
+        {% check_has_applied club current_user as has_applied %}
+        <script>
+          function confirmWithdrawApplication(){
+            if(confirm('Are you sure you want to withdraw your application?')){
+              return true;
+            }else{
+              event.stopPropagation(); event.preventDefault();
+            }
+          }
+          function confirmLeaveClub(){
+            if(confirm('Are you sure you want to leave the club?')){
+              return true;
+            }else{
+              event.stopPropagation(); event.preventDefault();
+            }
+          }
+          </script>
+          {% if has_applied %}
+          <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmWithdrawApplication()" class="btn btn-warning">Withdraw application</a></td>
+          {% elif userIsMember %}
+          {% check_is_owner club current_user as is_owner %}
+          {% if is_owner %}
+          <td style="text-align: center; vertical-align: bottom; padding: 25px"> You are the owner. </td>
+          {% else %}
+          <td style="vertical-align: bottom; padding: 25px"><a href='{% url 'leave_club' club.id %}' onclick="confirmLeaveClub()" class="btn btn-danger">Leave club</a></td>
+          {% endif%}
+          {% else %}
+          <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success">Apply to club</a></td>
+          {% endif %}
       </div>
     </div>
   </div>
