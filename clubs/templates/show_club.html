@@ -14,6 +14,7 @@
         <p><b>Number of Members: </b> {{members}} </p>
         {% if userIsMember == False %}
           <td><a href='{% url 'apply_to_club' club.id %}' class="btn btn-primary">Apply to club</a></td>
+
         {% else %}
           <b>Owner: </b>
           <table class="table">
@@ -41,34 +42,39 @@
           </tr>
           </table>
           <b>Officers: </b>
-          <table class="table">
-            <td><b></b></td>
-            <td><b>Username</b></td>
-            <td><b>Last Name</b></td>
-            <td><b>First Name</b></td>
-            {% if userIsOwner or userIsOfficer%}
-            <td><b>Email</b></td>
-            {%endif%}
+          {%if officerCount == 0%}
+            <td><a>No Officers</a></td>
 
-          {% for officer in officers %}
-          <tr>
-            <td><a> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </a></td>
-            <td><a>{{ officer.user }}</a></td>
-            <td><a>{{ officer.user.last_name }}</a></td>
-            <td><a>{{ officer.user.first_name }}</a></td>
-            {% if userIsOwner == True%}
-            <td><a>{{ officer.user.email }}</a></td>
-            {%endif%}
-            {% if userIsOfficer == True%}
-            <td><a>{{ officer.user.email }}</a></td>
-            {%endif%}
-            <td><i></i></td>
-          </tr>
-          {% endfor %}
-          </table>
+          {%else%}
+            <table class="table">
+              <td><b></b></td>
+              <td><b>Username</b></td>
+              <td><b>Last Name</b></td>
+              <td><b>First Name</b></td>
+              {% if userIsOwner or userIsOfficer%}
+              <td><b>Email</b></td>
+              {%endif%}
 
+              {% for officer in officers %}
+              <tr>
+                <td><a> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </a></td>
+                <td><a>{{ officer.user }}</a></td>
+                <td><a>{{ officer.user.last_name }}</a></td>
+                <td><a>{{ officer.user.first_name }}</a></td>
+                {% if userIsOwner == True%}
+                <td><a>{{ officer.user.email }}</a></td>
+                {%endif%}
+                {% if userIsOfficer == True%}
+                <td><a>{{ officer.user.email }}</a></td>
+                {%endif%}
+                <td><i></i></td>
+              </tr>
+              {% endfor %}
+              {%endif%}
 
-          <td><a href='{% url 'members_list' club.id %}' class="btn btn-primary">Show Members</a></td>
+            </table>
+            <p></p>
+            <td><a href='{% url 'members_list' club.id %}' class="btn btn-primary">Show Members</a></td>
         {%endif%}
         {% if userIsOwner == True%}
           <td><a href='{% url 'banned_members' club.id %}' class="btn btn-primary">Banned Members</a></td>
