@@ -42,38 +42,6 @@ def my_clubs_list(request):
 
     return render(request, 'my_clubs_list.html', {'clubs': my_clubs, 'current_user':current_user, 'page_obj':page_obj, 'my_clubs':get_clubs_of_user(request.user)})
 
-@login_required
-@club_exists
-@not_banned
-def apply_to_club(request, club_id):
-    """Have currently logged in user create an application to a specified club."""
-    if request.method == 'POST':
-        desired_club = Club.objects.get(id = club_id)
-        current_user = request.user
-        form = forms.ApplyToClubForm(request.POST)
-        if form.is_valid():
-            if not(Application.objects.filter(club=desired_club, user = current_user).exists()) and not(Member.objects.filter(club=desired_club, user = current_user).exists()):
-                form.save(desired_club, current_user)
-                return redirect('show_clubs')
-        # Else: Invalid form/Already applied/Already member
-        if Application.objects.filter(club=desired_club, user = current_user).exists():
-            messages.add_message(request, messages.ERROR, "You have already applied for this club")
-        elif Member.objects.filter(club=desired_club, user = current_user).exists():
-            messages.add_message(request, messages.ERROR, "You are already a member in this club")
-        return render(request, 'apply_to_club.html', {'form': form, 'club':desired_club, 'my_clubs':get_clubs_of_user(request.user)})
-    else: # GET
-        return render(request, 'apply_to_club.html', {'form': forms.ApplyToClubForm(), 'club':Club.objects.get(id = club_id), 'my_clubs':get_clubs_of_user(request.user)})
-
-@login_required
-@club_exists
-def withdraw_application_to_club(request, club_id):
-    """Have currently logged in user delete an application to the specified club, if it exists."""
-    current_user = request.user
-    applied_club = Club.objects.get(id=club_id)
-    if Application.objects.filter(club=applied_club, user = current_user).exists():
-        Application.objects.get(club=applied_club, user=current_user).delete()
-        return redirect('show_clubs')
-    return redirect('show_clubs')
 
 @login_required
 @membership_exists
