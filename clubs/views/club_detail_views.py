@@ -1,4 +1,4 @@
-"""Views relating to viewing a club."""
+"""Views relating to viewing a club and general member facing views."""
 
 from django.views import View
 
@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 
 from clubs.models import Member, Club
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 @login_required
 @club_exists
@@ -47,5 +47,17 @@ def show_club(request, club_id):
 @login_required
 @club_exists
 def manage_club(request, club_id):
+    """Access management page of club"""
     club = Club.objects.get(id=club_id)
     return render(request, 'manage_club.html', {'club': club, 'my_clubs':get_clubs_of_user(request.user)})
+
+
+@login_required
+@club_exists
+def leave_club(request, club_id):
+    """Delete the member object linking the current user to the specified club, iff it exists."""
+    current_user = request.user
+    applied_club = Club.objects.get(id=club_id)
+    if Member.objects.filter(club=applied_club, user = current_user).exists():
+        Member.objects.get(club=applied_club, user=current_user).delete()
+    return redirect('show_clubs')

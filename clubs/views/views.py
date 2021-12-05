@@ -76,16 +76,6 @@ def withdraw_application_to_club(request, club_id):
     return redirect('show_clubs')
 
 @login_required
-@club_exists
-def leave_club(request, club_id):
-    """Delete the member object linking the current user to the specified club, iff it exists."""
-    current_user = request.user
-    applied_club = Club.objects.get(id=club_id)
-    if Member.objects.filter(club=applied_club, user = current_user).exists():
-        Member.objects.get(club=applied_club, user=current_user).delete()
-    return redirect('show_clubs')
-
-@login_required
 @membership_exists
 def kick_member(request, member_id):
     current_user = request.user

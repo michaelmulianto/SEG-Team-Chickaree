@@ -1,4 +1,4 @@
-"""Various small views."""
+"""Miscellaneous small views."""
 
 from .helpers import get_clubs_of_user
 from .decorators import login_prohibited, club_exists
