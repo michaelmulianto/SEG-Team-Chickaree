@@ -4,7 +4,7 @@ from django.views import View
 from django.views.generic.edit import FormView
 
 from .helpers import get_clubs_of_user
-from .decorators import club_exists, membership_exists, not_banned
+from .decorators import club_exists, membership_exists, not_banned, application_exists
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
@@ -14,6 +14,8 @@ from clubs.models import Member, Club, Application
 from django.contrib import messages
 from django.urls import reverse
 from django.shortcuts import render, redirect
+
+# User applying to club views:
 
 class ApplyToClubView(FormView):
     """Allow the user to apply to some club."""
@@ -60,3 +62,38 @@ def withdraw_application_to_club(request, club_id):
         Application.objects.get(club=applied_club, user=current_user).delete()
 
     return redirect('show_clubs')
+
+# Owner viewing application views:
+
+@login_required
+@club_exists
+def show_applications_to_club(request, club_id):
+    """Allow the owner of a club to view all applications to said club."""
+    club_to_view = Club.objects.get(id = club_id)
+    if not(Member.objects.filter(club=club_to_view, user=request.user, is_owner=True).exists()):
+        # Access denied
+        #return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
+        return redirect('show_clubs')
+
+    applications = Application.objects.all().filter(club = club_to_view)
+    return render(request, 'application_list.html', {'applications': applications, 'my_clubs':get_clubs_of_user(request.user)})
+
+@login_required
+@application_exists
+def respond_to_application(request, app_id, is_accepted):
+    """Allow the owner of a club to accept or reject some application to said club."""
+    application = Application.objects.get(id = app_id)
+    club_applied_to = application.club
+    if not(Member.objects.filter(club=club_applied_to, user=request.user, is_owner=True).exists()):
+        # Access denied
+        return redirect('show_clubs')
+
+    # Create member object iff application is accepted
+    if is_accepted:
+        Member.objects.create(
+            user = application.user,
+            club = club_applied_to
+        )
+
+    application.delete() # Remains local python object while in scope.
+    return redirect("show_applications_to_club", club_id=club_applied_to.id)

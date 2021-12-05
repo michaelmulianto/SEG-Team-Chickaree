@@ -79,40 +79,6 @@ def unban_member(request, ban_id):
     return redirect('members_list', club_id=club.id)
 
 @login_required
-@club_exists
-def show_applications_to_club(request, club_id):
-    """Allow the owner of a club to view all applications to said club."""
-    club_to_view = Club.objects.get(id = club_id)
-    if not(Member.objects.filter(club=club_to_view, user=request.user, is_owner=True).exists()):
-        # Access denied
-        #return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
-        return redirect('show_clubs')
-
-    applications = Application.objects.all().filter(club = club_to_view)
-    return render(request, 'application_list.html', {'applications': applications, 'my_clubs':get_clubs_of_user(request.user)})
-
-@login_required
-@application_exists
-def respond_to_application(request, app_id, is_accepted):
-    """Allow the owner of a club to accept or reject some application to said club."""
-    application = Application.objects.get(id = app_id)
-    club_applied = application.club
-    if not(Member.objects.filter(club=application.club, user=request.user, is_owner=True).exists()):
-        # Access denied
-        return redirect('show_clubs')
-    # Create member object iff application is accepted
-
-    if is_accepted:
-        Member.objects.create(
-            user = application.user,
-            club = club_applied
-        )
-
-    application.delete() # Remains local python object while in scope.
-    applications = Application.objects.all().filter(club = club_applied)
-    return redirect("show_applications_to_club", club_id=club_applied.id)
-
-@login_required
 @membership_exists
 def promote_member_to_officer(request, member_id):
     """Allow the owner of a club to promote some member of said club to officer."""
