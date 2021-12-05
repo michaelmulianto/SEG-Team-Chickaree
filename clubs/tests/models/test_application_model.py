@@ -31,16 +31,6 @@ class ApplicationModelTestCase(TestCase):
     def test_valid_app(self):
         self._assert_app_is_valid()
 
-    # Assertions
-    def _assert_app_is_valid(self):
-        try:
-            self.app.full_clean()
-        except (ValidationError):
-            self.fail("Test Application should be valid")
-
-    def _assert_app_is_invalid(self):
-        with self.assertRaises(ValidationError):
-            self.app.full_clean()
 
     # Test personal_statement
     def test_ps_must_not_be_blank(self):
@@ -50,5 +40,24 @@ class ApplicationModelTestCase(TestCase):
 
     def test_ps_must_not_be_overlong(self):
         self.app.personal_statement = 'x' * 581
+        with self.assertRaises(ValidationError):
+            self.app.full_clean()
+
+    #Constraints:
+    def test_user_and_club_together_are_unique(self):
+        Application.objects.create(
+            user = self.user,
+            club = self.club,
+        )
+        self._assert_app_is_invalid()
+
+    # Assertions
+    def _assert_app_is_valid(self):
+        try:
+            self.app.full_clean()
+        except (ValidationError):
+            self.fail("Test Application should be valid")
+
+    def _assert_app_is_invalid(self):
         with self.assertRaises(ValidationError):
             self.app.full_clean()
