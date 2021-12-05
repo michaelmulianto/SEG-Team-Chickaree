@@ -1,7 +1,7 @@
 """Views relating to club applications."""
 
 from django.views import View
-from django.views.generic.edit import FormView, UpdateView
+from django.views.generic.edit import FormView
 
 from .helpers import get_clubs_of_user
 from .decorators import club_exists, membership_exists, not_banned
@@ -29,16 +29,24 @@ class ApplyToClubView(FormView):
     def form_valid(self, form):
         current_user = self.request.user
         desired_club = Club.objects.get(id=self.kwargs['club_id'])
+
         if Application.objects.filter(club=desired_club, user = current_user).exists():
-            messages.add_message(request, messages.ERROR, "You have already applied for this club")
+            messages.add_message(self.request, messages.ERROR, "You have already applied for this club")
         elif Member.objects.filter(club=desired_club, user = current_user).exists():
-            messages.add_message(request, messages.ERROR, "You are already a member in this club")
+            messages.add_message(self.request, messages.ERROR, "You are already a member in this club")
         else:    
             self.object = form.save(desired_club, current_user)
-        return super().form_valid(form)
+            return super().form_valid(form)
+
+        return self.form_invalid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['club'] = Club.objects.get(id=self.kwargs['club_id'])
+        return context
 
     def get_success_url(self):
-        messages.add_message(self.request, messages.SUCCESS, f"Applied to {Club.objects.get(id=self.kwargs['club_id'])}!")
+        messages.add_message(self.request, messages.SUCCESS, f"Applied to {Club.objects.get(id=self.kwargs['club_id']).name}!")
         return reverse('show_clubs')
 
 # @login_required
@@ -71,5 +79,5 @@ def withdraw_application_to_club(request, club_id):
     applied_club = Club.objects.get(id=club_id)
     if Application.objects.filter(club=applied_club, user = current_user).exists():
         Application.objects.get(club=applied_club, user=current_user).delete()
-        return redirect('show_clubs')
+
     return redirect('show_clubs')
