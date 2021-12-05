@@ -16,19 +16,20 @@
         {% else %}
           <b>Owner: </b>
           <table class="table">
+            <td><b></b></td>
             <td><b>Username</b></td>
             <td><b>Last Name</b></td>
             <td><b>First Name</b></td>
-            {% if userIsOwner == True%}
-            <td><b>Email</b></td>
-            {%endif%}
-            {% if userIsOfficer == True%}
+            <td><b>Bio</b></td>
+            {% if userIsOwner or userIsOfficer%}
             <td><b>Email</b></td>
             {%endif%}
           <tr>
+            <td> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
             <td><a>{{owner.user}} </a></td>
             <td><a>{{owner.user.last_name}} </a></td>
             <td><a>{{owner.user.first_name}} </a></td>
+            <td><a>{{owner.user.bio}} </a></td>
             {% if userIsOwner == True%}
             <td><a>{{ owner.user.email }}</a></td>
             {%endif%}
@@ -40,20 +41,17 @@
           </table>
           <b>Officers: </b>
           <table class="table">
+            <td><b></b></td>
             <td><b>Username</b></td>
-            {% if userIsOwner == True%}
             <td><b>Last Name</b></td>
             <td><b>First Name</b></td>
-            <td><b>Email</b></td>
-            {%endif%}
-            {% if userIsOfficer == True%}
-            <td><b>Last Name</b></td>
-            <td><b>First Name</b></td>
+            {% if userIsOwner or userIsOfficer%}
             <td><b>Email</b></td>
             {%endif%}
 
           {% for officer in officers %}
           <tr>
+            <td><a> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </a></td>
             <td><a>{{ officer.user }}</a></td>
             <td><a>{{ officer.user.last_name }}</a></td>
             <td><a>{{ officer.user.first_name }}</a></td>
