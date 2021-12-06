@@ -140,8 +140,9 @@ h3.profile-title {
 /*
 * Buttons
 */
-.button {
-  width: 40%;
+
+.home-page-button {
+  width: 40% !important;
 }
 
 .dropdown-menu-end {
@@ -159,5 +160,5 @@ h3.profile-title {
 }
 
 .search-button {
-  float: right; 
+  float: right;
 }

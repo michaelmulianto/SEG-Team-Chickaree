@@ -9,7 +9,9 @@ Implemented:
 """
 
 from libgravatar import Gravatar
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import UniqueConstraint, CheckConstraint, Q, F, Exists
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 
@@ -92,6 +94,27 @@ class Member(models.Model):
 
     class Meta:
         ordering = ['club']
+        constraints = [
+            UniqueConstraint(
+                name='user_in_club_unique',
+                fields=['club', 'user'],
+            ),
+            CheckConstraint(
+                name='not_officer_and_owner',
+                check = Q(Q(is_owner=True) & Q(is_officer=True))
+            ),
+        ]
+
+    def save(self, *args, **kwargs):
+        if Member.objects.filter(club=self.club, is_owner=True).exists() and self.is_owner:
+            raise ValidationError("There is already an owner for this club.")
+        else:
+            return super(Member, self).save(*args, **kwargs)
+
+    def full_clean(self, *args, **kwargs):
+        super().full_clean(*args, **kwargs)
+        if Member.objects.filter(club=self.club, is_owner=True).exists() and self.is_owner:
+            raise ValidationError("There is already an owner for this club.")
 
 
 class Application(models.Model):
@@ -100,7 +123,25 @@ class Application(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
     personal_statement = models.CharField(max_length=580, blank=False, default = "")
 
+    class Meta:
+        ordering = ['club']
+        constraints = [
+            UniqueConstraint(
+                name='application_to_club_unique',
+                fields=['club', 'user'],
+            )
+        ]
+
 class Ban(models.Model):
-    "Medel for a ban to a club for some user"
+    "Model for a ban to a club for some user"
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
+
+    class Meta:
+        ordering = ['club']
+        constraints = [
+            UniqueConstraint(
+                name='user_ban_from_club_unique',
+                fields=['club', 'user'],
+            )
+        ]
