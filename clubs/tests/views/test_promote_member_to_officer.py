@@ -49,7 +49,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
 
     def test_promote_redirects_when_invalid_member_id_entered(self):
         self.url = reverse('promote_member_to_officer', kwargs = {'member_id': 999})
-        self.client.login(username=self.owner_user.username, password="Password123")
+        self.client.login(email=self.owner_user.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -57,7 +57,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         self.assertFalse(self._has_member_been_promoted())
 
     def test_promote_redirects_when_not_owner_of_club(self):
-        self.client.login(username=self.target_user.username, password="Password123")
+        self.client.login(email=self.target_user.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -65,7 +65,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         self.assertFalse(self._has_member_been_promoted())
 
     def test_successful_promotion(self):
-        self.client.login(username=self.owner_user.username, password="Password123")
+        self.client.login(email=self.owner_user.email, password="Password123")
         self.assertFalse(self._has_member_been_promoted())
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})

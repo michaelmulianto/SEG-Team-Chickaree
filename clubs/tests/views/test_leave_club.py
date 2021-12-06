@@ -38,7 +38,7 @@ class LeaveClubTestCase(TestCase):
         self.assertEqual(member_count_after, member_count_before)
 
     def test_unsuccessful_leave_when_not_member(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         Member.objects.get(club=self.club, user=self.user).delete()
 
         member_count_before = Member.objects.count()
@@ -55,7 +55,7 @@ class LeaveClubTestCase(TestCase):
         self.assertTemplateUsed(response, 'show_clubs.html')
 
     def test_successful_leave(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         member_count_before = Member.objects.count()
         response = self.client.post(self.url, follow=True)
         member_count_after = Member.objects.count()

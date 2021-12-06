@@ -60,7 +60,7 @@ class UnbanMemberViewTestCase(TestCase):
 
     def test_unban_redirects_when_invalid_member_id_entered(self):
         self.url = reverse('unban_member', kwargs = {'ban_id': 999})
-        self.client.login(username=self.user_club_owner.username, password="Password123")
+        self.client.login(email=self.user_club_owner.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -69,7 +69,7 @@ class UnbanMemberViewTestCase(TestCase):
         self.assertFalse(self._has_member_been_added())
 
     def test_unban_redirects_when_not_owner_or_officer(self): #Utilises the user bieng unban for test (a user being unban will never be an owner or ofificer)
-        self.client.login(username=self.user_being_unbanned.username, password="Password123")
+        self.client.login(email=self.user_being_unbanned.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -78,7 +78,7 @@ class UnbanMemberViewTestCase(TestCase):
         self.assertFalse(self._has_member_been_added())
 
     def test_unban_redirects_as_officer(self):
-        self.client.login(username=self.user_club_officer.username, password="Password123")
+        self.client.login(email=self.user_club_officer.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         self.assertFalse(self._has_member_been_unbanned())
         self.assertFalse(self._has_member_been_added())
@@ -87,7 +87,7 @@ class UnbanMemberViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'members_list.html')
 
     def test_successful_unban_as_owner(self):
-        self.client.login(username=self.user_club_owner.username, password="Password123")
+        self.client.login(email=self.user_club_owner.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
