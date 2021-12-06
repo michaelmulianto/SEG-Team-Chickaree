@@ -374,4 +374,4 @@ def edit_club_info(request, club_id):
                 return redirect('show_clubs')
     else:
         form = EditClubInfoForm(instance = club)
-    return render(request, 'edit_club_info.html', {'form': form, 'club':Club.objects.get(id = club_id)})
+    return render(request, 'edit_club_info.html', {'form': form, 'club':Club.objects.get(id = club_id), 'my_clubs':get_clubs_of_user(request.user)})
