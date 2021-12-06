@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from faker import Faker
 from random import sample, choice
-from clubs.models import User, Club, Member, Application
+from clubs.models import User, Club, Member, Application, Ban
 
 class Command(BaseCommand):
     """Fill the database with pseudorandom data and some mandated test cases."""
