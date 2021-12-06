@@ -1,6 +1,6 @@
 """Miscellaneous views."""
 
-from .helpers import get_clubs_of_user
+from .helpers import get_clubs_of_user, sort_clubs
 from .decorators import login_prohibited, club_exists
 from django.contrib.auth.decorators import login_required
 
@@ -17,10 +17,14 @@ def home(request):
 
 
 @login_required
-def show_clubs(request):
+def show_clubs(request, param=None, order=None):
     """Return a list of every club created on the website"""
-    clubs = Club.objects.all()
-    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user, 'my_clubs':get_clubs_of_user(request.user)})
+    if request.method == "POST":
+        searched = request.POST.get('searched')
+        clubs = Club.objects.filter(name__contains=searched)
+        return render(request, 'show_clubs.html', {'searched': searched, 'clubs': clubs, 'current_user': request.user})
+    clubs = sort_clubs(param, order)
+    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user, 'order': order})
 
 
 @login_required

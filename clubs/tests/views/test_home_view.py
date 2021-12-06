@@ -25,7 +25,7 @@ class AccountViewTestCase(TestCase, MenuTesterMixin):
         self.assert_no_menu(response)
 
     def test_get_home_redirects_when_logged_in(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)

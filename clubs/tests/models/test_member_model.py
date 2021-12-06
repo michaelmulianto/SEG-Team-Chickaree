@@ -79,24 +79,14 @@ class MemberModelTestCase(TestCase):
         )
         self._assert_member_is_invalid()
 
-    def test_club_only_has_one_owner_constraint_save(self):
-        with self.assertRaises(ValidationError):
-            self.membership.is_owner = True
-            self.membership.save()
-
-    def test_club_only_has_one_owner_constraint_clean(self):
+    def test_club_can_only_have_one_owner_constraint(self):
         self.membership.is_owner = True
         self._assert_member_is_invalid()
 
-    def test_member_cannot_be_owner_and_officer_save(self):
+    def test_member_cannot_be_owner_and_officer(self):
         with self.assertRaises(ValidationError):
             self.member_club_owner.is_officer = True
             self.member_club_owner.full_clean()
-
-    def test_member_cannot_be_owner_and_officer_clean(self):
-        with self.assertRaises(ValidationError):
-            self.member_club_owner.is_officer = True
-            self.member_club_owner.save()
 
     #assertions
     def _assert_member_is_valid(self):

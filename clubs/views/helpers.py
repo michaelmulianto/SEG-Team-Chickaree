@@ -16,3 +16,14 @@ def get_clubs_of_user(userIn):
             my_clubs.append(club)
 
     return my_clubs
+
+def sort_clubs(param, order):
+    if order == None:
+        clubs = Club.objects.all()
+    elif order == "asc":
+        clubs = Club.objects.order_by(param)
+        order = "des"
+    elif order == "des":
+        clubs = Club.objects.order_by("-" + param)
+        order = "asc"
+    return clubs
