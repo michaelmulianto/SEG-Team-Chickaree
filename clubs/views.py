@@ -198,6 +198,7 @@ def show_clubs(request, param=None, order=None):
     clubs = sort_clubs(param, order)
     return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user, 'order': order})
 
+@login_required
 @ban_exists
 def unban_member(request, ban_id):
     current_user = request.user
