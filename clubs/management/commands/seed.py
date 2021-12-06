@@ -231,6 +231,11 @@ class Command(BaseCommand):
             club = less_lonely_club,
         )).save()
 
+        (Ban.objects.create(
+            user = choice(list(User.objects.exclude(username="testuser1"))),
+            club = less_lonely_club,
+        )).save()
+
 
     def handle(self, *args, **options):
         # It is VERY important that random data is generated first, so we can fully control the memberships of the mandated users
