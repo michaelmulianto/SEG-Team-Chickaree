@@ -63,7 +63,7 @@ class Command(BaseCommand):
                 m.full_clean()
                 m.save()
 
-            for i in range(len(members)-3,len(members)):
+            for i in range(len(members)-3,len(members)-1):
                 a = Application.objects.create(
                     club = club,
                     user = members[i],
@@ -71,6 +71,11 @@ class Command(BaseCommand):
                 )
                 a.full_clean()
                 a.save()
+
+            b = Ban.objects.create(
+                club = club,
+                user = members[len(members)-1],
+            )
 
     def generate_required_data(self):
         """This is the data needed as part of non-functional requirements"""
