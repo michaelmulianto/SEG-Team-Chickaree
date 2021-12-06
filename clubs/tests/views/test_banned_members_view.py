@@ -3,7 +3,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
-from clubs.models import User, Club, Member, Application, Ban
+from clubs.models import User, Club, Membership, Application, Ban
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 from with_asserts.mixin import AssertHTMLMixin
 
@@ -20,7 +20,7 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.user_banned = User.objects.get(username='janedoe')
         self.club = Club.objects.get(name='King\'s Knights')
 
-        self.member_club_owner = Member.objects.create(
+        self.member_club_owner = Membership.objects.create(
             club = self.club,
             user = self.user_club_owner,
             is_owner = True
