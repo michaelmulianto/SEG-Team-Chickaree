@@ -27,7 +27,7 @@ def show_club(request, club_id):
     """View details of a club."""
     current_user = request.user
     club = Club.objects.get(id=club_id)
-    members = Member.objects.filter(club = club_id)
+    members = Member.objects.filter(club = club)
     officers = members.filter(is_officer = True)
     officer_count = officers.count()
     get_owner = members.get(is_owner = True)
