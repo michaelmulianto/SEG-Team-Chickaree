@@ -31,7 +31,7 @@ class EditClubInfoViewTest(TestCase):
         self.assertEqual(self.url, '/club/' + str(self.club.id) + '/edit')
 
     def test_get_edit_club_info(self):
-        self.client.login(username=self.user.username, password='Password123')
+        self.client.login(email=self.user.email, password='Password123')
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'edit_club_info.html')
@@ -45,7 +45,7 @@ class EditClubInfoViewTest(TestCase):
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
 
     def test_unsuccesful_edit_club_info_update(self):
-        self.client.login(username=self.user.username, password='Password123')
+        self.client.login(email=self.user.email, password='Password123')
         self.form_input['name'] = 'A' * 51
         before_count = Club.objects.count()
         response = self.client.post(self.url, self.form_input)
@@ -62,7 +62,7 @@ class EditClubInfoViewTest(TestCase):
         self.assertEqual(self.club.description, "The best chess club in London.")
 
     def test_unsuccessful_edit_club_info_due_to_duplicate_name(self):
-        self.client.login(username=self.user.username, password='Password123')
+        self.client.login(email=self.user.email, password='Password123')
         self.form_input['name'] = self.second_club.name
         before_count = Club.objects.count()
         response = self.client.post(self.url, self.form_input)
@@ -79,7 +79,7 @@ class EditClubInfoViewTest(TestCase):
         self.assertEqual(self.club.description, "The best chess club in London.")
 
     def test_succesful_edit_account_update(self):
-        self.client.login(username=self.user.username, password='Password123')
+        self.client.login(email=self.user.email, password='Password123')
         before_count = Club.objects.count()
         response = self.client.post(self.url, self.form_input, follow=True)
         after_count = Club.objects.count()

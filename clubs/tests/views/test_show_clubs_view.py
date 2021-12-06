@@ -20,7 +20,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.assertEqual('/show_clubs/' , self.url)
 
     def test_get_show_clubs(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'show_clubs.html')

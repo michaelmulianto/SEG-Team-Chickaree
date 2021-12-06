@@ -47,14 +47,14 @@ def log_in(request):
         form = LogInForm(request.POST)
         next = request.POST.get('next') or ''
         if form.is_valid():
-            username = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
+            user = authenticate(email=email, password=password)
             if user is not None:
                 login(request, user)
                 redirect_url = next or settings.REDIRECT_URL_WHEN_LOGGED_IN
                 return redirect(redirect_url)
-            elif User.objects.filter(username=username).exists():
+            elif User.objects.filter(email=email).exists():
                 messages.add_message(request, messages.ERROR, "Wrong password")
         else:
             messages.add_message(request, messages.ERROR, "The credentials provided are invalid!")
@@ -224,8 +224,21 @@ def show_applications_to_club(request, club_id):
         #return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
         return redirect('show_clubs')
 
-    applications = Application.objects.all().filter(club = club_to_view)
+    applications = Application.objects.filter(club = club_to_view)
     return render(request, 'application_list.html', {'applications': applications, 'my_clubs':get_clubs_of_user(request.user)})
+
+@login_required
+@club_exists
+def banned_members(request, club_id):
+    """Allow the owner of a club to view all applications to said club."""
+    club_to_view = Club.objects.get(id = club_id)
+    if not is_user_owner_of_club(request.user, club_to_view):
+        # Access denied
+        messages.error(request, "Only the club owner can view banned members")
+        return redirect('show_clubs')
+
+    banned_members = Ban.objects.filter(club = club_to_view)
+    return render(request, 'banned_member_list.html', {'club': club_to_view, 'banned_members': banned_members, 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
 @application_exists
@@ -272,6 +285,7 @@ def show_club(request, club_id):
     club = Club.objects.get(id=club_id)
     members = Member.objects.filter(club = club_id)
     officers = members.filter(is_officer = True)
+    officerCount = officers.count()
     getOwner = members.get(is_owner = True)
     numberOfMembers = members.count()
     checkUserisMember = members.filter(user = current_user)
@@ -284,13 +298,7 @@ def show_club(request, club_id):
         isMember = True
     if checkUserisMember.filter(is_officer = True).count() > 0:
         isOfficer = True
-    return render(request, 'show_club.html', {'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner, 'userIsOwner': isOwner, 'userIsOfficer': isOfficer, 'officers': officers, 'my_clubs':get_clubs_of_user(request.user)})
-
-@login_required
-@club_exists
-def manage_club(request, club_id):
-    club = Club.objects.get(id=club_id)
-    return render(request, 'manage_club.html', {'club': club, 'my_clubs':get_clubs_of_user(request.user)})
+    return render(request, 'show_club.html', {'current_user': request.user, 'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner, 'userIsOwner': isOwner, 'userIsOfficer': isOfficer, 'officers': officers, 'my_clubs':get_clubs_of_user(request.user), 'officerCount': officerCount})
 
 @login_required
 @membership_exists
@@ -343,13 +351,14 @@ def transfer_ownership_to_officer(request, member_id):
         # Targetted member should be an officer
         return redirect('members_list', club_id=club.id)
 
+    curr_owner.is_owner = False
+    curr_owner.is_officer = True
+    curr_owner.save() # Or database won't update.
+    
     member.is_owner = True
     member.is_officer = False
     member.save() # Or database won't update.
 
-    curr_owner.is_owner = False
-    curr_owner.is_officer = True
-    curr_owner.save()
     return redirect('members_list', club_id=club.id)
 
 @login_required
