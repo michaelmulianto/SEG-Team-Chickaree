@@ -75,7 +75,7 @@ def show_applications_to_club(request, club_id):
         #return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
         return redirect('show_clubs')
 
-    applications = Application.objects.all().filter(club = club_to_view)
+    applications = Application.objects.filter(club = club_to_view)
     return render(request, 'application_list.html', {'applications': applications, 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required

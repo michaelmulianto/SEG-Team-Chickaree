@@ -33,6 +33,21 @@ def ban_member(request, member_id):
         Member.objects.filter(id=member_id).delete()
     return redirect('members_list', club_id=club.id)
 
+
+@login_required
+@club_exists
+def banned_members(request, club_id):
+    """Allow the owner of a club to view all applications to said club."""
+    club_to_view = Club.objects.get(id = club_id)
+    if not is_user_owner_of_club(request.user, club_to_view):
+        # Access denied
+        messages.error(request, "Only the club owner can view banned members")
+        return redirect('show_clubs')
+
+    banned_members = Ban.objects.filter(club = club_to_view)
+    return render(request, 'banned_member_list.html', {'club': club_to_view, 'banned_members': banned_members, 'my_clubs':get_clubs_of_user(request.user)})
+
+
 @login_required
 @ban_exists
 def unban_member(request, ban_id):
