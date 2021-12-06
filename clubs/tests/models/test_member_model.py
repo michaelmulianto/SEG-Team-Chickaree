@@ -88,6 +88,16 @@ class MemberModelTestCase(TestCase):
         self.membership.is_owner = True
         self._assert_member_is_invalid()
 
+    def test_member_cannot_be_owner_and_officer_save(self):
+        with self.assertRaises(ValidationError):
+            self.member_club_owner.is_officer = True
+            self.member_club_owner.full_clean()
+
+    def test_member_cannot_be_owner_and_officer_clean(self):
+        with self.assertRaises(ValidationError):
+            self.member_club_owner.is_officer = True
+            self.member_club_owner.save()
+
     #assertions
     def _assert_member_is_valid(self):
         try:

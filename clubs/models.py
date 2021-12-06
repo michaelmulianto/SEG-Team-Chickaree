@@ -104,6 +104,8 @@ class Member(models.Model):
     def save(self, *args, **kwargs):
         if Member.objects.filter(club=self.club, is_owner=True).exists() and self.is_owner:
             raise ValidationError("There is already an owner for this club.")
+        if self.is_owner and self.is_officer:
+            raise ValidationError("A member cannot be an officer and an owner.")
         else:
             return super(Member, self).save(*args, **kwargs)
 
@@ -111,6 +113,8 @@ class Member(models.Model):
         super().full_clean(*args, **kwargs)
         if Member.objects.filter(club=self.club, is_owner=True).exists() and self.is_owner:
             raise ValidationError("There is already an owner for this club.")
+        if self.is_owner and self.is_officer:
+            raise ValidationError("A member cannot be an officer and an owner.")
 
 
 class Application(models.Model):
