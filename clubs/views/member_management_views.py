@@ -1,4 +1,4 @@
-"""Views relating to club applications."""
+"""Views relating to club members."""
 
 from django.views import View
 
@@ -15,6 +15,7 @@ from django.shortcuts import render, redirect
 @login_required
 @membership_exists
 def kick_member(request, member_id):
+    """Kick a given member from their club."""
     current_user = request.user
     member = Member.objects.get(id=member_id)
     club = member.club
@@ -25,6 +26,7 @@ def kick_member(request, member_id):
 @login_required
 @membership_exists
 def ban_member(request, member_id):
+    """Ban a given member from their club."""
     current_user = request.user
     member = Member.objects.get(id=member_id)
     club = member.club
@@ -51,6 +53,7 @@ def banned_members(request, club_id):
 @login_required
 @ban_exists
 def unban_member(request, ban_id):
+    """Revoke a given ban from their club."""
     current_user = request.user
     ban = Ban.objects.get(id=ban_id)
     club = ban.club
