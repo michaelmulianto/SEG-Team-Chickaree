@@ -17,7 +17,7 @@ class LogOutViewTestCase(TestCase, LogInTester):
         self.assertEqual('/log_out/', self.url)
 
     def test_get_log_out(self):
-        self.client.login(username='johndoe', password='Password123')
+        self.client.login(email=self.user.email, password='Password123')
         self.assertTrue(self._is_logged_in())
         response = self.client.get(self.url, follow = True)
         response_url = reverse('home')

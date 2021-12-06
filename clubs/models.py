@@ -52,6 +52,9 @@ class User(AbstractUser):
         blank=False,
     )
 
+    USERNAME_FIELD = 'email' # set default auth user to email
+    REQUIRED_FIELDS = [] # Django error told me to do this
+
     bio = models.CharField(max_length=520, blank = True, default = '')
 
     LEVELS = (

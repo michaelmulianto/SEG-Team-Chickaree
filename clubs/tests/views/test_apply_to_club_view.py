@@ -46,7 +46,7 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(app_count_after, app_count_before)
 
     def test_get_apply_redirects_when_banned(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
 
         Ban.objects.create(
             club = self.club,
@@ -63,7 +63,7 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
         self.assertTemplateUsed(response, 'show_clubs.html')
 
     def test_get_apply(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200) #OK
         self.assertTemplateUsed(response, 'apply_to_club.html')
@@ -73,7 +73,7 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
         self.assert_menu(response)
 
     def test_unsuccessful_application_when_already_applied(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         self.application = Application.objects.create(
             club = self.club,
             user = self.user,
@@ -93,7 +93,7 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
 
 
     def test_unsuccessful_application_when_already_member(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
 
         Member.objects.create(
             club = self.club,
@@ -113,7 +113,7 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
         self.assertTrue(form.is_bound)
 
     def test_unsuccessful_application_when_banned_and_redirect(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
 
         Ban.objects.create(
             club = self.club,
@@ -131,7 +131,7 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
 
     def test_apply_with_invalid_form_input(self):
         self.data['personal_statement'] = ''
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
 
         app_count_before = Application.objects.count()
         response = self.client.post(self.url, self.data, follow=True)
@@ -144,7 +144,7 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
         self.assertTemplateUsed(response, 'apply_to_club.html')
 
     def test_successful_application(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         app_count_before = Application.objects.count()
         response = self.client.post(self.url, self.data, follow=True)
         app_count_after = Application.objects.count()

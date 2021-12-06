@@ -39,7 +39,7 @@ class WithdrawApplicationToClubTestCase(TestCase):
         self.assertEqual(app_count_after, app_count_before)
 
     def test_unsuccessful_withdrawal_when_not_applied(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         Application.objects.get(club=self.club, user=self.user).delete()
 
         app_count_before = Application.objects.count()
@@ -56,7 +56,7 @@ class WithdrawApplicationToClubTestCase(TestCase):
         self.assertTemplateUsed(response, 'show_clubs.html')
         
     def test_successful_withdrawal(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         app_count_before = Application.objects.count()
         response = self.client.post(self.url, follow=True)
         app_count_after = Application.objects.count()
