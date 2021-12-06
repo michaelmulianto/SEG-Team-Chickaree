@@ -80,8 +80,9 @@ class MemberModelTestCase(TestCase):
         self._assert_member_is_invalid()
 
     def test_club_only_has_one_owner(self):
-        self.membership.is_owner = True
-        self._assert_member_is_invalid()
+        with self.assertRaises(ValidationError):
+            self.membership.is_owner = True
+            self.membership.save()
 
     #assertions
     def _assert_member_is_valid(self):

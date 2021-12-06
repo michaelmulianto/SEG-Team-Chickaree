@@ -9,8 +9,9 @@ Implemented:
 """
 
 from libgravatar import Gravatar
+from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import UniqueConstraint, CheckConstraint
+from django.db.models import UniqueConstraint
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 
@@ -100,6 +101,18 @@ class Member(models.Model):
             )
         ]
 
+    def save(self, *args, **kwargs):
+        if Member.objects.filter(club=self.club, is_owner=True).exists() and self.is_owner:
+            raise ValidationError("There is already an owner for this club.")
+        else:
+            return super(Member, self).save(*args, **kwargs)
+
+    def clean(self, *args, **kwargs):
+        super(self).clean(*args, **kwargs)
+
+        if Member.objects.filter(club=self.club, is_owner=True).exists() and self.is_owner:
+            raise ValidationError("There is already an owner for this club.")
+
 
 class Application(models.Model):
     """Model for an application to a club by some user."""
@@ -127,5 +140,5 @@ class Ban(models.Model):
             UniqueConstraint(
                 name='user_ban_from_club_unique',
                 fields=['club', 'user'],
-            ) 
+            )
         ]
