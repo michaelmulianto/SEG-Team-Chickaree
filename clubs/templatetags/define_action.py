@@ -21,3 +21,5 @@ def check_is_officer(club_to_check, user):
 @register.simple_tag
 def check_is_owner(club_to_check, user):
   return Member.objects.filter(club=club_to_check, user=user, is_owner=True).exists()
+
+
