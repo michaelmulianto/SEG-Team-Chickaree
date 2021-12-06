@@ -140,3 +140,43 @@ class Ban(models.Model):
                 fields=['club', 'user'],
             )
         ]
+
+class Tournament(models.Model):
+    pass 
+
+class MemberTournamentRelationship(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE, unique=False, blank=False)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
+
+    class Meta:
+        ordering = ['tournament']
+        constraints = [
+            UniqueConstraint(
+                name='one_object_per_relationship',
+                fields=['member', 'tournament'],
+            ),
+        ]
+
+class Organiser(MemberTournamentRelationship):
+    is_lead_organiser = models.BooleanField(default=False)
+
+class Participant(MemberTournamentRelationship):
+    round_eliminated = models.integerField(default=-1)
+
+class Stage(models.Model):
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
+    def get_next_round(self):
+        pass
+
+class Match(models.Model):
+    white_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False)
+    black_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False)
+
+    stage = models.ForeignKey(Round, on_delete=models.CASCADE, unique=False, blank=False)
+
+    OUTCOMES = (
+        (1,'White Victory'),
+        (2, 'Black Victory'),
+        (3, 'Stalemate'),
+    )
+    result = models.IntegerField(default = None, choices = OUTCOMES, blank = True)
