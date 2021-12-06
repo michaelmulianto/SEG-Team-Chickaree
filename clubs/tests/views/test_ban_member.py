@@ -6,7 +6,7 @@ their club.
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
-from clubs.models import User, Club, Member, Ban
+from clubs.models import User, Club, Membership, Ban
 from clubs.tests.helpers import reverse_with_next
 
 class BanMemberViewTestCase(TestCase):
@@ -26,7 +26,7 @@ class BanMemberViewTestCase(TestCase):
         self.club = Club.objects.get(name='King\'s Knights')
 
         #Owner of the club
-        Member.objects.create(
+        Membership.objects.create(
             club = self.club,
             user = self.user_club_owner,
             is_officer = False,
@@ -34,14 +34,14 @@ class BanMemberViewTestCase(TestCase):
         )
 
         #Officer of the club
-        self.member_club_officer = Member.objects.create(
+        self.member_club_officer = Membership.objects.create(
             club = self.club,
             user = self.user_club_officer,
             is_officer = True,
             is_owner = False,
         )
 
-        self.member_being_banned = Member.objects.create(
+        self.member_being_banned = Membership.objects.create(
             club = self.club,
             user = self.user_being_banned,
             is_owner = False,
@@ -112,4 +112,4 @@ class BanMemberViewTestCase(TestCase):
         return Ban.objects.filter(user=user, club=club).exists()
 
     def _has_member_been_kicked(self, member):
-        return not Member.objects.filter(id=member.id).exists()
+        return not Membership.objects.filter(id=member.id).exists()

@@ -3,7 +3,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
-from clubs.models import User, Club, Member, Application
+from clubs.models import User, Club, Membership, Application
 from clubs.tests.helpers import reverse_with_next
 
 class RespondToApplicationViewTestCase(TestCase):
@@ -20,7 +20,7 @@ class RespondToApplicationViewTestCase(TestCase):
         self.applyingUser = User.objects.get(username='janedoe')
         self.club = Club.objects.get(name='King\'s Knights')
 
-        self.ownerMember = Member.objects.create(
+        self.ownerMember = Membership.objects.create(
             club = self.club,
             user = self.ownerUser,
             is_owner = True
@@ -64,11 +64,11 @@ class RespondToApplicationViewTestCase(TestCase):
     def test_successful_accept_application_to_club(self):
         self.client.login(email=self.ownerUser.email, password="Password123")
 
-        member_count_before = Member.objects.count()
+        member_count_before = Membership.objects.count()
         application_count_before = Application.objects.count()
 
         response = self.client.get(self.url, follow=True)
-        member_count_after = Member.objects.count()
+        member_count_after = Membership.objects.count()
         application_count_after = Application.objects.count()
 
         self.assertEqual(member_count_before, member_count_after-1)
@@ -82,12 +82,12 @@ class RespondToApplicationViewTestCase(TestCase):
         self.url = reverse('respond_to_application', kwargs = {'app_id': self.application.id, 'is_accepted':0})
         self.client.login(email=self.ownerUser.email, password="Password123")
 
-        member_count_before = Member.objects.count()
+        member_count_before = Membership.objects.count()
         application_count_before = Application.objects.count()
 
         response = self.client.get(self.url, follow=True)
 
-        member_count_after = Member.objects.count()
+        member_count_after = Membership.objects.count()
         application_count_after = Application.objects.count()
 
         self.assertEqual(member_count_before, member_count_after)

@@ -6,7 +6,7 @@ their club to an officer of said club.
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
-from clubs.models import User, Club, Member
+from clubs.models import User, Club, Membership
 from clubs.tests.helpers import reverse_with_next
 
 class PromoteMemberToOfficerViewTestCase(TestCase):
@@ -23,13 +23,13 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         self.target_user = User.objects.get(username='janedoe')
         self.club = Club.objects.get(name='King\'s Knights')
 
-        self.owner_member = Member.objects.create(
+        self.owner_member = Membership.objects.create(
             club = self.club,
             user = self.owner_user,
             is_owner = True,
         )
 
-        self.target_member = Member.objects.create(
+        self.target_member = Membership.objects.create(
             club = self.club,
             user = self.target_user,
             is_owner = False,
@@ -74,4 +74,4 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         self.assertTrue(self._has_member_been_promoted())
 
     def _has_member_been_promoted(self):
-        return Member.objects.get(id=self.target_member.id).is_officer
+        return Membership.objects.get(id=self.target_member.id).is_officer

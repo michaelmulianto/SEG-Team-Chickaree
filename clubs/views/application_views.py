@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from clubs.forms import ApplyToClubForm
-from clubs.models import Member, Club, Application
+from clubs.models import Membership, Club, Application
 
 from django.contrib import messages
 from django.urls import reverse
@@ -39,7 +39,7 @@ class ApplyToClubView(FormView):
 
         if Application.objects.filter(club=desired_club, user = current_user).exists():
             messages.add_message(self.request, messages.ERROR, "You have already applied for this club")
-        elif Member.objects.filter(club=desired_club, user = current_user).exists():
+        elif Membership.objects.filter(club=desired_club, user = current_user).exists():
             messages.add_message(self.request, messages.ERROR, "You are already a member in this club")
         else:    
             self.object = form.save(desired_club, current_user)
@@ -90,7 +90,7 @@ def respond_to_application(request, app_id, is_accepted):
 
     # Create member object iff application is accepted
     if is_accepted:
-        Member.objects.create(
+        Membership.objects.create(
             user = application.user,
             club = club_applied_to
         )

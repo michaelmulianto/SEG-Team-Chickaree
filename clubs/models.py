@@ -87,7 +87,7 @@ class Club(models.Model):
     class Meta:
         ordering = ['-created_on']
 
-class Member(models.Model):
+class Membership(models.Model):
     """Model representing a membership of some single chess club by some single user"""
     club = models.ForeignKey('Club', on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey('User', on_delete=models.CASCADE, unique=False, blank=False)
@@ -105,7 +105,7 @@ class Member(models.Model):
 
     def full_clean(self, *args, **kwargs):
         super().full_clean(*args, **kwargs)
-        if Member.objects.exclude(id=self.id).filter(club=self.club, is_owner=True).exists() and self.is_owner:
+        if Membership.objects.exclude(id=self.id).filter(club=self.club, is_owner=True).exists() and self.is_owner:
             raise ValidationError("There is already an owner for this club.")
         
         if self.is_owner and self.is_officer:

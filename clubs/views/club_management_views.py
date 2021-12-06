@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from clubs.forms import CreateClubForm, EditClubInfoForm
-from clubs.models import Member, Club
+from clubs.models import Membership, Club
 
 from django.contrib import messages
 from django.urls import reverse
@@ -26,7 +26,7 @@ class CreateClubView(FormView):
 
     def form_valid(self, form):
         self.object = form.save()
-        Member.objects.create(
+        Membership.objects.create(
             club = self.object,
             user = self.request.user,
             is_owner = True
@@ -41,13 +41,13 @@ class CreateClubView(FormView):
 @membership_exists
 def transfer_ownership_to_officer(request, member_id):
     """Allow the owner of a club to promote some member of said club to officer."""
-    member = Member.objects.get(id = member_id)
+    member = Membership.objects.get(id = member_id)
     club = member.club
     if not(is_user_owner_of_club(request.user, club)):
         # Access denied, member isn't owner
         return redirect('members_list', club_id=club.id)
 
-    curr_owner = Member.objects.get(club=club, user=request.user)
+    curr_owner = Membership.objects.get(club=club, user=request.user)
     if not(member.is_officer):
         # Targetted member should be an officer
         return redirect('members_list', club_id=club.id)
