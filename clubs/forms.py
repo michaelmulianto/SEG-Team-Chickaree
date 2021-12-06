@@ -5,7 +5,7 @@ purpose like loggin in a user with the correct username and password.
 """
 
 from django import forms
-from clubs.models import User, Club, Application
+from clubs.models import User, Club, Application, Tournament
 from django.core.validators import RegexValidator
 
 
@@ -108,3 +108,21 @@ class EditClubInfoForm(forms.ModelForm):
         model = Club
         fields = ['name', 'location', 'description']
         widgets = {'description': forms.Textarea()}
+
+class OrganiseTournamentForm(forms.ModelForm):
+    class Meta:
+        model = Tournament
+        fields = ['name', 'description', 'capacity', 'start_date', 'end_date']
+        widgets = {'description': forms.Textarea()}
+
+    #Create new tournament using the tournament form data
+    def save(self):
+        super().save(commit=False)
+        tournament = Tournament.objects.create(
+            name = self.cleaned_data.get('name'),
+            description = self.cleaned_data.get('description'),
+            capacity = self.cleaned_data.get('capacity'),
+            start_date = self.cleaned_data.get('start_date'),
+            end_date = self.cleaned_data.get('end_date')
+        )
+        return tournament

@@ -13,7 +13,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import UniqueConstraint, CheckConstraint, Q, F, Exists
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinLengthValidator, MaxLengthValidator
 
 class User(AbstractUser):
     """Model for a registered user, independent of any clubs"""
@@ -107,7 +107,7 @@ class Membership(models.Model):
         super().full_clean(*args, **kwargs)
         if Membership.objects.exclude(id=self.id).filter(club=self.club, is_owner=True).exists() and self.is_owner:
             raise ValidationError("There is already an owner for this club.")
-        
+
         if self.is_owner and self.is_officer:
             raise ValidationError("A single member cannot be both member and officer.")
 
@@ -140,3 +140,23 @@ class Ban(models.Model):
                 fields=['club', 'user'],
             )
         ]
+
+class Tournament(models.Model):
+    """Model representing a single tournament."""
+    name = models.CharField(max_length=50, blank=False, unique = True)
+    description =  models.CharField(max_length=280, blank=False)
+    capacity = models.PositiveIntegerField(default=16, validators=[
+                MinLengthValidator(2),
+                MaxLengthValidator(96)
+            ])
+    start_date = models.DateField(auto_now=False, auto_now_add=False, blank=False)
+    end_date = models.DateField(auto_now=False, auto_now_add=False, blank=False)
+
+    class Meta:
+        ordering = ['start_date']
+
+    def get_club():
+        pass
+
+    def get_initial_round():
+        pass

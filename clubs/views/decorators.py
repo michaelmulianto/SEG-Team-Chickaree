@@ -3,7 +3,7 @@
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.conf import settings
-from clubs.models import User, Club, Membership, Application, Ban
+from clubs.models import User, Club, Membership, Application, Ban, Tournament
 
 def login_prohibited(view_function):
     def modified_view_fuction(request):
