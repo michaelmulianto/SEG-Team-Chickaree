@@ -1,3 +1,5 @@
+"""Decorators representing requirements of views to be accessed"""
+
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.conf import settings
@@ -63,29 +65,3 @@ def not_banned(view_function):
             return view_function(request, club_id, **kwargs)
 
     return modified_view_fuction
-
-
-def is_user_officer_of_club(user, club):
-    return Member.objects.filter(user=user, club=club, is_officer=True).exists()
-
-def is_user_owner_of_club(user, club):
-    return Member.objects.filter(user=user, club=club, is_owner=True).exists()
-
-def sort_clubs(param, order):
-    if order == None:
-        clubs = Club.objects.all()
-    elif order == "asc":
-        clubs = Club.objects.order_by(param)
-        order = "des"
-    elif order == "des":
-        clubs = Club.objects.order_by("-" + param)
-        order = "asc"
-    return clubs
-
-def get_clubs_of_user(userIn):
-    my_clubs = []
-    for club in Club.objects.all():
-        if Member.objects.filter(club=club, user=userIn):
-            my_clubs.append(club)
-
-    return my_clubs
