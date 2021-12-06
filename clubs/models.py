@@ -107,9 +107,8 @@ class Member(models.Model):
         else:
             return super(Member, self).save(*args, **kwargs)
 
-    def clean(self, *args, **kwargs):
-        super(self).clean(*args, **kwargs)
-
+    def full_clean(self, *args, **kwargs):
+        super().full_clean(*args, **kwargs)
         if Member.objects.filter(club=self.club, is_owner=True).exists() and self.is_owner:
             raise ValidationError("There is already an owner for this club.")
 
