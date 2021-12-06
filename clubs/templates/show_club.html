@@ -70,17 +70,6 @@
             <p></p>
             <td><a href='{% url 'members_list' club.id %}' class="btn btn-primary">Show Members</a></td>
         {%endif%}
-        {% if userIsOwner == True%}
-          <td><a href='{% url 'banned_members' club.id %}' class="btn btn-primary">Banned Members</a></td>
-          <td><a href='{% url 'edit_club_info' club.id %}' class="btn btn-primary">Edit</a></td>
-          <td><a href='{% url 'show_applications_to_club' club.id %}' class="btn btn-primary">Show Applications</a></td>
-          <td><a href='#' class="btn btn-danger">Delete Club</a></td>
-        {%endif%}
-        {% if userIsOfficer == True%}
-          <td><a href='{% url 'banned_members' club.id %}' class="btn btn-primary">Banned Members</a></td>
-          <td><a href='{% url 'show_applications_to_club' club.id %}' class="btn btn-primary">Show Applications</a></td>
-        {%endif%}
-
 
         {% load static %}
         {% load define_action %}
@@ -100,7 +89,26 @@
               event.stopPropagation(); event.preventDefault();
             }
           }
+          function confirmDeleteClub(){
+            if(confirm('Are you sure you want to delete this club?')){
+              return true;
+            }else{
+              event.stopPropagation(); event.preventDefault();
+            }
+          }
           </script>
+
+        {% if userIsOwner == True%}
+          <td><a href='{% url 'banned_members' club.id %}' class="btn btn-primary">Banned Members</a></td>
+          <td><a href='{% url 'edit_club_info' club.id %}' class="btn btn-primary">Edit</a></td>
+          <td><a href='{% url 'show_applications_to_club' club.id %}' class="btn btn-primary">Show Applications</a></td>
+          <td><a href='{% url 'delete_club' club.id %}' class="btn btn-danger" onclick="confirmDeleteClub()">Delete Club</a></td>
+        {%endif%}
+        {% if userIsOfficer == True%}
+          <td><a href='{% url 'banned_members' club.id %}' class="btn btn-primary">Banned Members</a></td>
+          <td><a href='{% url 'show_applications_to_club' club.id %}' class="btn btn-primary">Show Applications</a></td>
+        {%endif%}
+
           {% if has_applied %}
           <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmWithdrawApplication()" class="btn btn-warning">Withdraw application</a></td>
           {% elif userIsMember %}
