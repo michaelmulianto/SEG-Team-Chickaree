@@ -3,8 +3,9 @@
 from django.views import View
 
 from .helpers import get_clubs_of_user
-from .decorators import club_exists, membership_exists, club_exists
+from .decorators import club_exists, membership_exists, club_exists, is_user_owner_of_club
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 # from django.utils.decorators import method_decorator
 
 from clubs.models import Membership, Club
