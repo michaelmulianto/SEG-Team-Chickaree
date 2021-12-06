@@ -14,7 +14,7 @@ class KickMemberViewTestCase(TestCase):
 
     fixtures = [
         'clubs/tests/fixtures/default_user.json',
-        'clubs/tests/fixtures/second_user.json',
+        'clubs/tests/fixtures/other_users.json',
         'clubs/tests/fixtures/default_club.json'
     ]
 
@@ -50,7 +50,7 @@ class KickMemberViewTestCase(TestCase):
 
     def test_promote_redirects_when_invalid_member_id_entered(self):
         self.url = reverse('kick_member', kwargs = {'member_id': 999})
-        self.client.login(username=self.user_kicking.username, password="Password123")
+        self.client.login(email=self.user_kicking.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -58,7 +58,7 @@ class KickMemberViewTestCase(TestCase):
         self.assertFalse(self._has_member_been_kicked())
 
     def test_promote_redirects_when_not_owner_or_officer_of_club(self):
-        self.client.login(username=self.user_kicking.username, password="Password123")
+        self.client.login(email=self.user_kicking.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -68,7 +68,7 @@ class KickMemberViewTestCase(TestCase):
     def test_successful_kick_as_officer(self):
         self.member_kicking.is_officer = True
         self.member_kicking.save()
-        self.client.login(username=self.user_kicking.username, password="Password123")
+        self.client.login(email=self.user_kicking.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         self.assertTrue(self._has_member_been_kicked())
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
@@ -78,7 +78,7 @@ class KickMemberViewTestCase(TestCase):
     def test_successful_kick_as_owner(self):
         self.member_kicking.is_owner = True
         self.member_kicking.save()
-        self.client.login(username=self.user_kicking.username, password="Password123")
+        self.client.login(email=self.user_kicking.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)

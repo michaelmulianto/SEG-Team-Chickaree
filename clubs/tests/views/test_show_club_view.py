@@ -25,7 +25,7 @@ class ShowClubViewTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(self.url,f'/club/{self.club.id}')
 
     def test_get_show_club_with_valid_id(self):
-        self.client.login(username="johndoe", password="Password123")
+        self.client.login(email="johndoe@example.org", password="Password123")
         response = self.client.get(self.url)
         self.assertTemplateUsed(response, "show_club.html")
         self.assertEqual(response.status_code, 200) #OK
@@ -37,7 +37,7 @@ class ShowClubViewTestCase(TestCase, MenuTesterMixin):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_get_show_club_with_invalid_id(self):
-        self.client.login(username="johndoe", password="Password123")
+        self.client.login(email="johndoe@example.org", password="Password123")
         self.url = reverse('show_club', kwargs={'club_id': self.club.id-1})
         response = self.client.get(self.url)
         redirect_url = reverse("show_clubs")

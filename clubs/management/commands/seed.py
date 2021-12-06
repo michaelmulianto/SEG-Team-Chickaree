@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from faker import Faker
 from random import sample, choice
-from clubs.models import User, Club, Member, Application
+from clubs.models import User, Club, Member, Application, Ban
 
 class Command(BaseCommand):
     """Fill the database with pseudorandom data and some mandated test cases."""
@@ -44,7 +44,7 @@ class Command(BaseCommand):
             club.save()
 
             members = sample(list(User.objects.exclude(is_staff=True)), (i%5)+6)
-            
+
             owner = Member.objects.create(
                 club = club,
                 user = members[0],
@@ -63,7 +63,7 @@ class Command(BaseCommand):
                 m.full_clean()
                 m.save()
 
-            for i in range(len(members)-3,len(members)):
+            for i in range(len(members)-3,len(members)-1):
                 a = Application.objects.create(
                     club = club,
                     user = members[i],
@@ -71,6 +71,11 @@ class Command(BaseCommand):
                 )
                 a.full_clean()
                 a.save()
+
+            b = Ban.objects.create(
+                club = club,
+                user = members[len(members)-1],
+            )
 
     def generate_required_data(self):
         """This is the data needed as part of non-functional requirements"""
@@ -183,12 +188,12 @@ class Command(BaseCommand):
         # We hard code this so it can be logged in to.
         owner_user = User.objects.create_user(
             username = "testuser1",
-                first_name = "Test",
-                last_name = "Testson",
-                email = "test@example.org",
-                bio = "",
-                experience = 1,
-                password = "Password123",
+            first_name = "Test",
+            last_name = "Testson",
+            email = "test@example.org",
+            bio = "",
+            experience = 1,
+            password = "Password123",
         )
         owner_user.full_clean()
         owner_user.save()
@@ -222,6 +227,11 @@ class Command(BaseCommand):
         )).save()
 
         (Member.objects.create(
+            user = choice(list(User.objects.exclude(username="testuser1"))),
+            club = less_lonely_club,
+        )).save()
+
+        (Ban.objects.create(
             user = choice(list(User.objects.exclude(username="testuser1"))),
             club = less_lonely_club,
         )).save()

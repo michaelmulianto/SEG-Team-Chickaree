@@ -28,12 +28,21 @@ class BanModelTestCase(TestCase):
     def test_valid_ban(self):
         self._assert_ban_is_valid()
 
+    #Constraints:
+    def test_user_and_club_together_are_unique(self):
+        Ban.objects.create(
+            user = self.user,
+            club = self.club,
+        )
+        self._assert_ban_is_invalid()
+
+
     # Assertions
     def _assert_ban_is_valid(self):
         try:
             self.ban.full_clean()
         except (ValidationError):
-            self.fail("Test Application should be valid")
+            self.fail("Test Ban should be valid")
 
     def _assert_ban_is_invalid(self):
         with self.assertRaises(ValidationError):

@@ -13,7 +13,7 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
     fixtures = [
         'clubs/tests/fixtures/default_user.json',
         'clubs/tests/fixtures/default_club.json',
-        'clubs/tests/fixtures/second_user.json',
+        'clubs/tests/fixtures/other_users.json',
     ]
     def setUp(self):
         self.user = User.objects.get(username='johndoe')
@@ -39,7 +39,7 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.membership.is_owner = False
         self.membership.save(update_fields=['is_owner'])
 
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url, follow=True)
 
         redirect_url = reverse('show_clubs')
@@ -48,14 +48,14 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
 
     def test_show_application_to_club_redirects_when_invalid_club_id_entered(self):
         self.url = reverse('show_applications_to_club', kwargs = {'club_id': 0})
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
 
     def test_successful_show_applications_to_club(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url, follow=True)
 
         self.assertEqual(response.status_code, 200)
@@ -63,7 +63,7 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assert_menu(response)
 
     def test_template_does_not_show_header_fields_when_there_are_no_aplications(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url)
 
         with self.assertHTML(response) as html:
@@ -79,7 +79,7 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         )
 
 
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url)
         with self.assertHTML(response) as html:
             TableTextContainer = html.find('body/div/div/div/table/table/tr/th')
@@ -101,7 +101,7 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         )
 
 
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url)
         with self.assertHTML(response) as html:
             TableTextContainer = html.find('body/div/div/div/table/table/tr/th')

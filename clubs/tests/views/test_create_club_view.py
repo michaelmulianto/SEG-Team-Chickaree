@@ -26,7 +26,7 @@ class CreateClubViewTest(TestCase, MenuTesterMixin):
         self.assertEqual(self.url, '/create_club/')
 
     def test_get_create_club_loads_empty_form(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         club_count_before = Club.objects.count()
         response = self.client.get(self.url, follow=True)
         self.assert_menu(response)
@@ -40,7 +40,7 @@ class CreateClubViewTest(TestCase, MenuTesterMixin):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_successful_create_club(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
 
         # We need to test that both a new club and member object have been created.
         club_count_before = Club.objects.count()
@@ -66,7 +66,7 @@ class CreateClubViewTest(TestCase, MenuTesterMixin):
         self.assertTemplateUsed(response, 'show_clubs.html')
 
     def test_unsuccessful_create_club(self):
-        self.client.login(username='johndoe', password='Password123')
+        self.client.login(email=self.user.email, password='Password123')
 
         club_count_before = Club.objects.count()
         member_count_before = Member.objects.count()

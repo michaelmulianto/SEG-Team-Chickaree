@@ -11,7 +11,7 @@ class RespondToApplicationViewTestCase(TestCase):
 
     fixtures = [
         'clubs/tests/fixtures/default_user.json',
-        'clubs/tests/fixtures/second_user.json',
+        'clubs/tests/fixtures/other_users.json',
         'clubs/tests/fixtures/default_club.json'
     ]
 
@@ -46,7 +46,7 @@ class RespondToApplicationViewTestCase(TestCase):
         self.ownerMember.is_owner = False
         self.ownerMember.save(update_fields=['is_owner'])
 
-        self.client.login(username=self.ownerUser.username, password="Password123")
+        self.client.login(email=self.ownerUser.email, password="Password123")
         response = self.client.get(self.url, follow=True)
 
         redirect_url = reverse('show_clubs')
@@ -55,14 +55,14 @@ class RespondToApplicationViewTestCase(TestCase):
 
     def test_respond_to_application_redirects_when_invalid_application_id_entered(self):
         self.url = reverse('respond_to_application', kwargs = {'app_id': 0, 'is_accepted':1})
-        self.client.login(username=self.ownerUser.username, password="Password123")
+        self.client.login(email=self.ownerUser.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
 
     def test_successful_accept_application_to_club(self):
-        self.client.login(username=self.ownerUser.username, password="Password123")
+        self.client.login(email=self.ownerUser.email, password="Password123")
 
         member_count_before = Member.objects.count()
         application_count_before = Application.objects.count()
@@ -80,7 +80,7 @@ class RespondToApplicationViewTestCase(TestCase):
 
     def test_successful_reject_application_to_club(self):
         self.url = reverse('respond_to_application', kwargs = {'app_id': self.application.id, 'is_accepted':0})
-        self.client.login(username=self.ownerUser.username, password="Password123")
+        self.client.login(email=self.ownerUser.email, password="Password123")
 
         member_count_before = Member.objects.count()
         application_count_before = Application.objects.count()

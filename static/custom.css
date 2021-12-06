@@ -140,10 +140,25 @@ h3.profile-title {
 /*
 * Buttons
 */
-.button {
-  width: 40%;
+
+.home-page-button {
+  width: 40% !important;
 }
 
 .dropdown-menu-end {
   padding: 0px;
+}
+
+.search-icon {
+  float:left;
+  padding-top: 1%;
+  padding-right: 1%;
+}
+.search-bar {
+  float: left;
+  width: 95%;
+}
+
+.search-button {
+  float: right;
 }
