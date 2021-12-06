@@ -11,7 +11,7 @@ Implemented:
 from libgravatar import Gravatar
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import UniqueConstraint
+from django.db.models import UniqueConstraint, CheckConstraint, Q, F, Exists
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 
@@ -98,14 +98,16 @@ class Member(models.Model):
             UniqueConstraint(
                 name='user_in_club_unique',
                 fields=['club', 'user'],
-            )
+            ),
+            CheckConstraint(
+                name='not_officer_and_owner',
+                check = Q(Q(is_owner=True) & Q(is_officer=True))
+            ),
         ]
 
     def save(self, *args, **kwargs):
         if Member.objects.filter(club=self.club, is_owner=True).exists() and self.is_owner:
             raise ValidationError("There is already an owner for this club.")
-        if self.is_owner and self.is_officer:
-            raise ValidationError("A member cannot be an officer and an owner.")
         else:
             return super(Member, self).save(*args, **kwargs)
 
@@ -113,8 +115,6 @@ class Member(models.Model):
         super().full_clean(*args, **kwargs)
         if Member.objects.filter(club=self.club, is_owner=True).exists() and self.is_owner:
             raise ValidationError("There is already an owner for this club.")
-        if self.is_owner and self.is_officer:
-            raise ValidationError("A member cannot be an officer and an owner.")
 
 
 class Application(models.Model):
