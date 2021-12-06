@@ -84,7 +84,6 @@ class Club(models.Model):
     class Meta:
         ordering = ['-created_on']
 
-
 class Member(models.Model):
     """Model representing a membership of some single chess club by some single user"""
     club = models.ForeignKey('Club', on_delete=models.CASCADE, unique=False, blank=False)
@@ -99,22 +98,15 @@ class Member(models.Model):
                 name='user_in_club_unique',
                 fields=['club', 'user'],
             ),
-            CheckConstraint(
-                name='not_officer_and_owner',
-                check = Q(Q(is_owner=True) & Q(is_officer=True))
-            ),
         ]
-
-    def save(self, *args, **kwargs):
-        if Member.objects.filter(club=self.club, is_owner=True).exists() and self.is_owner:
-            raise ValidationError("There is already an owner for this club.")
-        else:
-            return super(Member, self).save(*args, **kwargs)
 
     def full_clean(self, *args, **kwargs):
         super().full_clean(*args, **kwargs)
-        if Member.objects.filter(club=self.club, is_owner=True).exists() and self.is_owner:
+        if Member.objects.exclude(id=self.id).filter(club=self.club, is_owner=True).exists() and self.is_owner:
             raise ValidationError("There is already an owner for this club.")
+        
+        if self.is_owner and self.is_officer:
+            raise ValidationError("A single member cannot be both member and officer.")
 
 
 class Application(models.Model):
