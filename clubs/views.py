@@ -356,13 +356,14 @@ def transfer_ownership_to_officer(request, member_id):
         # Targetted member should be an officer
         return redirect('members_list', club_id=club.id)
 
+    curr_owner.is_owner = False
+    curr_owner.is_officer = True
+    curr_owner.save() # Or database won't update.
+    
     member.is_owner = True
     member.is_officer = False
     member.save() # Or database won't update.
 
-    curr_owner.is_owner = False
-    curr_owner.is_officer = True
-    curr_owner.save()
     return redirect('members_list', club_id=club.id)
 
 @login_required
