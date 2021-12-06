@@ -129,7 +129,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         next = response.context['next']
         self.assertEqual(next, redirect_url)
 
-    def test_valid_log_in_by_inacitve_user(self):
+    def test_valid_log_in_by_inactive_user(self):
         self.user.is_active = False
         self.user.save()
         response = self.client.post(self.url, self.form_input, follow=True)

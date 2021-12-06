@@ -8,7 +8,7 @@ from clubs.forms import ApplyToClubForm
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 
 class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
-    """Test all aspects of the apply to club view"""
+    """Test all aspects of the apply to club view."""
 
     fixtures = [
         'clubs/tests/fixtures/default_user.json',

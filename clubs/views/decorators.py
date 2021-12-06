@@ -1,3 +1,5 @@
+"""Decorators representing requirements of views to be accessed"""
+
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.conf import settings
@@ -63,6 +65,7 @@ def not_banned(view_function):
             return view_function(request, club_id, **kwargs)
 
     return modified_view_fuction
+
 
 
 def is_user_officer_of_club(user, club):
