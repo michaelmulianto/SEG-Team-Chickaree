@@ -27,22 +27,22 @@ def show_club(request, club_id):
     """View details of a club."""
     current_user = request.user
     club = Club.objects.get(id=club_id)
-    members = Member.objects.filter(club = club)
+    members = Member.objects.filter(club = club_id)
     officers = members.filter(is_officer = True)
-    officer_count = officers.count()
-    get_owner = members.get(is_owner = True)
-    num_members = members.count()
-    check_user_is_member = members.filter(user = current_user)
-    is_member = False
-    is_owner = False
-    is_officer = False
-    if check_user_is_member.filter(is_owner = True).count() > 0:
-        is_owner = True
-    if check_user_is_member.count() > 0:
-        is_member = True
-    if check_user_is_member.filter(is_officer = True).count() > 0:
-        is_officer = True
-    return render(request, 'show_club.html', {'club': club, 'members': num_members, 'userIsMember': is_member, 'owner': get_owner, 'userIsOwner': is_owner, 'userIsOfficer': is_officer, 'officers': officers, 'officerCount': officer_count, 'my_clubs':get_clubs_of_user(request.user)})
+    officerCount = officers.count()
+    getOwner = members.get(is_owner = True)
+    numberOfMembers = members.count()
+    checkUserisMember = members.filter(user = current_user)
+    isMember = False
+    isOwner = False
+    isOfficer = False
+    if checkUserisMember.filter(is_owner = True).count() > 0:
+        isOwner = True
+    if checkUserisMember.count() > 0:
+        isMember = True
+    if checkUserisMember.filter(is_officer = True).count() > 0:
+        isOfficer = True
+    return render(request, 'show_club.html', {'current_user': request.user, 'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner, 'userIsOwner': isOwner, 'userIsOfficer': isOfficer, 'officers': officers, 'my_clubs':get_clubs_of_user(request.user), 'officerCount': officerCount})
 
 
 @login_required
