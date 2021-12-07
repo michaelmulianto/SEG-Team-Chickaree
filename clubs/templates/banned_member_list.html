@@ -1,6 +1,7 @@
 {% extends 'base_content.html' %}
 {% block content %}
 {% load define_action %}
+{% get_banned_members club as banned_members %}
   <div class="container">
     <div class="row">
       <div class="col-12">
@@ -37,7 +38,6 @@
             <td> @{{ ban_member.user.username }} </td>
             <td> {{ ban_member.user.first_name }} {{ ban_member.user.last_name }} </td>
             <td> {{ ban_member.user.email }} </td>
-            <!-- <td> {{ban_member.user.level}}<td> -->
             <td> {{ ban_member.user.bio }} </td>
             <td style="width: 100px"><a style="width: 100px" href='{% url 'unban_member' ban_member.id %}' class="btn btn-danger">Unban</a></td>
           </tr>

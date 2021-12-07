@@ -41,6 +41,7 @@ class BanMemberViewTestCase(TestCase):
             is_owner = False,
         )
 
+        #Member to ban
         self.member_being_banned = Membership.objects.create(
             club = self.club,
             user = self.user_being_banned,

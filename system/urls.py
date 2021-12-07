@@ -20,6 +20,9 @@ from . import converters
 
 register_converter(converters.BooleanPathConverter, 'bool')
 
+handler404 = 'clubs.views.errors.page_not_found_custom'
+handler500 = 'clubs.views.errors.server_error_custom'
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
@@ -48,5 +51,5 @@ urlpatterns = [
     path('unban_member/<int:ban_id>', views.unban_member, name='unban_member'),
     path('promote_member/<int:member_id>', views.promote_member_to_officer, name='promote_member_to_officer'),
     path('demote_officer/<int:member_id>', views.demote_officer_to_member, name='demote_officer_to_member'),
-    path('transfer_ownership_to/<int:member_id>', views.transfer_ownership_to_officer, name='transfer_ownership_to_officer'),
+    path('transfer_ownership_to/<int:member_id>', views.transfer_ownership_to_officer, name='transfer_ownership_to_officer'), 
 ]

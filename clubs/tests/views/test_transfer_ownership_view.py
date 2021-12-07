@@ -63,6 +63,16 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'members_list.html')
         self.assertFalse(self._has_ownership_been_transferred())
 
+    def test_transfer_redirects_transfering_ownership_to_non_officer(self):
+        self.target_member.is_officer = False
+        self.target_member.save()
+        self.client.login(email=self.owner_user.email, password="Password123")
+        response = self.client.get(self.url, follow=True)
+        redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertFalse(self._has_ownership_been_transferred())
+
     def test_successful_transfer(self):
         self.client.login(email=self.owner_user.email, password="Password123")
         self.assertFalse(self._has_ownership_been_transferred())
