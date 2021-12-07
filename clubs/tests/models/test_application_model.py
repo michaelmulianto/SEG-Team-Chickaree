@@ -4,9 +4,11 @@ Tests for model of a single application by some user to some club.
 The model effectively represents a many-to-many relationship, however we test a single relationship.
 """
 
+from django.db.utils import IntegrityError
 from django.test import TestCase
 from clubs.models import User, Club, Application
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 
 class ApplicationModelTestCase(TestCase):
     """Test all attributes included in the application model"""
@@ -45,11 +47,13 @@ class ApplicationModelTestCase(TestCase):
 
     #Constraints:
     def test_user_and_club_together_are_unique(self):
-        Application.objects.create(
-            user = self.user,
-            club = self.club,
-        )
-        self._assert_app_is_invalid()
+        try:
+            Application.objects.create(
+                user = self.user,
+                club = self.club,
+            )
+        except(IntegrityError):
+            self.assertRaises(IntegrityError)
 
     # Assertions
     def _assert_app_is_valid(self):

@@ -7,13 +7,15 @@ Implemented:
     - Application: many clubs to many users
     - Member: many clubs to many users
 """
-
+from datetime import datetime
+from django.utils import timezone
+from django.utils.timezone import now
 from libgravatar import Gravatar
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import UniqueConstraint, CheckConstraint, Q, F, Exists
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinLengthValidator, MaxLengthValidator
 
 class User(AbstractUser):
     """Model for a registered user, independent of any clubs"""
@@ -87,7 +89,7 @@ class Club(models.Model):
     class Meta:
         ordering = ['-created_on']
 
-class Member(models.Model):
+class Membership(models.Model):
     """Model representing a membership of some single chess club by some single user"""
     club = models.ForeignKey('Club', on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey('User', on_delete=models.CASCADE, unique=False, blank=False)
@@ -105,9 +107,9 @@ class Member(models.Model):
 
     def full_clean(self, *args, **kwargs):
         super().full_clean(*args, **kwargs)
-        if Member.objects.exclude(id=self.id).filter(club=self.club, is_owner=True).exists() and self.is_owner:
+        if Membership.objects.exclude(id=self.id).filter(club=self.club, is_owner=True).exists() and self.is_owner:
             raise ValidationError("There is already an owner for this club.")
-        
+
         if self.is_owner and self.is_officer:
             raise ValidationError("A single member cannot be both member and officer.")
 
@@ -140,3 +142,33 @@ class Ban(models.Model):
                 fields=['club', 'user'],
             )
         ]
+
+class Tournament(models.Model):
+    """Model representing a single tournament."""
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
+    name = models.CharField(max_length=50, blank=False, unique = True)
+    description =  models.CharField(max_length=280, blank=False)
+    capacity = models.PositiveIntegerField(default=16, blank=False)
+    start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+    end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+
+    class Meta:
+        ordering = ['start']
+
+    def full_clean(self, *args, **kwargs):
+        super().full_clean(*args, **kwargs)
+        if self.capacity < 2:
+            raise ValidationError("The capacity should be at least 2.")
+        if self.capacity > 96:
+            raise ValidationError("The capacity should not exceed 96.")
+        if self.capacity % 2 != 0:
+            raise ValidationError("The capacity should be even.")
+        if self.start < now():
+            raise ValidationError("The start date cannot be in the past!")
+        if self.end < now():
+            raise ValidationError("The end date cannot be in the past!")
+        if self.start > self.end:
+            raise ValidationError("The tournament should have a positive duration.")
+
+    def get_initial_round():
+        pass

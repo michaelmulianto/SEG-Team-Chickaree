@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 from django.urls import reverse
-from clubs.models import Club, Member, User
+from clubs.models import Club, Membership, User
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 
 class ShowClubViewTestCase(TestCase, MenuTesterMixin):
@@ -14,7 +14,7 @@ class ShowClubViewTestCase(TestCase, MenuTesterMixin):
     def setUp(self):
         self.club = Club.objects.get(name='King\'s Knights')
         self.url = reverse('show_club', kwargs={'club_id': self.club.id})
-        self.member = Member.objects.create(
+        self.member = Membership.objects.create(
             user = User.objects.get(username='johndoe'),
             club = self.club,
             is_owner = True,

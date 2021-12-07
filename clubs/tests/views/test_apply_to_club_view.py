@@ -3,7 +3,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
-from clubs.models import User, Club, Application, Member, Ban
+from clubs.models import User, Club, Application, Membership, Ban
 from clubs.forms import ApplyToClubForm
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 
@@ -20,7 +20,7 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
         self.user = User.objects.get(username='johndoe')
         self.club_owner = User.objects.get(username='janedoe')
         self.club = Club.objects.get(name='King\'s Knights')
-        Member.objects.create(
+        Membership.objects.create(
             user = self.club_owner,
             club = self.club,
             is_owner = True
@@ -95,7 +95,7 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
     def test_unsuccessful_application_when_already_member(self):
         self.client.login(email=self.user.email, password="Password123")
 
-        Member.objects.create(
+        Membership.objects.create(
             club = self.club,
             user = self.user,
             is_owner = False

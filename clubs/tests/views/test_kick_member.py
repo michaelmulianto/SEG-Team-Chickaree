@@ -6,7 +6,7 @@ their club.
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
-from clubs.models import User, Club, Member
+from clubs.models import User, Club, Membership
 from clubs.tests.helpers import reverse_with_next
 
 class KickMemberViewTestCase(TestCase):
@@ -23,14 +23,14 @@ class KickMemberViewTestCase(TestCase):
         self.user_being_kicked = User.objects.get(username='johndoe')
         self.club = Club.objects.get(name='King\'s Knights')
 
-        self.member_kicking = Member.objects.create(
+        self.member_kicking = Membership.objects.create(
             club = self.club,
             user = self.user_kicking,
             is_officer = False,
             is_owner = False,
         )
 
-        self.member_being_kicked = Member.objects.create(
+        self.member_being_kicked = Membership.objects.create(
             club = self.club,
             user = self.user_being_kicked,
             is_owner = False,
@@ -86,4 +86,4 @@ class KickMemberViewTestCase(TestCase):
         self.assertTrue(self._has_member_been_kicked())
 
     def _has_member_been_kicked(self):
-        return (not Member.objects.filter(id=self.member_being_kicked.id).exists())
+        return (not Membership.objects.filter(id=self.member_being_kicked.id).exists())

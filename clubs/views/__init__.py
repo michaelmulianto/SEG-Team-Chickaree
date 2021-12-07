@@ -6,3 +6,4 @@ from .club_detail_views import *
 from .club_management_views import *
 from .application_views import *
 from .member_management_views import *
+from .tournament_views import *

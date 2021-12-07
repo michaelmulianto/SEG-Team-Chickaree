@@ -4,7 +4,7 @@ from .helpers import get_clubs_of_user, sort_clubs
 from .decorators import login_prohibited, club_exists
 from django.contrib.auth.decorators import login_required
 
-from clubs.models import Club, Application, Member
+from clubs.models import Club, Application, Membership
 
 from django.shortcuts import render
 from django.conf import settings
@@ -34,7 +34,7 @@ def my_clubs_list(request):
     for club in Club.objects.all():
         if Application.objects.filter(club=club, user=current_user):
             my_clubs.append(club)
-        if Member.objects.filter(club=club, user=current_user):
+        if Membership.objects.filter(club=club, user=current_user):
             my_clubs.append(club)
 
     paginator = Paginator(my_clubs, settings.CLUBS_PER_PAGE)

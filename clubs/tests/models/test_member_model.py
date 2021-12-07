@@ -5,8 +5,9 @@ The model effectively represents a many-to-many relationship, however we test a 
 """
 
 from django.test import TestCase
-from clubs.models import Club, User, Member
+from clubs.models import Club, User, Membership
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 
 
 class MemberModelTestCase(TestCase):
@@ -23,11 +24,11 @@ class MemberModelTestCase(TestCase):
         self.club = Club.objects.get(name="King\'s Knights")
         self.user = User.objects.get(username="johndoe")
         self.user_club_owner = User.objects.get(username="janedoe")
-        self.membership = Member.objects.create(
+        self.membership = Membership.objects.create(
             user = self.user,
             club = self.club
         )
-        self.member_club_owner = Member.objects.create(
+        self.member_club_owner = Membership.objects.create(
             user = self.user_club_owner,
             club = self.club,
             is_owner = True
@@ -48,7 +49,7 @@ class MemberModelTestCase(TestCase):
 
     def test_member_deletes_when_club_is_deleted(self):
         self.club.delete()
-        self.assertFalse(Member.objects.filter(id=self.membership.id).exists())
+        self.assertFalse(Membership.objects.filter(id=self.membership.id).exists())
 
     def test_club_does_not_delete_when_member_is_deleted(self):
         self.membership.delete()
@@ -65,7 +66,7 @@ class MemberModelTestCase(TestCase):
 
     def test_member_deletes_when_user_is_deleted(self):
         self.user.delete()
-        self.assertFalse(Member.objects.filter(id=self.membership.id).exists())
+        self.assertFalse(Membership.objects.filter(id=self.membership.id).exists())
 
     def test_user_does_not_delete_when_member_is_deleted(self):
         self.membership.delete()
@@ -73,11 +74,13 @@ class MemberModelTestCase(TestCase):
 
     #Constraints:
     def test_user_and_club_together_are_unique(self):
-        Member.objects.create(
+        try:
+            Membership.objects.create(
             user = self.user,
             club = self.club,
         )
-        self._assert_member_is_invalid()
+        except(IntegrityError):
+            self.assertRaises(IntegrityError)
 
     def test_club_can_only_have_one_owner_constraint(self):
         self.membership.is_owner = True
