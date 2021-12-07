@@ -52,7 +52,7 @@ def transfer_ownership_to_officer(request, member_id):
     if not(member.is_officer):
         # Targetted member should be an officer
         messages.error(request, 'Ownership must be transfered to an officer. Promote '
-            + '@' + member.user.username + ' from your list of members first.')
+            + '@' + member.user.username + ' first.')
         return redirect('members_list', club_id=club.id)
 
     curr_owner.is_owner = False
