@@ -257,7 +257,7 @@ class KnockoutStage(StageInterface):
                 winners.append(match.white_player)
             elif match.result == 2:
                 winners.append(match.black_player)
-
+        # Case draw not considered: To-do
         return winners
 
 class GroupStage(StageInterface):
@@ -274,8 +274,25 @@ class SingleGroup(StageInterface):
             player_occurences.append(match.white_player)
             player_occurences.append(match.black_player)
 
-        num_players = len(set(player_occurences))
-        if matches.count() != num_players * (num_players - 1)
+        # We must calculate the number of players each player plays.
+        unique_players = set(player_occurences)
+        num_players = len(unique_players)
+
+        num_occurences = {}
+        for player in unique_players:
+            num_occurences.update({player.id : 0})
+
+        for occurence in player_occurences:
+            num_occurences.update({occurence.id : num_occurences[occurence.id]+1})
+
+        # Now we ensure all players have played exactly n-1 games i.e. everyone once
+        for k in num_occurences.values():
+            if k != num_players-1:
+                raise ValidationError("Not all players play the correct number of games.")
+
+        # Check total number of matches, in case of edge case.
+        if matches.count() != ((num_players-1)/2.0) * num_players: # Triangle number: (n/2)*(n+1)
+            raise ValidationError("The incorrect number of matches are linked to this group.")
             
 
     def get_winners(self):
