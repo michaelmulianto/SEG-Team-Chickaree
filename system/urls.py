@@ -43,6 +43,7 @@ urlpatterns = [
     path('members_list/<int:club_id>', views.members_list, name='members_list'),
     path('club/<int:club_id>', views.show_club, name='show_club'),
     path('club/<int:club_id>/edit', views.EditClubInfoView.as_view(), name='edit_club_info'),
+    path('club/<int:club_id>/edit/delete', views.delete_club, name='delete_club'),
     path('club/<int:club_id>/applications', views.show_applications_to_club, name='show_applications_to_club'),
     path('club/<int:club_id>/banned_members', views.banned_members, name='banned_members'),
     path('kick_member/<int:member_id>', views.kick_member, name='kick_member'),
