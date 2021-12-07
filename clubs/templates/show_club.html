@@ -3,6 +3,7 @@
 | {{club.name}}
 {% endblock %}
 {% block content %}
+{% include 'partials/js_confirm_messages.html'%}
 {% load static %}
 {% load define_action %}
 {% check_is_owner club current_user as is_owner %}
@@ -83,10 +84,10 @@
               </style>
               <td class="button-cell-spacing"><a href='{% url 'members_list' club.id %}' class="btn btn-primary">Members</a></td>
           {% if has_applied %}
-              <td class="button-cell-spacing"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmWithdrawApplication()" class="btn btn-warning">Withdraw application</a></td>
+              <td class="button-cell-spacing"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmMsg('withdraw_application')" class="btn btn-warning">Withdraw application</a></td>
           {% elif is_member %}
             {% if not is_owner %}
-              <td class="button-cell-spacing"><a href='{% url 'leave_club' club.id %}' onclick="confirmLeaveClub()" class="btn btn-danger">Leave club</a></td>
+              <td class="button-cell-spacing"><a href='{% url 'leave_club' club.id %}' onclick="confirmMsg('leave_club')" class="btn btn-danger">Leave club</a></td>
             {% elif is_officer or is_owner %}
               <td class="button-cell-spacing"><a href='{% url 'banned_members' club.id %}' class="btn btn-primary">Banned Members</a></td>
               <td class="button-cell-spacing"><a href='{% url 'show_applications_to_club' club.id %}' class="btn btn-primary">Applications</a></td>
@@ -101,25 +102,6 @@
             </tr>
           </table>
 
-
-
-
-        <script>
-          function confirmWithdrawApplication(){
-            if(confirm('Are you sure you want to withdraw your application?')){
-              return true;
-            }else{
-              event.stopPropagation(); event.preventDefault();
-            }
-          }
-          function confirmLeaveClub(){
-            if(confirm('Are you sure you want to leave the club?')){
-              return true;
-            }else{
-              event.stopPropagation(); event.preventDefault();
-            }
-          }
-          </script>
       </div>
     </div>
   </div>
