@@ -165,6 +165,48 @@ class Participant(MemberTournamentRelationship):
 
 class Stage(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
+
+    class Meta:
+        ordering = ['stage']
+
+    @abstractmethod
+    def get_next_round(self):
+        pass
+
+    def get_matches(self):
+        return Match.objects.filter(stage=self)
+
+    def get_is_complete(self):
+        return not self.get_matches().filter(result = None).exists()
+
+class KnockoutStage(Stage):
+
+    def full_clean(self):
+        super().full_clean()
+        matches = self.get_matches()
+
+        if (len(matches) & (len(matches) - 1) != 0):
+            raise ValidationError("The number of matches must be a power of two.")
+
+        player_occurences = []
+        for match in matches:
+            player_occurences.append(match.white_player)
+            player_occurences.append(match.black_player)
+
+        if(len(player_occurences) != len(set(player_occurences))):
+            raise ValidationError("Each player must only play 1 match.")
+
+    def get_next_round(self):
+        matches = self.get_matches()
+        if not self.get_is_complete():
+            return None 
+        
+
+class RoundRobinStage(Stage):
+    def get_next_round(self):
+        pass
+
+class GroupStage(Stage):
     def get_next_round(self):
         pass
 
@@ -172,7 +214,7 @@ class Match(models.Model):
     white_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False)
     black_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False)
 
-    stage = models.ForeignKey(Round, on_delete=models.CASCADE, unique=False, blank=False)
+    stage = models.ForeignKey(Stage, on_delete=models.CASCADE, unique=False, blank=False)
 
     OUTCOMES = (
         (1,'White Victory'),
@@ -180,3 +222,12 @@ class Match(models.Model):
         (3, 'Stalemate'),
     )
     result = models.IntegerField(default = None, choices = OUTCOMES, blank = True)
+
+    class Meta:
+        ordering = ['stage']
+        constraints = [
+            UniqueConstraint(
+                name='cannot_play_self',
+                fields=['white_player', 'black_player'],
+            ),
+        ]
