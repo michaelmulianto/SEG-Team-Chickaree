@@ -16,10 +16,11 @@
     <div class="row">
       <div class="col-12">
         {%csrf_token%}
-        <h1><b>{{ club.name }}</b></h1>
-        <P><B>Location: </b> {{ club.location }}</p>
+        <h1 style=font-size:50px><b>{{ club.name }}</b></h1>
+        </br>
+        <p><i class="bi bi-people-fill"></i> {{ number_of_members }}<p>
+        <P><i class="bi bi-geo-alt-fill"></i> {{ club.location }}</p>
         <p><b>Description: </b> {{ club.description }} </p>
-        <p><b>Number of Members: </b> {{ number_of_members }} </p>
         <b>Owner: </b>
         <style>
           .standard-table-spacing{
@@ -36,7 +37,7 @@
             <th>Bio</th>
           </tr>
           <tr>
-            <td> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
+            <td> <img src="{{ owner.user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
             <td> @{{ owner.user.username }} </td>
             <td> {{ owner.user.first_name }} {{ owner.user.last_name }} </td>
             <td> {{ owner.user.email }} </td>
@@ -48,8 +49,8 @@
         {% if is_member %}
           <b>Officers: </b>
           <table class="table standard-table-spacing">
-          {%if officer.count == 0 %}
-            <td> No Officers </td>
+          {%if not officer %}
+            <tr><td> No Officers </td></tr>
           {%else%}
             <tr>
               <th></th>
@@ -58,7 +59,7 @@
               <th>Email</th>
               <th>Bio</th>
             </tr>
-              {% for officer in officers %}
+            {% for officer in officers %}
             <tr>
               <td> <img src="{{ officer.user.mini_gravatar }}" alt="Gravatar" style="border-radius: 50%"> </td>
               <td> @{{ officer.user.username }} </td>
