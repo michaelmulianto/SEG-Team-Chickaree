@@ -1,5 +1,5 @@
 from django import template
-from clubs.models import User, Club, Application, Membership
+from clubs.models import User, Club, Application, Membership, Ban
 register = template.Library()
 
 @register.simple_tag
