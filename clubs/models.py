@@ -223,6 +223,11 @@ class StageInterface(models.Model):
         if self.get_matches().count() < 1:
             raise ValidationError("A stage cannot have no matches.")
 
+    def save(self):
+        # Due to complex nature of the models it is important that we check validation.
+        self.full_clean()
+        super().save()
+
 class KnockoutStage(StageInterface):
 
     def full_clean(self):
@@ -255,10 +260,14 @@ class KnockoutStage(StageInterface):
 
         return winners
 
-class RoundRobinStage(StageInterface):
-    def get_next_round(self):
-        pass
-
 class GroupStage(StageInterface):
     def get_next_round(self):
         pass
+
+class SingleGroup(StageInterface):
+    group_stage = models.ForeignKey(GroupStage, on_delete=models.CASCADE, unique=False, blank=False)
+    def get_winners(self):
+        if not self.get_is_complete():
+            return []
+        
+        
