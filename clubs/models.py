@@ -161,36 +161,14 @@ class Organiser(MemberTournamentRelationship):
     is_lead_organiser = models.BooleanField(default=False)
 
 class Participant(MemberTournamentRelationship):
-    round_eliminated = models.integerField(default=-1)
-
-class Match(models.Model):
-    white_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False)
-    black_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False)
-
-    stage = models.ForeignKey(Stage, on_delete=models.CASCADE, unique=False, blank=False)
-
-    OUTCOMES = (
-        (1,'White Victory'),
-        (2, 'Black Victory'),
-        (3, 'Stalemate'),
-    )
-    result = models.IntegerField(default = None, choices = OUTCOMES, blank = True)
-
-    class Meta:
-        ordering = ['stage']
-        constraints = [
-            UniqueConstraint(
-                name='cannot_play_self',
-                fields=['white_player', 'black_player'],
-            ),
-        ]
+    round_eliminated = models.IntegerField(default=-1)
 
 class StageInterface(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
     round_num = models.IntegerField(default = 1, blank = False)
 
     class Meta:
-        ordering = ['stage']
+        ordering = ['tournament']
 
     # ABSTRACT
     def get_winners(self):
@@ -202,7 +180,7 @@ class StageInterface(models.Model):
         if(num_participants < 1):
             return None
         
-        if(num_participants > 16)):
+        if(num_participants > 16):
             pass
             #CREATE GROUP
         elif(num_participants & (num_participants - 1) != 0):
@@ -227,6 +205,28 @@ class StageInterface(models.Model):
         # Due to complex nature of the models it is important that we check validation.
         self.full_clean()
         super().save()
+
+class Match(models.Model):
+    white_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False, related_name='white')
+    black_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False, related_name='black')
+
+    stage = models.ForeignKey(StageInterface, on_delete=models.CASCADE, unique=False, blank=False)
+
+    OUTCOMES = (
+        (1,'White Victory'),
+        (2, 'Black Victory'),
+        (3, 'Stalemate'),
+    )
+    result = models.IntegerField(default = None, choices = OUTCOMES, blank = True)
+
+    class Meta:
+        ordering = ['stage']
+        constraints = [
+            UniqueConstraint(
+                name='cannot_play_self',
+                fields=['white_player', 'black_player'],
+            ),
+        ]
 
 class KnockoutStage(StageInterface):
 
@@ -266,8 +266,19 @@ class GroupStage(StageInterface):
 
 class SingleGroup(StageInterface):
     group_stage = models.ForeignKey(GroupStage, on_delete=models.CASCADE, unique=False, blank=False)
+
+    def full_clean(self):
+        player_occurences = []
+        matches = self.get_matches()
+        for match in matches:
+            player_occurences.append(match.white_player)
+            player_occurences.append(match.black_player)
+
+        num_players = len(set(player_occurences))
+        if matches.count() != num_players * (num_players - 1)
+            
+
     def get_winners(self):
         if not self.get_is_complete():
             return []
-        
         
