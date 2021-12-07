@@ -187,7 +187,8 @@ class StageInterface(models.Model):
             pass
             #CREATE GROUP
         else:
-            KnockoutStage.objects.create()
+            pass
+            #CREATE KNOCKOUT
 
     def get_matches(self):
         return Match.objects.filter(stage=self)
