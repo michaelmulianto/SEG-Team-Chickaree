@@ -1,4 +1,6 @@
 {%csrf_token%}
+{% load define_action %}
+{% get_clubs current_user as my_clubs %}
 {% for club in my_clubs %}
     {% if my_clubs.count == 0 %}
     <li><a class="dropdown-item">No Clubs!</a></li>
