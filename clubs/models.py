@@ -16,7 +16,7 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 
 class User(AbstractUser):
-    """Model for a registered user, independent of any clubs"""
+    """Model for a registered user, independent of any clubs."""
     username = models.CharField(
         max_length=32,
         unique=True,
@@ -88,7 +88,7 @@ class Club(models.Model):
         ordering = ['-created_on']
 
 class Member(models.Model):
-    """Model representing a membership of some single chess club by some single user"""
+    """Model representing a membership of some single chess club by some single user."""
     club = models.ForeignKey('Club', on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey('User', on_delete=models.CASCADE, unique=False, blank=False)
     is_officer = models.BooleanField(default=False)
@@ -128,7 +128,7 @@ class Application(models.Model):
         ]
 
 class Ban(models.Model):
-    "Model for a ban to a club for some user"
+    "Model for a ban to a club for some user."
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
 
@@ -142,9 +142,11 @@ class Ban(models.Model):
         ]
 
 class Tournament(models.Model):
+    """Model for a chess tournament."""
     pass 
 
 class MemberTournamentRelationship(models.Model):
+    """Represent a single relationship between a member of a club and its tournament."""
     member = models.ForeignKey(Member, on_delete=models.CASCADE, unique=False, blank=False)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
 
@@ -158,12 +160,15 @@ class MemberTournamentRelationship(models.Model):
         ]
 
 class Organiser(MemberTournamentRelationship):
+    """Relationship between member and tournament where member has an admin role."""
     is_lead_organiser = models.BooleanField(default=False)
 
 class Participant(MemberTournamentRelationship):
+    """Relationship between member and tournament where member will play."""
     round_eliminated = models.IntegerField(default=-1)
 
 class StageInterface(models.Model):
+    """Model for single round in the tournament."""
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
     round_num = models.IntegerField(default = 1, blank = False)
 
@@ -217,6 +222,7 @@ class StageInterface(models.Model):
         super().save()
 
 class Match(models.Model):
+    """Model representing a single game of chess, in some tournament stage."""
     white_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False, related_name='white')
     black_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False, related_name='black')
 
@@ -239,7 +245,7 @@ class Match(models.Model):
         ]
 
 class KnockoutStage(StageInterface):
-
+    """Tournament round of type knockout."""
     def full_clean(self):
         super().full_clean()
         matches = self.get_matches()
@@ -268,6 +274,7 @@ class KnockoutStage(StageInterface):
         return winners
 
 class GroupStage(StageInterface):
+    """Tournament round of type group. Is associated with multiple groups."""
     def get_winners(self):
         groups = List(SingleGroup.objects.filter(group_stage=self))
         winners = []
@@ -282,6 +289,7 @@ class GroupStage(StageInterface):
             raise ValidationError("No groups assigned to the stage!")
 
 class SingleGroup(StageInterface):
+    """Represent a single round robin group within a larger group stage."""
     group_stage = models.ForeignKey(GroupStage, on_delete=models.CASCADE, unique=False, blank=False)
     winners_required = models.IntegerField(default = 1, blank=False)
 
