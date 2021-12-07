@@ -73,22 +73,23 @@
         {% endif %}
 
           </br>
-          <table>
+          <table class="table">
             <tr>
               <td><a href='{% url 'members_list' club.id %}' class="btn btn-primary">Members</a></td>
           {% if has_applied %}
               <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmWithdrawApplication()" class="btn btn-warning">Withdraw application</a></td>
           {% elif is_member %}
+            {% if not is_owner %}
               <td style="vertical-align: bottom; padding: 25px"><a href='{% url 'leave_club' club.id %}' onclick="confirmLeaveClub()" class="btn btn-danger">Leave club</a></td>
-            {% if is_officer or is_owner %}
+            {% elif is_officer or is_owner %}
               <td><a href='{% url 'banned_members' club.id %}' class="btn btn-primary">Banned Members</a></td>
               <td><a href='{% url 'show_applications_to_club' club.id %}' class="btn btn-primary">Applications</a></td>
               {% if is_owner %}
-              <td><a href='{% url 'edit_club_info' club.id %}' class="btn btn-primary">Edit</a></td>
+              <td><a href='{% url 'edit_club_info' club.id %}' class="btn btn-primary">Edit Club</a></td>
               <td><a href='#' class="btn btn-danger">Delete Club</a></td>
               {% endif %}
             {% endif %}
-          {% else %}
+          {% else%}
               <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success">Apply to club</a></td>
           {% endif %}
             </tr>
