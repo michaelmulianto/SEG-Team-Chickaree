@@ -1,8 +1,8 @@
-    {%csrf_token%}
-    {% for club in my_clubs %}
-        {% if my_clubs.count == 0 %}
-        <li><a class="dropdown-item">No Clubs!</a></li>
-        {% else %}
-            <li><a class="dropdown-item" href="{% url 'show_club' club.id %}"> | {{ club.name }}</a> </li>
-        {% endif %}
-    {% endfor %}
+{%csrf_token%}
+{% for club in my_clubs %}
+    {% if my_clubs.count == 0 %}
+    <li><a class="dropdown-item">No Clubs!</a></li>
+    {% else %}
+        <li><a class="dropdown-item" href="{% url 'show_club' club.id %}"> | {{ club.name }}</a> </li>
+    {% endif %}
+{% endfor %}
