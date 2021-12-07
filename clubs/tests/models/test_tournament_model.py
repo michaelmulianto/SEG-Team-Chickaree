@@ -5,10 +5,10 @@ from clubs.models import Tournament
 from django.core.exceptions import ValidationError
 
 
-class tournamentModelTestCase(TestCase):
+class TournamentModelTestCase(TestCase):
     """Test all aspects of a tournament."""
 
-    fixtures = ['clubs/tests/fixtures/default_tournament.json',
+    fixtures = ['clubs/tests/fixtures/default_club.json','clubs/tests/fixtures/default_tournament.json',
         'clubs/tests/fixtures/other_tournaments.json'
         ]
 

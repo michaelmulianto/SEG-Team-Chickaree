@@ -16,6 +16,11 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
     def setUp(self):
         self.user = User.objects.get(username='johndoe')
         self.club = Club.objects.get(name='King\'s Knights')
+        self.member = Membership.objects.create(
+            user=self.user,
+            club=self.club,
+            is_owner=True
+        )
         self.data = {
         "name" : "Grand Championship",
         "description" : "The most prestigious tournament in London.",
@@ -51,7 +56,7 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
         self.assertEqual(tournament_count_after, tournament_count_before+1)
 
         # Response tests
-        response_url = reverse('show_club')
+        response_url = reverse('show_club', kwargs={'club_id':self.club.id})
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,

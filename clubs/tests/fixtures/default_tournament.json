@@ -3,18 +3,7 @@
     "model": "clubs.tournament",
     "pk": 1,
     "fields": {
-      "club": [
-        {
-          "model": "clubs.club",
-          "pk": 1,
-          "fields": {
-            "name" : "King's Knights",
-            "location" : "King's College London",
-            "description" : "The best chess club in London.",
-            "created_on" : "2021-11-20T03:04:05+00:00"
-          }
-        }
-      ],
+      "club": 1,
       "name" : "Grand Championship",
       "description" : "The most prestigious tournament in London.",
       "capacity" : 16,
