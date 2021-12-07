@@ -45,11 +45,14 @@ def transfer_ownership_to_officer(request, member_id):
     club = member.club
     if not(is_user_owner_of_club(request.user, club)):
         # Access denied, member isn't owner
+        messages.error(request, 'Only the owner can transfer ownership of a club.')
         return redirect('members_list', club_id=club.id)
 
     curr_owner = Membership.objects.get(club=club, user=request.user)
     if not(member.is_officer):
         # Targetted member should be an officer
+        messages.error(request, 'Ownership must be transfered to an officer. Promote '
+            + '@' + member.user.username + ' from your list of members first.')
         return redirect('members_list', club_id=club.id)
 
     curr_owner.is_owner = False
@@ -60,6 +63,7 @@ def transfer_ownership_to_officer(request, member_id):
     member.is_officer = False
     member.save() # Or database won't update.
 
+    messages.warning(request, 'Ownership transfered to ' + '@' + member.user.username + '.')
     return redirect('members_list', club_id=club.id)
 
 class EditClubInfoView(UpdateView):
