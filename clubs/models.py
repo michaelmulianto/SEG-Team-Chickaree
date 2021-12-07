@@ -163,6 +163,28 @@ class Organiser(MemberTournamentRelationship):
 class Participant(MemberTournamentRelationship):
     round_eliminated = models.integerField(default=-1)
 
+class Match(models.Model):
+    white_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False)
+    black_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False)
+
+    stage = models.ForeignKey(Stage, on_delete=models.CASCADE, unique=False, blank=False)
+
+    OUTCOMES = (
+        (1,'White Victory'),
+        (2, 'Black Victory'),
+        (3, 'Stalemate'),
+    )
+    result = models.IntegerField(default = None, choices = OUTCOMES, blank = True)
+
+    class Meta:
+        ordering = ['stage']
+        constraints = [
+            UniqueConstraint(
+                name='cannot_play_self',
+                fields=['white_player', 'black_player'],
+            ),
+        ]
+
 class Stage(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
     round_num = models.IntegerField(default = 1, blank = False)
@@ -170,9 +192,9 @@ class Stage(models.Model):
     class Meta:
         ordering = ['stage']
 
-    @abstractmethod
+    # ABSTRACT
     def get_winners(self):
-        pass
+        return []
 
     def get_next_round(self):
         participants = self.get_winners()
@@ -206,11 +228,19 @@ class KnockoutStage(Stage):
         if(len(player_occurences) != len(set(player_occurences))):
             raise ValidationError("Each player must only play 1 match.")
 
-    def get_next_round(self):
-        matches = self.get_matches()
+    def get_winners(self):
         if not self.get_is_complete():
-            return None 
-        
+            return []
+
+        matches = self.get_matches()
+        winners = []
+        for match in matches:
+            if match.result == 1:
+                winners.append(match.white_player)
+            elif match.result == 2:
+                winners.append(match.black_player)
+
+        return winners
 
 class RoundRobinStage(Stage):
     def get_next_round(self):
@@ -219,25 +249,3 @@ class RoundRobinStage(Stage):
 class GroupStage(Stage):
     def get_next_round(self):
         pass
-
-class Match(models.Model):
-    white_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False)
-    black_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False)
-
-    stage = models.ForeignKey(Stage, on_delete=models.CASCADE, unique=False, blank=False)
-
-    OUTCOMES = (
-        (1,'White Victory'),
-        (2, 'Black Victory'),
-        (3, 'Stalemate'),
-    )
-    result = models.IntegerField(default = None, choices = OUTCOMES, blank = True)
-
-    class Meta:
-        ordering = ['stage']
-        constraints = [
-            UniqueConstraint(
-                name='cannot_play_self',
-                fields=['white_player', 'black_player'],
-            ),
-        ]
