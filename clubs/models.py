@@ -165,13 +165,18 @@ class Participant(MemberTournamentRelationship):
 
 class Stage(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
+    round_num = models.IntegerField(default = 1, blank = False)
 
     class Meta:
         ordering = ['stage']
 
     @abstractmethod
-    def get_next_round(self):
+    def get_winners(self):
         pass
+
+    def get_next_round(self):
+        participants = self.get_winners()
+        if(self.get_winners().count())
 
     def get_matches(self):
         return Match.objects.filter(stage=self)
@@ -179,13 +184,18 @@ class Stage(models.Model):
     def get_is_complete(self):
         return not self.get_matches().filter(result = None).exists()
 
+    def full_clean(self):
+        super().full_clean()
+        if self.get_matches().count() < 1:
+            raise ValidationError("A stage cannot have no matches.")
+
 class KnockoutStage(Stage):
 
     def full_clean(self):
         super().full_clean()
         matches = self.get_matches()
 
-        if (len(matches) & (len(matches) - 1) != 0):
+        if (matches.count() & (matches.count() - 1) != 0):
             raise ValidationError("The number of matches must be a power of two.")
 
         player_occurences = []
