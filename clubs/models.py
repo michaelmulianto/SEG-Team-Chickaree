@@ -185,7 +185,7 @@ class Match(models.Model):
             ),
         ]
 
-class Stage(models.Model):
+class StageInterface(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
     round_num = models.IntegerField(default = 1, blank = False)
 
@@ -198,7 +198,19 @@ class Stage(models.Model):
 
     def get_next_round(self):
         participants = self.get_winners()
-        if(self.get_winners().count())
+        num_participants = len(participants)
+        if(num_participants < 1):
+            return None
+        
+        if(num_participants > 16)):
+            pass
+            #CREATE GROUP
+        elif(num_participants & (num_participants - 1) != 0):
+            pass
+            #CREATE GROUP
+        else:
+            pass
+            #create knockout
 
     def get_matches(self):
         return Match.objects.filter(stage=self)
@@ -211,13 +223,14 @@ class Stage(models.Model):
         if self.get_matches().count() < 1:
             raise ValidationError("A stage cannot have no matches.")
 
-class KnockoutStage(Stage):
+class KnockoutStage(StageInterface):
 
     def full_clean(self):
         super().full_clean()
         matches = self.get_matches()
 
-        if (matches.count() & (matches.count() - 1) != 0):
+        # Using len is more efficient here as we intend to traverse the query set later.
+        if (len(matches) & (len(matches) - 1) != 0):
             raise ValidationError("The number of matches must be a power of two.")
 
         player_occurences = []
@@ -242,10 +255,10 @@ class KnockoutStage(Stage):
 
         return winners
 
-class RoundRobinStage(Stage):
+class RoundRobinStage(StageInterface):
     def get_next_round(self):
         pass
 
-class GroupStage(Stage):
+class GroupStage(StageInterface):
     def get_next_round(self):
         pass
