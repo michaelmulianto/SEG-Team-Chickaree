@@ -193,6 +193,16 @@ class StageInterface(models.Model):
     def get_matches(self):
         return Match.objects.filter(stage=self)
 
+    # 1 entry in list per player
+    def get_player_occurences(self):
+        matches = self.get_matches()
+        player_occurences = []
+        for match in matches:
+            player_occurences.append(match.white_player)
+            player_occurences.append(match.black_player)
+
+        return player_occurences
+
     def get_is_complete(self):
         return not self.get_matches().filter(result = None).exists()
 
@@ -238,10 +248,7 @@ class KnockoutStage(StageInterface):
         if (len(matches) & (len(matches) - 1) != 0):
             raise ValidationError("The number of matches must be a power of two.")
 
-        player_occurences = []
-        for match in matches:
-            player_occurences.append(match.white_player)
-            player_occurences.append(match.black_player)
+        player_occurences = self.get_player_occurences()
 
         if(len(player_occurences) != len(set(player_occurences))):
             raise ValidationError("Each player must only play 1 match.")
@@ -266,13 +273,11 @@ class GroupStage(StageInterface):
 
 class SingleGroup(StageInterface):
     group_stage = models.ForeignKey(GroupStage, on_delete=models.CASCADE, unique=False, blank=False)
+    winners_required = models.IntegerField(default = 1, blank=False)
 
     def full_clean(self):
-        player_occurences = []
-        matches = self.get_matches()
-        for match in matches:
-            player_occurences.append(match.white_player)
-            player_occurences.append(match.black_player)
+        super().full_clean()
+        player_occurences = self.get_player_occurences()
 
         # We must calculate the number of players each player plays.
         unique_players = set(player_occurences)
@@ -291,11 +296,29 @@ class SingleGroup(StageInterface):
                 raise ValidationError("Not all players play the correct number of games.")
 
         # Check total number of matches, in case of edge case.
-        if matches.count() != ((num_players-1)/2.0) * num_players: # Triangle number: (n/2)*(n+1)
+        if self.get_matches().count() != ((num_players-1)/2.0) * num_players: # Triangle number: (n/2)*(n+1)
             raise ValidationError("The incorrect number of matches are linked to this group.")
             
 
     def get_winners(self):
         if not self.get_is_complete():
             return []
-        
+
+        matches = self.get_matches()
+        players = set(self.get_player_occurences())
+        scores = {}
+        for player in players:
+            scores.update({player.id:0})
+
+        for match in matches:
+            if match.result == 1:
+                scores[match.white_player.id] += 1
+            elif match.result == 2:
+                scores[match.black_player.id] += 1
+            else:
+                scores[match.white_player.id] += 0.5
+                scores[match.black_player.id] += 0.5
+
+        # https://www.geeksforgeeks.org/python-sort-list-by-dictionary-values/
+        res = sorted(scores.keys(), key = lambda ele: scores[ele])
+        return res[self.num_winners + 1]
