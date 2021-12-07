@@ -3,88 +3,107 @@
 | {{club.name}}
 {% endblock %}
 {% block content %}
+{% load static %}
+{% load define_action %}
+{% check_is_owner club current_user as is_owner %}
+{% check_is_officer club current_user as is_officer %}
+{% check_is_member club current_user as is_member %}
+{% check_has_applied club current_user as has_applied %}
+{% count_members club as number_of_members%}
+{% get_owner club as owner %}
+{% get_officers club as officers %}
   <div class="container">
     <div class="row">
       <div class="col-12">
         {%csrf_token%}
-        <h1><b>{{club.name}}</b></h1>
-        <P><B>Location: </b> {{club.location}}</p>
-        <p><b>Description: </b> {{club.description}} </p>
-        <p><b>Number of Members: </b> {{members}} </p>
-        {% if userIsMember == False %}
-          <b>Owner: </b>
-          <table class="table">
-            <td><b></b></td>
-            <td><b>Username</b></td>
-            <td><b>Last Name</b></td>
-            <td><b>First Name</b></td>
-            <td><b>Bio</b></td>
-            {% if userIsOwner or userIsOfficer%}
-            <td><b>Email</b></td>
-            {%endif%}
+        <h1 style=font-size:50px><b>{{ club.name }}</b></h1>
+        </br>
+        <p><i class="bi bi-people-fill"></i> {{ number_of_members }}<p>
+        <P><i class="bi bi-geo-alt-fill"></i> {{ club.location }}</p>
+        <p><b>Description: </b> {{ club.description }} </p>
+        <b>Owner: </b>
+        <style>
+          .standard-table-spacing{
+            vertical-align: middle;
+            border-spacing: 10px 2px;
+          }
+        </style>
+        <table class="table standard-table-spacing">
           <tr>
-            <td> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
-            <td><a>{{owner.user}} </a></td>
-            <td><a>{{owner.user.last_name}} </a></td>
-            <td><a>{{owner.user.first_name}} </a></td>
-            <td><a>{{owner.user.bio}} </a></td>
-            {% if userIsOwner or userIsOfficer%}
-            <td><a>{{ owner.user.email }}</a></td>
-            {%endif%}
-            <td><i></i></td>
+            <th></th>
+            <th>Username</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Bio</th>
           </tr>
-          </table>
-        {% else %}
+          <tr>
+            <td> <img src="{{ owner.user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
+            <td> @{{ owner.user.username }} </td>
+            <td> {{ owner.user.first_name }} {{ owner.user.last_name }} </td>
+            <td> {{ owner.user.email }} </td>
+
+            <td> {{ owner.user.bio }} </td>
+            <td></td>
+          </tr>
+        </table>
+        {% if is_member %}
           <b>Officers: </b>
-          {%if officerCount == 0%}
-            <td><a>No Officers</a></td>
-
+          <table class="table standard-table-spacing">
+          {%if not officer %}
+            <tr><td></td></tr>
+            <tr><td> No Officers </td></tr>
           {%else%}
-            <table class="table">
-              <td><b></b></td>
-              <td><b>Username</b></td>
-              <td><b>Last Name</b></td>
-              <td><b>First Name</b></td>
-              {% if userIsOwner or userIsOfficer%}
-              <td><b>Email</b></td>
-              {%endif%}
+            <tr>
+              <th></th>
+              <th>Username</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Bio</th>
+            </tr>
+            {% for officer in officers %}
+            <tr>
+              <td> <img src="{{ officer.user.mini_gravatar }}" alt="Gravatar" style="border-radius: 50%"> </td>
+              <td> @{{ officer.user.username }} </td>
+              <td> {{ officer.user.first_name }} {{ officer.user.last_name }} </td>
+              <td> {{ officer.user.email }} </td>
+              <td> {{ officer.user.bio }} </td>
+            </tr>
+            {% endfor %}
+          {% endif %}
+          </table>
+        {% endif %}
 
-              {% for officer in officers %}
-              <tr>
-                <td><a> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </a></td>
-                <td><a>{{ officer.user }}</a></td>
-                <td><a>{{ officer.user.last_name }}</a></td>
-                <td><a>{{ officer.user.first_name }}</a></td>
-                {% if userIsOwner == True%}
-                <td><a>{{ officer.user.email }}</a></td>
-                {%endif%}
-                {% if userIsOfficer == True%}
-                <td><a>{{ officer.user.email }}</a></td>
-                {%endif%}
-                <td><i></i></td>
-              </tr>
-              {% endfor %}
-              {%endif%}
-
-            </table>
-            <p></p>
-            <td><a href='{% url 'members_list' club.id %}' class="btn btn-primary">Show Members</a></td>
-        {%endif%}
-        {% if userIsOwner == True%}
-          <td><a href='{% url 'banned_members' club.id %}' class="btn btn-primary">Banned Members</a></td>
-          <td><a href='{% url 'edit_club_info' club.id %}' class="btn btn-primary">Edit</a></td>
-          <td><a href='{% url 'show_applications_to_club' club.id %}' class="btn btn-primary">Show Applications</a></td>
-          <td><a href='#' class="btn btn-danger">Delete Club</a></td>
-        {%endif%}
-        {% if userIsOfficer == True%}
-          <td><a href='{% url 'banned_members' club.id %}' class="btn btn-primary">Banned Members</a></td>
-          <td><a href='{% url 'show_applications_to_club' club.id %}' class="btn btn-primary">Show Applications</a></td>
-        {%endif%}
+          </br>
+          <table>
+            <tr>
+              <style>
+              .button-cell-spacing{
+                padding: 20px;
+              }
+              </style>
+              <td class="button-cell-spacing"><a href='{% url 'members_list' club.id %}' class="btn btn-primary">Members</a></td>
+          {% if has_applied %}
+              <td class="button-cell-spacing"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmWithdrawApplication()" class="btn btn-warning">Withdraw application</a></td>
+          {% elif is_member %}
+            {% if not is_owner %}
+              <td class="button-cell-spacing"><a href='{% url 'leave_club' club.id %}' onclick="confirmLeaveClub()" class="btn btn-danger">Leave club</a></td>
+            {% elif is_officer or is_owner %}
+              <td class="button-cell-spacing"><a href='{% url 'banned_members' club.id %}' class="btn btn-primary">Banned Members</a></td>
+              <td class="button-cell-spacing"><a href='{% url 'show_applications_to_club' club.id %}' class="btn btn-primary">Applications</a></td>
+              {% if is_owner %}
+              <td class="button-cell-spacing"><a href='{% url 'edit_club_info' club.id %}' class="btn btn-primary">Edit Club</a></td>
+              <td class="button-cell-spacing"><a href='#' class="btn btn-danger">Delete Club</a></td>
+              {% endif %}
+            {% endif %}
+          {% else%}
+              <td class="button-cell-spacing"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success">Apply to club</a></td>
+          {% endif %}
+            </tr>
+          </table>
 
 
-        {% load static %}
-        {% load define_action %}
-        {% check_has_applied club current_user as has_applied %}
+
+
         <script>
           function confirmWithdrawApplication(){
             if(confirm('Are you sure you want to withdraw your application?')){
@@ -101,18 +120,6 @@
             }
           }
           </script>
-          {% if has_applied %}
-          <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmWithdrawApplication()" class="btn btn-warning">Withdraw application</a></td>
-          {% elif userIsMember %}
-          {% check_is_owner club current_user as is_owner %}
-          {% if is_owner %}
-          <td style="text-align: center; vertical-align: bottom; padding: 25px"> You are the owner. </td>
-          {% else %}
-          <td style="vertical-align: bottom; padding: 25px"><a href='{% url 'leave_club' club.id %}' onclick="confirmLeaveClub()" class="btn btn-danger">Leave club</a></td>
-          {% endif%}
-          {% else %}
-          <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success">Apply to club</a></td>
-          {% endif %}
       </div>
     </div>
   </div>
