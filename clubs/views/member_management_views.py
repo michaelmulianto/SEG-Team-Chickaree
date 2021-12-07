@@ -1,6 +1,8 @@
 """Views relating to club members."""
 
 from django.views import View
+from django.contrib import messages
+from django.shortcuts import render, redirect
 
 from .helpers import is_user_owner_of_club, is_user_officer_of_club, get_clubs_of_user
 from .decorators import membership_exists, ban_exists, club_exists
@@ -9,8 +11,6 @@ from django.utils.decorators import method_decorator
 
 from clubs.models import Membership, Club, Ban
 
-from django.contrib import messages
-from django.shortcuts import render, redirect
 
 @login_required
 @membership_exists
@@ -30,9 +30,15 @@ def ban_member(request, member_id):
     current_user = request.user
     member = Membership.objects.get(id=member_id)
     club = member.club
-    if is_user_owner_of_club(current_user, club) and not is_user_officer_of_club(member.user, club): #Only owners can ban members, not officers.
-        Ban.objects.create(club=club, user=member.user)
-        Membership.objects.filter(id=member_id).delete()
+    if is_user_owner_of_club(current_user, club):
+        if not is_user_officer_of_club(member.user, club): #Only owners can ban members, not officers.
+            Ban.objects.create(club=club, user=member.user)
+            Membership.objects.filter(id=member_id).delete()
+            messages.warning(request, '@' + member.user.username + ' was banned from the club.')
+        else:
+            messages.error(request, 'You cannot ban an officer. Demote them first.')
+    else:
+        messages.error(request, 'Only the owner can ban members of a club.')
     return redirect('members_list', club_id=club.id)
 
 
@@ -41,13 +47,12 @@ def ban_member(request, member_id):
 def banned_members(request, club_id):
     """Allow the owner of a club to view all applications to said club."""
     club_to_view = Club.objects.get(id = club_id)
-    if not is_user_owner_of_club(request.user, club_to_view):
+    if not is_user_owner_of_club(request.user, club_to_view) or not is_user_officer_of_club:
         # Access denied
-        messages.error(request, "Only the club owner can view banned members")
+        messages.error(request, "Only the club owner and Officers can view banned members")
         return redirect('show_clubs')
 
-    banned_members = Ban.objects.filter(club = club_to_view)
-    return render(request, 'banned_member_list.html', {'club': club_to_view, 'banned_members': banned_members, 'my_clubs':get_clubs_of_user(request.user)})
+    return render(request, 'banned_member_list.html', {'club': club_to_view, 'my_clubs':get_clubs_of_user(request.user)})
 
 
 @login_required
