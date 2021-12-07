@@ -11,6 +11,10 @@ def get_members(club):
   return Membership.objects.filter(club=club)
 
 @register.simple_tag
+def get_banned_members(club):
+  return Ban.objects.filter(club=club)
+
+@register.simple_tag
 def get_officers(club):
   return Membership.objects.filter(club=club, is_officer=True)
 
