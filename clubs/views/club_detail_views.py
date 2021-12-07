@@ -20,30 +20,13 @@ def members_list(request, club_id):
     members = Membership.objects.filter(club = club)
     return render(request, 'members_list.html', {'members': members, 'club': club, 'current_user': current_user , 'my_clubs':get_clubs_of_user(request.user)})
 
-
 @login_required
 @club_exists
 def show_club(request, club_id):
     """View details of a club."""
     current_user = request.user
     club = Club.objects.get(id=club_id)
-    members = Membership.objects.filter(club = club_id)
-    officers = members.filter(is_officer = True)
-    officerCount = officers.count()
-    getOwner = members.get(is_owner = True)
-    numberOfMembers = members.count()
-    checkUserisMember = members.filter(user = current_user)
-    isMember = False
-    isOwner = False
-    isOfficer = False
-    if checkUserisMember.filter(is_owner = True).count() > 0:
-        isOwner = True
-    if checkUserisMember.count() > 0:
-        isMember = True
-    if checkUserisMember.filter(is_officer = True).count() > 0:
-        isOfficer = True
-    return render(request, 'show_club.html', {'current_user': request.user, 'club': club, 'members': numberOfMembers, 'userIsMember': isMember, 'owner': getOwner, 'userIsOwner': isOwner, 'userIsOfficer': isOfficer, 'officers': officers, 'my_clubs':get_clubs_of_user(request.user), 'officerCount': officerCount})
-
+    return render(request, 'show_club.html', {'current_user': current_user, 'club': club, 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
 @club_exists
