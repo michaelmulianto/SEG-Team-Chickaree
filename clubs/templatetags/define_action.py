@@ -7,12 +7,16 @@ def count_members(club_to_count):
   return Membership.objects.filter(club=club_to_count).count()
 
 @register.simple_tag
-def get_owner(club_to_count):
-  return Membership.objects.get(club=club_to_count, is_owner=True)
+def get_members(club):
+  return Membership.objects.filter(club=club)
 
 @register.simple_tag
-def get_officers(club_to_count):
-  return Membership.objects.filter(club=club_to_count, is_officer=True)
+def get_officers(club):
+  return Membership.objects.filter(club=club, is_officer=True)
+
+@register.simple_tag
+def get_owner(club):
+  return Membership.objects.get(club=club, is_owner=True)
 
 @register.simple_tag
 def check_has_applied(club_to_check, user):

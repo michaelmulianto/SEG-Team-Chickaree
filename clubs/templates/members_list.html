@@ -4,6 +4,7 @@
 {% load define_action %}
 {% check_is_owner club current_user as is_owner %}
 {% check_is_officer club current_user as is_officer %}
+{% get_members club as members %}
   <div class="container">
     <div class="row">
       <div class="col-12">

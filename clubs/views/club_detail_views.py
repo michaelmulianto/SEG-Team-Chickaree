@@ -18,7 +18,7 @@ def members_list(request, club_id):
     current_user = request.user
     club = Club.objects.get(id = club_id)
     members = Membership.objects.filter(club = club)
-    return render(request, 'members_list.html', {'members': members, 'club': club, 'current_user': current_user , 'my_clubs':get_clubs_of_user(request.user)})
+    return render(request, 'members_list.html', {'club': club, 'current_user': current_user , 'my_clubs':get_clubs_of_user(request.user)})
 
 @login_required
 @club_exists
