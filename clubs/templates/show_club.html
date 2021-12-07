@@ -47,10 +47,10 @@
         </table>
         {% if is_member %}
           <b>Officers: </b>
-          {%if officer.count == 0 %}
-            <td><a>No Officers</a></td>
-          {%else%}
           <table class="table standard-table-spacing">
+          {%if officer.count == 0 %}
+            <td> No Officers </td>
+          {%else%}
             <tr>
               <th></th>
               <th>Username</th>
@@ -67,10 +67,10 @@
               <td> {{ officer.user.bio }} </td>
             </tr>
               {% endfor %}
-            {%endif%}
-
+            {% endif %}
+          </table>
           </br>
-            </table>
+
             <p></p>
             <td><a href='{% url 'members_list' club.id %}' class="btn btn-primary">Show Members</a></td>
         {%endif%}

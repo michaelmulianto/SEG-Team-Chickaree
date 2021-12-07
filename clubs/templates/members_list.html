@@ -52,14 +52,14 @@
             <td> {{ member.user.bio }} </td>
 
             <script>
-              var messages_dic = {
+              var msgDic = {
                 "kick": "Are you sure you want to kick this user from the club?",
                 "ban": "Are you sure you want to ban this user from the club?",
                 "ownership": "Are you sure you want to give up ownership?"
               }
-              function confirmMsg(msgtype){
+              function confirmMsg(msgType){
 
-                if(confirm(messages_dic)){
+                if(confirm(mesgDic[msgType])){
                   return true;
                 }else{
                   event.stopPropagation(); event.preventDefault();
