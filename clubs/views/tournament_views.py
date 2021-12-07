@@ -6,13 +6,15 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from clubs.forms import OrganiseTournamentForm
-from clubs.models import Tournament
+from clubs.models import Tournament, Club
+
+from .decorators import club_exists
 
 from django.contrib import messages
 from django.contrib.auth import login
 from django.urls import reverse
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 class OrganiseTournamentView(FormView):
     """Create a new tournament."""
@@ -20,12 +22,21 @@ class OrganiseTournamentView(FormView):
     template_name = "organise_tournament.html"
 
     @method_decorator(login_required)
-    def dispatch(self, request):
+    @method_decorator(club_exists)
+    def dispatch(self, request, club_id):
         return super().dispatch(request)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['club'] = Club.objects.get(id=self.kwargs['club_id'])
+        return context
+
     def form_valid(self, form):
-        self.object = form.save()
+        desired_club = self.get_context_data()['club']
+
+        self.object = form.save(desired_club)
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('show_club')
+        club = self.get_context_data()['club']
+        return reverse('show_club', kwargs={'club_id': club.id})

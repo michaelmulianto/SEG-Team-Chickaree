@@ -116,9 +116,10 @@ class OrganiseTournamentForm(forms.ModelForm):
         widgets = {'description': forms.Textarea()}
 
     #Create new tournament using the tournament form data
-    def save(self):
+    def save(self, desired_club):
         super().save(commit=False)
         tournament = Tournament.objects.create(
+            club = desired_club,
             name = self.cleaned_data.get('name'),
             description = self.cleaned_data.get('description'),
             capacity = self.cleaned_data.get('capacity'),

@@ -145,6 +145,7 @@ class Ban(models.Model):
 
 class Tournament(models.Model):
     """Model representing a single tournament."""
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     name = models.CharField(max_length=50, blank=False, unique = True)
     description =  models.CharField(max_length=280, blank=False)
     capacity = models.PositiveIntegerField(default=16, blank=False)
@@ -168,9 +169,6 @@ class Tournament(models.Model):
             raise ValidationError("The end date cannot be in the past!")
         if self.start > self.end:
             raise ValidationError("The tournament should have a positive duration.")
-
-    def get_club():
-        pass
 
     def get_initial_round():
         pass

@@ -48,5 +48,5 @@ urlpatterns = [
     path('promote_member/<int:member_id>', views.promote_member_to_officer, name='promote_member_to_officer'),
     path('demote_officer/<int:member_id>', views.demote_officer_to_member, name='demote_officer_to_member'),
     path('transfer_ownership_to/<int:member_id>', views.transfer_ownership_to_officer, name='transfer_ownership_to_officer'),
-    path('organise_tournament/', views.OrganiseTournamentView.as_view(), name='organise_tournament'),
+    path('club/<int:club_id>/organise_tournament/', views.OrganiseTournamentView.as_view(), name='organise_tournament'),
 ]
