@@ -180,15 +180,14 @@ class StageInterface(models.Model):
         if(num_participants < 1):
             return None
         
-        if(num_participants > 16):
+        if(num_participants > 32):
             pass
             #CREATE GROUP
         elif(num_participants & (num_participants - 1) != 0):
             pass
             #CREATE GROUP
         else:
-            pass
-            #create knockout
+            KnockoutStage.objects.create()
 
     def get_matches(self):
         return Match.objects.filter(stage=self)
@@ -268,8 +267,18 @@ class KnockoutStage(StageInterface):
         return winners
 
 class GroupStage(StageInterface):
-    def get_next_round(self):
-        pass
+    def get_winners(self):
+        groups = List(SingleGroup.objects.filter(group_stage=self))
+        winners = []
+        for group in groups:
+            winners += group.get_winners()
+
+        return winners
+
+    def full_clean(self):
+        super().full_clean()
+        if SingleGroup.objects.filter(group_stage=self).count() < 1:
+            raise ValidationError("No groups assigned to the stage!")
 
 class SingleGroup(StageInterface):
     group_stage = models.ForeignKey(GroupStage, on_delete=models.CASCADE, unique=False, blank=False)
@@ -321,4 +330,10 @@ class SingleGroup(StageInterface):
 
         # https://www.geeksforgeeks.org/python-sort-list-by-dictionary-values/
         res = sorted(scores.keys(), key = lambda ele: scores[ele])
-        return res[self.num_winners + 1]
+        res = res[self.num_winners + 1:]
+
+        winners = []
+        for p_id in res:
+            winners.append(Participant.objects.get(id = p_id))
+        
+        return winners
