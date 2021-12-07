@@ -112,7 +112,7 @@ class EditClubInfoForm(forms.ModelForm):
 class OrganiseTournamentForm(forms.ModelForm):
     class Meta:
         model = Tournament
-        fields = ['name', 'description', 'capacity', 'start_date', 'end_date']
+        fields = ['name', 'description', 'capacity', 'start', 'end']
         widgets = {'description': forms.Textarea()}
 
     #Create new tournament using the tournament form data
@@ -122,7 +122,7 @@ class OrganiseTournamentForm(forms.ModelForm):
             name = self.cleaned_data.get('name'),
             description = self.cleaned_data.get('description'),
             capacity = self.cleaned_data.get('capacity'),
-            start_date = self.cleaned_data.get('start_date'),
-            end_date = self.cleaned_data.get('end_date')
+            start = self.cleaned_data.get('start'),
+            end = self.cleaned_data.get('end')
         )
         return tournament

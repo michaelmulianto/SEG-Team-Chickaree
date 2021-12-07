@@ -1,0 +1,13 @@
+[
+  {
+    "model": "clubs.tournament",
+    "pk": 2,
+    "fields": {
+      "name" : "Just A League",
+      "description" : "The tournament for the best.",
+      "capacity" : 32,
+      "start" : "2021-12-14T00:00:00+00:00",
+      "end" : "2021-12-22T00:00:00+00:00"
+    }
+  }
+]

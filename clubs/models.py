@@ -7,7 +7,9 @@ Implemented:
     - Application: many clubs to many users
     - Member: many clubs to many users
 """
-
+from datetime import datetime
+from django.utils import timezone
+from django.utils.timezone import now
 from libgravatar import Gravatar
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -145,15 +147,27 @@ class Tournament(models.Model):
     """Model representing a single tournament."""
     name = models.CharField(max_length=50, blank=False, unique = True)
     description =  models.CharField(max_length=280, blank=False)
-    capacity = models.PositiveIntegerField(default=16, validators=[
-                MinLengthValidator(2),
-                MaxLengthValidator(96)
-            ])
-    start_date = models.DateField(auto_now=False, auto_now_add=False, blank=False)
-    end_date = models.DateField(auto_now=False, auto_now_add=False, blank=False)
+    capacity = models.PositiveIntegerField(default=16, blank=False)
+    start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+    end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
 
     class Meta:
-        ordering = ['start_date']
+        ordering = ['start']
+
+    def full_clean(self, *args, **kwargs):
+        super().full_clean(*args, **kwargs)
+        if self.capacity < 2:
+            raise ValidationError("The capacity should be at least 2.")
+        if self.capacity > 96:
+            raise ValidationError("The capacity should not exceed 96.")
+        if self.capacity % 2 != 0:
+            raise ValidationError("The capacity should be even.")
+        if self.start < now():
+            raise ValidationError("The start date cannot be in the past!")
+        if self.end < now():
+            raise ValidationError("The end date cannot be in the past!")
+        if self.start > self.end:
+            raise ValidationError("The tournament should have a positive duration.")
 
     def get_club():
         pass
