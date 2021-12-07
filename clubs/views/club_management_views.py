@@ -83,23 +83,12 @@ class EditClubInfoView(UpdateView):
         messages.add_message(self.request, messages.SUCCESS, "Club Details updated!")
         return reverse('show_clubs')
 
-# class DeleteClub(DeleteView):
-#     """Delete a club, only owner can delete a club"""
-#     model = Club
-#
-#
-#     def get_success_url(self):
-#        return reverse('show_clubs')
-
-
 @login_required
 @club_exists
 def delete_club(request, club_id):
     """Delete the club, you must be the owner in order to delete the club"""
     current_user = request.user
     club_to_delete = Club.objects.get(id=club_id)
-    
-    
 
     if is_user_owner_of_club(current_user, club_to_delete):
         Club.objects.get(id=club_id).delete()

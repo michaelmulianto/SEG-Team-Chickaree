@@ -49,7 +49,7 @@ def show_club(request, club_id):
 @login_required
 @club_exists
 def leave_club(request, club_id):
-    """Delete the member object linking the current user to the specified club, iff it exists."""
+    """Delete the member object linking the current user to the specified club, if it exists."""
     current_user = request.user
     applied_club = Club.objects.get(id=club_id)
     if Membership.objects.filter(club=applied_club, user = current_user).exists():
