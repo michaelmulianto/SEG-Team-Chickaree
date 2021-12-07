@@ -52,7 +52,7 @@ def banned_members(request, club_id):
         messages.error(request, "Only the club owner and Officers can view banned members")
         return redirect('show_clubs')
 
-    return render(request, 'banned_member_list.html', {'club': club_to_view, 'my_clubs':get_clubs_of_user(request.user)})
+    return render(request, 'banned_member_list.html', {'current_user': request.user, 'club': club_to_view})
 
 
 @login_required
