@@ -17,7 +17,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.user = User.objects.get(username='johndoe')
 
     def test_get_show_clubs_url(self):
-        self.assertEqual('/show_clubs/' , self.url)
+        self.assertEqual(self.url, '/clubs/')
 
     def test_get_show_clubs(self):
         self.client.login(email=self.user.email, password="Password123")

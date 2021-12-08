@@ -32,7 +32,7 @@ class LeaveClubTestCase(TestCase):
         self.url = reverse('leave_club', kwargs = {'club_id': self.club.id})
 
     def test_url_of_leave_club(self):
-        self.assertEqual(self.url, '/leave_club/' + str(self.club.id))
+        self.assertEqual(self.url, f'/club/{self.club.id}/leave/')
 
     def test_leave_club_redirects_when_not_logged_in(self):
         member_count_before = Membership.objects.count()

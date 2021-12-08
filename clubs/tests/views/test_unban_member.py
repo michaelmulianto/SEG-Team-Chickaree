@@ -49,7 +49,7 @@ class UnbanMemberViewTestCase(TestCase):
         self.url = reverse('unban_member', kwargs = {'ban_id': self.member_ban_being_unbanned.id})
 
     def test_unban_url(self):
-        self.assertEqual(self.url, '/unban_member/' + str(self.member_ban_being_unbanned.id))
+        self.assertEqual(self.url, f'/banned/{self.member_ban_being_unbanned.id}/unban/')
 
     def test_unban_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)

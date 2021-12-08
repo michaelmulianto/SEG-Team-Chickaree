@@ -34,7 +34,7 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         self.url = reverse('banned_members', kwargs = {'club_id': self.club.id})
 
     def test_url_of_banned_members(self):
-        self.assertEqual(self.url, '/club/' + str(self.club.id) + '/banned_members')
+        self.assertEqual(self.url, f'/club/{self.club.id}/banned_members/')
 
     def test_show_banned_members_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)

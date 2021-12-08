@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 from clubs.models import User, Club, Membership, Application
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
-from django.db.models.base import ObjectDoesNotExist 
+from django.db.models.base import ObjectDoesNotExist
 
 class MyClubsListTestCase(TestCase, MenuTesterMixin):
 
@@ -21,7 +21,7 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         self.club = Club.objects.get(name='King\'s Knights')
 
     def test_my_clubs_list_url(self):
-        self.assertEqual(self.url, '/account/my_clubs/')
+        self.assertEqual(self.url, '/clubs/my/')
 
     def test_get_my_clubs_list(self):
         self.client.login(email=self.user.email, password = 'Password123')
@@ -86,7 +86,7 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         clubs = response.context['clubs']
         self.assertEqual(len(clubs), 0)
 
-        self._make_new_membership(self.club, self.user)  
+        self._make_new_membership(self.club, self.user)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         clubs = response.context['clubs']
@@ -127,6 +127,6 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         try:
             Club.objects.get(name = self.club.name)
         except ObjectDoesNotExist:
-            return 
+            return
         else:
             return True
