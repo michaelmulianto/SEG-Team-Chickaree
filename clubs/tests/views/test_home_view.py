@@ -16,7 +16,7 @@ class AccountViewTestCase(TestCase, MenuTesterMixin):
         self.user = User.objects.get(username='johndoe')
 
     def test_get_home_url(self):
-        self.assertEqual('/', self.url)
+        self.assertEqual(self.url, '/')
 
     def test_get_home(self):
         response = self.client.get(self.url)

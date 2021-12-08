@@ -39,7 +39,7 @@ class DemoteOfficerToMemberViewTestCase(TestCase):
         self.url = reverse('demote_officer_to_member', kwargs = {'member_id': self.target_member.id})
 
     def test_demote_url(self):
-        self.assertEqual(self.url, '/demote_officer/' + str(self.target_member.id))
+        self.assertEqual(self.url, f'/member/{self.target_member.id}/demote/')
 
     def test_demote_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)

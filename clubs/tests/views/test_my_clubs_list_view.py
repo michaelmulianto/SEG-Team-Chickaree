@@ -10,6 +10,7 @@ from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 
+
 class MyClubsListTestCase(TestCase, MenuTesterMixin):
 
     """Test aspects of my clubs view"""
@@ -23,7 +24,7 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         self.club = Club.objects.get(name='King\'s Knights')
 
     def test_my_clubs_list_url(self):
-        self.assertEqual(self.url, '/account/my_clubs/')
+        self.assertEqual(self.url, '/clubs/my/')
 
     def test_get_my_clubs_list(self):
         self.client.login(email=self.user.email, password = 'Password123')
@@ -94,7 +95,7 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         page_obj = response.context['page_obj']
         self.assertEqual(len(page_obj), 0)
 
-        self._make_new_membership(self.club, self.user)  
+        self._make_new_membership(self.club, self.user)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')

@@ -28,8 +28,8 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id})
 
     def test_url_of_show_applications_to_club(self):
-        self.assertEqual(self.url, '/club/' + str(self.club.id) + '/applications')
-
+        self.assertEqual(self.url, f'/club/{self.club.id}/applications/')
+        
     def test_show_application_to_club_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
         redirect_url = reverse_with_next('log_in', self.url)

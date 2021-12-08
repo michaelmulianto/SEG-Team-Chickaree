@@ -23,7 +23,7 @@ class CreateClubViewTest(TestCase, MenuTesterMixin):
         }
 
     def test_create_club_url(self):
-        self.assertEqual(self.url, '/create_club/')
+        self.assertEqual(self.url, '/club/create/')
 
     def test_get_create_club_loads_empty_form(self):
         self.client.login(email=self.user.email, password="Password123")
