@@ -34,13 +34,13 @@ def ban_member(request, member_id):
     member = Membership.objects.get(id=member_id)
     club = member.club
     if is_user_owner_of_club(current_user, club):
-        if not is_user_officer_of_club(member.user, club): #Only owners can ban members, not officers.
+        if not is_user_officer_of_club(member.user, club): #Owners can only ban members, not officers.
             Ban.objects.create(club=club, user=member.user)
             Membership.objects.filter(id=member_id).delete()
             messages.warning(request, '@' + member.user.username + ' was banned from the club.')
-        else:
+        else: #Tried to ban an officer.
             messages.error(request, 'You cannot ban an officer. Demote them first.')
-    else:
+    else: #Not the owner
         messages.error(request, 'Only the owner can ban members of a club.')
     return redirect('members_list', club_id=club.id)
 
@@ -50,12 +50,11 @@ def ban_member(request, member_id):
 def banned_members(request, club_id):
     """Allow the owner and officer of a club to view banned members to said club."""
     club_to_view = Club.objects.get(id = club_id)
-    if not is_user_owner_of_club(request.user, club_to_view) or not is_user_officer_of_club:
-        # Access denied
-        messages.error(request, "Only the club owner and Officers can view banned members")
-        return redirect('show_clubs')
-
-    return render(request, 'banned_member_list.html', {'current_user': request.user, 'club': club_to_view})
+    if is_user_owner_of_club(request.user, club_to_view) or is_user_officer_of_club(request.user, club_to_view):
+        return render(request, 'banned_member_list.html', {'current_user': request.user, 'club': club_to_view})
+    else: #Access denied
+        messages.error(request, "Only the club owner and officers can view banned members")
+        return redirect('show_club', club_id=club_id)
 
 
 @login_required
@@ -68,6 +67,7 @@ def unban_member(request, ban_id):
     if is_user_owner_of_club(current_user, club):
         Membership.objects.create(club=club, user=ban.user)
         Ban.objects.filter(id=ban_id).delete()
+        messages.warning(request, '@' + ban.user.username + ' was unban from the club.')
     else:
         member = Membership.objects.get(club=club, is_owner=True)
         messages.error(request, 'Only the owner can unban members.')
@@ -93,7 +93,7 @@ def demote_officer_to_member(request, member_id):
     """Allow the owner of a club to promote some member of said club to officer."""
     member = Membership.objects.get(id = member_id)
     club = member.club
-    if not(is_user_owner_of_club(request.user, club)):
+    if is_user_owner_of_club(request.user, club) :
         member.is_officer = False
         member.save() # Or database won't update.
         messages.warning(request, '@' + member.user.username + ' was demoted.')
