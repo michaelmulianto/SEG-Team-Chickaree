@@ -79,6 +79,20 @@ class TournamentModelTestCase(TestCase):
         self.tournament.description = self.second_tournament.description
         self._assert_tournament_is_valid()
 
+    # Test deadline date time
+    def test_deadline_must_not_be_blank(self):
+        self.tournament.deadline = None
+        self._assert_tournament_is_invalid()
+
+    def test_deadline_must_not_be_in_the_past(self):
+        self.tournament.deadline = "2021-12-02T00:00:00+00:00"
+        self._assert_tournament_is_invalid()
+
+    def test_deadline_must_be_before_the_start_date(self):
+        self.tournament.deadline = "2021-12-20T00:00:00+00:00"
+        self.tournament.start = "2021-12-19T00:00:00+00:00"
+        self._assert_tournament_is_invalid()
+
     # Test start date time
     def test_start_must_not_be_blank(self):
         self.tournament.start = None
@@ -88,7 +102,7 @@ class TournamentModelTestCase(TestCase):
         self.tournament.start= "2021-12-01T00:00:00+00:00"
         self._assert_tournament_is_invalid()
 
-    # Test start date time
+    # Test end date time
     def test_end_must_not_be_blank(self):
         self.tournament.end = None
         self._assert_tournament_is_invalid()

@@ -143,9 +143,44 @@ class Ban(models.Model):
             )
         ]
 
+class Tournament(models.Model):
+    """Model representing a single tournament."""
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
+    name = models.CharField(max_length=50, blank=False, unique = True)
+    description =  models.CharField(max_length=280, blank=False)
+    capacity = models.PositiveIntegerField(default=16, blank=False)
+    deadline = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+    start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+    end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+
+    class Meta:
+        ordering = ['start']
+
+    def full_clean(self, *args, **kwargs):
+        super().full_clean(*args, **kwargs)
+        if self.capacity < 2:
+            raise ValidationError("The capacity should be at least 2.")
+        if self.capacity > 96:
+            raise ValidationError("The capacity should not exceed 96.")
+        if self.capacity % 2 != 0:
+            raise ValidationError("The capacity should be even.")
+        if self.deadline < now():
+            raise ValidationError("The deadline cannot be in the past!")
+        if self.start < self.deadline:
+            raise ValidationError("The deadline cannot be after the start date.")
+        if self.start < now():
+            raise ValidationError("The start date cannot be in the past!")
+        if self.end < now():
+            raise ValidationError("The end date cannot be in the past!")
+        if self.start > self.end:
+            raise ValidationError("The tournament should have a positive duration.")
+
+    def get_initial_round():
+        pass
+
 class MemberTournamentRelationship(models.Model):
     """Represent a single relationship between a member of a club and its tournament."""
-    member = models.ForeignKey(Member, on_delete=models.CASCADE, unique=False, blank=False)
+    member = models.ForeignKey(Membership, on_delete=models.CASCADE, unique=False, blank=False)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
 
     class Meta:
@@ -164,6 +199,7 @@ class Organiser(MemberTournamentRelationship):
 class Participant(MemberTournamentRelationship):
     """Relationship between member and tournament where member will play."""
     round_eliminated = models.IntegerField(default=-1)
+    joined = models.DateTimeField(auto_now_add=True, blank=False)
 
 class StageInterface(models.Model):
     """Model for single round in the tournament."""
@@ -182,7 +218,7 @@ class StageInterface(models.Model):
         num_participants = len(participants)
         if(num_participants < 1):
             return None
-        
+
         if(num_participants > 32):
             pass
             #CREATE GROUP
@@ -314,7 +350,7 @@ class SingleGroup(StageInterface):
         # Check total number of matches, in case of edge case.
         if self.get_matches().count() != ((num_players-1)/2.0) * num_players: # Triangle number: (n/2)*(n+1)
             raise ValidationError("The incorrect number of matches are linked to this group.")
-            
+
 
     def get_winners(self):
         if not self.get_is_complete():
@@ -342,35 +378,5 @@ class SingleGroup(StageInterface):
         winners = []
         for p_id in res:
             winners.append(Participant.objects.get(id = p_id))
-        
+
         return winners
-
-class Tournament(models.Model):
-      """Model representing a single tournament."""
-    club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
-    name = models.CharField(max_length=50, blank=False, unique = True)
-    description =  models.CharField(max_length=280, blank=False)
-    capacity = models.PositiveIntegerField(default=16, blank=False)
-    start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
-    end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
-
-    class Meta:
-        ordering = ['start']
-
-    def full_clean(self, *args, **kwargs):
-        super().full_clean(*args, **kwargs)
-        if self.capacity < 2:
-            raise ValidationError("The capacity should be at least 2.")
-        if self.capacity > 96:
-            raise ValidationError("The capacity should not exceed 96.")
-        if self.capacity % 2 != 0:
-            raise ValidationError("The capacity should be even.")
-        if self.start < now():
-            raise ValidationError("The start date cannot be in the past!")
-        if self.end < now():
-            raise ValidationError("The end date cannot be in the past!")
-        if self.start > self.end:
-            raise ValidationError("The tournament should have a positive duration.")
-
-    def get_initial_round():
-        pass

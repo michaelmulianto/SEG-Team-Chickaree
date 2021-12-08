@@ -25,7 +25,8 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
         "name" : "Grand Championship",
         "description" : "The most prestigious tournament in London.",
         "capacity" : 16,
-        "start" : "2021-12-10T00:00:00+00:00",
+        "deadline" : "2021-12-14T00:00:00+00:00",
+        "start" : "2021-12-16T00:00:00+00:00",
         "end" : "2021-12-20T00:00:00+00:00"
         }
         self.url = reverse('organise_tournament', kwargs={'club_id': self.club.id})
