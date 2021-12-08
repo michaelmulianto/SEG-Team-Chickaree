@@ -59,9 +59,9 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
     def test_promote_redirects_when_not_owner_of_club(self):
         self.client.login(email=self.target_user.email, password="Password123")
         response = self.client.get(self.url, follow=True)
-        redirect_url = reverse('show_clubs')
+        redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'members_list.html')
         self.assertFalse(self._has_member_been_promoted())
 
     def test_successful_promotion(self):

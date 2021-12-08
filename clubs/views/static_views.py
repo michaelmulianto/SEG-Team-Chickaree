@@ -1,6 +1,6 @@
 """Miscellaneous views."""
 
-from .helpers import get_clubs_of_user, sort_clubs
+from .helpers import sort_clubs
 from .decorators import login_prohibited, club_exists
 from django.contrib.auth.decorators import login_required
 
@@ -8,7 +8,7 @@ from clubs.models import Club, Application, Membership
 
 from django.shortcuts import render
 from django.conf import settings
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator    
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 @login_prohibited
 def home(request):
@@ -22,9 +22,9 @@ def show_clubs(request, param=None, order=None):
     if request.method == "POST":
         searched = request.POST.get('searched')
         clubs = Club.objects.filter(name__contains=searched)
-        return render(request, 'show_clubs.html', {'searched': searched, 'clubs': clubs, 'current_user': request.user})
+        return render(request, 'show_clubs.html', {'searched': searched, 'current_user': request.user, 'clubs': clubs})
     clubs = sort_clubs(param, order)
-    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user, 'order': order})
+    return render(request, 'show_clubs.html', {'current_user': request.user, 'clubs': clubs, 'order': order})
 
 
 @login_required
@@ -48,8 +48,7 @@ def my_clubs_list(request):
         page_obj  = paginator.page(paginator.num_pages)
 
     return render(request, 'my_clubs_list.html', {
-        'clubs': my_clubs, 
-        'current_user':current_user, 
-        'page_obj':page_obj, 
-        'my_clubs':get_clubs_of_user(request.user)
+        'clubs': my_clubs,
+        'current_user':current_user,
+        'page_obj':page_obj
     })

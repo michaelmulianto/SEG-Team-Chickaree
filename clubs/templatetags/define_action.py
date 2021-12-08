@@ -7,6 +7,14 @@ def count_members(club_to_count):
   return Membership.objects.filter(club=club_to_count).count()
 
 @register.simple_tag
+def get_clubs(current_user):
+  memberships = Membership.objects.filter(user=current_user)
+  my_clubs = []
+  for membership in memberships:
+      my_clubs.append(membership.club)
+  return my_clubs
+
+@register.simple_tag
 def get_members(club):
   return Membership.objects.filter(club=club)
 
