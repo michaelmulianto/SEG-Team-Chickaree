@@ -4,7 +4,7 @@ from typing import List
 from django.core.paginator import Page
 from django.test import TestCase
 from django.urls import reverse
-from clubs.models import User, Club, Member, Application
+from clubs.models import User, Club, Membership, Application
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 from django.db.models.base import ObjectDoesNotExist 
 
@@ -106,7 +106,7 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         clubs = response.context['clubs']
         self.assertEqual(len(clubs), 1)
 
-        Member.objects.all().delete()
+        Membership.objects.all().delete()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         clubs = response.context['clubs']
@@ -114,7 +114,7 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
 
     #make a new membership for a user to a club
     def _make_new_membership(self, clubIn, userIn):
-        membership = Member.objects.create(
+        membership = Membership.objects.create(
         club = clubIn,
         user = userIn,
         is_officer = False,

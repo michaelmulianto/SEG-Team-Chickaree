@@ -6,7 +6,7 @@ their club.
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
-from clubs.models import User, Club, Member, Ban
+from clubs.models import User, Club, Membership, Ban
 from clubs.tests.helpers import reverse_with_next
 
 class UnbanMemberViewTestCase(TestCase):
@@ -26,7 +26,7 @@ class UnbanMemberViewTestCase(TestCase):
         self.club = Club.objects.get(name='King\'s Knights')
 
         #Owner of the club
-        Member.objects.create(
+        Membership.objects.create(
             club = self.club,
             user = self.user_club_owner,
             is_officer = False,
@@ -34,7 +34,7 @@ class UnbanMemberViewTestCase(TestCase):
         )
 
         #An officer of the club
-        Member.objects.create(
+        Membership.objects.create(
             club = self.club,
             user = self.user_club_officer,
             is_officer = True,
@@ -99,4 +99,4 @@ class UnbanMemberViewTestCase(TestCase):
         return not Ban.objects.filter(user=self.user_being_unbanned, club=self.club).exists()
 
     def _has_member_been_added(self):
-        return Member.objects.filter(user=self.user_being_unbanned, club=self.club).exists()
+        return Membership.objects.filter(user=self.user_being_unbanned, club=self.club).exists()

@@ -3,7 +3,7 @@
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.conf import settings
-from clubs.models import User, Club, Member, Application, Ban
+from clubs.models import User, Club, Membership, Application, Ban, Tournament
 
 def login_prohibited(view_function):
     def modified_view_fuction(request):
@@ -26,7 +26,7 @@ def club_exists(view_function):
 
 def membership_exists(view_function):
     def modified_view_fuction(request, member_id, **kwargs):
-        if not Member.objects.filter(id=member_id).exists():
+        if not Membership.objects.filter(id=member_id).exists():
             messages.error(request, 'No user with membership id ' + str(member_id) + ' exists.')
             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         else:
@@ -58,10 +58,26 @@ def not_banned(view_function):
     def modified_view_fuction(request, club_id, **kwargs):
         club = Club.objects.get(id=club_id) #Must be used with @club_exists
         if Ban.objects.filter(club=club, user=request.user).exists():
-            member = Member.objects.get(club=club, is_owner=True)
+            member = Membership.objects.get(club=club, is_owner=True)
             messages.error(request, 'You are banned from ' + club.name + '. Contact the owner ' + member.user.first_name + ' ' + member.user.last_name + ' for details by email at ' + member.user.email + '.')
             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         else:
             return view_function(request, club_id, **kwargs)
 
     return modified_view_fuction
+
+
+
+def is_user_officer_of_club(user, club):
+    return Membership.objects.filter(user=user, club=club, is_officer=True).exists()
+
+def is_user_owner_of_club(user, club):
+    return Membership.objects.filter(user=user, club=club, is_owner=True).exists()
+
+def get_clubs_of_user(userIn):
+    my_clubs = []
+    for club in Club.objects.all():
+        if Membership.objects.filter(club=club, user=userIn):
+            my_clubs.append(club)
+
+    return my_clubs

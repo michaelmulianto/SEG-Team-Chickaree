@@ -3,7 +3,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
-from clubs.models import User, Club, Member
+from clubs.models import User, Club, Membership
 from clubs.forms import CreateClubForm
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 
@@ -44,12 +44,12 @@ class CreateClubViewTest(TestCase, MenuTesterMixin):
 
         # We need to test that both a new club and member object have been created.
         club_count_before = Club.objects.count()
-        member_count_before = Member.objects.count()
+        member_count_before = Membership.objects.count()
 
         response = self.client.post(self.url, self.data, follow=True)
 
         club_count_after = Club.objects.count()
-        member_count_after = Member.objects.count()
+        member_count_after = Membership.objects.count()
 
         self.assertEqual(club_count_after, club_count_before+1)
         self.assertEqual(member_count_after, member_count_before+1)
@@ -69,13 +69,13 @@ class CreateClubViewTest(TestCase, MenuTesterMixin):
         self.client.login(email=self.user.email, password='Password123')
 
         club_count_before = Club.objects.count()
-        member_count_before = Member.objects.count()
+        member_count_before = Membership.objects.count()
 
         self.data['name'] = ""
         response = self.client.post(self.url, self.data, follow=True)
 
         club_count_after = Club.objects.count()
-        member_count_after = Member.objects.count()
+        member_count_after = Membership.objects.count()
 
         self.assertEqual(club_count_after, club_count_before)
         self.assertEqual(member_count_after, member_count_before)
