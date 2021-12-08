@@ -53,3 +53,11 @@ def my_clubs_list(request):
         'page_obj':page_obj, 
         'my_clubs':get_clubs_of_user(request.user)
     })
+
+# class MyClubsListView(LoginRequiredMixin, ListView):
+#     """View that shows a list of all users"""
+
+#     model = User
+#     template_name = "user_list.html"
+#     context_object_name = "users"
+#     paginate_by = settings.USERS_PER_PAGE
