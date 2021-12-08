@@ -24,6 +24,11 @@ class CreateClubView(FormView):
     def dispatch(self, request):
         return super().dispatch(request)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_user'] = self.request.user
+        return context
+
     def form_valid(self, form):
         self.object = form.save()
         Membership.objects.create(
@@ -77,6 +82,11 @@ class EditClubInfoView(UpdateView):
     @method_decorator(club_exists)
     def dispatch(self, request, club_id):
         return super().dispatch(request)
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['current_user'] = self.request.user
+    #     return context
 
     def get_object(self):
         """Return the object (club) to be updated."""

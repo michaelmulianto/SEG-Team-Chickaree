@@ -71,9 +71,9 @@ class UnbanMemberViewTestCase(TestCase):
     def test_unban_redirects_when_not_owner_or_officer(self): #Utilises the user bieng unban for test (a user being unban will never be an owner or ofificer)
         self.client.login(email=self.user_being_unbanned.email, password="Password123")
         response = self.client.get(self.url, follow=True)
-        redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
+        redirect_url = reverse('show_club', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'show_club.html')
         self.assertFalse(self._has_member_been_unbanned())
         self.assertFalse(self._has_member_been_added())
 
@@ -82,16 +82,16 @@ class UnbanMemberViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         self.assertFalse(self._has_member_been_unbanned())
         self.assertFalse(self._has_member_been_added())
-        redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
+        redirect_url = reverse('banned_members', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'banned_member_list.html')
 
     def test_successful_unban_as_owner(self):
         self.client.login(email=self.user_club_owner.email, password="Password123")
         response = self.client.get(self.url, follow=True)
-        redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
+        redirect_url = reverse('banned_members', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'banned_member_list.html')
         self.assertTrue(self._has_member_been_unbanned())
         self.assertTrue(self._has_member_been_added())
 

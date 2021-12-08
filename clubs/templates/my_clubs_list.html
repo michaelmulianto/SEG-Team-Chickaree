@@ -12,7 +12,7 @@
 
         {% include 'partials/searchbar.html' %}
 
-        {% bootstrap_paginate page_obj range=6 show_first_last="true" %}
+        {% bootstrap_paginate page_obj range=6 show_first_last="false" %}
         <table class="table table-hover">
           <hr style="opacity: 0.15;">
         {% for club in clubs %}
@@ -53,7 +53,7 @@
 
         {% endfor %}
         </table>
-        {% bootstrap_paginate page_obj range=6 show_first_last="true" %}
+        {% bootstrap_paginate page_obj range=6 show_first_last="false" %}
     </div>
   </div>
 </div>

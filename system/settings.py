@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-2@dv!r%*_^tovdo*cf0=9hxgl=xq=eer%8am&f)5ah8sz(q&^9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['.localhost']
 
@@ -145,4 +145,4 @@ LOGIN_URL = 'log_in'
 REDIRECT_URL_WHEN_LOGGED_IN = 'show_clubs'
 
 #Page lengths
-CLUBS_PER_PAGE = 10
+CLUBS_PER_PAGE = 2
