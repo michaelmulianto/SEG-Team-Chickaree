@@ -21,6 +21,9 @@ def kick_member(request, member_id):
     club = member.club
     if is_user_owner_of_club(current_user, club) or is_user_officer_of_club(current_user, club):
         Membership.objects.filter(id=member_id).delete()
+        messages.warning(request, '@' + member.user.username + ' was kicked from the club.')
+    else:
+        messages.error(request, 'Only the owners and officers can kick members from a club.')
     return redirect('members_list', club_id=club.id)
 
 @login_required
@@ -45,7 +48,7 @@ def ban_member(request, member_id):
 @login_required
 @club_exists
 def banned_members(request, club_id):
-    """Allow the owner of a club to view all applications to said club."""
+    """Allow the owner and officer of a club to view banned members to said club."""
     club_to_view = Club.objects.get(id = club_id)
     if not is_user_owner_of_club(request.user, club_to_view) or not is_user_officer_of_club:
         # Access denied
@@ -67,8 +70,8 @@ def unban_member(request, ban_id):
         Ban.objects.filter(id=ban_id).delete()
     else:
         member = Membership.objects.get(club=club, is_owner=True)
-        messages.error(request, 'Only the owner can unban users. Please ask ' + member.user.first_name + ' ' + member.user.last_name + ' to perform this action for you.')
-    return redirect('members_list', club_id=club.id)
+        messages.error(request, 'Only the owner can unban members.')
+    return redirect('banned_members', club_id=club.id)
 
 @login_required
 @membership_exists
@@ -76,12 +79,12 @@ def promote_member_to_officer(request, member_id):
     """Allow the owner of a club to promote some member of said club to officer."""
     member = Membership.objects.get(id = member_id)
     club = member.club
-    if not(is_user_owner_of_club(request.user, club)):
-        # Access denied, member isn't owner
-        return redirect('show_clubs')
-
-    member.is_officer = True
-    member.save() # Or database won't update.
+    if is_user_owner_of_club(request.user, club):
+        member.is_officer = True
+        member.save() # Or database won't update.
+        messages.success(request, '@' + member.user.username + ' was promoted to officer.')
+    else: # Access denied, member isn't owner
+        messages.error(request, 'Only the owner can promote members.')
     return redirect('members_list', club_id=club.id)
 
 @login_required
@@ -91,9 +94,9 @@ def demote_officer_to_member(request, member_id):
     member = Membership.objects.get(id = member_id)
     club = member.club
     if not(is_user_owner_of_club(request.user, club)):
-        # Access denied, member isn't owner
-        return redirect('show_clubs')
-
-    member.is_officer = False
-    member.save() # Or database won't update.
+        member.is_officer = False
+        member.save() # Or database won't update.
+        messages.warning(request, '@' + member.user.username + ' was demoted.')
+    else: # Access denied, member isn't owner
+        messages.error(request, 'Only the owner can demote members.')
     return redirect('members_list', club_id=club.id)
