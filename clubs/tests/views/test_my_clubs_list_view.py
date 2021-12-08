@@ -8,6 +8,7 @@ from django.urls import reverse
 from clubs.models import User, Club, Membership, Application
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 
 class MyClubsListTestCase(TestCase, MenuTesterMixin):
 
@@ -125,6 +126,59 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         self.assert_menu(response)
         page_obj = response.context['page_obj']
         self.assertEqual(len(page_obj), 0)
+
+    def test_get_my_clubs_list_with_pagination(self):
+        self.client.login(email=self.user.email, password="Password123")
+        self._create_test_clubs_and_apply_default_user(settings.CLUBS_PER_PAGE*2+3)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['page_obj']), settings.CLUBS_PER_PAGE)
+        page_obj = response.context['page_obj']
+        self.assertFalse(page_obj.has_previous())
+        self.assertTrue(page_obj.has_next())
+        page_one_url = reverse('my_clubs_list') + '?page=1'
+        response = self.client.get(page_one_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['page_obj']), settings.CLUBS_PER_PAGE)
+        page_obj = response.context['page_obj']
+        self.assertFalse(page_obj.has_previous())
+        self.assertTrue(page_obj.has_next())
+        page_two_url = reverse('my_clubs_list') + '?page=2'
+        response = self.client.get(page_two_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['page_obj']), settings.CLUBS_PER_PAGE)
+        page_obj = response.context['page_obj']
+        self.assertTrue(page_obj.has_previous())
+        self.assertTrue(page_obj.has_next())
+        page_three_url = reverse('my_clubs_list') + '?page=3'
+        response = self.client.get(page_three_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['page_obj']), 3)
+        page_obj = response.context['page_obj']
+        self.assertTrue(page_obj.has_previous())
+        self.assertFalse(page_obj.has_next())
+
+
+    def _create_test_clubs_and_apply_default_user(self, club_count=10):
+        for club_id in range(club_count):
+
+            Application.objects.create(
+                club = Club.objects.create(
+                    name = f'NEW_CLUB{club_id}',
+                    location = f'LOCATION {club_id}',
+                    description = f'DESCRIPTION {club_id}'
+                    ),
+                user = self.user,
+                personal_statement = f'PERSONAL STATEMENT FOR CLUB {club_id}'
+            )
 
     #make a new membership for a user to a club
     def _make_new_membership(self, clubIn, userIn):
