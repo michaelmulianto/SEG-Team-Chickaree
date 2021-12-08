@@ -113,6 +113,10 @@ class OrganiseTournamentForm(forms.ModelForm):
     class Meta:
         model = Tournament
         fields = ['name', 'description', 'capacity', 'deadline', 'start', 'end']
+        deadline = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
+        start = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
+        end = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
+
         widgets = {'description': forms.Textarea()}
 
     #Create new tournament using the tournament form data
