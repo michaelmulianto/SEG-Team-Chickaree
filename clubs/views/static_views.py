@@ -29,48 +29,18 @@ def show_clubs(request, param=None, order=None):
         clubs = Club.objects.filter(name__contains=searched)
 
         paginator = Paginator(clubs, settings.CLUBS_PER_PAGE)
-
         page_number = request.GET.get('page')
-
         page_obj  = paginator.get_page(page_number)
 
 
-        return render(request, 'show_clubs.html', {'searched': searched, 'current_user': request.user, 'clubs': clubs, 'page_obj':page_obj,})
+        return render(request, 'show_clubs.html', {'searched': searched, 'current_user': request.user, 'page_obj':page_obj,})
     clubs = sort_clubs(param, order)
 
     paginator = Paginator(clubs, settings.CLUBS_PER_PAGE)
     page_number = request.GET.get('page')
     page_obj  = paginator.get_page(page_number)
 
-    return render(request, 'show_clubs.html', {'current_user': request.user, 'clubs': clubs, 'order': order, 'page_obj':page_obj})
-
-# class ShowClubsView(LoginRequiredMixin, ListView):
-#     model = Club
-#     template_name = "show_clubs.html"
-#     context_object_name = "clubs"
-#     paginate_by = settings.CLUBS_PER_PAGE
-#     searched = None
-#     param = None
-#     order = None
-
-
-#     @method_decorator(login_required)
-#     def dispatch(self, request, *args,**kwargs):
-#         return super().dispatch(request, *args, **kwargs)
-
-#     def get_context_data(self, *args, **kwargs):
-#         """Generate content to be displayed in the template"""
-
-#         context = super().get_context_data(*args, **kwargs)
-#         user = self.get_object()
-#         context['searched'] = self.searched
-#         context['current_user'] = user
-#         context['clubs'] = sort_clubs(self.param, self.order)
-#         context['order'] = self.order
-#         return context
-
-#     def get_object(self):
-#         return User.objects.filter(id = self.request.user.id)
+    return render(request, 'show_clubs.html', {'current_user': request.user, 'order': order, 'page_obj':page_obj})
 
 
 @login_required
@@ -94,7 +64,6 @@ def my_clubs_list(request):
         page_obj  = paginator.page(paginator.num_pages)
 
     return render(request, 'my_clubs_list.html', {
-        'clubs': my_clubs, 
         'current_user':current_user, 
         'page_obj':page_obj, 
     })
