@@ -40,8 +40,8 @@ urlpatterns = [
 
     path('club/create/', views.CreateClubView.as_view(), name='create_club'),
     path('club/<int:club_id>/', views.show_club, name='show_club'),
-    path('club/<int:club_id>/edit/', views.EditClubInfoView.as_view(), name='delete_club'),
-    path('club/<int:club_id>/delete/', views.EditClubInfoView.as_view(), name='edit_club_info'),
+    path('club/<int:club_id>/edit/', views.EditClubInfoView.as_view(), name='edit_club_info'),
+    path('club/<int:club_id>/delete/', views.delete_club, name='delete_club'),
     path('club/<int:club_id>/apply/', views.ApplyToClubView.as_view(), name = 'apply_to_club'),
     path('club/<int:club_id>/withdraw_application/', views.withdraw_application_to_club, name = 'withdraw_application_to_club'),
     path('club/<int:club_id>/leave/', views.leave_club, name = 'leave_club'),

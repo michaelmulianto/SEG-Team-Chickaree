@@ -28,7 +28,7 @@ class CreateClubViewTest(TestCase, MenuTesterMixin, AssertHTMLMixin):
         }
 
     def test_delete_club_url(self):
-        self.assertEqual(self.url, f'/club/{self.club.id}/delete')
+        self.assertEqual(self.url, f'/club/{self.club.id}/delete/')
 
     def test_get_delete_club_redirects_when_not_logged_in(self):
         response = self.client.post(self.url)
