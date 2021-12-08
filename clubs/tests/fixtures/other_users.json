@@ -38,5 +38,18 @@
       "password": "pbkdf2_sha256$260000$7FuLCy6i6tRTsm2GgebFWh$gSV4zo0N7chWhcBheeWMXRIE4pyc3kIQnzpoH90lliI=",
       "is_active": true
     }
-  }
+  },
+    {
+      "model": "clubs.user",
+      "pk": 5,
+      "fields": {
+        "first_name": "Darron",
+        "last_name": "Hughes",
+        "username": "darronhughes",
+        "email": "darronhughes@example.org",
+        "bio": "Darron here. I like chess.",
+        "password": "pbkdf2_sha256$260000$7FuLCy6i6tRTsm2GgebFWh$gSV4zo0N7chWhcBheeWMXRIE4pyc3kIQnzpoH90lliI=",
+        "is_active": true
+      }
+    }
 ]
