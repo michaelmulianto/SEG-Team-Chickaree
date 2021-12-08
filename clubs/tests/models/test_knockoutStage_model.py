@@ -8,7 +8,8 @@ class KnockoutStageModelTestCase(TestCase):
     fixtures = ['clubs/tests/fixtures/default_user.json',
                 'clubs/tests/fixtures/other_users.json',
                 'clubs/tests/fixtures/default_club.json',
-                'clubs/tests/fixtures/other_clubs.json', 
+                'clubs/tests/fixtures/other_clubs.json',
+                'clubs/tests/fixtures/default_tournament.json',
                 'clubs/tests/fixtures/other_tournaments.json']   
 
     def setUp(self):
@@ -79,10 +80,9 @@ class KnockoutStageModelTestCase(TestCase):
         #     result = 1,
         # )
 
-        self.knockoutRoung = KnockoutStage.objects.create()
+        self.knockoutStage = KnockoutStage.objects.create()
 
 
 
     def _assert_knockout_stage_is_valid(self):
-        try:
-            self.
+        pass
