@@ -53,7 +53,7 @@ class User(AbstractUser):
     )
 
     USERNAME_FIELD = 'email' # set default auth user to email
-    REQUIRED_FIELDS = [] # Django error told me to do this
+    REQUIRED_FIELDS = ['username'] # Required fields for a user creation. e.g. when creating a superuser.
 
     bio = models.CharField(max_length=520, blank = True, default = '')
 
@@ -107,7 +107,7 @@ class Membership(models.Model):
         super().full_clean(*args, **kwargs)
         if Membership.objects.exclude(id=self.id).filter(club=self.club, is_owner=True).exists() and self.is_owner:
             raise ValidationError("There is already an owner for this club.")
-        
+
         if self.is_owner and self.is_officer:
             raise ValidationError("A single member cannot be both member and officer.")
 
