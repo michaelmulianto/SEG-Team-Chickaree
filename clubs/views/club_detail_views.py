@@ -34,6 +34,7 @@ def leave_club(request, club_id):
     if Membership.objects.filter(club=club_to_leave, user=current_user).exists():
         Membership.objects.get(club=club_to_leave, user=current_user).delete()
         messages.warning(request, 'You left the ' + club_to_leave.name + ' club.')
+        return redirect('show_clubs')
     else:
         messages.error(request, 'You do not belong to the ' + club_to_leave.name + ' club.')
-    return redirect('show_clubs')
+        return redirect('show_club', club_id=club_to_leave.id)

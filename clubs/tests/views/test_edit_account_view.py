@@ -53,7 +53,7 @@ class EditAccountViewTest(TestCase, MenuTesterMixin):
         self.assertEqual(after_count, before_count)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'edit_account.html')
-    
+        form = response.context['form']
         self.assertTrue(isinstance(form, EditAccountForm))
         self.assertTrue(form.is_bound)
         self.user.refresh_from_db()
