@@ -62,7 +62,6 @@ class CreateClubViewTest(TestCase, MenuTesterMixin, AssertHTMLMixin):
         self.assertEqual(len(messages_list), 1)
         self.assertEqual(messages_list[0].level, messages.INFO)
 
-
     def test_successful_club_deletion_deletes_memberships_of_the_club(self):
         self.client.login(email=self.user.email, password='Password123')
         Membership.objects.create(club=self.club, user=self.user, is_owner=True)

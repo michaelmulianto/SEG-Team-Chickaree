@@ -1,6 +1,7 @@
 """Functions to aid functionality of the views"""
 from clubs.models import User, Club, Membership, Application, Ban
 
+
 def is_user_officer_of_club(user, club):
     return Membership.objects.filter(user=user, club=club, is_officer=True).exists()
 
