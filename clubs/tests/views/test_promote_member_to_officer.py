@@ -39,7 +39,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         self.url = reverse('promote_member_to_officer', kwargs = {'member_id': self.target_member.id})
 
     def test_promote_url(self):
-        self.assertEqual(self.url, '/promote_member/' + str(self.target_member.id))
+        self.assertEqual(self.url, f'/member/{self.target_member.id}/promote/')
 
     def test_promote_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)

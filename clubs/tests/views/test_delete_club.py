@@ -12,7 +12,7 @@ from with_asserts.mixin import AssertHTMLMixin
 class CreateClubViewTest(TestCase, MenuTesterMixin, AssertHTMLMixin):
     """Test all aspects of the delete club view"""
 
-    fixtures = ['clubs/tests/fixtures/default_user.json',        
+    fixtures = ['clubs/tests/fixtures/default_user.json',
                 'clubs/tests/fixtures/other_users.json',
                 'clubs/tests/fixtures/default_club.json']
 
@@ -28,7 +28,7 @@ class CreateClubViewTest(TestCase, MenuTesterMixin, AssertHTMLMixin):
         }
 
     def test_delete_club_url(self):
-        self.assertEqual(self.url, '/club/1/edit/delete')
+        self.assertEqual(self.url, f'/club/{self.club.id}/delete/')
 
     def test_get_delete_club_redirects_when_not_logged_in(self):
         response = self.client.post(self.url)
@@ -117,4 +117,3 @@ class CreateClubViewTest(TestCase, MenuTesterMixin, AssertHTMLMixin):
         messages_list = list(response.context['messages'])
         self.assertEqual(len(messages_list), 1)
         self.assertEqual(messages_list[0].level, messages.WARNING)
-
