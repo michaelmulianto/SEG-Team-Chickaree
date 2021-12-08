@@ -7,7 +7,7 @@ from django.test import TestCase
 from django.urls import reverse
 from clubs.models import User, Club, Membership, Application
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
-from django.db.models.base import ObjectDoesNotExist 
+from django.core.exceptions import ObjectDoesNotExist
 
 class MyClubsListTestCase(TestCase, MenuTesterMixin):
 
@@ -37,7 +37,7 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         self.assertTrue(isinstance(page_obj, Page))
         self.assert_menu(response)
 
-    def test_get_user_list_redirects_when_not_logged_in(self):
+    def test_get_my_clubs_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
         redirect_url = reverse_with_next('log_in', self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -51,12 +51,14 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
 
     def test_club_user_has_applied_is_on_list(self):
         self.client.login(email=self.user.email, password='Password123')
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
         page_obj = response.context['page_obj']
         self.assertEqual(len(page_obj), 0)
 
@@ -69,6 +71,7 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
         page_obj = response.context['page_obj']
         self.assertEqual(len(page_obj), 1)
 
@@ -77,6 +80,7 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
         page_obj = response.context['page_obj']
         self.assertEqual(len(page_obj), 0)
 
@@ -85,12 +89,15 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
         page_obj = response.context['page_obj']
         self.assertEqual(len(page_obj), 0)
 
         self._make_new_membership(self.club, self.user)  
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
         page_obj = response.context['page_obj']
         self.assertEqual(len(page_obj), 1)
 
@@ -99,36 +106,40 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
         page_obj = response.context['page_obj']
         self.assertEqual(len(page_obj), 0)
 
-        membership = self._make_new_membership(self.club, self.user)
+        self._make_new_membership(self.club, self.user)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
         page_obj = response.context['page_obj']
         self.assertEqual(len(page_obj), 1)
 
         Membership.objects.all().delete()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
         page_obj = response.context['page_obj']
         self.assertEqual(len(page_obj), 0)
 
     #make a new membership for a user to a club
     def _make_new_membership(self, clubIn, userIn):
-        membership = Membership.objects.create(
+        Membership.objects.create(
         club = clubIn,
         user = userIn,
         is_officer = False,
         is_owner = False
         )
-        return membership
 
     #check a club can be on the list
     def _is_on_list(self):
         try:
             Club.objects.get(name = self.club.name)
         except ObjectDoesNotExist:
-            return 
+            return False
         else:
             return True
