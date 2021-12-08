@@ -37,7 +37,7 @@ class CreateClubViewTest(TestCase, MenuTesterMixin, AssertHTMLMixin):
 
     def test_successful_delete_club(self):
         self.client.login(email=self.user.email, password='Password123')
-        Membership.objects.create(club=self.club, user=self.user, is_owner=True)
+        Membership.objects.create(club=self.club, user=self.user)
 
         club_count_before = Club.objects.count()
         member_count_before = Membership.objects.count()
@@ -71,7 +71,7 @@ class CreateClubViewTest(TestCase, MenuTesterMixin, AssertHTMLMixin):
         club_count_before = Club.objects.count()
         member_count_before = Membership.objects.count()
 
-        response = self.client.post(self.url, follow=True)
+        response = self.client.post(self.url)
 
         club_count_after = Club.objects.count()
         member_count_after = Membership.objects.count()
@@ -98,7 +98,7 @@ class CreateClubViewTest(TestCase, MenuTesterMixin, AssertHTMLMixin):
         club_count_before = Club.objects.count()
         member_count_before = Membership.objects.count()
 
-        response = self.client.post(self.url, follow=True)
+        response = self.client.post(self.url)
 
         club_count_after = Club.objects.count()
         member_count_after = Membership.objects.count()

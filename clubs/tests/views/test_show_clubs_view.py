@@ -61,16 +61,42 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self._club_is_on_list(new_club)
 
     def test_delete_club_is_no_longer_on_list(self):
-        pass
+        self.client.login(email=self.user.email, password="Password123")
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assert_menu(response)
+        before_count1 = Club.objects.count()
+
+        new_club = self._make_new_club_with_default_user_as_owner()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assert_menu(response)
+
+        after_count1 = Club.objects.count()
+        self.assertEqual(after_count1, before_count1+1)
+        self._club_is_on_list(new_club)
+        before_count2 = Club.objects.count()
+
+        self.client.post(reverse('delete_club', kwargs = {'club_id': new_club.id}))
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assert_menu(response)
+        after_count2 = Club.objects.count()
+        self.assertEqual(after_count2, before_count2-1)
+        self._club_is_on_list(new_club)
+
 
 
     def _make_new_club(self):
-        new_club = Club.objects.create(
-        name = "NEW_CLUB1",
-        location = "Paris",
-        description = "LOOK AT THIS CHESS CLUB"
-        )
-        return new_club
+        new_club_1 = Club.objects.create(
+            name = "NEW_CLUB1",
+            location = "London",
+            description = "THIS IS AN AMAZING CHESS CLUB"
+            )
+        return new_club_1
 
     def _make_new_club_with_default_user_as_owner(self):
         new_club_2 = Club.objects.create(
