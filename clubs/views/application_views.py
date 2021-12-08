@@ -3,7 +3,7 @@
 from django.views import View
 from django.views.generic.edit import FormView
 
-from .helpers import is_user_owner_of_club, get_clubs_of_user
+from .helpers import is_user_owner_of_club
 from .decorators import club_exists, membership_exists, not_banned, application_exists
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator

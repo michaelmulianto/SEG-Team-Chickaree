@@ -1,6 +1,6 @@
 """Miscellaneous views."""
 
-from .helpers import get_clubs_of_user, sort_clubs
+from .helpers import sort_clubs
 from .decorators import login_prohibited, club_exists
 from django.contrib.auth.decorators import login_required
 
@@ -48,7 +48,7 @@ def my_clubs_list(request):
         page_obj  = paginator.page(paginator.num_pages)
 
     return render(request, 'my_clubs_list.html', {
-        'clubs': my_clubs, 
+        'clubs': my_clubs,
         'current_user':current_user,
         'page_obj':page_obj
     })

@@ -4,7 +4,7 @@ from django.views import View
 from django.contrib import messages
 from django.shortcuts import render, redirect
 
-from .helpers import is_user_owner_of_club, is_user_officer_of_club, get_clubs_of_user
+from .helpers import is_user_owner_of_club, is_user_officer_of_club
 from .decorators import membership_exists, ban_exists, club_exists
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
