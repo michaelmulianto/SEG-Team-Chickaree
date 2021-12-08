@@ -1,7 +1,7 @@
 """Views relating to management of a club."""
 
 from django.views import View
-from django.views.generic.edit import FormView, UpdateView
+from django.views.generic.edit import FormView, UpdateView, DeleteView
 
 from .helpers import is_user_owner_of_club
 from .decorators import club_exists, membership_exists
@@ -96,3 +96,18 @@ class EditClubInfoView(UpdateView):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Club Details updated!")
         return reverse('show_clubs')
+
+@login_required
+@club_exists
+def delete_club(request, club_id):
+    """Delete the club, you must be the owner in order to delete the club"""
+    current_user = request.user
+    club_to_delete = Club.objects.get(id=club_id)
+
+    if is_user_owner_of_club(current_user, club_to_delete):
+        Club.objects.get(id=club_id).delete()
+        messages.add_message(request, messages.INFO, "The club has successfully been deleted")
+        return redirect('show_clubs')
+    else:
+        messages.add_message(request, messages.WARNING, "You are not the owner of this clubs")
+        return redirect('show_clubs')
