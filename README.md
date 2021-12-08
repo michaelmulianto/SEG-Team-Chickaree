@@ -5,8 +5,8 @@ The members of the team are:
 - Michael Mulianto
 - Kieran Woolley
 - John Kelly
-- Liam Clark
-- Kanishk
+- Liam Clark Gutiérrez
+- Kanishk Upadhyay
 
 *Add any further information about the team here, such as absent team members.*
 
@@ -63,3 +63,9 @@ All passwords are "Password123"
 The packages used by this application are specified in `requirements.txt`
 
 Some code is borrowed from the Clucker application developed in the SEG practice video series.
+Main sources are:
+  - [https://docs.djangoproject.com/en/4.0/]Django documentation.
+  - [https://getbootstrap.com/docs/5.1/getting-started/introduction/]Bootstrap 5 documentation.
+
+While all code is original, Stack overflow and other online resources is occasionally used as reference to fix problems or guide implementaion. Some notable references are:
+  - [https://stackoverflow.com/questions/1455126/unique-booleanfield-value-in-django]Single boolean constraint implementation mechanism.
