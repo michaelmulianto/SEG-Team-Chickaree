@@ -163,8 +163,8 @@ class Tournament(models.Model):
             raise ValidationError("The capacity should be at least 2.")
         if self.capacity > 96:
             raise ValidationError("The capacity should not exceed 96.")
-        if self.capacity > 16 and (self.capacity % 4 != 0) and (self.capacity % 6 != 0):
-            raise ValidationError("The capacity should be divisible by both 4 and 6 when above 16.")
+        if self.capacity > 16 and (self.capacity % 4 != 0) and (self.capacity % 6 != 0) and self.capacity !=32:
+            raise ValidationError("The capacity should be divisible by both 4 and 6 when above 16 (except 32).")
         if self.capacity > 32 and (self.capacity % 8 != 0):
             raise ValidationError("The capacity should be divisible by 8 when above 32.")
         if self.start < now():

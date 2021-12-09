@@ -50,8 +50,20 @@ class TournamentModelTestCase(TestCase):
         self.tournament.capacity = -1
         self._assert_tournament_is_invalid()
 
-    def test_capacity_is_even(self):
-        self.tournament.capacity = 15
+    def test_capacity_must_be_divisible_by_4_when_above_16(self):
+        self.tournament.capacity = 18 # Divisible by 6
+        self._assert_tournament_is_invalid()
+
+    def test_capacity_must_be_divisible_by_6_when_above_16(self):
+        self.tournament.capacity = 28 # Divisible by 4
+        self._assert_tournament_is_invalid()
+
+    def test_capacity_can_be_32(self):
+        self.tournament.capacity = 32
+        self._assert_tournament_is_invalid()
+
+    def test_capacity_must_be_divisble_by_8_above_32(self):
+        self.tournament.capacity = 36 # Divisible by 4 and 6
         self._assert_tournament_is_invalid()
 
     def test_capacity_is_greater_than_1(self):
