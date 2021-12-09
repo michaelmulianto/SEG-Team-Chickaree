@@ -28,29 +28,18 @@
 
           </tr>
         {% for member in members %}
+          {% check_is_officer club member.user as is_member_an_officer %}
+          {% check_is_owner club member.user as is_member_an_owner %}
           <tr>
-            <td> {{ forloop.counter }} <td>
-            <td> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
-            <td> @{{ member.user.username }} </td>
-            <td> {{ member.user.first_name }} {{ member.user.last_name }} </td>
-            {% if is_owner or is_officer %}
-            <td> {{ member.user.email }} </td>
-            {% endif %}
-            <td> {{ member.user.bio }} </td>
-
-            {% check_is_officer club member.user as is_member_an_officer %}
-            {% check_is_owner club member.user as is_member_an_owner %}
+            {% include 'member_list_partials/table_row.html' with user=member.user is_owner=is_owner is_officer=is_officer %}
 
             {% if member.user == current_user %}
-
               {% if is_owner %}
             <td style="text-align: center; width: 200px" colspan="3"><b> This is you! <b></td>
               {% elif is_officer %}
             <td style="text-align: center" ><b> This is you! <b></td>
               {% endif %}
-
             {% else %}
-
               {% if is_owner %} <!-- Owners will see transfer ownership or kick + ban depending on member rank -->
                 {% if is_member_an_officer %}
             <td><a href='{% url 'demote_officer_to_member' member.id %}' class="btn btn-warning">Demote</a></td>

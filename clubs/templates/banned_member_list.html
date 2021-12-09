@@ -31,12 +31,7 @@
           </tr>
           {% for ban_member in banned_members %}
           <tr>
-            <td> {{ forloop.counter }} <td>
-            <td> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
-            <td> @{{ ban_member.user.username }} </td>
-            <td> {{ ban_member.user.first_name }} {{ ban_member.user.last_name }} </td>
-            <td> {{ ban_member.user.email }} </td>
-            <td> {{ ban_member.user.bio }} </td>
+            {% include 'member_list_partials/table_row.html' with user=ban_member.user is_owner=is_owner is_officer=is_officer %}
             {% if is_owner %}
             <td style="width: 100px"><a style="width: 100px" href='{% url 'unban_member' ban_member.id %}' class="btn btn-danger">Unban</a></td>
             {% endif %}

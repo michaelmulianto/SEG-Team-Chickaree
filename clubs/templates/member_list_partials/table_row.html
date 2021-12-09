@@ -1,0 +1,8 @@
+<td> {{ forloop.counter }} <td>
+<td> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
+<td> @{{ user.username }} </td>
+<td> {{ user.first_name }} {{ user.last_name }} </td>
+{% if is_owner or is_officer %}
+<td> {{ user.email }} </td>
+{% endif %}
+<td> {{ user.bio }} </td>
