@@ -91,7 +91,7 @@ def promote_member_to_officer(request, member_id):
             else: #Access denied owner is trying to promote an officer.
                 messages.warning(request, '@' + member.user.username + ' is already an officer.')
         else: #Access denied owner is trying to promote themselves.
-            messages.error(request, 'You are the owner. You cannot be an officer.')
+            messages.error(request, 'You are the owner. You cannot promote yourself to officer.')
     else: # Access denied, member isn't owner.
         messages.error(request, 'Only the owner can promote members.')
 
@@ -112,7 +112,7 @@ def demote_officer_to_member(request, member_id):
             else: #Access denied, trying to demote non-officer.
                 messages.warning(request, '@' + member.user.username + ' is not an officer.')
         else: #Access denied, owner is trying to demote themselves.
-            messages.error(request, 'You cannot demote yourself.')
+            messages.error(request, 'You are the owner. You cannot demote yourself. You can transfer ownership from the member list.')
     else: # Access denied, member isn't owner
         messages.error(request, 'Only the owner can demote members.')
 
