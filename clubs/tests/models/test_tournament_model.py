@@ -114,6 +114,10 @@ class TournamentModelTestCase(TestCase):
         self.tournament.end = "2021-12-01T00:00:00+00:00"
         self._assert_tournament_is_invalid()
 
+    # Test generate next round
+    def test_None_returned_when_generating_next_round_with_no_participants(self):
+        self.assertEqual(self.tournament.generate_next_round(), None)
+
     # Helper functions.
     # Generic assertions.
     def _assert_tournament_is_valid(self):
@@ -125,3 +129,5 @@ class TournamentModelTestCase(TestCase):
     def _assert_tournament_is_invalid(self):
         with self.assertRaises(ValidationError):
             self.tournament.full_clean()
+
+    

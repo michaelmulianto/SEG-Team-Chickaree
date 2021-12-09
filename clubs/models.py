@@ -188,7 +188,7 @@ class Tournament(models.Model):
             participants = curr_round.get_winners()
             next_num = curr_round.round_num+1
         else: # No round has occured yet.
-            participants = Participant.objects.filter(tournament=Self)
+            participants = Participant.objects.filter(tournament=self)
             next_num = 1
         
         num_participants = len(participants)
