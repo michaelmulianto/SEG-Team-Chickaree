@@ -12,7 +12,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.conf import settings
 from clubs.forms import LogInForm, SignUpForm, CreateClubForm, EditAccountForm, ApplyToClubForm, EditClubInfoForm
-from clubs.models import User, Club, Application, Membership, Ban, Tournament
+from clubs.models import User, Club, Application, Membership, Ban, Tournament, MemberTournamentRelationship, Member
 from clubs.helpers import login_prohibited, club_exists, application_exists, membership_exists, ban_exists, not_banned, is_user_officer_of_club, is_user_owner_of_club, get_clubs_of_user
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView
@@ -385,10 +385,9 @@ def edit_club_info(request, club_id):
 @membership_exists
 def join_tournament(request, member_id, tournament_id):
     tour = Tournmanent.objects.get(id = tournament_id)
-    currentCapacity = MemberTournamentRelationship.objects.filter(id = tournament_id)
+    currentCapacity = MemberTournamentRelationship.objects.filter(tournament = tour)
     if(tour.capacity < currentCapacity.count()):
         participant = Participant.objects.create(
             member = Membership.objects.get(id = member_id)
             tournament = tour
         )
-    return render(request, 'show_clubs.html')
