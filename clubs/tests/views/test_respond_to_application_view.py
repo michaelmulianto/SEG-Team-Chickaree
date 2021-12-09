@@ -32,14 +32,17 @@ class RespondToApplicationViewTestCase(TestCase):
             personal_statement = 'I love chess!'
         )
 
-        self.url = reverse('respond_to_application', kwargs = {'app_id': self.application.id, 'is_accepted': 1})
+        self.url_accepted = reverse('respond_to_application', kwargs = {'app_id': self.application.id, 'is_accepted': 1})
+        self.url_rejected = reverse('respond_to_application', kwargs = {'app_id': self.application.id, 'is_accepted':0})
+
 
     def test_respond_to_app_url(self):
-        self.assertEqual(self.url, f'/application/{self.application.id}/respond/1/')
+        self.assertEqual(self.url_accepted, f'/application/{self.application.id}/respond/1/')
+        self.assertEqual(self.url_rejected, f'/application/{self.application.id}/respond/0/')
 
     def test_respond_to_application_redirects_when_not_logged_in(self):
-        response = self.client.get(self.url)
-        redirect_url = reverse_with_next('log_in', self.url)
+        response = self.client.get(self.url_accepted)
+        redirect_url = reverse_with_next('log_in', self.url_accepted)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_respond_to_application_redirects_when_not_owner_of_club(self):
@@ -47,16 +50,16 @@ class RespondToApplicationViewTestCase(TestCase):
         self.ownerMember.save(update_fields=['is_owner'])
 
         self.client.login(email=self.ownerUser.email, password="Password123")
-        response = self.client.get(self.url, follow=True)
+        response = self.client.get(self.url_accepted, follow=True)
 
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
 
     def test_respond_to_application_redirects_when_invalid_application_id_entered(self):
-        self.url = reverse('respond_to_application', kwargs = {'app_id': 0, 'is_accepted':1})
+        url_invalid_id = reverse('respond_to_application', kwargs = {'app_id': 0, 'is_accepted':1})
         self.client.login(email=self.ownerUser.email, password="Password123")
-        response = self.client.get(self.url, follow=True)
+        response = self.client.get(url_invalid_id, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
@@ -67,7 +70,7 @@ class RespondToApplicationViewTestCase(TestCase):
         member_count_before = Membership.objects.count()
         application_count_before = Application.objects.count()
 
-        response = self.client.get(self.url, follow=True)
+        response = self.client.get(self.url_accepted, follow=True)
         member_count_after = Membership.objects.count()
         application_count_after = Application.objects.count()
 
@@ -79,13 +82,12 @@ class RespondToApplicationViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'application_list.html')
 
     def test_successful_reject_application_to_club(self):
-        self.url = reverse('respond_to_application', kwargs = {'app_id': self.application.id, 'is_accepted':0})
         self.client.login(email=self.ownerUser.email, password="Password123")
 
         member_count_before = Membership.objects.count()
         application_count_before = Application.objects.count()
 
-        response = self.client.get(self.url, follow=True)
+        response = self.client.get(self.url_rejected, follow=True)
 
         member_count_after = Membership.objects.count()
         application_count_after = Application.objects.count()
