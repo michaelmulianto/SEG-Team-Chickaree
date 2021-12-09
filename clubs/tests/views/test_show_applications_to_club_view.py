@@ -63,7 +63,15 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
 
-    def test_successful_show_applications_to_club(self):
+    def test_successful_show_applications_to_club_officer(self):
+        self.client.login(email=self.user_officer.email, password="Password123")
+        response = self.client.get(self.url, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'application_list.html')
+        self.assert_menu(response)
+
+    def test_successful_show_applications_to_club_owner(self):
         self.client.login(email=self.user_owner.email, password="Password123")
         response = self.client.get(self.url, follow=True)
 

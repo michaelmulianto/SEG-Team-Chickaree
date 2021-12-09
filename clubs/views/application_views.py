@@ -76,23 +76,24 @@ def show_applications_to_club(request, club_id):
     else: #Access denied
         messages.error(request, "Only the club owner and officers can view applications")
         return redirect('show_club', club_id=club_id)
-        
+
 @login_required
 @application_exists
 def respond_to_application(request, app_id, is_accepted):
     """Allow the owner of a club to accept or reject some application to said club."""
     application = Application.objects.get(id = app_id)
     club_applied_to = application.club
-    if not(is_user_owner_of_club(request.user, club_applied_to)):
-        # Access denied
-        return redirect('show_clubs')
-
-    # Create member object iff application is accepted
-    if is_accepted:
-        Membership.objects.create(
-            user = application.user,
-            club = club_applied_to
-        )
-
-    application.delete() # Remains local python object while in scope.
-    return redirect("show_applications_to_club", club_id=club_applied_to.id)
+    if is_user_owner_of_club(request.user, club_applied_to) or is_user_officer_of_club(request.user, club_applied_to):
+        if is_accepted: #Applications are delete wether rejected or accepted but iff accepted a membership is created.
+            Membership.objects.create(
+                user = application.user,
+                club = club_applied_to
+            )
+            messages.success(request, '@' + application.user.username + ' was accepted.')
+        else:
+            messages.warning(request, '@' + application.user.username + ' was rejected.')
+        application.delete() # Remains local python object while in scope.
+        return redirect("show_applications_to_club", club_id=club_applied_to.id)
+    else:
+        messages.error(request, 'Only owners or officers can accept or reject applications.')
+        return redirect("show_club", club_applied_to)
