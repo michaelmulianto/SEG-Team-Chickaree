@@ -40,7 +40,7 @@ class SignUpViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         self.assert_no_menu(response)
 
     def test_get_sign_up_redirects_when_logged_in(self):
-        self.client.login(username='johndoe', password="Password123")
+        self.client.login(email='johndoe@example.org', password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)

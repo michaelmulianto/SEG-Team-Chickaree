@@ -27,7 +27,7 @@ class ChangePasswordViewTestCase(TestCase, MenuTesterMixin):
         self.url = reverse('change_password')
 
     def test_change_password_url(self):
-        self.assertEqual(self.url, '/change_password/')
+        self.assertEqual(self.url, '/account/change_password/')
 
     def test_get_password_redirects_when_not_logged_in(self):
         redirect_url = reverse_with_next('log_in', self.url)
@@ -35,7 +35,7 @@ class ChangePasswordViewTestCase(TestCase, MenuTesterMixin):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_get_change_password_form(self):
-        self.client.login(username="johndoe", password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url)
         self.assert_menu(response)
         self.assertEqual(response.status_code, 200) #OK
@@ -45,7 +45,7 @@ class ChangePasswordViewTestCase(TestCase, MenuTesterMixin):
         self.assertFalse(form.is_bound)
 
     def test_successful_password_change(self):
-        self.client.login(username="johndoe", password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         old_pass = self.user.password
         response = self.client.post(self.url, self.data, follow=True)
         self.user = self._get_updated_self_user()
@@ -58,7 +58,7 @@ class ChangePasswordViewTestCase(TestCase, MenuTesterMixin):
     def test_password_validation_used(self):
         self.data['new_password1'] = 'badpass'
         self.data['new_password2'] = 'badpass'
-        self.client.login(username="johndoe", password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         old_pass = self.user.password
         response = self.client.post(self.url, self.data, follow=True)
         self.user = self._get_updated_self_user()
@@ -69,7 +69,7 @@ class ChangePasswordViewTestCase(TestCase, MenuTesterMixin):
 
     def test_password_confirmation_must_equal_new_password(self):
         self.data['new_password2'] = 'NotSame1'
-        self.client.login(username="johndoe", password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         old_pass = self.user.password
         response = self.client.post(self.url, self.data, follow=True)
         self.user = self._get_updated_self_user()
@@ -80,7 +80,7 @@ class ChangePasswordViewTestCase(TestCase, MenuTesterMixin):
 
     def test_password_change_fails_when_old_password_is_wrong(self):
         self.data['old_password'] = 'Fail!'
-        self.client.login(username="johndoe", password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         old_pass = self.user.password
         response = self.client.post(self.url, self.data, follow=True)
         self.user = self._get_updated_self_user()

@@ -17,10 +17,10 @@ class AccountViewTestCase(TestCase, MenuTesterMixin):
         self.user = User.objects.get(username='johndoe')
 
     def test_get_account_url(self):
-        self.assertEqual('/account/', self.url)
+        self.assertEqual(self.url, '/account/')
 
     def test_get_account_logged_in_user(self):
-        self.client.login(username='johndoe', password='Password123')
+        self.client.login(email=self.user.email, password='Password123')
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'account.html')

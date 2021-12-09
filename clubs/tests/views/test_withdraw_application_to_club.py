@@ -3,7 +3,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
-from clubs.models import User, Club, Application, Member
+from clubs.models import User, Club, Application, Membership
 from clubs.tests.helpers import reverse_with_next
 
 class WithdrawApplicationToClubTestCase(TestCase):
@@ -26,7 +26,7 @@ class WithdrawApplicationToClubTestCase(TestCase):
         self.url = reverse('withdraw_application_to_club', kwargs = {'club_id': self.club.id})
 
     def test_url_of_withdraw_application_to_club(self):
-        self.assertEqual(self.url, '/withdraw_application_to_club/' + str(self.club.id))
+        self.assertEqual(self.url, f'/club/{self.club.id}/withdraw_application/')
 
     def test_withdraw_application_to_club_redirects_when_not_logged_in(self):
         app_count_before = Application.objects.count()
@@ -39,7 +39,7 @@ class WithdrawApplicationToClubTestCase(TestCase):
         self.assertEqual(app_count_after, app_count_before)
 
     def test_unsuccessful_withdrawal_when_not_applied(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         Application.objects.get(club=self.club, user=self.user).delete()
 
         app_count_before = Application.objects.count()
@@ -54,9 +54,9 @@ class WithdrawApplicationToClubTestCase(TestCase):
             fetch_redirect_response=True
         )
         self.assertTemplateUsed(response, 'show_clubs.html')
-        
+
     def test_successful_withdrawal(self):
-        self.client.login(username=self.user.username, password="Password123")
+        self.client.login(email=self.user.email, password="Password123")
         app_count_before = Application.objects.count()
         response = self.client.post(self.url, follow=True)
         app_count_after = Application.objects.count()

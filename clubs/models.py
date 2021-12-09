@@ -9,7 +9,9 @@ Implemented:
 """
 
 from libgravatar import Gravatar
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import UniqueConstraint, CheckConstraint, Q, F, Exists
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 
@@ -50,6 +52,9 @@ class User(AbstractUser):
         blank=False,
     )
 
+    USERNAME_FIELD = 'email' # set default auth user to email
+    REQUIRED_FIELDS = ['username'] # Required fields for a user creation. e.g. when creating a superuser.
+
     bio = models.CharField(max_length=520, blank = True, default = '')
 
     LEVELS = (
@@ -82,8 +87,7 @@ class Club(models.Model):
     class Meta:
         ordering = ['-created_on']
 
-
-class Member(models.Model):
+class Membership(models.Model):
     """Model representing a membership of some single chess club by some single user"""
     club = models.ForeignKey('Club', on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey('User', on_delete=models.CASCADE, unique=False, blank=False)
@@ -92,6 +96,20 @@ class Member(models.Model):
 
     class Meta:
         ordering = ['club']
+        constraints = [
+            UniqueConstraint(
+                name='user_in_club_unique',
+                fields=['club', 'user'],
+            ),
+        ]
+
+    def full_clean(self, *args, **kwargs):
+        super().full_clean(*args, **kwargs)
+        if Membership.objects.exclude(id=self.id).filter(club=self.club, is_owner=True).exists() and self.is_owner:
+            raise ValidationError("There is already an owner for this club.")
+
+        if self.is_owner and self.is_officer:
+            raise ValidationError("A single member cannot be both member and officer.")
 
 
 class Application(models.Model):
@@ -100,7 +118,25 @@ class Application(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
     personal_statement = models.CharField(max_length=580, blank=False, default = "")
 
+    class Meta:
+        ordering = ['club']
+        constraints = [
+            UniqueConstraint(
+                name='application_to_club_unique',
+                fields=['club', 'user'],
+            )
+        ]
+
 class Ban(models.Model):
-    "Medel for a ban to a club for some user"
+    "Model for a ban to a club for some user"
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
+
+    class Meta:
+        ordering = ['club']
+        constraints = [
+            UniqueConstraint(
+                name='user_ban_from_club_unique',
+                fields=['club', 'user'],
+            )
+        ]

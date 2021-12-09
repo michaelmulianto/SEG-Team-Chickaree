@@ -26,10 +26,10 @@ class EditAccountViewTest(TestCase, MenuTesterMixin):
         self.second_user = User.objects.get(username='janedoe')
 
     def test_edit_account_url(self):
-        self.assertEqual(self.url, '/edit_account/')
+        self.assertEqual(self.url, '/account/edit/')
 
     def test_get_edit_account(self):
-        self.client.login(username=self.user.username, password='Password123')
+        self.client.login(email=self.user.email, password='Password123')
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'edit_account.html')
@@ -45,7 +45,7 @@ class EditAccountViewTest(TestCase, MenuTesterMixin):
 
 
     def test_unsuccesful_edit_account_update(self):
-        self.client.login(username=self.user.username, password='Password123')
+        self.client.login(email=self.user.email, password='Password123')
         self.form_input['first_name'] = 'B' * 50
         before_count = User.objects.count()
         response = self.client.post(self.url, self.form_input)
@@ -63,7 +63,7 @@ class EditAccountViewTest(TestCase, MenuTesterMixin):
         self.assertEqual(self.user.email, 'johndoe@example.org')
 
     def test_unsuccessful_edit_account_update_due_to_duplicate_username(self):
-        self.client.login(username=self.user.username, password='Password123')
+        self.client.login(email=self.user.email, password='Password123')
         self.form_input['username'] = self.second_user.username
         before_count = User.objects.count()
         response = self.client.post(self.url, self.form_input)
@@ -81,7 +81,7 @@ class EditAccountViewTest(TestCase, MenuTesterMixin):
         self.assertEqual(self.user.email, 'johndoe@example.org')
 
     def test_unsuccessful_edit_account_update_due_to_duplicate_email(self):
-        self.client.login(username=self.user.username, password='Password123')
+        self.client.login(email=self.user.email, password='Password123')
         self.form_input['email'] = self.second_user.email
         before_count = User.objects.count()
         response = self.client.post(self.url, self.form_input)
@@ -99,7 +99,7 @@ class EditAccountViewTest(TestCase, MenuTesterMixin):
         self.assertEqual(self.user.email, 'johndoe@example.org')
 
     def test_succesful_edit_account_update(self):
-        self.client.login(username=self.user.username, password='Password123')
+        self.client.login(email=self.user.email, password='Password123')
         before_count = User.objects.count()
         response = self.client.post(self.url, self.form_input, follow=True)
         after_count = User.objects.count()

@@ -3,6 +3,8 @@
 {% load define_action %}
 {% load bootstrap_pagination %}
 {% block content %}
+{% include 'partials/js_confirm_messages.html'%}
+
 <div class="container">
   <div class="row">
     <div class="col-12">
@@ -10,10 +12,10 @@
 
         {% include 'partials/searchbar.html' %}
 
-        {% bootstrap_paginate page_obj range=6 show_first_last="true" %}
+        {% bootstrap_paginate page_obj range=6 show_first_last="false" %}
         <table class="table table-hover">
           <hr style="opacity: 0.15;">
-        {% for club in clubs %}
+        {% for club in page_obj %}
         <tr onclick=window.location="{% url 'show_club' club.id %}">
           <td style="width:0.1%; white-space: nowrap"><img src={% static 'images/pawn.jpg' %} style="max-width: 150px" alt="Club image, default pawn"<td>
 
@@ -34,33 +36,15 @@
 
           {% check_has_applied club current_user as has_applied %}
           {% check_is_member club current_user as is_member %}
-          <script>
-            function confirmWithdrawApplication(){
-              if(confirm('Are you sure you want to withdraw your application?')){
-                return true;
-              }else{
-                event.stopPropagation();
-                event.preventDefault();
-              }
-            }
-            function confirmLeaveClub(){
-              if(confirm('Are you sure you want to leave the club?')){
-                return true;
-              }else{
-                event.stopPropagation();
-                event.preventDefault();
-              }
-            }
-          </script>
 
           {% if has_applied %}
-            <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmWithdrawApplication()" class="btn btn-warning">Withdraw application</a></td>
+            <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmMsg('withdraw_application')" class="btn btn-warning">Withdraw application</a></td>
           {% elif is_member %}
             {% check_is_owner club current_user as is_owner %}
             {% if is_owner %}
               <td style="text-align: center; vertical-align: bottom; padding: 25px"> You are the owner. </td>
             {% else %}
-              <td style="vertical-align: bottom; padding: 25px"><a href='{% url 'leave_club' club.id %}' onclick="confirmLeaveClub()" class="btn btn-danger">Leave club</a></td>
+              <td style="vertical-align: bottom; padding: 25px"><a href='{% url 'leave_club' club.id %}' onclick="confirmMsg('leave_club')" class="btn btn-danger">Leave club</a></td>
             {% endif%}
           {% else %}
             <td style="vertical-align: bottom; padding: 20px"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success">Apply to club</a></td>
@@ -69,7 +53,7 @@
 
         {% endfor %}
         </table>
-        {% bootstrap_paginate page_obj range=6 show_first_last="true" %}
+        {% bootstrap_paginate page_obj range=6 show_first_last="false" %}
     </div>
   </div>
 </div>

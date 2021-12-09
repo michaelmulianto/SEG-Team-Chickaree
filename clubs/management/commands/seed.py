@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from faker import Faker
 from random import sample, choice
-from clubs.models import User, Club, Member, Application
+from clubs.models import User, Club, Membership, Application, Ban
 
 class Command(BaseCommand):
     """Fill the database with pseudorandom data and some mandated test cases."""
@@ -45,7 +45,7 @@ class Command(BaseCommand):
 
             members = sample(list(User.objects.exclude(is_staff=True)), (i%5)+6)
 
-            owner = Member.objects.create(
+            owner = Membership.objects.create(
                 club = club,
                 user = members[0],
                 is_owner = True,
@@ -55,7 +55,7 @@ class Command(BaseCommand):
             owner.save()
 
             for i in range(1,len(members)-3):
-                m = Member.objects.create(
+                m = Membership.objects.create(
                     club = club,
                     user = members[i],
                     is_officer = not(bool(i%4)),
@@ -63,7 +63,7 @@ class Command(BaseCommand):
                 m.full_clean()
                 m.save()
 
-            for i in range(len(members)-3,len(members)):
+            for i in range(len(members)-3,len(members)-1):
                 a = Application.objects.create(
                     club = club,
                     user = members[i],
@@ -71,6 +71,11 @@ class Command(BaseCommand):
                 )
                 a.full_clean()
                 a.save()
+
+            b = Ban.objects.create(
+                club = club,
+                user = members[len(members)-1],
+            )
 
     def generate_required_data(self):
         """This is the data needed as part of non-functional requirements"""
@@ -126,14 +131,14 @@ class Command(BaseCommand):
         billie.save()
 
         # Memberships to Kerbal
-        m1 = Member.objects.create(
+        m1 = Membership.objects.create(
             club = kerbal,
             user = jeb
         )
         m1.full_clean()
         m1.save()
 
-        m2 = Member.objects.create(
+        m2 = Membership.objects.create(
             club = kerbal,
             user = val,
             is_officer = True
@@ -141,7 +146,7 @@ class Command(BaseCommand):
         m2.full_clean()
         m2.save()
 
-        m3 = Member.objects.create(
+        m3 = Membership.objects.create(
             club = kerbal,
             user = billie,
             is_owner = True
@@ -149,7 +154,7 @@ class Command(BaseCommand):
         # Other memberships
         other_clubs = sample(list(Club.objects.exclude(id = kerbal.id)),3)
 
-        jeb_officer = Member.objects.create(
+        jeb_officer = Membership.objects.create(
             club = other_clubs[0],
             user = jeb,
             is_officer = True
@@ -158,8 +163,8 @@ class Command(BaseCommand):
         jeb_officer.save()
 
         # Here we delete the existing owner of the club that val will be the owner of.
-        Member.objects.filter(club=other_clubs[1],is_owner=True).delete()
-        val_owner = Member.objects.create(
+        Membership.objects.filter(club=other_clubs[1],is_owner=True).delete()
+        val_owner = Membership.objects.create(
             club = other_clubs[1],
             user = val,
             is_owner = True
@@ -167,7 +172,7 @@ class Command(BaseCommand):
         val_owner.full_clean()
         val_owner.save()
 
-        billie_member = Member.objects.create(
+        billie_member = Membership.objects.create(
             club = other_clubs[1],
             user = billie,
         )
@@ -201,7 +206,7 @@ class Command(BaseCommand):
         lonely_club.full_clean()
         lonely_club.save()
 
-        (Member.objects.create(
+        (Membership.objects.create(
             user = owner_user,
             club = lonely_club,
             is_owner = True
@@ -215,13 +220,18 @@ class Command(BaseCommand):
         less_lonely_club.full_clean()
         less_lonely_club.save()
 
-        (Member.objects.create(
+        (Membership.objects.create(
             user = owner_user,
             club = less_lonely_club,
             is_owner = True
         )).save()
 
-        (Member.objects.create(
+        (Membership.objects.create(
+            user = choice(list(User.objects.exclude(username="testuser1"))),
+            club = less_lonely_club,
+        )).save()
+
+        (Ban.objects.create(
             user = choice(list(User.objects.exclude(username="testuser1"))),
             club = less_lonely_club,
         )).save()

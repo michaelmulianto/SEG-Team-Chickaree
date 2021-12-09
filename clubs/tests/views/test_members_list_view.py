@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 from django.urls import reverse
-from clubs.models import User, Club, Member
+from clubs.models import User, Club, Membership
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 
 class MembersTestCase(TestCase, MenuTesterMixin):
@@ -15,7 +15,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.user = User.objects.get(username='johndoe')
         self.club = Club.objects.get(name='King\'s Knights')
 
-        self.member = Member.objects.create(
+        self.member = Membership.objects.create(
             user = self.user,
             club = self.club,
             is_officer = False,
@@ -24,7 +24,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.url = reverse('members_list', kwargs={'club_id': self.club.id})
 
     def test_members_list_url(self):
-        self.assertEqual('/members_list/'+ str(self.club.id), self.url)
+        self.assertEqual(self.url, f'/club/{self.club.id}/members/')
 
     def test_get_user_list_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
@@ -32,7 +32,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_get_members_list(self):
-        self.client.login(username=self.user.username, password='Password123')
+        self.client.login(email=self.user.email, password='Password123')
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'members_list.html')
@@ -49,7 +49,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
                 last_name=f'Last{user_id}',
             )
             users.append(new_user)
-            Member.objects.create(
+            Membership.objects.create(
                 user = users,
                 club = self.club,
                 is_officer = False,
