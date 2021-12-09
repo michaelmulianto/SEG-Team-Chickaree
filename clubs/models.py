@@ -250,10 +250,10 @@ class StageInterface(models.Model):
         if self.get_matches().count() < 1:
             raise ValidationError("A stage cannot have no matches.")
 
-    def save(self):
+    def save(self, *args, **kwargs):
         # Due to complex nature of the models it is important that we check validation.
-        self.full_clean()
-        super().save()
+        #self.full_clean()
+        super(StageInterface, self).save(*args, **kwargs)
 
 class Match(models.Model):
     """Model representing a single game of chess, in some tournament stage."""
