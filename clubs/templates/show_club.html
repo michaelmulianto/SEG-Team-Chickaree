@@ -31,18 +31,12 @@
         </style>
         <table class="table standard-table-spacing">
           <tr>
-            <th></th>
-            <th>Username</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Bio</th>
+            {% include 'member_list_partials/table_header_basics.html' with include_counter=False %}
+            {% include 'member_list_partials/table_header_extras.html' with is_owner=True is_officer=True %}
           </tr>
           <tr>
-            <td> <img src="{{ owner.user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
-            <td> @{{ owner.user.username }} </td>
-            <td> {{ owner.user.first_name }} {{ owner.user.last_name }} </td>
-            <td> {{ owner.user.email }} </td>
-            <td> {{ owner.user.bio }} </td>
+            {% include 'member_list_partials/table_row_basics.html' with user=owner.user include_counter=False %}
+            {% include 'member_list_partials/table_row_extras.html' with user=owner.user is_owner=True is_officer=True %}
             <td></td>
           </tr>
         </table>
@@ -96,7 +90,6 @@
           {% endif %}
             </tr>
           </table>
-
       </div>
     </div>
   </div>
