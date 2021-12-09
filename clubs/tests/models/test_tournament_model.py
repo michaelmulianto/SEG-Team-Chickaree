@@ -60,7 +60,7 @@ class TournamentModelTestCase(TestCase):
 
     def test_capacity_can_be_32(self):
         self.tournament.capacity = 32
-        self._assert_tournament_is_invalid()
+        self._assert_tournament_is_valid()
 
     def test_capacity_must_be_divisble_by_8_above_32(self):
         self.tournament.capacity = 36 # Divisible by 4 and 6
