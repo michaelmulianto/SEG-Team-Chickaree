@@ -16,6 +16,8 @@ from django.db import models
 from django.db.models import UniqueConstraint, CheckConstraint, Q, F, Exists
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator, MinLengthValidator, MaxLengthValidator
+from django.db.models import Max
+from itertools import combinations
 
 class User(AbstractUser):
     """Model for a registered user, independent of any clubs."""
@@ -143,9 +145,114 @@ class Ban(models.Model):
             )
         ]
 
+class Tournament(models.Model):
+    """Model representing a single tournament."""
+    club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
+    name = models.CharField(max_length=50, blank=False, unique = True)
+    description =  models.CharField(max_length=280, blank=False)
+    capacity = models.PositiveIntegerField(default=16, blank=False)
+    start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+    end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+
+    class Meta:
+        ordering = ['start']
+
+    def full_clean(self, *args, **kwargs):
+        super().full_clean(*args, **kwargs)
+        if self.capacity < 2:
+            raise ValidationError("The capacity should be at least 2.")
+        if self.capacity > 96:
+            raise ValidationError("The capacity should not exceed 96.")
+        if self.capacity > 16 and (self.capacity % 4 != 0) and (self.capacity % 6 != 0):
+            raise ValidationError("The capacity should be divisible by both 4 and 6 when above 16.")
+        if self.capacity > 32 and (self.capacity % 8 != 0):
+            raise ValidationError("The capacity should be divisible by 8 when above 32.")
+        if self.start < now():
+            raise ValidationError("The start date cannot be in the past!")
+        if self.end < now():
+            raise ValidationError("The end date cannot be in the past!")
+        if self.start > self.end:
+            raise ValidationError("The tournament should have a positive duration.")
+
+    def get_current_round(self):
+        rounds = StageInterface.objects.filter(tournament=self)
+        if rounds.count() == 0:
+            return None
+        curr_round_num = rounds.aggregate(Max('round_num'))
+        return rounds.get(round_num=curr_round_num)
+
+    def generate_next_round(self):
+        self.full_clean() # Constraints are needed for this to work.
+        curr_round = self.get_current_round()
+        if curr_round != None:
+            participants = curr_round.get_winners()
+            next_num = curr_round.round_num+1
+        else: # No round has occured yet.
+            participants = Participant.objects.filter(tournament=Self)
+            next_num = 1
+        
+        num_participants = len(participants)
+        if num_participants == 0:
+            return None # Round not complete or no one signed up
+
+        # KNOCKOUT CASE
+        if num_participants <= 16 and (num_participants & (num_participants - 1) == 0):
+            my_stage = KnockoutStage.objects.create(
+                round_num = next_num,
+                tournament=self
+            )
+            i = 0
+            while i < num_participants:
+                (Match.objects.create(
+                    stage = my_stage,
+                    white_player = participants[0],
+                    black_player = participants[1]
+                )).save()
+                i += 2
+        # GROUP STAGE CASE
+        else:
+            my_stage = GroupStage.objects.create(
+                round_num = curr_round.round_num+1,
+                tournament=self
+            )
+            # By own constraints, this will result in a valid draw.
+            if num_participants < 33:
+                group_size = 4
+                required_winners = 16
+            else:
+                group_size = 6
+                required_winners = 32
+            
+            num_groups = num_participants / group_size
+            winners_per_group = required_winners / num_groups
+            
+            for i in range(0, num_groups):
+                group = SingleGroup.objects.create(
+                    group_stage = my_stage,
+                    winners_required = winners_per_group
+                )
+                group_members = participants[:group_size]
+                participants = participants[group_size:]
+
+                player_pairs = combinations(group_members, 2)
+
+                for pair in player_pairs:
+                    (Match.objects.create(
+                        stage = group,
+                        white_player = pair[0],
+                        black_player = pair[1]
+                    )).save()
+                
+                group.full_clean()
+                group.save()
+
+        my_stage.full_clean()
+        my_stage.save()
+            
+
 class MemberTournamentRelationship(models.Model):
     """Represent a single relationship between a member of a club and its tournament."""
-    member = models.ForeignKey(Member, on_delete=models.CASCADE, unique=False, blank=False)
+    member = models.ForeignKey(Membership, on_delete=models.CASCADE, unique=False, blank=False)
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
 
     class Meta:
@@ -176,22 +283,6 @@ class StageInterface(models.Model):
     # ABSTRACT
     def get_winners(self):
         return []
-
-    def get_next_round(self):
-        participants = self.get_winners()
-        num_participants = len(participants)
-        if(num_participants < 1):
-            return None
-        
-        if(num_participants > 32):
-            pass
-            #CREATE GROUP
-        elif(num_participants & (num_participants - 1) != 0):
-            pass
-            #CREATE GROUP
-        else:
-            pass
-            #CREATE KNOCKOUT
 
     def get_matches(self):
         return Match.objects.filter(stage=self)
@@ -266,8 +357,10 @@ class KnockoutStage(StageInterface):
         for match in matches:
             if match.result == 1:
                 winners.append(match.white_player)
+                match.black_player.round_eliminated = self.round_num
             elif match.result == 2:
                 winners.append(match.black_player)
+                match.white_player.round_eliminated = self.round_num
         # Case draw not considered: To-do
         return winners
 
@@ -337,40 +430,15 @@ class SingleGroup(StageInterface):
 
         # https://www.geeksforgeeks.org/python-sort-list-by-dictionary-values/
         res = sorted(scores.keys(), key = lambda ele: scores[ele])
-        res = res[self.num_winners + 1:]
+        winner_ids = res[self.winners_required + 1:]
+        loser_ids = res[:self.winners_required + 1]
 
         winners = []
-        for p_id in res:
+        for p_id in winner_ids:
             winners.append(Participant.objects.get(id = p_id))
+
+        for p_id in loser_ids:
+            Participant.objects.filter(id = p_id).round_eliminated = self.round_num
         
         return winners
 
-class Tournament(models.Model):
-      """Model representing a single tournament."""
-    club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
-    name = models.CharField(max_length=50, blank=False, unique = True)
-    description =  models.CharField(max_length=280, blank=False)
-    capacity = models.PositiveIntegerField(default=16, blank=False)
-    start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
-    end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
-
-    class Meta:
-        ordering = ['start']
-
-    def full_clean(self, *args, **kwargs):
-        super().full_clean(*args, **kwargs)
-        if self.capacity < 2:
-            raise ValidationError("The capacity should be at least 2.")
-        if self.capacity > 96:
-            raise ValidationError("The capacity should not exceed 96.")
-        if self.capacity % 2 != 0:
-            raise ValidationError("The capacity should be even.")
-        if self.start < now():
-            raise ValidationError("The start date cannot be in the past!")
-        if self.end < now():
-            raise ValidationError("The end date cannot be in the past!")
-        if self.start > self.end:
-            raise ValidationError("The tournament should have a positive duration.")
-
-    def get_initial_round():
-        pass
