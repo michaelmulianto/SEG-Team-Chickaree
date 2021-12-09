@@ -96,4 +96,4 @@ def respond_to_application(request, app_id, is_accepted):
         return redirect("show_applications_to_club", club_id=club_applied_to.id)
     else:
         messages.error(request, 'Only owners or officers can accept or reject applications.')
-        return redirect("show_club", club_applied_to)
+        return redirect("show_club", club_id=club_applied_to.id)
