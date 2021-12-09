@@ -1,6 +1,8 @@
 {% extends 'base_content.html' %}
 {% block content %}
 {% load define_action %}
+{% check_is_owner club current_user as is_owner %}
+{% check_is_officer club current_user as is_officer %}
 {% get_banned_members club as banned_members %}
   <div class="container">
     <div class="row">
@@ -21,14 +23,10 @@
           </tr>
         {% else %}
           <tr>
+            {% include 'member_list_partials/table_header.html' with is_owner=is_owner is_officer=is_officer %}
+            {% if is_owner %}
             <th></th>
-            <th></th>
-            <th></th>
-            <th>Name</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Bio</th>
-            <th></th>
+            {% endif %}
 
           </tr>
           {% for ban_member in banned_members %}

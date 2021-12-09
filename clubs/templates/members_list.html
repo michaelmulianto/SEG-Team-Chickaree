@@ -17,18 +17,7 @@
         </style>
         <table class="table standard-table-spacing">
           <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th>Username</th>
-            <th>Name</th>
-
-            {% if is_owner or is_officer %}
-            <th>Email</th>
-            {% endif %}
-
-            <th>Bio</th>
-
+            {% include 'member_list_partials/table_header.html' with is_owner=is_owner is_officer=is_officer %}
             {% if is_owner%}
             <th></th>
             <th></th>
@@ -44,13 +33,9 @@
             <td> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
             <td> @{{ member.user.username }} </td>
             <td> {{ member.user.first_name }} {{ member.user.last_name }} </td>
-
-
             {% if is_owner or is_officer %}
             <td> {{ member.user.email }} </td>
-            <!-- <td> {{member.user.level}}<td> -->
             {% endif %}
-
             <td> {{ member.user.bio }} </td>
 
             {% check_is_officer club member.user as is_member_an_officer %}
