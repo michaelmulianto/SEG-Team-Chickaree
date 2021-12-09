@@ -60,7 +60,7 @@ def banned_members(request, club_id):
 @login_required
 @ban_exists
 def unban_member(request, ban_id):
-    """Revoke a given ban from their club."""
+    """Allow the owner to revoke a given ban from their club."""
     current_user = request.user
     ban = Ban.objects.get(id=ban_id)
     club = ban.club
