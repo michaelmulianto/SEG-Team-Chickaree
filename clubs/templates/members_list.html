@@ -8,13 +8,14 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <h1>{{club.name}} Members: </h1>
         <style>
           .standard-table-spacing{
             vertical-align: middle;
             border-spacing: 10px 2px;
           }
         </style>
+        <h1>{{club.name}} Members: </h1>
+        <br>
         <table class="table standard-table-spacing">
           <tr>
             {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}

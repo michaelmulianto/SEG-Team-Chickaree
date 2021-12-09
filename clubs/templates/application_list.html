@@ -10,33 +10,29 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <h1>Your Applications:</h1>
-        <table class="table">
+        <h1>{{club.name}} Applications: </h1>
+        <br>
+        <style>
+          .standard-table-spacing{
+            vertical-align: middle;
+            border-spacing: 10px 2px;
+          }
+        </style>
+        <table class="table standard-table-spacing">
             <!-- to be able to show the window messages-->
-
-          <style>
-            .standard-table-spacing{
-              vertical-align: middle;
-              border-spacing: 10px 2px;
-            }
-          </style>
-
             {% if applications.count == 0 %}
-            <br>
             <tr>
               <b><p style="font-family: verdana; font-size: 250%;"> No more applications </p> </b>
             </tr>
 
             {% else %}
-
-            <table class="table standard-table-spacing">
-              <tr>
-                {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}
-                <th>Experience</th>
-                <th>Personal Statement</th>
-                <th>
-                <th>
-              </tr>
+            <tr>
+              {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}
+              <th>Experience</th>
+              <th>Personal Statement</th>
+              <th>
+              <th>
+            </tr>
 
             {% for app in applications %}
             <tr>

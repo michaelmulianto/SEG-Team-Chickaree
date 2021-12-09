@@ -29,7 +29,7 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
 
     def test_url_of_show_applications_to_club(self):
         self.assertEqual(self.url, f'/club/{self.club.id}/applications/')
-        
+
     def test_show_application_to_club_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
         redirect_url = reverse_with_next('log_in', self.url)
@@ -83,7 +83,7 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         response = self.client.get(self.url)
         with self.assertHTML(response) as html:
             TableTextContainer = html.find('body/div/div/div/table/table/tr/th')
-            self.assertEqual(TableTextContainer.text, 'Name')
+            self.assertEqual(TableTextContainer.text, '')
 
     def test_template_shows_header_fields_when_there_are_more_than_one_aplicationa(self):
         second_user = User.objects.get(username='janedoe')

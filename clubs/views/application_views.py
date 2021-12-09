@@ -76,6 +76,7 @@ def show_applications_to_club(request, club_id):
     else: #Access denied
         messages.error(request, "Only the club owner and officers can view applications")
         return redirect('show_club', club_id=club_id)
+        
 @login_required
 @application_exists
 def respond_to_application(request, app_id, is_accepted):
