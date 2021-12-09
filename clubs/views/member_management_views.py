@@ -15,7 +15,7 @@ from clubs.models import Membership, Club, Ban
 @login_required
 @membership_exists
 def kick_member(request, member_id):
-    """Kick a given member from their club."""
+    """Allow an owner or officer to kick a given member from their club."""
     current_user = request.user
     member = Membership.objects.get(id=member_id)
     club = member.club
@@ -29,7 +29,7 @@ def kick_member(request, member_id):
 @login_required
 @membership_exists
 def ban_member(request, member_id):
-    """Ban a given member from their club."""
+    """Allow the owner to ban a given member from their club."""
     current_user = request.user
     member = Membership.objects.get(id=member_id)
     club = member.club
