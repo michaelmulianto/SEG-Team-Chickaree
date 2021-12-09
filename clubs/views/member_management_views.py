@@ -35,9 +35,12 @@ def ban_member(request, member_id):
     club = member.club
     if is_user_owner_of_club(current_user, club):
         if not is_user_officer_of_club(member.user, club): #Owners can only ban members, not officers.
-            Ban.objects.create(club=club, user=member.user)
-            Membership.objects.filter(id=member_id).delete()
-            messages.warning(request, '@' + member.user.username + ' was banned from the club.')
+            if not is_user_owner_of_club(member.user, club): #An owner cannot ban themselves.
+                Ban.objects.create(club=club, user=member.user)
+                Membership.objects.filter(id=member_id).delete()
+                messages.warning(request, '@' + member.user.username + ' was banned from the club.')
+            else:
+                messages.error(request, "You cannot ban yourself from your club.")
         else: #Tried to ban an officer.
             messages.error(request, 'You cannot ban an officer. Demote them first.')
     else: #Not the owner
