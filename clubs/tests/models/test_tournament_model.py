@@ -1,7 +1,7 @@
 """Tests for Tournament model, found in tournaments/models.py"""
 
 from django.test import TestCase
-from clubs.models import Tournament
+from clubs.models import Tournament, Membership, User, Participant, Match, SingleGroup
 from django.core.exceptions import ValidationError
 
 
@@ -9,13 +9,17 @@ class TournamentModelTestCase(TestCase):
     """Test all aspects of a tournament."""
 
     fixtures = ['clubs/tests/fixtures/default_club.json','clubs/tests/fixtures/default_tournament.json',
-        'clubs/tests/fixtures/other_tournaments.json'
+        'clubs/tests/fixtures/other_tournaments.json', 'clubs/tests/fixtures/other_users.json'
         ]
 
     # Test setup
     def setUp(self):
         self.tournament = Tournament.objects.get(name="Grand Championship")
         self.second_tournament = Tournament.objects.get(name="Just A League")
+        self.dummy_member = Membership.objects.create(
+            user = User.objects.get(username='janedoe'),
+            club = self.tournament.club
+        )
 
     def test_valid_message(self):
         self._assert_tournament_is_valid()
@@ -118,6 +122,12 @@ class TournamentModelTestCase(TestCase):
     def test_None_returned_when_generating_next_round_with_no_participants(self):
         self.assertEqual(self.tournament.generate_next_round(), None)
 
+    # Test generate next round
+    def test_generate_first_round_with_32_participants(self):
+        self.create_dummy_participants()
+        r = self.tournament.get_next_round()
+        self.assert_equal(SingleGroup.objects.filter(group_stage=r), 8)
+
     # Helper functions.
     # Generic assertions.
     def _assert_tournament_is_valid(self):
@@ -130,4 +140,9 @@ class TournamentModelTestCase(TestCase):
         with self.assertRaises(ValidationError):
             self.tournament.full_clean()
 
-    
+    def create_dummy_participants(self):
+        for i in range(0,32):
+            Participant.objects.create(
+                tournament=self.tournament,
+                member = self.dummy_member
+            )
