@@ -80,11 +80,18 @@ def promote_member_to_officer(request, member_id):
     member = Membership.objects.get(id = member_id)
     club = member.club
     if is_user_owner_of_club(request.user, club):
-        member.is_officer = True
-        member.save() # Or database won't update.
-        messages.success(request, '@' + member.user.username + ' was promoted to officer.')
-    else: # Access denied, member isn't owner
+        if not is_user_owner_of_club(member.user, club):
+            if not is_user_officer_of_club(member.user, club):
+                member.is_officer = True
+                member.save() # Or database won't update.
+                messages.success(request, '@' + member.user.username + ' was promoted to officer.')
+            else: #Access denied owner is trying to promote an officer.
+                messages.warning(request, '@' + member.user.username + ' is already an officer.')
+        else: #Access denied owner is trying to promote themselves.
+            messages.error(request, 'You are the owner. You cannot be an officer.')
+    else: # Access denied, member isn't owner.
         messages.error(request, 'Only the owner can promote members.')
+
     return redirect('members_list', club_id=club.id)
 
 @login_required
