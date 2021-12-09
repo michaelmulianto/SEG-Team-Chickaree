@@ -42,7 +42,6 @@
             <td> @{{ owner.user.username }} </td>
             <td> {{ owner.user.first_name }} {{ owner.user.last_name }} </td>
             <td> {{ owner.user.email }} </td>
-
             <td> {{ owner.user.bio }} </td>
             <td></td>
           </tr>
@@ -87,15 +86,16 @@
           {% if has_applied %}
               <td class="button-cell-spacing"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmMsg('withdraw_application')" class="btn btn-warning">Withdraw application</a></td>
           {% elif is_member %}
-            {% if not is_owner %}
-              <td class="button-cell-spacing"><a href='{% url 'leave_club' club.id %}' onclick="confirmMsg('leave_club')" class="btn btn-danger">Leave club</a></td>
-            {% elif is_officer or is_owner %}
+            {% if is_officer or is_owner %}
               <td class="button-cell-spacing"><a href='{% url 'banned_members' club.id %}' class="btn btn-primary">Banned Members</a></td>
               <td class="button-cell-spacing"><a href='{% url 'show_applications_to_club' club.id %}' class="btn btn-primary">Applications</a></td>
               {% if is_owner %}
               <td class="button-cell-spacing"><a href='{% url 'edit_club_info' club.id %}' class="btn btn-primary">Edit Club</a></td>
               <td class="button-cell-spacing"><a href='{% url 'delete_club' club.id %}' class="btn btn-danger" onclick="confirmMsg('delete_applications')">Delete Club</a></td>
               {% endif %}
+            {% endif %}
+            {% if not is_owner %}
+              <td class="button-cell-spacing"><a href='{% url 'leave_club' club.id %}' onclick="confirmMsg('leave_club')" class="btn btn-danger">Leave club</a></td>
             {% endif %}
           {% else%}
               <td class="button-cell-spacing"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success">Apply to club</a></td>
