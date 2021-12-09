@@ -198,8 +198,8 @@ class Organiser(MemberTournamentRelationship):
 
 class Participant(MemberTournamentRelationship):
     """Relationship between member and tournament where member will play."""
-    round_eliminated = models.IntegerField(default=-1)
-    joined = models.DateTimeField(auto_now_add=True, blank=False)
+    round_eliminated = models.IntegerField(default=-1, blank = False)
+    joined = models.DateTimeField(auto_now_add=True)
 
 class StageInterface(models.Model):
     """Model for single round in the tournament."""
