@@ -162,3 +162,7 @@ h3.profile-title {
 .search-button {
   float: right;
 }
+
+.btn-risk {
+  background-color: orange !important;
+}
