@@ -194,7 +194,7 @@ class MemberTournamentRelationship(models.Model):
 
 class Organiser(MemberTournamentRelationship):
     """Relationship between member and tournament where member has an admin role."""
-    is_lead_organiser = models.BooleanField(default=False)
+    is_lead_organiser = models.BooleanField(default=False, blank = False)
 
 class Participant(MemberTournamentRelationship):
     """Relationship between member and tournament where member will play."""

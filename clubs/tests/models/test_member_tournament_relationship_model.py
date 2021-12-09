@@ -8,7 +8,6 @@ class MemberTournamentRelationshipModelTestCase(TestCase):
     fixtures = ['clubs/tests/fixtures/default_user.json',
             'clubs/tests/fixtures/other_users.json',
             'clubs/tests/fixtures/default_club.json',
-            'clubs/tests/fixtures/other_clubs.json',
             'clubs/tests/fixtures/default_tournament.json',
             'clubs/tests/fixtures/other_tournaments.json']  
 

@@ -31,7 +31,13 @@ class ApplyToClubView(FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['club'] = Club.objects.get(id=self.kwargs['club_id'])
+        context['my_clubs'] = get_clubs_of_user(self.get_object())
         return context
+
+    def get_object(self):
+        """Return the object (user) to be updated."""
+        user = self.request.user
+        return user
 
     def form_valid(self, form):
         current_user = self.request.user

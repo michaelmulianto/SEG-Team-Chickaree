@@ -53,6 +53,12 @@ class EditAccountView(UpdateView):
     def dispatch(self, request):
         return super().dispatch(request)
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        user = self.get_object()
+        context['my_clubs'] = get_clubs_of_user(user)
+        return context
+
     def get_object(self):
         """Return the object (user) to be updated."""
         user = self.request.user
@@ -81,12 +87,23 @@ class ChangePasswordView(FormView):
         kwargs.update({'user': self.request.user})
         return kwargs
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        user = self.get_object()
+        context['my_clubs'] = get_clubs_of_user(user)
+        return context
+
     def form_valid(self, form):
         """Handle valid form by saving the new password."""
 
         form.save()
         login(self.request, self.request.user)
         return super().form_valid(form)
+
+    def get_object(self):
+        """Return the object (user) to be updated."""
+        user = self.request.user
+        return user
 
     def get_success_url(self):
         """Redirect the user after successful password change."""

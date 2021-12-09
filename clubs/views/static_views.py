@@ -22,9 +22,9 @@ def show_clubs(request, param=None, order=None):
     if request.method == "POST":
         searched = request.POST.get('searched')
         clubs = Club.objects.filter(name__contains=searched)
-        return render(request, 'show_clubs.html', {'searched': searched, 'clubs': clubs, 'current_user': request.user})
+        return render(request, 'show_clubs.html', {'searched': searched, 'clubs': clubs, 'current_user': request.user, 'my_clubs':get_clubs_of_user(request.user)})
     clubs = sort_clubs(param, order)
-    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user, 'order': order})
+    return render(request, 'show_clubs.html', {'clubs': clubs, 'current_user': request.user, 'order': order, 'my_clubs':get_clubs_of_user(request.user)})
 
 
 @login_required

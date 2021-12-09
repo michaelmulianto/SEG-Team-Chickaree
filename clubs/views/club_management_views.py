@@ -3,7 +3,7 @@
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 
-from .helpers import is_user_owner_of_club
+from .helpers import is_user_owner_of_club, get_clubs_of_user
 from .decorators import club_exists, membership_exists
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -32,6 +32,17 @@ class CreateClubView(FormView):
             is_owner = True
         )
         return super().form_valid(form)
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        user = self.get_object()
+        context['my_clubs'] = get_clubs_of_user(user)
+        return context
+
+    def get_object(self):
+        """Return the object (user) to be updated."""
+        user = self.request.user
+        return user
 
     def get_success_url(self):
         return reverse('show_clubs')
@@ -82,3 +93,8 @@ class EditClubInfoView(UpdateView):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Club Details updated!")
         return reverse('show_clubs')
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['my_clubs'] = get_clubs_of_user(self.request.user)
+        return context
