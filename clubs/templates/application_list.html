@@ -31,7 +31,7 @@
 
             <table class="table standard-table-spacing">
               <tr>
-                {% include 'member_list_partials/table_header_basics.html' %}
+                {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}
                 <th>Experience</th>
                 <th>Personal Statement</th>
                 <th>
@@ -40,7 +40,7 @@
 
             {% for app in applications %}
             <tr>
-              {% include 'member_list_partials/table_row_basics.html' with user=app.user %}
+              {% include 'member_list_partials/table_row_basics.html' with user=app.user include_counter=True %}
               <td><b>{{ app.user.experience }}</b></td>
               <td>{{ app.personal_statement }}</td>
               <td style="vertical-align: bottom; padding: 10px"><a href='{% url "respond_to_application" app.id 0  %}' onclick="confirmMsg('reject_application')" class="btn btn-danger">Reject</a></td>

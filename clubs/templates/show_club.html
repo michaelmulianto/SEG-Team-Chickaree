@@ -55,19 +55,13 @@
         {%endif%}
 
             <tr>
-              <th></th>
-              <th>Username</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Bio</th>
+              {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}
+              {% include 'member_list_partials/table_header_extras.html' with is_owner=True is_officer=True %}
             </tr>
             {% for officer in officers %}
             <tr>
-              <td> <img src="{{ officer.user.mini_gravatar }}" alt="Gravatar" style="border-radius: 50%"> </td>
-              <td> @{{ officer.user.username }} </td>
-              <td> {{ officer.user.first_name }} {{ officer.user.last_name }} </td>
-              <td> {{ officer.user.email }} </td>
-              <td> {{ officer.user.bio }} </td>
+              {% include 'member_list_partials/table_row_basics.html' with user=officer.user include_counter=True %}
+              {% include 'member_list_partials/table_row_extras.html' with user=officer.user is_owner=True is_officer=True %}
             </tr>
             {% endfor %}
           </table>
