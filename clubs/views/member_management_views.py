@@ -20,8 +20,14 @@ def kick_member(request, member_id):
     member = Membership.objects.get(id=member_id)
     club = member.club
     if is_user_owner_of_club(current_user, club) or is_user_officer_of_club(current_user, club):
-        Membership.objects.filter(id=member_id).delete()
-        messages.warning(request, '@' + member.user.username + ' was kicked from the club.')
+        if not is_user_officer_of_club(member.user, club):
+            if not is_user_owner_of_club(member.user, club):
+                Membership.objects.filter(id=member_id).delete()
+                messages.warning(request, '@' + member.user.username + ' was kicked from the club.')
+            else:
+                messages.error(request, 'You are the owner. You cannot kick yourself from your club. Transfer ownership before leaving or delete the club.')
+        else:
+            messages.error(request, 'You cannot kick a officer, demote them first (owner only).')
     else:
         messages.error(request, 'Only the owners and officers can kick members from a club.')
     return redirect('members_list', club_id=club.id)
@@ -40,7 +46,7 @@ def ban_member(request, member_id):
                 Membership.objects.filter(id=member_id).delete()
                 messages.warning(request, '@' + member.user.username + ' was banned from the club.')
             else:
-                messages.error(request, "You cannot ban yourself from your club.")
+                messages.error(request, "You are the owner. You cannot ban yourself from your club.")
         else: #Tried to ban an officer.
             messages.error(request, 'You cannot ban an officer. Demote them first.')
     else: #Not the owner
