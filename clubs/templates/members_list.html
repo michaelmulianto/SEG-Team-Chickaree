@@ -68,14 +68,14 @@
 
               {% if is_owner %} <!-- Owners will see transfer ownership or kick + ban depending on member rank -->
                 {% if is_member_an_officer %}
-            <td><a href='{% url 'demote_officer_to_member' member.id %}' class="btn btn-warning">Demote</a></td>
+            <td><a href='{% url 'demote_officer_to_member' member.id %}' style="color: white" class="btn btn-warning">Demote</a></td>
                 {% else %}
             <td><a href='{% url 'promote_member_to_officer' member.id %}' class="btn btn-success">Promote</a></td>
                 {% endif %}
                 {%if member.is_officer %}
-            <td colspan="3" ><a href='{% url 'transfer_ownership_to_officer' member.id %}' onclick="confirmMsg('transfer_ownership')" class="btn btn-warning">Transfer Ownership</a></td>
+            <td colspan="3" ><a href='{% url 'transfer_ownership_to_officer' member.id %}' onclick="confirmMsg('transfer_ownership')" style="background-color: rgb(135, 211, 124); color: white" class="btn">Transfer Ownership</a></td>
                 {% else %}
-            <td><a href='{% url 'kick_member' member.id %}' onclick="confirmMsg('kick')" class="btn btn-danger">Kick</a></td>
+            <td><a href='{% url 'kick_member' member.id %}' onclick="confirmMsg('kick')" style="background-color: rgb(255,100,0); color: white" class="btn">Kick</a></td>
             <td><a href='{% url 'ban_member' member.id %}' onclick="confirmMsg('ban')" class="btn btn-danger">Ban</a></td>
                 {% endif %}
               {% elif is_officer %}
