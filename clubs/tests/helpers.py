@@ -19,6 +19,7 @@ class MenuTesterMixin(AssertHTMLMixin):
     menu_urls = [reverse('show_clubs'),  reverse('account'),
                 reverse('my_clubs_list'), reverse('log_out')]
 
+
     def assert_menu(self, response):
         for url in self.menu_urls:
             with self.assertHTML(response, f'a[href = "{url}"]'):

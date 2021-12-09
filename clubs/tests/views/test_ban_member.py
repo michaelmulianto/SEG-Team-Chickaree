@@ -41,6 +41,7 @@ class BanMemberViewTestCase(TestCase):
             is_owner = False,
         )
 
+        #Member to ban
         self.member_being_banned = Membership.objects.create(
             club = self.club,
             user = self.user_being_banned,
@@ -52,8 +53,8 @@ class BanMemberViewTestCase(TestCase):
         self.url_ban_an_officer = reverse('ban_member', kwargs = {'member_id': self.member_club_officer.id})
 
     def test_ban_urls(self):
-        self.assertEqual(self.url_ban, '/ban_member/' + str(self.member_being_banned.id))
-        self.assertEqual(self.url_ban_an_officer, '/ban_member/' + str(self.member_club_officer.id))
+        self.assertEqual(self.url_ban, f'/member/{self.member_being_banned.id}/ban/')
+        self.assertEqual(self.url_ban_an_officer, f'/member/{self.member_club_officer.id}/ban/')
 
     def test_ban_redirects_when_not_logged_in(self):
         response = self.client.get(self.url_ban)

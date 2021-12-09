@@ -1,8 +1,10 @@
 {% extends 'base_content.html' %}
 {% block content %}
+{% include 'partials/js_confirm_messages.html'%}
 {% load define_action %}
 {% check_is_owner club current_user as is_owner %}
 {% check_is_officer club current_user as is_officer %}
+{% get_members club as members %}
   <div class="container">
     <div class="row">
       <div class="col-12">
@@ -18,8 +20,8 @@
             <th></th>
             <th></th>
             <th></th>
-            <th>Name</th>
             <th>Username</th>
+            <th>Name</th>
 
             {% if is_owner or is_officer %}
             <th>Email</th>
@@ -51,23 +53,6 @@
 
             <td> {{ member.user.bio }} </td>
 
-            <script>
-              var messages_dic = {
-                "kick": "Are you sure you want to kick this user from the club?",
-                "ban": "Are you sure you want to ban this user from the club?",
-                "ownership": "Are you sure you want to give up ownership?"
-              }
-              function confirmMsg(msgtype){
-
-                if(confirm(messages_dic)){
-                  return true;
-                }else{
-                  event.stopPropagation(); event.preventDefault();
-                }
-              }
-            </script>
-
-
             {% check_is_officer club member.user as is_member_an_officer %}
             {% check_is_owner club member.user as is_member_an_owner %}
 
@@ -88,7 +73,7 @@
             <td><a href='{% url 'promote_member_to_officer' member.id %}' class="btn btn-success">Promote</a></td>
                 {% endif %}
                 {%if member.is_officer %}
-            <td colspan="3" ><a href='{% url 'transfer_ownership_to_officer' member.id %}' onclick="confirmMsg('ownership')" class="btn btn-warning">Transfer Ownership</a></td>
+            <td colspan="3" ><a href='{% url 'transfer_ownership_to_officer' member.id %}' onclick="confirmMsg('transfer_ownership')" class="btn btn-warning">Transfer Ownership</a></td>
                 {% else %}
             <td><a href='{% url 'kick_member' member.id %}' onclick="confirmMsg('kick')" class="btn btn-danger">Kick</a></td>
             <td><a href='{% url 'ban_member' member.id %}' onclick="confirmMsg('ban')" class="btn btn-danger">Ban</a></td>

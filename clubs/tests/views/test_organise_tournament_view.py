@@ -38,7 +38,6 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
         self.client.login(email=self.user.email, password="Password123")
         tournament_count_before = Tournament.objects.count()
         response = self.client.get(self.url, follow=True)
-        self.assert_menu(response)
         tournament_count_after = Tournament.objects.count()
         self.assertEqual(tournament_count_after, tournament_count_before)
         self.assertEqual(response.status_code, 200)

@@ -26,7 +26,7 @@ class WithdrawApplicationToClubTestCase(TestCase):
         self.url = reverse('withdraw_application_to_club', kwargs = {'club_id': self.club.id})
 
     def test_url_of_withdraw_application_to_club(self):
-        self.assertEqual(self.url, '/withdraw_application_to_club/' + str(self.club.id))
+        self.assertEqual(self.url, f'/club/{self.club.id}/withdraw_application/')
 
     def test_withdraw_application_to_club_redirects_when_not_logged_in(self):
         app_count_before = Application.objects.count()
@@ -54,7 +54,7 @@ class WithdrawApplicationToClubTestCase(TestCase):
             fetch_redirect_response=True
         )
         self.assertTemplateUsed(response, 'show_clubs.html')
-        
+
     def test_successful_withdrawal(self):
         self.client.login(email=self.user.email, password="Password123")
         app_count_before = Application.objects.count()

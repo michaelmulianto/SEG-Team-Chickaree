@@ -28,7 +28,7 @@ class EditClubInfoViewTest(TestCase):
         self.url = reverse('edit_club_info', kwargs = {'club_id': self.club.id})
 
     def test_edit_club_info_url(self):
-        self.assertEqual(self.url, '/club/' + str(self.club.id) + '/edit')
+        self.assertEqual(self.url, f'/club/{self.club.id}/edit/')
 
     def test_get_edit_club_info(self):
         self.client.login(email=self.user.email, password='Password123')

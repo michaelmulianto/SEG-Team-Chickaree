@@ -33,7 +33,7 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
         self.url = reverse('apply_to_club', kwargs = {'club_id': self.club.id})
 
     def test_url_of_apply_to_club(self):
-        self.assertEqual(self.url, '/apply_to_club/' + str(self.club.id))
+        self.assertEqual(self.url, f'/club/{self.club.id}/apply/')
 
     def test_get_apply_to_club_redirects_when_not_logged_in(self):
         app_count_before = Application.objects.count()

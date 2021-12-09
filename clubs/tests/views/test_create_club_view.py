@@ -23,13 +23,12 @@ class CreateClubViewTest(TestCase, MenuTesterMixin):
         }
 
     def test_create_club_url(self):
-        self.assertEqual(self.url, '/create_club/')
+        self.assertEqual(self.url, '/club/create/')
 
     def test_get_create_club_loads_empty_form(self):
         self.client.login(email=self.user.email, password="Password123")
         club_count_before = Club.objects.count()
         response = self.client.get(self.url, follow=True)
-        self.assert_menu(response)
         club_count_after = Club.objects.count()
         self.assertEqual(club_count_after, club_count_before)
         self.assertEqual(response.status_code, 200)

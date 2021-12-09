@@ -30,6 +30,7 @@ class ApplyToClubView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['current_user'] = self.request.user
         context['club'] = Club.objects.get(id=self.kwargs['club_id'])
         context['my_clubs'] = get_clubs_of_user(self.get_object())
         return context
@@ -47,7 +48,7 @@ class ApplyToClubView(FormView):
             messages.add_message(self.request, messages.ERROR, "You have already applied for this club")
         elif Membership.objects.filter(club=desired_club, user = current_user).exists():
             messages.add_message(self.request, messages.ERROR, "You are already a member in this club")
-        else:    
+        else:
             self.object = form.save(desired_club, current_user)
             return super().form_valid(form)
 
@@ -78,11 +79,10 @@ def show_applications_to_club(request, club_id):
     club_to_view = Club.objects.get(id = club_id)
     if not(is_user_owner_of_club(request.user, club_to_view)):
         # Access denied
-        #return redirect('show_clubs', {'my_clubs':get_clubs_of_user(request.user)})
         return redirect('show_clubs')
 
     applications = Application.objects.filter(club = club_to_view)
-    return render(request, 'application_list.html', {'applications': applications, 'my_clubs':get_clubs_of_user(request.user)})
+    return render(request, 'application_list.html', {'current_user': request.user, 'applications': applications})
 
 @login_required
 @application_exists

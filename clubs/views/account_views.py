@@ -3,10 +3,10 @@
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 
-from .helpers import get_clubs_of_user
 from .decorators import login_prohibited
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from .helpers import get_clubs_of_user
 
 from clubs.forms import SignUpForm, EditAccountForm
 from django.contrib.auth.forms import PasswordChangeForm
@@ -21,7 +21,7 @@ from django.shortcuts import render
 @login_required
 def account(request):
     """Render a page displaying the attributes of the currently logged in user."""
-    return render(request, 'account.html', {'user': request.user, 'my_clubs':get_clubs_of_user(request.user)})
+    return render(request, 'account.html', { 'current_user': request.user })
 
 
 class SignUpView(FormView):
@@ -53,10 +53,11 @@ class EditAccountView(UpdateView):
     def dispatch(self, request):
         return super().dispatch(request)
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        user = self.get_object()
-        context['my_clubs'] = get_clubs_of_user(user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_user'] = self.request.user
+        context['my_clubs'] = get_clubs_of_user(self.get_object())
         return context
 
     def get_object(self):
@@ -79,6 +80,11 @@ class ChangePasswordView(FormView):
     @method_decorator(login_required)
     def dispatch(self, request):
         return super().dispatch(request)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_user'] = self.request.user
+        return context
 
     def get_form_kwargs(self, **kwargs):
         """Pass the current user to the password change form."""
