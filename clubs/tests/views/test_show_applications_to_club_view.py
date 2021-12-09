@@ -16,13 +16,25 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         'clubs/tests/fixtures/other_users.json',
     ]
     def setUp(self):
-        self.user = User.objects.get(username='johndoe')
+        self.user_owner = User.objects.get(username='johndoe')
+        self.user_officer = User.objects.get(username='janedoe')
+        self.user_applicant = User.objects.get(username='richarddoe')
         self.club = Club.objects.get(name='King\'s Knights')
 
-        self.membership = Membership.objects.create(
+        self.member_club_owner = Membership.objects.create(
             club = self.club,
-            user = self.user,
+            user = self.user_owner,
             is_owner = True
+        )
+        self.member_club_owner = Membership.objects.create(
+            club = self.club,
+            user = self.user_officer,
+            is_officer = True
+        )
+        self.application = Application.objects.create(
+            club = self.club,
+            user = self.user_applicant,
+            personal_statement = 'I love chess!'
         )
 
         self.url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id})
@@ -36,26 +48,23 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_show_application_to_club_redirects_when_not_owner_of_club(self):
-        self.membership.is_owner = False
-        self.membership.save(update_fields=['is_owner'])
-
-        self.client.login(email=self.user.email, password="Password123")
+        self.client.login(email=self.user_applicant.email, password="Password123")
         response = self.client.get(self.url, follow=True)
 
-        redirect_url = reverse('show_clubs')
+        redirect_url = reverse('show_club', kwargs={'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'show_club.html')
 
     def test_show_application_to_club_redirects_when_invalid_club_id_entered(self):
         self.url = reverse('show_applications_to_club', kwargs = {'club_id': 0})
-        self.client.login(email=self.user.email, password="Password123")
+        self.client.login(email=self.user_owner.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
         self.assertTemplateUsed(response, 'show_clubs.html')
 
     def test_successful_show_applications_to_club(self):
-        self.client.login(email=self.user.email, password="Password123")
+        self.client.login(email=self.user_owner.email, password="Password123")
         response = self.client.get(self.url, follow=True)
 
         self.assertEqual(response.status_code, 200)
@@ -63,46 +72,36 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assert_menu(response)
 
     def test_template_does_not_show_header_fields_when_there_are_no_aplications(self):
-        self.client.login(email=self.user.email, password="Password123")
+        self.client.login(email=self.user_owner.email, password="Password123")
+        self.application.delete()
+        self.assertTrue(not Application.objects.filter(club=self.club).exists())
         response = self.client.get(self.url)
 
         with self.assertHTML(response) as html:
-            noTableTextContainer = html.find('body/div/div/div/table/tr/p')
-            self.assertEqual(noTableTextContainer.text, ' No more applications ')
+            noTableTextContainer = html.find('body/div/div/div/table/tr/td/b')
+            self.assertEqual(noTableTextContainer.text, 'No more applications')
 
     def test_template_shows_header_fields_when_there_is_at_least_one_aplication(self):
         second_user = User.objects.get(username='janedoe')
-        Application.objects.create(
-            club = self.club,
-            user = second_user,
-            personal_statement = 'I love chess!'
-        )
 
 
-        self.client.login(email=self.user.email, password="Password123")
+        self.client.login(email=self.user_owner.email, password="Password123")
         response = self.client.get(self.url)
         with self.assertHTML(response) as html:
-            TableTextContainer = html.find('body/div/div/div/table/table/tr/th')
-            self.assertEqual(TableTextContainer.text, '')
+            TableTextContainer = html.find('body/div/div/div/table/tr/th')
+            self.assertEqual(TableTextContainer.text, None)
 
     def test_template_shows_header_fields_when_there_are_more_than_one_aplicationa(self):
-        second_user = User.objects.get(username='janedoe')
-        Application.objects.create(
-            club = self.club,
-            user = second_user,
-            personal_statement = 'I love chess!'
-        )
 
-        third_user = User.objects.get(username='mariadandy')
+        user_applicant2 = User.objects.get(username='mariadandy')
         Application.objects.create(
             club = self.club,
-            user = third_user,
+            user = user_applicant2,
             personal_statement = "Cool club you've got there"
         )
 
-
-        self.client.login(email=self.user.email, password="Password123")
+        self.client.login(email=self.user_owner.email, password="Password123")
         response = self.client.get(self.url)
         with self.assertHTML(response) as html:
-            TableTextContainer = html.find('body/div/div/div/table/table/tr/th')
-            self.assertEqual(TableTextContainer.text, 'Name')
+            TableTextContainer = html.find('body/div/div/div/table/tr/th')
+            self.assertEqual(TableTextContainer.text, None)

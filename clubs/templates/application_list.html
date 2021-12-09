@@ -21,9 +21,7 @@
         <table class="table standard-table-spacing">
             <!-- to be able to show the window messages-->
             {% if applications.count == 0 %}
-            <tr>
-              <b><p style="font-family: verdana; font-size: 250%;"> No more applications </p> </b>
-            </tr>
+            <tr><td><b style="font-family: verdana; font-size: 250%;">No more applications</b></td></tr>
 
             {% else %}
             <tr>
@@ -33,8 +31,7 @@
               <th>
               <th>
             </tr>
-
-            {% for app in applications %}
+              {% for app in applications %}
             <tr>
               {% include 'member_list_partials/table_row_basics.html' with user=app.user include_counter=True %}
               <td><b>{{ app.user.experience }}</b></td>
@@ -42,8 +39,7 @@
               <td style="vertical-align: bottom; padding: 10px"><a href='{% url "respond_to_application" app.id 0  %}' onclick="confirmMsg('reject_application')" class="btn btn-danger">Reject</a></td>
               <td style="vertical-align: bottom; padding: 10px"><a href='{% url "respond_to_application" app.id 1  %}' onclick="confirmMsg('accept_application')" class="btn btn-success">Accept</a></td>
             </tr>
-
-            {% endfor %}
+              {% endfor %}
             {% endif %}
         </table>
       </div>
