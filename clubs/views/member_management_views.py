@@ -69,8 +69,8 @@ def unban_member(request, ban_id):
         Ban.objects.filter(id=ban_id).delete()
         messages.warning(request, '@' + ban.user.username + ' was unban from the club.')
     else:
-        member = Membership.objects.get(club=club, is_owner=True)
         messages.error(request, 'Only the owner can unban members.')
+
     return redirect('banned_members', club_id=club.id)
 
 @login_required
@@ -101,9 +101,16 @@ def demote_officer_to_member(request, member_id):
     member = Membership.objects.get(id = member_id)
     club = member.club
     if is_user_owner_of_club(request.user, club) :
-        member.is_officer = False
-        member.save() # Or database won't update.
-        messages.warning(request, '@' + member.user.username + ' was demoted.')
+        if not is_user_owner_of_club(member.user, club):
+            if is_user_officer_of_club(member.user, club):
+                member.is_officer = False
+                member.save() # Or database won't update.
+                messages.warning(request, '@' + member.user.username + ' was demoted.')
+            else: #Access denied, trying to demote non-officer.
+                messages.warning(request, '@' + member.user.username + ' is not an officer.')
+        else: #Access denied, owner is trying to demote themselves.
+            messages.error(request, 'You cannot demote yourself.')
     else: # Access denied, member isn't owner
         messages.error(request, 'Only the owner can demote members.')
+
     return redirect('members_list', club_id=club.id)
