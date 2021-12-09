@@ -3,7 +3,7 @@
 from django.views import View
 from django.views.generic.edit import FormView
 
-from .helpers import is_user_owner_of_club
+from .helpers import is_user_owner_of_club, is_user_officer_of_club
 from .decorators import club_exists, membership_exists, not_banned, application_exists
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -71,13 +71,11 @@ def withdraw_application_to_club(request, club_id):
 def show_applications_to_club(request, club_id):
     """Allow the owner of a club to view all applications to said club."""
     club_to_view = Club.objects.get(id = club_id)
-    if not(is_user_owner_of_club(request.user, club_to_view)):
-        # Access denied
-        return redirect('show_clubs')
-
-    applications = Application.objects.filter(club = club_to_view)
-    return render(request, 'application_list.html', {'current_user': request.user, 'applications': applications})
-
+    if is_user_owner_of_club(request.user, club_to_view) or is_user_officer_of_club(request.user, club_to_view):
+        return render(request, 'application_list.html', {'current_user': request.user, 'club': club_to_view})
+    else: #Access denied
+        messages.error(request, "Only the club owner and officers can view applications")
+        return redirect('show_club', club_id=club_id)
 @login_required
 @application_exists
 def respond_to_application(request, app_id, is_accepted):

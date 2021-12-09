@@ -17,7 +17,8 @@
         </style>
         <table class="table standard-table-spacing">
           <tr>
-            {% include 'member_list_partials/table_header.html' with is_owner=is_owner is_officer=is_officer %}
+            {% include 'member_list_partials/table_header_basics.html' %}
+            {% include 'member_list_partials/table_header_extras.html' with is_owner=is_owner is_officer=is_officer %}
             {% if is_owner%}
             <th></th>
             <th></th>
@@ -31,7 +32,8 @@
           {% check_is_officer club member.user as is_member_an_officer %}
           {% check_is_owner club member.user as is_member_an_owner %}
           <tr>
-            {% include 'member_list_partials/table_row.html' with user=member.user is_owner=is_owner is_officer=is_officer %}
+            {% include 'member_list_partials/table_row_basics.html' with user=member.user %}
+            {% include 'member_list_partials/table_row_extras.html' with user=member.user is_owner=is_owner is_officer=is_officer %}
 
             {% if member.user == current_user %}
               {% if is_owner %}

@@ -23,7 +23,8 @@
           </tr>
         {% else %}
           <tr>
-            {% include 'member_list_partials/table_header.html' with is_owner=is_owner is_officer=is_officer %}
+            {% include 'member_list_partials/table_header_basics.html' %}
+            {% include 'member_list_partials/table_header_extras.html' with is_owner=is_owner is_officer=is_officer %}
             {% if is_owner %}
             <th></th>
             {% endif %}
@@ -31,7 +32,8 @@
           </tr>
           {% for ban_member in banned_members %}
           <tr>
-            {% include 'member_list_partials/table_row.html' with user=ban_member.user is_owner=is_owner is_officer=is_officer %}
+            {% include 'member_list_partials/table_row_basics.html' with user=ban_member.user %}
+            {% include 'member_list_partials/table_row_extras.html' with user=ban_member.user is_owner=is_owner is_officer=is_officer %}
             {% if is_owner %}
             <td style="width: 100px"><a style="width: 100px" href='{% url 'unban_member' ban_member.id %}' class="btn btn-danger">Unban</a></td>
             {% endif %}

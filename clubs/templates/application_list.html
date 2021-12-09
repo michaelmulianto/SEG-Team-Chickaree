@@ -5,6 +5,7 @@
 {% block content %}
 {% include 'partials/js_confirm_messages.html'%}
 {% load define_action %}
+{% get_applications club as applications %}
 
   <div class="container">
     <div class="row">
@@ -30,20 +31,20 @@
 
             <table class="table standard-table-spacing">
               <tr>
-                <th>Name</th>
+                {% include 'member_list_partials/table_header_basics.html' %}
                 <th>Experience</th>
                 <th>Personal Statement</th>
+                <th>
                 <th>
               </tr>
 
             {% for app in applications %}
-
             <tr>
-              <td>{{ app.user.first_name }} {{ app.user.last_name }}</td>
-              <td><b>{{ app.experience }}</b></td>
+              {% include 'member_list_partials/table_row_basics.html' with user=app.user %}
+              <td><b>{{ app.user.experience }}</b></td>
               <td>{{ app.personal_statement }}</td>
-              <td style="vertical-align: bottom; padding: 10px"><a href='{% url "respond_to_application" app.id 1  %}' onclick="confirmMsg('accept_application')" class="btn btn-success">Accept application</a></td>
-              <td style="vertical-align: bottom; padding: 10px"><a href='{% url "respond_to_application" app.id 0  %}' onclick="confirmMsg('reject_application')" class="btn btn-danger">Withdraw application</a></td>
+              <td style="vertical-align: bottom; padding: 10px"><a href='{% url "respond_to_application" app.id 0  %}' onclick="confirmMsg('reject_application')" class="btn btn-danger">Reject</a></td>
+              <td style="vertical-align: bottom; padding: 10px"><a href='{% url "respond_to_application" app.id 1  %}' onclick="confirmMsg('accept_application')" class="btn btn-success">Accept</a></td>
             </tr>
 
             {% endfor %}
