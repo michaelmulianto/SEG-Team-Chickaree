@@ -10,9 +10,14 @@
 {% check_is_officer club current_user as is_officer %}
 {% check_is_member club current_user as is_member %}
 {% check_has_applied club current_user as has_applied %}
-{% count_members club as number_of_members%}
+
+{% count_members club as number_of_members %}
+
 {% get_owner club as owner %}
 {% get_officers club as officers %}
+
+{% get_tournaments club "ongoing" as ongoing_tournaments %}
+
   <div class="container">
     <div class="row">
       <div class="col-12">
@@ -22,48 +27,7 @@
         <p><i class="bi bi-people-fill"></i> {{ number_of_members }}<p>
         <P><i class="bi bi-geo-alt-fill"></i> {{ club.location }}</p>
         <p><b>Description: </b> {{ club.description }} </p>
-        <b>Owner: </b>
-        <style>
-          .standard-table-spacing{
-            vertical-align: middle;
-            border-spacing: 10px 2px;
-          }
-        </style>
-        <table class="table standard-table-spacing">
-          <tr>
-            {% include 'member_list_partials/table_header_basics.html' with include_counter=False %}
-            {% include 'member_list_partials/table_header_extras.html' with is_owner=True is_officer=True %}
-          </tr>
-          <tr>
-            {% include 'member_list_partials/table_row_basics.html' with user=owner.user include_counter=False %}
-            {% include 'member_list_partials/table_row_extras.html' with user=owner.user is_owner=True is_officer=True %}
-            <td></td>
-          </tr>
-        </table>
-        {% if is_member %}
-        <br>
-        <b>Officers: </b>
-        <table class="table standard-table-spacing">
-          {%if not officers %}
-          <tr><td></td></tr>
-          <tr><td> No Officers </td></tr>
-          {% else %}
-
-          <tr>
-            {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}
-            {% include 'member_list_partials/table_header_extras.html' with is_owner=True is_officer=True %}
-          </tr>
-            {% for officer in officers %}
-          <tr>
-              {% include 'member_list_partials/table_row_basics.html' with user=officer.user include_counter=True %}
-              {% include 'member_list_partials/table_row_extras.html' with user=officer.user is_owner=True is_officer=True %}
-          </tr>
-            {% endfor %}
-          {% endif %}
-        </table>
-        {% endif %}
-        <br>
-        <table>
+        <table id="buttons">
           <tr>
             <style>
             .button-cell-spacing{
@@ -91,7 +55,87 @@
             <td class="button-cell-spacing"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success"><i class="bi bi-person-plus-fill"></i> Apply to club</a></td>
         {% endif %}
           </tr>
-        </table><a href='{% url 'show_clubs' %}' class="btn btn-info">
+        </table>
+
+        <b>Owner: </b>
+        <style>
+          .standard-table-spacing{
+            vertical-align: middle;
+            border-spacing: 10px 2px;
+          }
+        </style>
+        <table id="owner" class="table standard-table-spacing">
+          <tr>
+            {% include 'member_list_partials/table_header_basics.html' with include_counter=False %}
+            {% include 'member_list_partials/table_header_extras.html' with is_owner=True is_officer=True %}
+          </tr>
+          <tr>
+            {% include 'member_list_partials/table_row_basics.html' with user=owner.user include_counter=False %}
+            {% include 'member_list_partials/table_row_extras.html' with user=owner.user is_owner=True is_officer=True %}
+            <td></td>
+          </tr>
+        </table>
+        {% if is_member %}
+        <br>
+        <b>Officers: </b>
+        <table id="officer" class="table standard-table-spacing">
+          {%if not officers %}
+          <tr><td></td></tr>
+          <tr><td> No Officers </td></tr>
+          {% else %}
+
+          <tr>
+            {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}
+            {% include 'member_list_partials/table_header_extras.html' with is_owner=True is_officer=True %}
+          </tr>
+            {% for officer in officers %}
+          <tr>
+              {% include 'member_list_partials/table_row_basics.html' with user=officer.user include_counter=True %}
+              {% include 'member_list_partials/table_row_extras.html' with user=officer.user is_owner=True is_officer=True %}
+          </tr>
+            {% endfor %}
+          {% endif %}
+        </table>
+        {% endif %}
+        <br>
+        <h3><b>Tournaments </b></h3>
+        <br>
+        <script>
+        function displayTournaments(dateRangeType){
+                if(dateRangeType === "ongoing"){
+                  var tournamentTable = document.getElementById("tournamentList")
+                  tournamentList.innerHTML = "{% include 'tournament_partials/tournament_list.html' with tournaments=ongoing_tournaments %}"
+                }
+            }
+        </script>
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link active" type="button">Ongoing</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" type="button">Upcoming</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" type="button">Past</a>
+          </li>
+        </ul>
+        <br>
+        <table class="table standard-table-spacing">
+          <tr>
+            <th>Name<th>
+            <th>Description<th>
+            <th>Date<th>
+            <th>Capacity<th>
+          </tr>
+          <tr id="tournamentList">
+
+          </tr>
+
+        </table>
+        <br>
+        <br>
+        <br>
+        <a href='{% url 'show_clubs' %}' class="btn btn-info">
           <i class="bi bi-reply-fill"></i> Back to list of all clubs
         </a>
         <br>
