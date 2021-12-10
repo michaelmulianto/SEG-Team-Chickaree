@@ -9,7 +9,7 @@ class TournamentModelTestCase(TestCase):
     """Test all aspects of a tournament."""
 
     fixtures = ['clubs/tests/fixtures/default_club.json','clubs/tests/fixtures/default_tournament.json',
-        'clubs/tests/fixtures/other_tournaments.json', 'clubs/tests/fixtures/other_users.json'
+        'clubs/tests/fixtures/other_tournaments.json', 'clubs/tests/fixtures/other_users.json','clubs/tests/fixtures/default_tournament_participants.json'
         ]
 
     # Test setup
@@ -139,10 +139,3 @@ class TournamentModelTestCase(TestCase):
     def _assert_tournament_is_invalid(self):
         with self.assertRaises(ValidationError):
             self.tournament.full_clean()
-
-    def create_dummy_participants(self):
-        for i in range(0,32):
-            Participant.objects.create(
-                tournament=self.tournament,
-                member = self.dummy_member
-            )
