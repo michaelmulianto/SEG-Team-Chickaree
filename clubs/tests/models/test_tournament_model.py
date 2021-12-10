@@ -149,6 +149,16 @@ class TournamentModelTestCase(TestCase):
         self.assertEqual(groups.count(), 8)
         groups[0].full_clean()
         self.assertEqual(len(set(groups[0].get_player_occurences())), 4)
+    
+    def test_generate_first_round_with_48_participants(self):
+        self.tournament.capacity = 48
+        self._adjust_num_participants_to_capacity()
+        next_round = self.tournament.generate_next_round()
+        self.assertIsInstance(next_round, GroupStage)
+        groups = SingleGroup.objects.filter(group_stage=next_round)
+        self.assertEqual(groups.count(), 8)
+        groups[0].full_clean()
+        self.assertEqual(len(set(groups[0].get_player_occurences())), 6)
 
     # Helper functions.
 
