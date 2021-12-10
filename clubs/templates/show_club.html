@@ -90,7 +90,9 @@
             <td class="button-cell-spacing"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success"><i class="bi bi-person-plus-fill"></i> Apply to club</a></td>
         {% endif %}
           </tr>
-        </table>
+        </table><a href='{% url 'show_clubs' %}' class="btn btn-info">
+          <i class="bi bi-reply-fill"></i> Back to list of all clubs
+        </a>
         <br>
         <br>
         <br>
