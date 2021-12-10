@@ -27,7 +27,7 @@ class ChangePasswordViewTestCase(TestCase, MenuTesterMixin):
         self.url = reverse('change_password')
 
     def test_change_password_url(self):
-        self.assertEqual(self.url, '/change_password/')
+        self.assertEqual(self.url, '/account/change_password/')
 
     def test_get_password_redirects_when_not_logged_in(self):
         redirect_url = reverse_with_next('log_in', self.url)

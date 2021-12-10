@@ -39,7 +39,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         self.url = reverse('promote_member_to_officer', kwargs = {'member_id': self.target_member.id})
 
     def test_promote_url(self):
-        self.assertEqual(self.url, '/promote_member/' + str(self.target_member.id))
+        self.assertEqual(self.url, f'/member/{self.target_member.id}/promote/')
 
     def test_promote_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
@@ -59,9 +59,9 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
     def test_promote_redirects_when_not_owner_of_club(self):
         self.client.login(email=self.target_user.email, password="Password123")
         response = self.client.get(self.url, follow=True)
-        redirect_url = reverse('show_clubs')
+        redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'members_list.html')
         self.assertFalse(self._has_member_been_promoted())
 
     def test_successful_promotion(self):

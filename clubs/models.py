@@ -55,7 +55,7 @@ class User(AbstractUser):
     )
 
     USERNAME_FIELD = 'email' # set default auth user to email
-    REQUIRED_FIELDS = [] # Django error told me to do this
+    REQUIRED_FIELDS = ['username'] # Required fields for a user creation. e.g. when creating a superuser.
 
     bio = models.CharField(max_length=520, blank = True, default = '')
 

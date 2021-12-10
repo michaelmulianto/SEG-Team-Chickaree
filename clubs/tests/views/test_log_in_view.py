@@ -22,7 +22,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         self.user = User.objects.get(username='johndoe')
 
     def test_get_log_in_url(self):
-        self.assertEqual('/log_in/', self.url)
+        self.assertEqual(self.url, '/log_in/')
 
     def test_get_log_in(self):
         response = self.client.get(self.url)

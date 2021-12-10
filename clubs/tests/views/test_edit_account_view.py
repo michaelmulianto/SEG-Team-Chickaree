@@ -26,7 +26,7 @@ class EditAccountViewTest(TestCase, MenuTesterMixin):
         self.second_user = User.objects.get(username='janedoe')
 
     def test_edit_account_url(self):
-        self.assertEqual(self.url, '/edit_account/')
+        self.assertEqual(self.url, '/account/edit/')
 
     def test_get_edit_account(self):
         self.client.login(email=self.user.email, password='Password123')

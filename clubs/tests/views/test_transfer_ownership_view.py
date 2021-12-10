@@ -38,7 +38,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         self.url = reverse('transfer_ownership_to_officer', kwargs = {'member_id': self.target_member.id})
 
     def test_transfer_url(self):
-        self.assertEqual(self.url, '/transfer_ownership_to/' + str(self.target_member.id))
+        self.assertEqual(self.url, f'/member/{self.target_member.id}/transfer_ownership/')
 
     def test_transfer_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
@@ -57,6 +57,16 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
 
     def test_transfer_redirects_when_not_owner_of_club(self):
         self.client.login(email=self.target_user.email, password="Password123")
+        response = self.client.get(self.url, follow=True)
+        redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertFalse(self._has_ownership_been_transferred())
+
+    def test_transfer_redirects_transfering_ownership_to_non_officer(self):
+        self.target_member.is_officer = False
+        self.target_member.save()
+        self.client.login(email=self.owner_user.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)

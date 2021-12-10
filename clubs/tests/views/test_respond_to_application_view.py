@@ -35,7 +35,7 @@ class RespondToApplicationViewTestCase(TestCase):
         self.url = reverse('respond_to_application', kwargs = {'app_id': self.application.id, 'is_accepted': 1})
 
     def test_respond_to_app_url(self):
-        self.assertEqual(self.url, '/application/' + str(self.application.id) + "/respond/1")
+        self.assertEqual(self.url, f'/application/{self.application.id}/respond/1/')
 
     def test_respond_to_application_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)

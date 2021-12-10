@@ -40,7 +40,7 @@ class KickMemberViewTestCase(TestCase):
         self.url = reverse('kick_member', kwargs = {'member_id': self.member_being_kicked.id})
 
     def test_kick_url(self):
-        self.assertEqual(self.url, '/kick_member/' + str(self.member_being_kicked.id))
+        self.assertEqual(self.url, f'/member/{self.member_being_kicked.id}/kick/')
 
     def test_promote_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
