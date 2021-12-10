@@ -1,7 +1,7 @@
 """Tests for Tournament model, found in tournaments/models.py"""
 
 from django.test import TestCase
-from clubs.models import Tournament, Membership, User, Participant, Match, SingleGroup
+from clubs.models import Tournament, Membership, User, Participant
 from django.core.exceptions import ValidationError
 
 
@@ -44,38 +44,47 @@ class TournamentModelTestCase(TestCase):
     # Test capacity
     def test_capacity_must_not_be_blank(self):
         self.tournament.capacity = None
+        Participant.objects.filter(tournament=self.tournament).delete()
         self._assert_tournament_is_invalid()
 
     def test_capacity_is_not_unique(self):
         self.tournament.capacity = self.second_tournament.capacity
+        self._adjust_num_participants_to_capacity()
         self._assert_tournament_is_valid()
 
     def test_capacity_is_positive(self):
         self.tournament.capacity = -1
+        Participant.objects.filter(tournament=self.tournament).delete()
         self._assert_tournament_is_invalid()
 
     def test_capacity_must_be_divisible_by_4_when_above_16(self):
         self.tournament.capacity = 18 # Divisible by 6
+        self._adjust_num_participants_to_capacity()
         self._assert_tournament_is_invalid()
 
     def test_capacity_must_be_divisible_by_6_when_above_16(self):
         self.tournament.capacity = 28 # Divisible by 4
+        self._adjust_num_participants_to_capacity()
         self._assert_tournament_is_invalid()
 
     def test_capacity_can_be_32(self):
         self.tournament.capacity = 32
+        self._adjust_num_participants_to_capacity()
         self._assert_tournament_is_valid()
 
     def test_capacity_must_be_divisble_by_8_above_32(self):
         self.tournament.capacity = 36 # Divisible by 4 and 6
+        self._adjust_num_participants_to_capacity()
         self._assert_tournament_is_invalid()
 
     def test_capacity_is_greater_than_1(self):
         self.tournament.capacity = 1
+        self._adjust_num_participants_to_capacity()
         self._assert_tournament_is_invalid()
 
     def test_capacity_is_less_than_97(self):
         self.tournament.capacity = 97
+        Participant.objects.create(tournament=self.tournament,member=self.dummy_member)
         self._assert_tournament_is_invalid()
 
     # Test description
@@ -118,8 +127,17 @@ class TournamentModelTestCase(TestCase):
         self.tournament.end = "2021-12-01T00:00:00+00:00"
         self._assert_tournament_is_invalid()
 
+    # Test participant constraints
+    def test_more_participants_than_capacity(self):
+        Participant.objects.create(
+            tournament=self.tournament,
+            member=self.dummy_member
+        )
+        self._assert_tournament_is_invalid()
+
     # Test generate next round
     def test_None_returned_when_generating_next_round_with_no_participants(self):
+        Participant.objects.filter(tournament=self.tournament).delete()
         self.assertEqual(self.tournament.generate_next_round(), None)
 
     # Test generate next round
@@ -127,6 +145,17 @@ class TournamentModelTestCase(TestCase):
         pass
 
     # Helper functions.
+
+    def _adjust_num_participants_to_capacity(self):
+        participants = Participant.objects.filter(tournament=self.tournament)
+        i = 0
+        for p in participants:
+            if i >= participants.count()-self.tournament.capacity:
+                break
+            p.delete()
+            i += 1
+
+
     # Generic assertions.
     def _assert_tournament_is_valid(self):
         try:

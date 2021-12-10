@@ -15,7 +15,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import UniqueConstraint, CheckConstraint, Q, F, Exists
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator, MinLengthValidator, MaxLengthValidator
+from django.core.validators import RegexValidator, MinLengthValidator, MaxLengthValidator, MinValueValidator, MaxValueValidator
 from django.db.models import Max
 from itertools import combinations
 
@@ -150,7 +150,7 @@ class Tournament(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     name = models.CharField(max_length=50, blank=False, unique = True)
     description =  models.CharField(max_length=280, blank=False)
-    capacity = models.PositiveIntegerField(default=16, blank=False)
+    capacity = models.PositiveIntegerField(default=16, blank=False, validators=[MinValueValidator(2), MaxValueValidator(96)])
     start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
     end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
 
@@ -159,14 +159,12 @@ class Tournament(models.Model):
 
     def full_clean(self, *args, **kwargs):
         super().full_clean(*args, **kwargs)
-        if self.capacity < 2:
-            raise ValidationError("The capacity should be at least 2.")
-        if self.capacity > 96:
-            raise ValidationError("The capacity should not exceed 96.")
         if self.capacity > 16 and ((self.capacity % 4 != 0) or (self.capacity % 6 != 0)) and self.capacity !=32:
             raise ValidationError("The capacity should be divisible by both 4 and 6 when above 16 (except 32).")
         if self.capacity > 32 and (self.capacity % 8 != 0):
             raise ValidationError("The capacity should be divisible by 8 when above 32.")
+        if self.capacity < Participant.objects.filter(tournament=self).count():
+            raise ValidationError("At no point can there be more participants than capacity.")
         if self.start < now():
             raise ValidationError("The start date cannot be in the past!")
         if self.end < now():
@@ -204,7 +202,7 @@ class Tournament(models.Model):
             i = 0
             while i < num_participants:
                 (Match.objects.create(
-                    stage = my_stage,
+                    collection = my_stage,
                     white_player = participants[0],
                     black_player = participants[1]
                 )).save()
@@ -223,8 +221,8 @@ class Tournament(models.Model):
                 group_size = 6
                 required_winners = 32
             
-            num_groups = num_participants / group_size
-            winners_per_group = required_winners / num_groups
+            num_groups = num_participants // group_size
+            winners_per_group = required_winners // num_groups
             
             for i in range(0, num_groups):
                 group = SingleGroup.objects.create(
@@ -238,7 +236,7 @@ class Tournament(models.Model):
 
                 for pair in player_pairs:
                     (Match.objects.create(
-                        stage = group,
+                        collection = group,
                         white_player = pair[0],
                         black_player = pair[1]
                     )).save()
@@ -272,22 +270,16 @@ class Participant(MemberTournamentRelationship):
     """Relationship between member and tournament where member will play."""
     round_eliminated = models.IntegerField(default=-1)
 
-class StageInterface(models.Model):
-    """Model for single round in the tournament."""
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
-    round_num = models.IntegerField(default = 1, blank = False)
-
-    class Meta:
-        ordering = ['tournament']
-
+class GenericRoundOfMatchesInterface(models.Model):
+    """Model for some group of matches together that, when complete, produce some winners."""
     # ABSTRACT
     def get_winners(self):
         return []
 
     def get_matches(self):
-        return Match.objects.filter(stage=self)
+        return Match.objects.filter(collection=self)
 
-    # 1 entry in list per player
+        # 1 entry in list per match player is in
     def get_player_occurences(self):
         matches = self.get_matches()
         player_occurences = []
@@ -298,29 +290,38 @@ class StageInterface(models.Model):
         return player_occurences
 
     def get_is_complete(self):
-        return not self.get_matches().filter(result = None).exists()
+        return not self.get_matches().filter(result = 0).exists()
 
-    def save(self, *args, **kwargs):
-        # Due to complex nature of the models it is important that we check validation.
-        self.full_clean()
-        super().save()
+class StageInterface(GenericRoundOfMatchesInterface):
+    """Model for single round in the tournament."""
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
+    round_num = models.IntegerField(default = 1, blank = False)
+
+    class Meta:
+        ordering = ['tournament']
+
+    # def save(self, *args, **kwargs):
+    #     # Due to complex nature of the models it is important that we check validation.
+    #     self.full_clean()
+    #     super().save()
 
 class Match(models.Model):
     """Model representing a single game of chess, in some tournament stage."""
     white_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False, related_name='white')
     black_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False, related_name='black')
 
-    stage = models.ForeignKey(StageInterface, on_delete=models.CASCADE, unique=False, blank=False)
+    collection = models.ForeignKey(GenericRoundOfMatchesInterface, on_delete=models.CASCADE, unique=False, blank=False)
 
     OUTCOMES = (
+        (0, 'Incomplete'),
         (1,'White Victory'),
         (2, 'Black Victory'),
         (3, 'Stalemate'),
     )
-    result = models.IntegerField(default = None, choices = OUTCOMES, blank = True)
+    result = models.IntegerField(default = 0, choices = OUTCOMES, blank = False)
 
     class Meta:
-        ordering = ['stage']
+        ordering = ['collection']
         constraints = [
             UniqueConstraint(
                 name='cannot_play_self',
@@ -374,7 +375,7 @@ class GroupStage(StageInterface):
         if SingleGroup.objects.filter(group_stage=self).count() < 1:
             raise ValidationError("No groups assigned to the stage!")
 
-class SingleGroup(StageInterface):
+class SingleGroup(GenericRoundOfMatchesInterface):
     """Represent a single round robin group within a larger group stage."""
     group_stage = models.ForeignKey(GroupStage, on_delete=models.CASCADE, unique=False, blank=False)
     winners_required = models.IntegerField(default = 1, blank=False)
