@@ -3,13 +3,14 @@
 from django.views import View
 from django.contrib import messages
 
+from datetime import datetime
 from .helpers import is_user_owner_of_club
 from .decorators import club_exists, membership_exists, club_exists
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 # from django.utils.decorators import method_decorator
 
-from clubs.models import Membership, Club
+from clubs.models import Membership, Club, Tournament
 
 from django.shortcuts import render, redirect
 
@@ -25,7 +26,22 @@ def members_list(request, club_id):
 def show_club(request, club_id):
     """View details of a club."""
     club = Club.objects.get(id=club_id)
-    return render(request, 'show_club.html', {'current_user': request.user, 'club': club})
+
+    today = datetime.now()
+    ongoing_t = Tournament.objects.filter(club=club, start__lte=today, end__gte=today)
+    upcoming_t = Tournament.objects.filter(club=club, start__gte=today)
+    past_t = Tournament.objects.filter(club=club, end__lte=today)
+
+    return render(
+        request,
+        'show_club.html', {
+            'current_user': request.user,
+            'club': club,
+            'ongoing_tournaments': ongoing_t,
+            'upcoming_tournaments': upcoming_t,
+            'past_tournaments': past_t
+        }
+    )
 
 @login_required
 @club_exists
