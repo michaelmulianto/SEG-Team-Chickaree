@@ -49,5 +49,5 @@ urlpatterns = [
     path('demote_officer/<int:member_id>', views.demote_officer_to_member, name='demote_officer_to_member'),
     path('transfer_ownership_to/<int:member_id>', views.transfer_ownership_to_officer, name='transfer_ownership_to_officer'),
     path('club/<int:club_id>/organise_tournament/', views.OrganiseTournamentView.as_view(), name='organise_tournament'),
-    path('club/<str:tournament_name>/withdraw/', views.withdraw_participation_from_tournament, name='withdraw_from_tournament'),
+    path('<str:tournament_name>/withdraw/', views.withdraw_participation_from_tournament, name='withdraw_from_tournament'),
 ]
