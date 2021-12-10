@@ -1,7 +1,7 @@
 """Tests for Tournament model, found in tournaments/models.py"""
 
 from django.test import TestCase
-from clubs.models import Tournament, Membership, User, Participant, GroupStage, KnockoutStage, SingleGroup
+from clubs.models import Tournament, Membership, User, Participant, GroupStage, KnockoutStage, SingleGroup, Match
 from django.core.exceptions import ValidationError
 
 
@@ -134,7 +134,7 @@ class TournamentModelTestCase(TestCase):
         )
         self._assert_tournament_is_invalid()
 
-    # Test generate next round
+    # Test generate initial round
     def test_None_returned_when_generating_next_round_with_no_participants(self):
         Participant.objects.filter(tournament=self.tournament).delete()
         self.assertEqual(self.tournament.generate_next_round(), None)
@@ -194,8 +194,37 @@ class TournamentModelTestCase(TestCase):
             self._adjust_num_participants_to_capacity()
             next_round = self.tournament.generate_next_round()
 
-    # Helper functions.
+    # Test generate subsequent rounds
 
+    def test_round_after_6_player_group_stage_is_4_player_group_stage_with_32_participants(self):
+        # First we must play initial round...
+        # 96 Participants = 6 player group, tested above
+        first_round = self.tournament.generate_next_round()
+        self.assertIsInstance(first_round, GroupStage)
+        groups = SingleGroup.objects.filter(group_stage=first_round)
+        # Complete the round
+        for group in groups:
+            matches = Match.objects.filter(collection=group)
+            for match in matches:
+                match.result = 1 # Let white win, we don't care about specifics
+
+        next_round = self.tournament.generate_next_round()
+        self.assertIsInstance(next_round, GroupStage)
+        groups = SingleGroup.objects.filter(group_stage=next_round)
+        self.assertEqual(groups.count(), 8)
+        # Check num members in one group, as 8*4=32
+        self.assertEqual(len(set(groups[0].get_player_occurences())), 4)
+
+    def test_round_after_4_player_group_stage_is_knockout(self):
+        pass
+
+    def test_round_after_knockout_is_knockout(self):
+        pass
+
+    def test_round_after_2_player_knockout_is_None(self):
+        pass
+
+    # Helper functions.
     def _adjust_num_participants_to_capacity(self):
         participants = Participant.objects.filter(tournament=self.tournament)
         i = 0

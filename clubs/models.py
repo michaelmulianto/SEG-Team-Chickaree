@@ -176,7 +176,7 @@ class Tournament(models.Model):
         rounds = StageInterface.objects.filter(tournament=self)
         if rounds.count() == 0:
             return None
-        curr_round_num = rounds.aggregate(Max('round_num'))
+        curr_round_num = rounds.aggregate(Max('round_num'))['round_num__max']
         return rounds.get(round_num=curr_round_num)
 
     def generate_next_round(self):
