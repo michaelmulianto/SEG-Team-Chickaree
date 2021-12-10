@@ -1,0 +1,11 @@
+{% load define_action %}
+{% count_participants tournament as number_of_participants %}
+
+<td><b> {{tournament.name}}</b></td>
+<td> {{ tournament.description }} </td>
+<td> {{ tournament.start }} - {{ tournament.end }} </td>
+<td>
+  <div class="progress">
+    <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="number_of_participants" aria-valuemin="0" aria-valuemax="{{ tournament.capacity }}"></div>
+  </div>
+</td>
