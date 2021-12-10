@@ -121,15 +121,17 @@
         </ul>
         <br>
         <table class="table standard-table-spacing">
-          <tr>
-            <th>Name<th>
-            <th>Description<th>
-            <th>Date<th>
-            <th>Capacity<th>
-          </tr>
-          <tr id="tournamentList">
-
-          </tr>
+        <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Date</th>
+              <th>Capacity</th>
+            </tr>
+          </thead>
+          <tbody id="tournamentList">
+            {% include 'tournament_partials/tournament_list.html' with tournaments=ongoing_tournaments %}
+          </tbody>
 
         </table>
         <br>
