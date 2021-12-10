@@ -212,7 +212,7 @@ class Tournament(models.Model):
         # GROUP STAGE CASE
         else:
             my_stage = GroupStage.objects.create(
-                round_num = curr_round.round_num+1,
+                round_num = next_num,
                 tournament=self
             )
             # By own constraints, this will result in a valid draw.
@@ -300,12 +300,7 @@ class StageInterface(models.Model):
     def get_is_complete(self):
         return not self.get_matches().filter(result = None).exists()
 
-    def full_clean(self):
-        super().full_clean()
-        if self.get_matches().count() < 1:
-            raise ValidationError("A stage cannot have no matches.")
-
-    def save(self):
+    def save(self, *args, **kwargs):
         # Due to complex nature of the models it is important that we check validation.
         self.full_clean()
         super().save()
