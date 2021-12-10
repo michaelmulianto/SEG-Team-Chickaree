@@ -100,28 +100,64 @@
         <br>
         <h3><b>Tournaments </b></h3>
         <br>
+
+
         <script>
-        function displayTournaments(dateRangeType){
-                if(dateRangeType === "ongoing"){
-                  var tournamentTable = document.getElementById("tournamentList")
-                  tournamentList.innerHTML = "{% include 'tournament_partials/tournament_list.html' with tournaments=ongoing_tournaments %}"
-                }
+          function displayOngoingTournaments() {
+            document.getElementById("ongoing_tournaments_tab").classList.add('active');
+            document.getElementById("ongoing_tournaments_table_body").classList.remove('d-none');
+
+            if (document.getElementById("upcoming_tournaments_tab").classList.contains('active')) {
+              document.getElementById("upcoming_tournaments_tab").classList.remove('active');
+              document.getElementById("upcoming_tournaments_table_body").classList.add('d-node');
+            } else if (document.getElementById("past_tournaments_tab").classList.contains('active')) {
+              document.getElementById("past_tournaments_tab").classList.remove('active');
+              document.getElementById("past_tournaments_table_body").classList.add('d-node');
             }
+
+          }
+          function displayUpcomingTournaments() {
+            document.getElementById("upcoming_tournaments_tab").classList.add('active');
+            document.getElementById("upcoming_tournaments_table_body").classList.remove('d-none');
+
+            if (document.getElementById("past_tournaments_tab").classList.contains('active')) {
+              document.getElementById("past_tournaments_tab").classList.remove('active');
+              document.getElementById("past_tournaments_table_body").classList.add('d-node');
+            } else if (document.getElementById("ongoing_tournaments_tab").classList.contains('active')) {
+              document.getElementById("ongoing_tournaments_tab").classList.remove('active');
+              document.getElementById("ongoing_tournaments_table_body").classList.add('d-node');
+            }
+
+          }
+          function displayPastTournaments() {
+            document.getElementById("past_tournaments_tab").classList.add('active');
+            document.getElementById("past_tournaments_table_body").classList.remove('d-none');
+
+            if (document.getElementById("upcoming_tournaments_tab").classList.contains('active')) {
+              document.getElementById("upcoming_tournaments_tab").classList.remove('active');
+              document.getElementById("upcoming_tournaments_table_body").classList.add('d-node');
+            } else if (document.getElementById("ongoing_tournaments_tab").classList.contains('active')) {
+              document.getElementById("ongoing_tournaments_tab").classList.remove('active');
+              document.getElementById("ongoing_tournaments_table_body").classList.add('d-node');
+            }
+
+          }
         </script>
+
         <ul class="nav nav-tabs">
           <li class="nav-item">
-            <a class="nav-link active" type="button">Ongoing</a>
+            <a id="ongoing_tournaments_tab" class="nav-link active" onclick="displayOngoingTournaments()" type="button">Ongoing</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" type="button">Upcoming</a>
+            <a id="upcoming_tournaments_tab" class="nav-link" onclick="displayUpcomingTournaments()" type="button">Upcoming</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" type="button">Past</a>
+            <a id="past_tournaments_tab" class="nav-link" onclick="displayPastTournaments()" type="button">Past</a>
           </li>
         </ul>
         <br>
         <table class="table standard-table-spacing">
-        <thead>
+          <thead>
             <tr>
               <th>Name</th>
               <th>Description</th>
@@ -129,10 +165,15 @@
               <th>Capacity</th>
             </tr>
           </thead>
-          <tbody id="tournamentList">
-            {% include 'tournament_partials/tournament_list.html' with tournaments=ongoing_tournaments %}
+          <tbody id="ongoing_tournaments_table_body">
+              {% include 'tournament_partials/tournament_list.html' with tournaments=ongoing_tournaments %}
           </tbody>
-
+          <tbody id="upcoming_tournaments_table_body" class="d-none">
+              {% include 'tournament_partials/tournament_list.html' with tournaments=upcoming_tournaments %}
+          </tbody>
+          <tbody id="past_tournaments_table_body" class="d-none">
+              {% include 'tournament_partials/tournament_list.html' with tournaments=past_tournaments %}
+          </tbody>
         </table>
         <br>
         <br>

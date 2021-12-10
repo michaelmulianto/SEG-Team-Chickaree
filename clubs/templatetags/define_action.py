@@ -24,7 +24,7 @@ def get_clubs(current_user):
 @register.simple_tag
 def get_tournaments(club, date_range_type="ongoing"):
     return Tournament.objects.all()
-    if(date_range_type=="ongoing"):
+    if(not date_range_type=="ongoing"):
         today = datetime.now()
         return Tournament.objects.filter(club=club, start__lte=today, end__gte=today)
 
