@@ -33,7 +33,7 @@ class JoinTournamentViewTest(TestCase, MenuTesterMixin):
 
         #response = self.client.post(self.url, self.data, follow=True)
 
-        participant_count_after = Club.objects.count()
+        participant_count_after = Participant.objects.count()
 
         self.assertEqual(participant_count_after, participant_count_before+1)
 

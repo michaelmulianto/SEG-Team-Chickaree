@@ -41,14 +41,13 @@ class OrganiseTournamentView(FormView):
         return reverse('show_club', kwargs={'club_id': club.id})
 
 @login_required
-@membership_exists
 @tournament_exists
 def join_tournament(request,  tournament_id): #before deadline, not organizer, not already in tournament, add decorator for tournament
     tour = Tournmanent.objects.get(id = tournament_id)
-    currentCapacity = MemberTournamentRelationship.objects.filter(tournament = tour)
+    currentCapacity = Participant.objects.filter(tournament = tour)
     if(tour.capacity < currentCapacity.count()):
         participant = Participant.objects.create(
             member = Membership.objects.get(user = request.user, club = tour.club)
             tournament = tour
         )
-    return render
+    return reverse('show_club', kwargs={'club_id': tour.club.id})
