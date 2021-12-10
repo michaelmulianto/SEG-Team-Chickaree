@@ -16,8 +16,6 @@
 {% get_owner club as owner %}
 {% get_officers club as officers %}
 
-{% get_tournaments club "ongoing" as ongoing_tournaments %}
-
   <div class="container">
     <div class="row">
       <div class="col-12">
@@ -105,40 +103,40 @@
         <script>
           function displayOngoingTournaments() {
             document.getElementById("ongoing_tournaments_tab").classList.add('active');
-            document.getElementById("ongoing_tournaments_table_body").classList.remove('d-none');
+            document.getElementById("ongoing_tournaments_table_body").style.display = "block";
 
             if (document.getElementById("upcoming_tournaments_tab").classList.contains('active')) {
               document.getElementById("upcoming_tournaments_tab").classList.remove('active');
-              document.getElementById("upcoming_tournaments_table_body").classList.add('d-node');
+              document.getElementById("upcoming_tournaments_table_body").style.display = "none";
             } else if (document.getElementById("past_tournaments_tab").classList.contains('active')) {
               document.getElementById("past_tournaments_tab").classList.remove('active');
-              document.getElementById("past_tournaments_table_body").classList.add('d-node');
+              document.getElementById("past_tournaments_table_body").style.display = "none";
             }
 
           }
           function displayUpcomingTournaments() {
             document.getElementById("upcoming_tournaments_tab").classList.add('active');
-            document.getElementById("upcoming_tournaments_table_body").classList.remove('d-none');
+            document.getElementById("upcoming_tournaments_table_body").style.display = "block";
 
             if (document.getElementById("past_tournaments_tab").classList.contains('active')) {
               document.getElementById("past_tournaments_tab").classList.remove('active');
-              document.getElementById("past_tournaments_table_body").classList.add('d-node');
+              document.getElementById("past_tournaments_table_body").style.display = "none";
             } else if (document.getElementById("ongoing_tournaments_tab").classList.contains('active')) {
               document.getElementById("ongoing_tournaments_tab").classList.remove('active');
-              document.getElementById("ongoing_tournaments_table_body").classList.add('d-node');
+              document.getElementById("ongoing_tournaments_table_body").style.display = "none";
             }
 
           }
           function displayPastTournaments() {
             document.getElementById("past_tournaments_tab").classList.add('active');
-            document.getElementById("past_tournaments_table_body").classList.remove('d-none');
+            document.getElementById("past_tournaments_table_body").style.display = "block";
 
             if (document.getElementById("upcoming_tournaments_tab").classList.contains('active')) {
               document.getElementById("upcoming_tournaments_tab").classList.remove('active');
-              document.getElementById("upcoming_tournaments_table_body").classList.add('d-node');
+              document.getElementById("upcoming_tournaments_table_body").style.display = "none";
             } else if (document.getElementById("ongoing_tournaments_tab").classList.contains('active')) {
               document.getElementById("ongoing_tournaments_tab").classList.remove('active');
-              document.getElementById("ongoing_tournaments_table_body").classList.add('d-node');
+              document.getElementById("ongoing_tournaments_table_body").style.display = "none";
             }
 
           }
@@ -156,24 +154,21 @@
           </li>
         </ul>
         <br>
-        <table class="table standard-table-spacing">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Date</th>
-              <th>Capacity</th>
-            </tr>
-          </thead>
-          <tbody id="ongoing_tournaments_table_body">
-              {% include 'tournament_partials/tournament_list.html' with tournaments=ongoing_tournaments %}
-          </tbody>
-          <tbody id="upcoming_tournaments_table_body" class="d-none">
-              {% include 'tournament_partials/tournament_list.html' with tournaments=upcoming_tournaments %}
-          </tbody>
-          <tbody id="past_tournaments_table_body" class="d-none">
-              {% include 'tournament_partials/tournament_list.html' with tournaments=past_tournaments %}
-          </tbody>
+        <style>
+          .standard-table-spacing{
+            vertical-align: middle;
+            border-spacing: 10px 2px;
+          }
+        </style>
+        <table class="table standard-table-spacing" id="ongoing_tournaments_table_body">
+          {% include 'tournament_partials/tournament_list.html' with tournaments=ongoing_tournaments %}
+        </table>
+        <table class="table standard-table-spacing" id="upcoming_tournaments_table_body" style="display: none">
+          {% include 'tournament_partials/tournament_list.html' with tournaments=upcoming_tournaments %}
+        </table>
+        <table class="table standard-table-spacing" id="past_tournaments_table_body" style="display: none">
+          {% include 'tournament_partials/tournament_list.html' with tournaments=past_tournaments %}
+        </table>
         </table>
         <br>
         <br>
