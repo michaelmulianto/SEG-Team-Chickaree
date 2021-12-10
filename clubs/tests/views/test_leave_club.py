@@ -19,7 +19,7 @@ class LeaveClubTestCase(TestCase):
         self.user = User.objects.get(username='johndoe')
         self.user_club_owner = User.objects.get(username='janedoe')
         self.club = Club.objects.get(name='King\'s Knights')
-        self.membership = Membership.objects.create(
+        Membership.objects.create(
             club = self.club,
             user = self.user
         )
@@ -44,9 +44,42 @@ class LeaveClubTestCase(TestCase):
         member_count_after = Membership.objects.count()
         self.assertEqual(member_count_after, member_count_before)
 
+    def test_leave_redirects_when_invalid_club_id_entered(self):
+        url_invalid_id = reverse('leave_club', kwargs = {'club_id': 999})
+        self.client.login(email=self.user_club_owner.email, password="Password123")
+        member_count_before = Membership.objects.count()
+        response = self.client.get(url_invalid_id, follow=True)
+        member_count_after = Membership.objects.count()
+        self.assertEqual(member_count_after, member_count_before)
+
+        response_url = reverse('show_clubs')
+        self.assertRedirects(
+            response, response_url,
+            status_code=302, target_status_code=200,
+            fetch_redirect_response=True
+        )
+        self.assertTemplateUsed(response, 'show_clubs.html')
+
+
     def test_unsuccessful_leave_when_not_member(self):
         self.client.login(email=self.user.email, password="Password123")
         Membership.objects.get(club=self.club, user=self.user).delete()
+
+        member_count_before = Membership.objects.count()
+        response = self.client.get(self.url, follow=True)
+        member_count_after = Membership.objects.count()
+        self.assertEqual(member_count_after, member_count_before)
+
+        response_url = reverse('show_club', kwargs={'club_id': self.club.id})
+        self.assertRedirects(
+            response, response_url,
+            status_code=302, target_status_code=200,
+            fetch_redirect_response=True
+        )
+        self.assertTemplateUsed(response, 'show_club.html')
+
+    def test_unsuccessful_leave_when_club_owner(self):
+        self.client.login(email=self.user_club_owner.email, password="Password123")
 
         member_count_before = Membership.objects.count()
         response = self.client.get(self.url, follow=True)
