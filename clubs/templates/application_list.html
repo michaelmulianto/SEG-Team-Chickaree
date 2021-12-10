@@ -5,48 +5,41 @@
 {% block content %}
 {% include 'partials/js_confirm_messages.html'%}
 {% load define_action %}
+{% get_applications club as applications %}
 
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <h1>Your Applications:</h1>
-        <table class="table">
+        <h1>{{club.name}} Applications: </h1>
+        <br>
+        <style>
+          .standard-table-spacing{
+            vertical-align: middle;
+            border-spacing: 10px 2px;
+          }
+        </style>
+        <table class="table standard-table-spacing">
             <!-- to be able to show the window messages-->
-
-          <style>
-            .standard-table-spacing{
-              vertical-align: middle;
-              border-spacing: 10px 2px;
-            }
-          </style>
-
             {% if applications.count == 0 %}
-            <br>
-            <tr>
-              <b><p style="font-family: verdana; font-size: 250%;"> No more applications </p> </b>
-            </tr>
+            <tr><td><b style="font-family: verdana; font-size: 250%;">No more applications</b></td></tr>
 
             {% else %}
-
-            <table class="table standard-table-spacing">
-              <tr>
-                <th>Name</th>
-                <th>Experience</th>
-                <th>Personal Statement</th>
-                <th>
-              </tr>
-
-            {% for app in applications %}
-
             <tr>
-              <td>{{ app.user.first_name }} {{ app.user.last_name }}</td>
-              <td><b>{{ app.experience }}</b></td>
-              <td>{{ app.personal_statement }}</td>
-              <td style="vertical-align: bottom; padding: 10px"><a href='{% url "respond_to_application" app.id 1  %}' onclick="confirmMsg('accept_application')" class="btn btn-success">Accept application</a></td>
-              <td style="vertical-align: bottom; padding: 10px"><a href='{% url "respond_to_application" app.id 0  %}' onclick="confirmMsg('reject_application')" class="btn btn-danger">Withdraw application</a></td>
+              {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}
+              <th>Experience</th>
+              <th>Personal Statement</th>
+              <th>
+              <th>
             </tr>
-
-            {% endfor %}
+              {% for app in applications %}
+            <tr>
+              {% include 'member_list_partials/table_row_basics.html' with user=app.user include_counter=True %}
+              <td><b>{{ app.user.experience }}</b></td>
+              <td>{{ app.personal_statement }}</td>
+              <td style="vertical-align: bottom; padding: 10px"><a href='{% url "respond_to_application" app.id 0  %}' onclick="confirmMsg('reject_application')" class="btn btn-danger">Reject</a></td>
+              <td style="vertical-align: bottom; padding: 10px"><a href='{% url "respond_to_application" app.id 1  %}' onclick="confirmMsg('accept_application')" class="btn btn-success">Accept</a></td>
+            </tr>
+              {% endfor %}
             {% endif %}
         </table>
       </div>
