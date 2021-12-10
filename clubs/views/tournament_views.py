@@ -39,3 +39,15 @@ class OrganiseTournamentView(FormView):
     def get_success_url(self):
         club = self.get_context_data()['club']
         return reverse('show_club', kwargs={'club_id': club.id})
+
+@login_required
+@club_exists
+def withdraw_participation_from_tournament(request, tournament_name):
+    """Have currently logged in user withdraw from a tournament, if it exists."""
+    current_user = request.user
+    tournament = Tournament.objects.get(name=tournament_name)
+    member = Member.objects.get(club=tournament.club, user=current_user)
+    if Participant.objects.filter(tournament=tournament, member=member).exists():
+        Application.objects.get(tournament=tournament, member=member).delete()
+
+    return redirect('show_club', club_id=tournament.club.id)
