@@ -176,6 +176,7 @@ class Tournament(models.Model):
         rounds = StageInterface.objects.filter(tournament=self)
         if rounds.count() == 0:
             return None
+
         curr_round_num = rounds.aggregate(Max('round_num'))['round_num__max']
         return rounds.get(round_num=curr_round_num)
 
@@ -364,12 +365,21 @@ class KnockoutStage(StageInterface):
 class GroupStage(StageInterface):
     """Tournament round of type group. Is associated with multiple groups."""
     def get_winners(self):
-        groups = List(SingleGroup.objects.filter(group_stage=self))
+        if not self.get_is_complete():
+            return []
+        groups = list(SingleGroup.objects.filter(group_stage=self))
         winners = []
         for group in groups:
             winners += group.get_winners()
 
         return winners
+
+    def get_is_complete(self):
+        groups = list(SingleGroup.objects.filter(group_stage=self))
+        for group in groups:
+            if not group.get_is_complete():
+                   return False
+        return True 
 
     def full_clean(self):
         super().full_clean()
