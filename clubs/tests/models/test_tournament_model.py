@@ -1,7 +1,7 @@
 """Tests for Tournament model, found in tournaments/models.py"""
 
 from django.test import TestCase
-from clubs.models import Tournament, Membership, User, Participant
+from clubs.models import Tournament, Membership, User, Participant, GroupStage, KnockoutStage, SingleGroup
 from django.core.exceptions import ValidationError
 
 
@@ -84,7 +84,6 @@ class TournamentModelTestCase(TestCase):
 
     def test_capacity_is_less_than_97(self):
         self.tournament.capacity = 97
-        Participant.objects.create(tournament=self.tournament,member=self.dummy_member)
         self._assert_tournament_is_invalid()
 
     # Test description
@@ -142,7 +141,14 @@ class TournamentModelTestCase(TestCase):
 
     # Test generate next round
     def test_generate_first_round_with_32_participants(self):
-        pass
+        self.tournament.capacity = 32
+        self._adjust_num_participants_to_capacity()
+        next_round = self.tournament.generate_next_round()
+        self.assertIsInstance(next_round, GroupStage)
+        groups = SingleGroup.objects.filter(group_stage=next_round)
+        self.assertEqual(groups.count(), 8)
+        groups[0].full_clean()
+        self.assertEqual(len(set(groups[0].get_player_occurences())), 4)
 
     # Helper functions.
 

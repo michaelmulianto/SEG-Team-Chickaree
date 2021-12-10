@@ -1,3 +1,4 @@
+"""This was used to help generate the large fixture file default_tournament_participants."""
 from django.core.management.base import BaseCommand, CommandError
 from faker import Faker
 from clubs.models import User, Club, Membership, Participant, Tournament

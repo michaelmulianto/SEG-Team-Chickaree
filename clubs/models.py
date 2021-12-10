@@ -246,6 +246,7 @@ class Tournament(models.Model):
 
         my_stage.full_clean()
         my_stage.save()
+        return my_stage
             
 
 class MemberTournamentRelationship(models.Model):
