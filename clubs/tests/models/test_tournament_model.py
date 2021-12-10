@@ -139,7 +139,7 @@ class TournamentModelTestCase(TestCase):
         Participant.objects.filter(tournament=self.tournament).delete()
         self.assertEqual(self.tournament.generate_next_round(), None)
 
-    # Test generate next round
+    # Test generate first round
     def test_generate_first_round_with_32_participants(self):
         self.tournament.capacity = 32
         self._adjust_num_participants_to_capacity()
@@ -148,7 +148,10 @@ class TournamentModelTestCase(TestCase):
         groups = SingleGroup.objects.filter(group_stage=next_round)
         self.assertEqual(groups.count(), 8)
         groups[0].full_clean()
+        # Check num members in one group
         self.assertEqual(len(set(groups[0].get_player_occurences())), 4)
+        # Check number of matches in one group
+        self.assertEqual(len(groups[0].get_matches()), 6)
     
     def test_generate_first_round_with_48_participants(self):
         self.tournament.capacity = 48
@@ -158,7 +161,38 @@ class TournamentModelTestCase(TestCase):
         groups = SingleGroup.objects.filter(group_stage=next_round)
         self.assertEqual(groups.count(), 8)
         groups[0].full_clean()
+        # Check num members in one group
         self.assertEqual(len(set(groups[0].get_player_occurences())), 6)
+        # Check number of matches in one group
+        self.assertEqual(len(groups[0].get_matches()), 15)
+
+    def test_generate_first_round_with_96_participants(self):
+        # 96 participants by default in fixture
+        next_round = self.tournament.generate_next_round()
+        self.assertIsInstance(next_round, GroupStage)
+        groups = SingleGroup.objects.filter(group_stage=next_round)
+        self.assertEqual(groups.count(), 16)
+        groups[0].full_clean()
+        # Check num members in one group
+        self.assertEqual(len(set(groups[0].get_player_occurences())), 6)
+        # Check number of matches in one group
+        self.assertEqual(len(groups[0].get_matches()), 15)
+
+    def test_generate_first_round_with_16_participants(self):
+        self.tournament.capacity = 16
+        self._adjust_num_participants_to_capacity()
+        next_round = self.tournament.generate_next_round()
+        self.assertIsInstance(next_round, KnockoutStage)
+        # Check num members in round
+        self.assertEqual(len(set(next_round.get_player_occurences())), 16)
+        # Check correct number of matches played
+        self.assertEqual(len(next_round.get_matches()), 8)
+
+    def test_generate_first_round_with_invalid_number_of_participants(self):
+        with self.assertRaises(ValidationError):
+            self.tournament.capacity = 47
+            self._adjust_num_participants_to_capacity()
+            next_round = self.tournament.generate_next_round()
 
     # Helper functions.
 
@@ -170,7 +204,6 @@ class TournamentModelTestCase(TestCase):
                 break
             p.delete()
             i += 1
-
 
     # Generic assertions.
     def _assert_tournament_is_valid(self):

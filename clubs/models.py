@@ -186,7 +186,7 @@ class Tournament(models.Model):
             participants = curr_round.get_winners()
             next_num = curr_round.round_num+1
         else: # No round has occured yet.
-            participants = Participant.objects.filter(tournament=self)
+            participants = list(Participant.objects.filter(tournament=self))
             next_num = 1
         
         num_participants = len(participants)
@@ -203,8 +203,8 @@ class Tournament(models.Model):
             while i < num_participants:
                 (Match.objects.create(
                     collection = my_stage,
-                    white_player = participants[0],
-                    black_player = participants[1]
+                    white_player = participants[i],
+                    black_player = participants[i+1]
                 )).save()
                 i += 2
         # GROUP STAGE CASE
