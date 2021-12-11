@@ -60,5 +60,5 @@ urlpatterns = [
     path('member/<int:member_id>/kick/', views.kick_member, name='kick_member'),
     path('member/<int:member_id>/ban/', views.ban_member, name='ban_member'),
 
-    path('tournament/<int:club_id>/', views.show_tournament, name='show_tournament'),
+    path('tournament/<int:tournament_id>/', views.show_tournament, name='show_tournament'),
 ]
