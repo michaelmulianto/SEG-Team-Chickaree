@@ -1,7 +1,7 @@
 from django.views import View
 from django.views.generic.edit import FormView
 
-from .decorators import login_prohibited
+from .decorators import login_prohibited, tournament_exists
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
@@ -40,3 +40,9 @@ class OrganiseTournamentView(FormView):
     def get_success_url(self):
         club = self.get_context_data()['club']
         return reverse('show_club', kwargs={'club_id': club.id})
+
+@login_required
+@tournament_exists
+def show_tournament(request, tournament_id):
+    tournament = Tournament.objects.get(id=tournament_id)
+    return render(request, 'show_tournament.html', { 'current_user': request.user, 'tournament': tournament })
