@@ -204,9 +204,10 @@ class TournamentModelTestCase(TestCase):
         groups = SingleGroup.objects.filter(group_stage=first_round)
         # Complete the round
         for group in groups:
-            matches = Match.objects.filter(collection=group)
+            matches = group.get_matches()
             for match in matches:
                 match.result = 1 # Let white win, we don't care about specifics
+                match.save()
 
         next_round = self.tournament.generate_next_round()
         self.assertIsInstance(next_round, GroupStage)

@@ -178,7 +178,11 @@ class Tournament(models.Model):
             return None
 
         curr_round_num = rounds.aggregate(Max('round_num'))['round_num__max']
-        return rounds.get(round_num=curr_round_num)
+        curr_round = rounds.get(round_num=curr_round_num)
+        if hasattr(curr_round, 'knockoutstage'):
+            return curr_round.knockoutstage
+        else:
+            return curr_round.groupstage
 
     def generate_next_round(self):
         self.full_clean() # Constraints are needed for this to work.
@@ -272,16 +276,17 @@ class Participant(MemberTournamentRelationship):
     """Relationship between member and tournament where member will play."""
     round_eliminated = models.IntegerField(default=-1)
 
-class GenericRoundOfMatchesInterface(models.Model):
+class GenericRoundOfMatches(models.Model):
     """Model for some group of matches together that, when complete, produce some winners."""
-    # ABSTRACT
+    # ABSTRACT, but we can't declare this as we want to define a relation with it.
+
     def get_winners(self):
-        return []
+        return None
 
     def get_matches(self):
         return Match.objects.filter(collection=self)
 
-        # 1 entry in list per match player is in
+    # 1 entry in list per match player is in
     def get_player_occurences(self):
         matches = self.get_matches()
         player_occurences = []
@@ -290,11 +295,12 @@ class GenericRoundOfMatchesInterface(models.Model):
             player_occurences.append(match.black_player)
 
         return player_occurences
-
+    
     def get_is_complete(self):
         return not self.get_matches().filter(result = 0).exists()
 
-class StageInterface(GenericRoundOfMatchesInterface):
+class StageInterface(GenericRoundOfMatches):
+    # ABSTRACT, but we can't declare it so as we want to query it.
     """Model for single round in the tournament."""
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
     round_num = models.IntegerField(default = 1, blank = False)
@@ -312,7 +318,7 @@ class Match(models.Model):
     white_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False, related_name='white')
     black_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False, related_name='black')
 
-    collection = models.ForeignKey(GenericRoundOfMatchesInterface, on_delete=models.CASCADE, unique=False, blank=False)
+    collection = models.ForeignKey(GenericRoundOfMatches, on_delete=models.CASCADE, unique=False, blank=False)
 
     OUTCOMES = (
         (0, 'Incomplete'),
@@ -348,7 +354,7 @@ class KnockoutStage(StageInterface):
 
     def get_winners(self):
         if not self.get_is_complete():
-            return []
+            return None
 
         matches = self.get_matches()
         winners = []
@@ -366,7 +372,8 @@ class GroupStage(StageInterface):
     """Tournament round of type group. Is associated with multiple groups."""
     def get_winners(self):
         if not self.get_is_complete():
-            return []
+            return None
+
         groups = list(SingleGroup.objects.filter(group_stage=self))
         winners = []
         for group in groups:
@@ -378,7 +385,7 @@ class GroupStage(StageInterface):
         groups = list(SingleGroup.objects.filter(group_stage=self))
         for group in groups:
             if not group.get_is_complete():
-                   return False
+                return False
         return True 
 
     def full_clean(self):
@@ -386,7 +393,7 @@ class GroupStage(StageInterface):
         if SingleGroup.objects.filter(group_stage=self).count() < 1:
             raise ValidationError("No groups assigned to the stage!")
 
-class SingleGroup(GenericRoundOfMatchesInterface):
+class SingleGroup(GenericRoundOfMatches):
     """Represent a single round robin group within a larger group stage."""
     group_stage = models.ForeignKey(GroupStage, on_delete=models.CASCADE, unique=False, blank=False)
     winners_required = models.IntegerField(default = 1, blank=False)
@@ -414,11 +421,17 @@ class SingleGroup(GenericRoundOfMatchesInterface):
         # Check total number of matches, in case of edge case.
         if self.get_matches().count() != ((num_players-1)/2.0) * num_players: # Triangle number: (n/2)*(n+1)
             raise ValidationError("The incorrect number of matches are linked to this group.")
-            
+    
+    def get_is_complete(self):
+        matches = self.get_matches()
+        for match in matches:
+            if match.result == 0:
+                return False
+        return True
 
     def get_winners(self):
         if not self.get_is_complete():
-            return []
+            return None
 
         matches = self.get_matches()
         players = set(self.get_player_occurences())
@@ -445,7 +458,7 @@ class SingleGroup(GenericRoundOfMatchesInterface):
             winners.append(Participant.objects.get(id = p_id))
 
         for p_id in loser_ids:
-            Participant.objects.filter(id = p_id).round_eliminated = self.round_num
+            Participant.objects.filter(id = p_id).round_eliminated = self.group_stage.round_num
         
         return winners
 
