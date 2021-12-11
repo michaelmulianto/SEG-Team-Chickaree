@@ -6,10 +6,10 @@
       "club": 1,
       "name" : "Grand Championship",
       "description" : "The most prestigious tournament in London.",
-      "capacity" : 16,
-      "deadline" : "2021-12-14T00:00:00+00:00",
-      "start" : "2021-12-16T00:00:00+00:00",
-      "end" : "2021-12-20T00:00:00+00:00"
+      "capacity" : 96,
+      "start" : "2099-12-10T00:00:00+00:00",
+      "end" : "2099-12-20T00:00:00+00:00",
+      "deadline" : "2099-12-09T00:00:00+00:00"
     }
   }
 ]
