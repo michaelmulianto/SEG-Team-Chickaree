@@ -195,14 +195,29 @@ class Tournament(models.Model):
     def get_current_round(self):
         rounds = StageInterface.objects.filter(tournament=self)
         if rounds.count() == 0:
-            return None
-
+            return None 
         curr_round_num = rounds.aggregate(Max('round_num'))['round_num__max']
         curr_round = rounds.get(round_num=curr_round_num)
         if hasattr(curr_round, 'knockoutstage'):
             return curr_round.knockoutstage
         else:
             return curr_round.groupstage
+
+    def get_num_participants(self):
+        return Participant.objects.filter(tournament=self).count()
+
+    def get_max_round_num(self):
+        n = self.get_num_participants()
+        if n > 32:
+            return 6
+        elif n > 16:
+            return 5
+        else:
+            d = 0
+            while n > 1:
+                d += 1
+                n = n/2
+            return d
 
     def generate_next_round(self):
         self.full_clean() # Constraints are needed for this to work.
