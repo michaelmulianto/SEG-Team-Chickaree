@@ -40,7 +40,7 @@
           {% if is_officer or is_owner %}
             <td class="button-cell-spacing"><a href='{% url 'banned_members' club.id %}' class="btn btn-primary"><i class="bi bi-slash-circle"></i> Banned Members</a></td>
             <td class="button-cell-spacing"><a href='{% url 'show_applications_to_club' club.id %}' class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Applications</a></td>
-            <td class="button-cell-spacing"><a href='{% url 'organise_tournament' club.id %}' class="btn btn-primary">Organise Tournament</a></td>
+            <td class="button-cell-spacing"><a href='{% url 'organise_tournament' club.id %}' class="btn btn-primary"><i class="bi bi-trophy-fill"></i> Organise Tournament</a></td>
             {% if is_owner %}
             <td class="button-cell-spacing"><a href='{% url 'edit_club_info' club.id %}' class="btn btn-primary"><i class="bi bi-pencil-square"></i> Edit Club</a></td>
             <td class="button-cell-spacing"><a href='{% url 'delete_club' club.id %}' class="btn btn-danger" onclick="confirmMsg('delete_applications')"><i class="bi bi-trash-fill"></i> Delete Club</a></td>
