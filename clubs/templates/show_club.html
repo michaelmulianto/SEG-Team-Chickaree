@@ -101,6 +101,19 @@
 
 
         <script>
+          function displayPastTournaments() {
+            document.getElementById("past_tournaments_tab").classList.add('active');
+            document.getElementById("past_tournaments_table_body").style.display = "table";
+
+            if (document.getElementById("upcoming_tournaments_tab").classList.contains('active')) {
+              document.getElementById("upcoming_tournaments_tab").classList.remove('active');
+              document.getElementById("upcoming_tournaments_table_body").style.display = "none";
+            } else if (document.getElementById("ongoing_tournaments_tab").classList.contains('active')) {
+              document.getElementById("ongoing_tournaments_tab").classList.remove('active');
+              document.getElementById("ongoing_tournaments_table_body").style.display = "none";
+            }
+
+          }
           function displayOngoingTournaments() {
             document.getElementById("ongoing_tournaments_tab").classList.add('active');
             document.getElementById("ongoing_tournaments_table_body").style.display = "table";
@@ -127,48 +140,37 @@
             }
 
           }
-          function displayPastTournaments() {
-            document.getElementById("past_tournaments_tab").classList.add('active');
-            document.getElementById("past_tournaments_table_body").style.display = "table";
-
-            if (document.getElementById("upcoming_tournaments_tab").classList.contains('active')) {
-              document.getElementById("upcoming_tournaments_tab").classList.remove('active');
-              document.getElementById("upcoming_tournaments_table_body").style.display = "none";
-            } else if (document.getElementById("ongoing_tournaments_tab").classList.contains('active')) {
-              document.getElementById("ongoing_tournaments_tab").classList.remove('active');
-              document.getElementById("ongoing_tournaments_table_body").style.display = "none";
-            }
-
-          }
         </script>
 
         <ul class="nav nav-tabs">
           <li class="nav-item">
-            <a id="ongoing_tournaments_tab" class="nav-link active" onclick="displayOngoingTournaments()" type="button">Ongoing</a>
-          </li>
-          <li class="nav-item">
-            <a id="upcoming_tournaments_tab" class="nav-link" onclick="displayUpcomingTournaments()" type="button">Upcoming</a>
-          </li>
-          <li class="nav-item">
             <a id="past_tournaments_tab" class="nav-link" onclick="displayPastTournaments()" type="button">Past</a>
+          </li>
+          <li class="nav-item">
+            <a id="ongoing_tournaments_tab" class="nav-link" onclick="displayOngoingTournaments()" type="button">Ongoing</a>
+          </li>
+          <li class="nav-item">
+            <a id="upcoming_tournaments_tab" class="nav-link active" onclick="displayUpcomingTournaments()" type="button">Upcoming</a>
           </li>
         </ul>
         <br>
         <style>
-          .standard-table-spacing{
+          .standard-chess-table{
             vertical-align: middle;
             border-spacing: 10px 2px;
           }
+          tbody {
+            border-top: none !important;
+          }
         </style>
-        <table class="table standard-table-spacing" id="ongoing_tournaments_table_body">
-          {% include 'tournament_partials/tournament_list.html' with tournaments=ongoing_tournaments %}
+        <table class="table standard-chess-table {% if is_member %} table-hover {% endif %}" id="past_tournaments_table_body" style="display: none">
+          {% include 'tournament_partials/tournament_list.html' with tournaments=past_tournaments is_upcoming=False %}
         </table>
-        <table class="table standard-table-spacing" id="upcoming_tournaments_table_body" style="display: none">
-          {% include 'tournament_partials/tournament_list.html' with tournaments=upcoming_tournaments %}
+        <table class="table standard-chess-table {% if is_member %} table-hover {% endif %}" id="ongoing_tournaments_table_body" style="display: none">
+          {% include 'tournament_partials/tournament_list.html' with tournaments=ongoing_tournaments is_upcoming=False %}
         </table>
-        <table class="table standard-table-spacing" id="past_tournaments_table_body" style="display: none">
-          {% include 'tournament_partials/tournament_list.html' with tournaments=past_tournaments %}
-        </table>
+        <table class="table standard-chess-table {% if is_member %} table-hover {% endif %}" id="upcoming_tournaments_table_body">
+          {% include 'tournament_partials/tournament_list.html' with tournaments=upcoming_tournaments is_upcoming=True %}
         </table>
         <br>
         <br>
