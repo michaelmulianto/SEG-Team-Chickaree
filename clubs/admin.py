@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Club, Application, Membership, Ban
+from .models import User, Club, Application, Membership, Ban, Tournament
 
 
 @admin.register(User)
@@ -35,4 +35,11 @@ class banAdmin(admin.ModelAdmin):
     """Configuration of the admin interface for ban"""
     list_display = [
         'club', 'user'
+    ]
+
+@admin.register(Tournament)
+class tournamentAdmin(admin.ModelAdmin):
+    """Configuration of the admin interface for ban"""
+    list_display = [
+        'club', 'name', 'capacity'
     ]

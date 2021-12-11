@@ -1,0 +1,45 @@
+{% if tournaments.count == 0 %}
+<thead>
+  <tr><td></td></tr>
+</thead>
+<tbody>
+  <tr><td> No tournaments </td></tr>
+</tbody>
+{% else %}
+  {% if is_upcoming %}
+<thead>
+  <tr>
+    {% include 'tournament_partials/tournament_list_header_basics.html' %}
+    {% include 'tournament_partials/tournament_list_header_extras_upcoming.html' %}
+  </tr>
+</thead>
+    {% for tournament in tournaments %}
+<tbody>
+  <tr {% if is_member %} onclick=window.location="{% url 'show_club' club.id %}" {% endif %}>
+      {% load define_action %}
+      {% check_is_lead_organiser current_user tournament as is_lead_organiser %}
+      {% check_has_joined_tournament current_user tournament as has_joined_tournament %}
+
+      {% include 'tournament_partials/tournament_list_row_basics.html' %}
+      {% include 'tournament_partials/tournament_list_row_extras_upcoming.html' %}
+  </tr>
+</tbody>
+    {% endfor %}
+
+  {% else %}
+<thead>
+  <tr>
+    {% include 'tournament_partials/tournament_list_header_basics.html' %}
+    {% include 'tournament_partials/tournament_list_header_extras.html' %}
+  </tr>
+</thead>
+    {% for tournament in tournaments %}
+<tbody>
+  <tr {% if is_member %} onclick=window.location="{% url 'show_club' club.id %}" {% endif %}>
+      {% include 'tournament_partials/tournament_list_row_basics.html' %}
+      {% include 'tournament_partials/tournament_list_row_extras.html' %}
+  </tr>
+</tbody>
+    {% endfor %}
+  {% endif %}
+{% endif %}

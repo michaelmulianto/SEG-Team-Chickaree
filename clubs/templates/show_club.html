@@ -10,9 +10,12 @@
 {% check_is_officer club current_user as is_officer %}
 {% check_is_member club current_user as is_member %}
 {% check_has_applied club current_user as has_applied %}
-{% count_members club as number_of_members%}
+
+{% count_members club as number_of_members %}
+
 {% get_owner club as owner %}
 {% get_officers club as officers %}
+
   <div class="container">
     <div class="row">
       <div class="col-12">
@@ -22,14 +25,44 @@
         <p><i class="bi bi-people-fill"></i> {{ number_of_members }}<p>
         <P><i class="bi bi-geo-alt-fill"></i> {{ club.location }}</p>
         <p><b>Description: </b> {{ club.description }} </p>
-        <b>Owner: </b>
+        <table id="buttons">
+          <tr>
+            <style>
+            .button-cell-spacing{
+              padding: 20px;
+            }
+            </style>
+            <td class="button-cell-spacing"><a href='{% url 'members_list' club.id %}' class="btn btn-primary"><i class="bi bi-people-fill"></i> Members</a></td>
+
+        {% if has_applied %}
+            <td class="button-cell-spacing"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmMsg('withdraw_application')" class="btn btn-warning">Withdraw application</a></td>
+        {% elif is_member %}
+          {% if is_officer or is_owner %}
+            <td class="button-cell-spacing"><a href='{% url 'banned_members' club.id %}' class="btn btn-primary"><i class="bi bi-slash-circle"></i> Banned Members</a></td>
+            <td class="button-cell-spacing"><a href='{% url 'show_applications_to_club' club.id %}' class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Applications</a></td>
+            <td class="button-cell-spacing"><a href='{% url 'organise_tournament' club.id %}' class="btn btn-primary"><i class="bi bi-trophy-fill"></i> Organise Tournament</a></td>
+            {% if is_owner %}
+            <td class="button-cell-spacing"><a href='{% url 'edit_club_info' club.id %}' class="btn btn-primary"><i class="bi bi-pencil-square"></i> Edit Club</a></td>
+            <td class="button-cell-spacing"><a href='{% url 'delete_club' club.id %}' class="btn btn-danger" onclick="confirmMsg('delete_applications')"><i class="bi bi-trash-fill"></i> Delete Club</a></td>
+            {% endif %}
+          {% endif %}
+          {% if not is_owner %}
+            <td class="button-cell-spacing"><a href='{% url 'leave_club' club.id %}' onclick="confirmMsg('leave_club')" class="btn btn-danger"><i class="bi bi-x-circle-fill"></i> Leave club</a></td>
+          {% endif %}
+        {% else%}
+            <td class="button-cell-spacing"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success"><i class="bi bi-person-plus-fill"></i> Apply to club</a></td>
+        {% endif %}
+          </tr>
+        </table>
+        <br>
+        <h3><b>Owner</b></h3>
         <style>
-          .standard-table-spacing{
+          .standard-chess-table{
             vertical-align: middle;
             border-spacing: 10px 2px;
           }
         </style>
-        <table class="table standard-table-spacing">
+        <table id="owner" class="table standard-chess-table">
           <tr>
             {% include 'member_list_partials/table_header_basics.html' with include_counter=False %}
             {% include 'member_list_partials/table_header_extras.html' with is_owner=True is_officer=True %}
@@ -37,13 +70,12 @@
           <tr>
             {% include 'member_list_partials/table_row_basics.html' with user=owner.user include_counter=False %}
             {% include 'member_list_partials/table_row_extras.html' with user=owner.user is_owner=True is_officer=True %}
-            <td></td>
           </tr>
         </table>
         {% if is_member %}
         <br>
-        <b>Officers: </b>
-        <table class="table standard-table-spacing">
+        <h3><b>Officers</b></h3>
+        <table id="officer" class="table standard-chess-table">
           {%if not officers %}
           <tr><td></td></tr>
           <tr><td> No Officers </td></tr>
@@ -63,35 +95,45 @@
         </table>
         {% endif %}
         <br>
-        <table>
-          <tr>
-            <style>
-            .button-cell-spacing{
-              padding: 20px;
-            }
-            </style>
-            <td class="button-cell-spacing"><a href='{% url 'members_list' club.id %}' class="btn btn-primary"><i class="bi bi-people-fill"></i> Members</a></td>
+        <h3><b>Tournaments</b></h3>
+        <br>
 
-        {% if has_applied %}
-            <td class="button-cell-spacing"><a href='{% url 'withdraw_application_to_club' club.id %}' onclick="confirmMsg('withdraw_application')" class="btn btn-warning">Withdraw application</a></td>
-        {% elif is_member %}
-          {% if is_officer or is_owner %}
-            <td class="button-cell-spacing"><a href='{% url 'banned_members' club.id %}' class="btn btn-primary"><i class="bi bi-slash-circle"></i> Banned Members</a></td>
-            <td class="button-cell-spacing"><a href='{% url 'show_applications_to_club' club.id %}' class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Applications</a></td>
-            <td class="button-cell-spacing"><a href='{% url 'organise_tournament' club.id %}' class="btn btn-primary">Organise Tournament</a></td>
-            {% if is_owner %}
-            <td class="button-cell-spacing"><a href='{% url 'edit_club_info' club.id %}' class="btn btn-primary"><i class="bi bi-pencil-square"></i> Edit Club</a></td>
-            <td class="button-cell-spacing"><a href='{% url 'delete_club' club.id %}' class="btn btn-danger" onclick="confirmMsg('delete_applications')"><i class="bi bi-trash-fill"></i> Delete Club</a></td>
-            {% endif %}
-          {% endif %}
-          {% if not is_owner %}
-            <td class="button-cell-spacing"><a href='{% url 'leave_club' club.id %}' onclick="confirmMsg('leave_club')" class="btn btn-danger"><i class="bi bi-x-circle-fill"></i> Leave club</a></td>
-          {% endif %}
-        {% else%}
-            <td class="button-cell-spacing"><a href='{% url 'apply_to_club' club.id %}' class="btn btn-success"><i class="bi bi-person-plus-fill"></i> Apply to club</a></td>
-        {% endif %}
-          </tr>
-        </table><a href='{% url 'show_clubs' %}' class="btn btn-info">
+        {% include 'tournament_partials/js_display_tournament_table.html' %}
+
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a id="past_tournaments_tab" class="nav-link" onclick="displayPastTournaments()" type="button">Past</a>
+          </li>
+          <li class="nav-item">
+            <a id="ongoing_tournaments_tab" class="nav-link" onclick="displayOngoingTournaments()" type="button">Ongoing</a>
+          </li>
+          <li class="nav-item">
+            <a id="upcoming_tournaments_tab" class="nav-link active" onclick="displayUpcomingTournaments()" type="button">Upcoming</a>
+          </li>
+        </ul>
+        <br>
+        <style>
+          .standard-chess-table{
+            vertical-align: middle;
+            border-spacing: 10px 2px;
+          }
+          tbody {
+            border-top: none !important;
+          }
+        </style>
+        <table class="table standard-chess-table {% if is_member %} table-hover {% endif %}" id="past_tournaments_table_body" style="display: none">
+          {% include 'tournament_partials/tournament_list.html' with tournaments=past_tournaments is_upcoming=False %}
+        </table>
+        <table class="table standard-chess-table {% if is_member %} table-hover {% endif %}" id="ongoing_tournaments_table_body" style="display: none">
+          {% include 'tournament_partials/tournament_list.html' with tournaments=ongoing_tournaments is_upcoming=False %}
+        </table>
+        <table class="table standard-chess-table {% if is_member %} table-hover {% endif %}" id="upcoming_tournaments_table_body">
+          {% include 'tournament_partials/tournament_list.html' with tournaments=upcoming_tournaments is_upcoming=True %}
+        </table>
+        <br>
+        <br>
+        <br>
+        <a href='{% url 'show_clubs' %}' class="btn btn-info">
           <i class="bi bi-reply-fill"></i> Back to list of all clubs
         </a>
         <br>
