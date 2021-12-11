@@ -250,10 +250,10 @@ class StageInterface(models.Model):
         if self.get_matches().count() < 1:
             raise ValidationError("A stage cannot have no matches.")
 
-    def save(self):
+    def save(self, *args, **kwargs):
         # Due to complex nature of the models it is important that we check validation.
         self.full_clean()
-        super().save()
+        super().save(*args, **kwargs)
 
 class Match(models.Model):
     """Model representing a single game of chess, in some tournament stage."""
@@ -310,7 +310,7 @@ class KnockoutStage(StageInterface):
 class GroupStage(StageInterface):
     """Tournament round of type group. Is associated with multiple groups."""
     def get_winners(self):
-        groups = List(SingleGroup.objects.filter(group_stage=self))
+        groups = SingleGroup.objects.filter(group_stage=self)
         winners = []
         for group in groups:
             winners += group.get_winners()
