@@ -70,7 +70,6 @@
           <tr>
             {% include 'member_list_partials/table_row_basics.html' with user=owner.user include_counter=False %}
             {% include 'member_list_partials/table_row_extras.html' with user=owner.user is_owner=True is_officer=True %}
-            <td></td>
           </tr>
         </table>
         {% if is_member %}
