@@ -6,10 +6,12 @@
     <div class="progress-bar" role="progressbar" aria-valuenow="number_of_participants" aria-valuemin="0" aria-valuemax="{{ tournament.capacity }}"></div>
   </div>
 </td>
-{% if not is_lead_organiser %}
-  {% if not has_joined %}
+{% if not is_lead_organiser and is_member %}
+  {% if not has_joined_tournament %}
 <td style="text-align: center; vertical-align: bottom; padding: 20px"><a href='{% url 'show_club' club.id %}' class="btn btn-success"><i class="bi bi-person-plus-fill"></i> Join</a></td>
   {% else %}
 <td style="text-align: center; vertical-align: bottom; padding: 20px"><a href='{% url 'show_club' club.id %}' onclick="confirmMsg('withdraw_from_tournament')" class="btn btn-warning"><i class="bi bi-person-dash-fill"></i> Withdraw</a></td>
   {% endif %}
+{% else %}
+<td></td>
 {% endif %}
