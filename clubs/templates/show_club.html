@@ -57,12 +57,12 @@
 
         <b>Owner: </b>
         <style>
-          .standard-table-spacing{
+          .standard-chess-table{
             vertical-align: middle;
             border-spacing: 10px 2px;
           }
         </style>
-        <table id="owner" class="table standard-table-spacing">
+        <table id="owner" class="table standard-chess-table">
           <tr>
             {% include 'member_list_partials/table_header_basics.html' with include_counter=False %}
             {% include 'member_list_partials/table_header_extras.html' with is_owner=True is_officer=True %}
@@ -76,7 +76,7 @@
         {% if is_member %}
         <br>
         <b>Officers: </b>
-        <table id="officer" class="table standard-table-spacing">
+        <table id="officer" class="table standard-chess-table">
           {%if not officers %}
           <tr><td></td></tr>
           <tr><td> No Officers </td></tr>
