@@ -15,10 +15,10 @@ def count_participants(tournament):
 
 @register.simple_tag
 def get_clubs(current_user):
-    memberships = Membership.objects.filter(user=current_user)
     my_clubs = []
-    for membership in memberships:
-      my_clubs.append(membership.club)
+    for club in Club.objects.all():
+        if Membership.objects.filter(club=club, user=current_user):
+            my_clubs.append(club)
     return my_clubs
 
 @register.simple_tag
