@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from clubs.forms import OrganiseTournamentForm
-from clubs.models import Tournament, Club
+from clubs.models import Membership, Tournament, Club
 
 from .decorators import club_exists
 
@@ -45,4 +45,9 @@ class OrganiseTournamentView(FormView):
 @tournament_exists
 def show_tournament(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
-    return render(request, 'show_tournament.html', { 'current_user': request.user, 'tournament': tournament })
+    club = tournament.club
+    if Membership.objects.filter(user=request.user, club=club):
+        return render(request, 'show_tournament.html', { 'current_user': request.user, 'tournament': tournament })
+    else:
+        messages.error(request, "You are not a member of the club that organises this tournament, you can view the basic tournament details from the club's page.")
+    return redirect('show_club', club_id=club.id)
