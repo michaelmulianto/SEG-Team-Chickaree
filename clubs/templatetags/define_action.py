@@ -4,6 +4,11 @@ from clubs.models import User, Club, Application, Membership, Ban, Participant, 
 register = template.Library()
 
 @register.simple_tag
+def boolean_or(a, b):
+    return a or b
+
+
+@register.simple_tag
 def count_members(club_to_count):
     return Membership.objects.filter(club=club_to_count).count()
 

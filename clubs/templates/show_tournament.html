@@ -19,7 +19,6 @@
         <p>A tournament by {{ tournament.club.name }}. </p>
         <p>{{ tournament.description }} </p>
         <p><i class="bi bi-people-fill"></i> {{ tournament.capacity }} participants<p>
-
         <br>
         <h3><b>Organisers</b></h3>
         <style>
@@ -30,19 +29,18 @@
         </style>
         <table id="owner" class="table standard-chess-table">
           <tr>
-            {% include 'member_list_partials/table_header_basics.html' with include_counter=False %}
-            {% include 'member_list_partials/table_header_extras.html' with is_officer=True %}
+            {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}
+            {% include 'member_list_partials/table_header_extras.html' with show_email=True %}
           </tr>
           {% for organiser in organisers %}
           <tr>
             {% include 'member_list_partials/table_row_basics.html' with user=organiser.member.user include_counter=True %}
-            {% include 'member_list_partials/table_row_extras.html' with user=organiser.member.user is_officer=True %}
+            {% include 'member_list_partials/table_row_extras.html' with user=organiser.member.user show_email=True %}
           </tr>
           {% endfor %}
         </table>
         <br>
         <a style="float: right;" href='{% url 'show_tournament' tournament.id %}' class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Add Co-Organiser</a>
-
         <br>
         <br>
         <a href='{% url 'show_club' tournament.club.id %}' class="btn btn-info">

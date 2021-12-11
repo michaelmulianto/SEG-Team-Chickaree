@@ -65,11 +65,11 @@
         <table id="owner" class="table standard-chess-table">
           <tr>
             {% include 'member_list_partials/table_header_basics.html' with include_counter=False %}
-            {% include 'member_list_partials/table_header_extras.html' with is_owner=True is_officer=True %}
+            {% include 'member_list_partials/table_header_extras.html' with show_email=True %}
           </tr>
           <tr>
             {% include 'member_list_partials/table_row_basics.html' with user=owner.user include_counter=False %}
-            {% include 'member_list_partials/table_row_extras.html' with user=owner.user is_owner=True is_officer=True %}
+            {% include 'member_list_partials/table_row_extras.html' with user=owner.user show_email=True %}
           </tr>
         </table>
         {% if is_member %}
@@ -83,12 +83,12 @@
 
           <tr>
             {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}
-            {% include 'member_list_partials/table_header_extras.html' with is_owner=True is_officer=True %}
+            {% include 'member_list_partials/table_header_extras.html' with show_email=True %}
           </tr>
             {% for officer in officers %}
           <tr>
               {% include 'member_list_partials/table_row_basics.html' with user=officer.user include_counter=True %}
-              {% include 'member_list_partials/table_row_extras.html' with user=officer.user is_owner=True is_officer=True %}
+              {% include 'member_list_partials/table_row_extras.html' with user=officer.user show_email=True %}
           </tr>
             {% endfor %}
           {% endif %}
