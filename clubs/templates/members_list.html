@@ -8,27 +8,18 @@
   <div class="container">
     <div class="row">
       <div class="col-12">
-        <h1>{{club.name}} Members: </h1>
         <style>
           .standard-table-spacing{
             vertical-align: middle;
             border-spacing: 10px 2px;
           }
         </style>
+        <h1>{{club.name}} Members: </h1>
+        <br>
         <table class="table standard-table-spacing">
           <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th>Username</th>
-            <th>Name</th>
-
-            {% if is_owner or is_officer %}
-            <th>Email</th>
-            {% endif %}
-
-            <th>Bio</th>
-
+            {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}
+            {% include 'member_list_partials/table_header_extras.html' with is_owner=is_owner is_officer=is_officer %}
             {% if is_owner%}
             <th></th>
             <th></th>
@@ -39,43 +30,29 @@
 
           </tr>
         {% for member in members %}
+          {% check_is_officer club member.user as is_member_an_officer %}
+          {% check_is_owner club member.user as is_member_an_owner %}
           <tr>
-            <td> {{ forloop.counter }} <td>
-            <td> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
-            <td> @{{ member.user.username }} </td>
-            <td> {{ member.user.first_name }} {{ member.user.last_name }} </td>
-
-
-            {% if is_owner or is_officer %}
-            <td> {{ member.user.email }} </td>
-            <!-- <td> {{member.user.level}}<td> -->
-            {% endif %}
-
-            <td> {{ member.user.bio }} </td>
-
-            {% check_is_officer club member.user as is_member_an_officer %}
-            {% check_is_owner club member.user as is_member_an_owner %}
+            {% include 'member_list_partials/table_row_basics.html' with user=member.user include_counter=True %}
+            {% include 'member_list_partials/table_row_extras.html' with user=member.user is_owner=is_owner is_officer=is_officer %}
 
             {% if member.user == current_user %}
-
               {% if is_owner %}
             <td style="text-align: center; width: 200px" colspan="3"><b> This is you! <b></td>
               {% elif is_officer %}
             <td style="text-align: center" ><b> This is you! <b></td>
               {% endif %}
-
             {% else %}
-
               {% if is_owner %} <!-- Owners will see transfer ownership or kick + ban depending on member rank -->
                 {% if is_member_an_officer %}
-            <td><a href='{% url 'demote_officer_to_member' member.id %}' class="btn btn-warning">Demote</a></td>
+            <td><a href='{% url 'demote_officer_to_member' member.id %}' style="color: white" class="btn btn-warning">Demote</a></td>
                 {% else %}
             <td><a href='{% url 'promote_member_to_officer' member.id %}' class="btn btn-success">Promote</a></td>
                 {% endif %}
                 {%if member.is_officer %}
-            <td colspan="3" ><a href='{% url 'transfer_ownership_to_officer' member.id %}' onclick="confirmMsg('transfer_ownership')" class="btn btn-warning">Transfer Ownership</a></td>
+            <td colspan="3" ><a href='{% url 'transfer_ownership_to_officer' member.id %}' onclick="confirmMsg('transfer_ownership')" style="background-color: rgb(135, 211, 124); color: white" class="btn">Transfer Ownership</a></td>
                 {% else %}
-            <td><a href='{% url 'kick_member' member.id %}' onclick="confirmMsg('kick')" class="btn btn-danger">Kick</a></td>
+            <td><a href='{% url 'kick_member' member.id %}' onclick="confirmMsg('kick')" style="background-color: rgb(255,100,0); color: white" class="btn">Kick</a></td>
             <td><a href='{% url 'ban_member' member.id %}' onclick="confirmMsg('ban')" class="btn btn-danger">Ban</a></td>
                 {% endif %}
               {% elif is_officer %}
@@ -92,6 +69,9 @@
           </tr>
         {% endfor %}
         </table>
+        <a href='{% url 'show_club' club.id %}' class="btn btn-info">
+          <i class="bi bi-reply-fill"></i> Back to club page
+        </a>
       </div>
     </div>
   </div>

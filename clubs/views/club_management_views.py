@@ -3,7 +3,7 @@
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView, DeleteView
 
-from .helpers import is_user_owner_of_club, get_clubs_of_user
+from .helpers import is_user_owner_of_club, is_user_officer_of_club, get_clubs_of_user
 from .decorators import club_exists, membership_exists
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -59,28 +59,26 @@ def transfer_ownership_to_officer(request, member_id):
     """Allow the owner of a club to promote some member of said club to officer."""
     member = Membership.objects.get(id = member_id)
     club = member.club
-    if not(is_user_owner_of_club(request.user, club)):
-        # Access denied, member isn't owner
+    if is_user_owner_of_club(request.user, club):
+        if is_user_officer_of_club(member.user, club):
+            curr_owner = Membership.objects.get(club=club, user=request.user)
+
+            curr_owner.is_owner = False
+            curr_owner.is_officer = True
+            curr_owner.save()
+
+            member.is_owner = True
+            member.is_officer = False
+            member.save() # Or database won't update.
+
+            messages.warning(request, 'Ownership transfered to ' + '@' + member.user.username + '.')
+        else: # Access denied, targetted member should be an officer.
+            messages.error(request, 'Ownership must be transfered to an officer. Promote '
+                + '@' + member.user.username + ' first.')
+    else: # Access denied, member isn't owner.
         messages.error(request, 'Only the owner can transfer ownership of a club.')
-        return redirect('members_list', club_id=club.id)
-
-    curr_owner = Membership.objects.get(club=club, user=request.user)
-    if not(member.is_officer):
-        # Targetted member should be an officer
-        messages.error(request, 'Ownership must be transfered to an officer. Promote '
-            + '@' + member.user.username + ' first.')
-        return redirect('members_list', club_id=club.id)
-
-    curr_owner.is_owner = False
-    curr_owner.is_officer = True
-    curr_owner.save()
-
-    member.is_owner = True
-    member.is_officer = False
-    member.save() # Or database won't update.
-
-    messages.warning(request, 'Ownership transfered to ' + '@' + member.user.username + '.')
     return redirect('members_list', club_id=club.id)
+
 
 class EditClubInfoView(UpdateView):
     """Edit the details of a given club."""
@@ -125,5 +123,5 @@ def delete_club(request, club_id):
         messages.add_message(request, messages.INFO, "The club has successfully been deleted")
         return redirect('show_clubs')
     else:
-        messages.add_message(request, messages.WARNING, "You are not the owner of this clubs")
-        return redirect('show_clubs')
+        messages.add_message(request, messages.ERROR, "You are not the owner of this clubs")
+        return redirect('show_club', club_id=club_id)
