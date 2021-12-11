@@ -20,7 +20,6 @@ class SingleGroupModelTestCase(TestCase):
             round_num = 1
         )
         self.SingleGroup = SingleGroup.objects.create(
-            tournament = self.GroupStage.tournament,
             group_stage = self.GroupStage,
             winners_required = 1
         )
