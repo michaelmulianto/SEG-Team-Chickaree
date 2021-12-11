@@ -1,7 +1,7 @@
 [
   {
     "model": "clubs.club",
-    "pk": 7,
+    "pk": 1,
     "fields": {
       "name" : "King's Knights",
       "location" : "King's College London",

@@ -3,7 +3,7 @@
     "model": "clubs.tournament",
     "pk": 2,
     "fields": {
-      "club": 7,
+      "club": 1,
       "name" : "Just A League",
       "description" : "The tournament for the best.",
       "capacity" : 32,

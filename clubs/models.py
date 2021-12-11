@@ -169,7 +169,7 @@ class Tournament(models.Model):
         if self.start < now():
             raise ValidationError("The start date cannot be in the past!")
         if self.deadline < now():
-            raise ValidationError("The start date cannot be in the past!")
+            raise ValidationError("The deadline date cannot be in the past!")
         if self.end < now():
             raise ValidationError("The end date cannot be in the past!")
         if self.start > self.end:

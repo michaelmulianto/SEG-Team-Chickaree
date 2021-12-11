@@ -1,15 +1,15 @@
 [
   {
     "model": "clubs.tournament",
-    "pk": 7,
+    "pk": 1,
     "fields": {
-      "club": 7,
+      "club": 1,
       "name" : "Grand Championship",
       "description" : "The most prestigious tournament in London.",
       "capacity" : 96,
       "start" : "2099-12-10T00:00:00+00:00",
       "end" : "2099-12-20T00:00:00+00:00",
-      "deadline" : "2099-12-9T00:00:00+00:00",
+      "deadline" : "2099-12-9T00:00:00+00:00"
     }
   }
 ]

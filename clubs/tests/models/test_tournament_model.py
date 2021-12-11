@@ -8,8 +8,11 @@ from django.core.exceptions import ValidationError
 class TournamentModelTestCase(TestCase):
     """Test all aspects of a tournament."""
 
-    fixtures = ['clubs/tests/fixtures/default_club.json','clubs/tests/fixtures/default_tournament.json',
-        'clubs/tests/fixtures/other_tournaments.json', 'clubs/tests/fixtures/other_users.json','clubs/tests/fixtures/default_tournament_participants.json'
+    fixtures = ['clubs/tests/fixtures/default_club.json',
+        'clubs/tests/fixtures/default_tournament.json',
+        'clubs/tests/fixtures/other_tournaments.json', 
+        'clubs/tests/fixtures/other_users.json',
+        'clubs/tests/fixtures/default_tournament_participants.json'
         ]
 
     # Test setup

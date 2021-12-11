@@ -10,6 +10,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         c = Club.objects.create(
+            id = 1,
             name = "King's Knights",
             location = "King's College London",
             description = "The best chess club in London.",
@@ -17,10 +18,12 @@ class Command(BaseCommand):
         )
         c.save()
         t = Tournament.objects.create(
+            id = 1,
             club= c,
             name = "Grand Championship",
             description = "The most prestigious tournament in London.",
             capacity = 96,
+            deadline="2023-12-9T00:00:00+00:00",
             start = "2023-12-10T00:00:00+00:00",
             end = "2023-12-20T00:00:00+00:00"
         )
