@@ -24,7 +24,7 @@ class TournamentModelTestCase(TestCase):
             club = self.tournament.club
         )
 
-    def test_valid_message(self):
+    def test_valid_tournament(self):
         self._assert_tournament_is_valid()
 
     # Test name
