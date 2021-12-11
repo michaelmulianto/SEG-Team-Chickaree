@@ -54,8 +54,8 @@
         {% endif %}
           </tr>
         </table>
-
-        <b>Owner: </b>
+        <br>
+        <h3><b>Owner</b></h3>
         <style>
           .standard-chess-table{
             vertical-align: middle;
@@ -74,7 +74,7 @@
         </table>
         {% if is_member %}
         <br>
-        <b>Officers: </b>
+        <h3><b>Officers</b></h3>
         <table id="officer" class="table standard-chess-table">
           {%if not officers %}
           <tr><td></td></tr>
@@ -95,7 +95,7 @@
         </table>
         {% endif %}
         <br>
-        <h3><b>Tournaments </b></h3>
+        <h3><b>Tournaments</b></h3>
         <br>
 
         {% include 'tournament_partials/js_display_tournament_table.html' %}
