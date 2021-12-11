@@ -1,5 +1,5 @@
 from django.test import TestCase
-from clubs.models import KnockoutStage, Club, Match, StageInterface, User, Membership, Participant, Tournament
+from clubs.models import KnockoutStage, Club, Match, StageInterface, User, Membership, Participant, Tournament, GroupStage, SingleGroup
 from django.core.exceptions import ValidationError
 
 class KnockoutStageModelTestCase(TestCase):
@@ -37,27 +37,25 @@ class KnockoutStageModelTestCase(TestCase):
             tournament = self.tournament
         )
 
-        # self.stage = StageInterface.objects.create(
-        #     tournament = self.tournament,
-        #     round_num = 1
-        # )
-
-        # self.knockoutStage = KnockoutStage.objects.create( 
-        #     tournament = self.tournament,
-        #     round_num = 1
-        # )
+        self.knockoutStage = KnockoutStage.objects.create( 
+            tournament = self.tournament,
+            round_num = 1
+        )
 
         self.match = Match.objects.create(
             white_player = self.first_par,
             black_player = self.second_par,
-            stage = KnockoutStage.objects.create(
-                tournament = self.tournament,
-                round_num = 1
-            ),
+            stage = self.knockoutStage,
             result = 1 # white player wins
         )
 
 
+    def test_valid_knockoutStage(self):
+        self._assert_knockout_stage_is_valid()
+
+    def test_knockout_stage_cannot_be_blank(self):
+        self.knockoutStage = None
+        self._assert_knockout_stage_is_invalid()
 
     def test_assert_number_of_matches_must_be_a_power_of_two(self):
         pass
@@ -68,13 +66,7 @@ class KnockoutStageModelTestCase(TestCase):
     def test_white_player_wins_the_match_shows_correctly(self):
         pass
 
-    def test_white_player_wins_the_match_shows_correctly(self):
-        pass
-
-    def test_we_can_access_tournament_from_superclass(self):
-        pass
-
-    def test_we_can_access_round_num_from_superclass(self):
+    def test_black_player_wins_the_match_shows_correctly(self):
         pass
 
 
