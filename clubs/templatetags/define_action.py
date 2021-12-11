@@ -1,6 +1,6 @@
 from django import template
 from datetime import datetime
-from clubs.models import User, Club, Application, Membership, Ban, Participant, Tournament
+from clubs.models import User, Club, Application, Membership, Ban, Participant, Organiser, Tournament
 register = template.Library()
 
 @register.simple_tag
@@ -22,13 +22,20 @@ def get_clubs(current_user):
     return my_clubs
 
 @register.simple_tag
-def get_tournaments(club, date_range_type="ongoing"):
-    return Tournament.objects.all()
-    if(not date_range_type=="ongoing"):
-        today = datetime.now()
-        return Tournament.objects.filter(club=club, start__lte=today, end__gte=today)
+def check_is_lead_organiser(user, tournament):
+    if Membership.objects.filter(user=user, club=tournament.club).exists():
+        membership = Membership.objects.get(user=user, club=tournament.club)
+        return Organiser.objects.filter(member=membership, tournament=tournament).exists()
+    else:
+        return False
 
-
+@register.simple_tag
+def check_has_joined_tournament(user, tournament):
+    if Membership.objects.filter(user=user, club=tournament.club).exists():
+        membership = Membership.objects.get(user=user, club=tournament.club)
+        return Participant.objects.filter(member=membership, tournament=tournament).exists()
+    else:
+        return False
 
 @register.simple_tag
 def get_members(club):
