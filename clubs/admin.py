@@ -54,7 +54,7 @@ class ParticipantAdmin(admin.ModelAdmin):
 
 
 @admin.register(Organiser)
-class ParticipantAdmin(admin.ModelAdmin):
+class OrganiserAdmin(admin.ModelAdmin):
     list_display = [
              'member', 'tournament', 'is_lead_organiser'
     ]
