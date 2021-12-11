@@ -86,6 +86,9 @@ class Club(models.Model):
     #Automatically use current time as the club creation date
     created_on = models.DateTimeField(auto_now_add=True, blank=False)
 
+    def __str__(self):
+        return f'{self.name}'
+
     class Meta:
         ordering = ['-created_on']
 
@@ -95,6 +98,9 @@ class Membership(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE, unique=False, blank=False)
     is_officer = models.BooleanField(default=False)
     is_owner = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'User: {self.user.first_name} {self.user.last_name} at Club: {self.club}'
 
     class Meta:
         ordering = ['club']
@@ -120,6 +126,9 @@ class Application(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
     personal_statement = models.CharField(max_length=580, blank=False, default = "")
 
+    def __str__(self):
+        return f'User: {self.user.first_name} {self.user.last_name} to Club: {self.club}'
+
     class Meta:
         ordering = ['club']
         constraints = [
@@ -133,6 +142,9 @@ class Ban(models.Model):
     "Model for a ban to a club for some user."
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
+
+    def __str__(self):
+        return f'User: {self.user.first_name} {self.user.last_name} from Club: {self.club}'
 
     class Meta:
         ordering = ['club']
@@ -152,6 +164,9 @@ class Tournament(models.Model):
     deadline = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
     start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
     end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+
+    def __str__(self):
+        return f'{self.name} by {self.club}'
 
     class Meta:
         ordering = ['start']
@@ -195,6 +210,9 @@ class MemberTournamentRelationship(models.Model):
 class Organiser(MemberTournamentRelationship):
     """Relationship between member and tournament where member has an admin role."""
     is_lead_organiser = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.particpant} by {self.club}'
 
 class Participant(MemberTournamentRelationship):
     """Relationship between member and tournament where member will play."""
