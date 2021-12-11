@@ -151,12 +151,50 @@ class TournamentModelTestCase(TestCase):
         )
         self._assert_tournament_is_invalid()
 
+    # Test num participants
+
+    def test_num_participants(self):
+        self.assertEqual(self.tournament.get_num_participants(), self.tournament.capacity)
+
+    # Test get max round num
+    def test_max_round_num_over_32_participants(self):
+        self.assertEqual(self.tournament.get_max_round_num(), 6)
+    
+    def test_max_round_num_over_16_under_33_participants(self):
+        self.tournament.capacity = 32
+        self._adjust_num_participants_to_capacity()
+        self.assertEqual(self.tournament.get_max_round_num(), 5)
+
+    def test_max_round_num_16_participants(self):
+        self.tournament.capacity = 16
+        self._adjust_num_participants_to_capacity()
+        self.assertEqual(self.tournament.get_max_round_num(), 4)
+
+    def test_max_round_num_8_participants(self):
+        self.tournament.capacity = 8
+        self._adjust_num_participants_to_capacity()
+        self.assertEqual(self.tournament.get_max_round_num(), 3)
+
+    def test_max_round_num_4_participants(self):
+        self.tournament.capacity = 4
+        self._adjust_num_participants_to_capacity()
+        self.assertEqual(self.tournament.get_max_round_num(), 2)
+
+    def test_max_round_num_2_participants(self):
+        self.tournament.capacity = 2
+        self._adjust_num_participants_to_capacity()
+        self.assertEqual(self.tournament.get_max_round_num(), 1)
+
+    def test_max_round_num_0_participants(self):
+        self.tournament.capacity = 0
+        self._adjust_num_participants_to_capacity()
+        self.assertEqual(self.tournament.get_max_round_num(), 0)
+    
     # Test generate initial round
     def test_None_returned_when_generating_next_round_with_no_participants(self):
         Participant.objects.filter(tournament=self.tournament).delete()
         self.assertEqual(self.tournament.generate_next_round(), None)
 
-    # Test generate first round
     def test_generate_first_round_with_32_participants(self):
         self.tournament.capacity = 32
         self._adjust_num_participants_to_capacity()
