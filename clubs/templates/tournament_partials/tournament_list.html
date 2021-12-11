@@ -1,9 +1,41 @@
 {% if tournaments.count == 0 %}
-<tr><td></td></tr>
-<tr><td> No tournaments </td></tr>
+<thead>
+  <tr><td></td></tr>
+</thead>
+<tbody>
+  <tr><td> No tournaments </td></tr>
+</tbody>
 {% else %}
-  {% include 'tournament_partials/tournament_list_header.html' %}
-  {% for tournament in tournaments %}
-<tr>{% include 'tournament_partials/tournament_list_row_basics.html' with tournament=tournament %}</tr>
-  {% endfor %}
+  {% if is_upcoming %}
+<thead>
+  <tr>
+    {% include 'tournament_partials/tournament_list_header_basics.html' %}
+    {% include 'tournament_partials/tournament_list_header_extras_upcoming.html' %}
+  </tr>
+</thead>
+    {% for tournament in tournaments %}
+<tbody>
+  <tr onclick=window.location="{% url 'show_club' club.id %}">
+      {% include 'tournament_partials/tournament_list_row_basics.html' with tournament=tournament %}
+      {% include 'tournament_partials/tournament_list_row_extras_upcoming.html' with tournament=tournament %}
+  </tr>
+</tbody>
+    {% endfor %}
+
+  {% else %}
+<thead>
+  <tr>
+    {% include 'tournament_partials/tournament_list_header_basics.html' %}
+    {% include 'tournament_partials/tournament_list_header_extras.html' %}
+  </tr>
+</thead>
+    {% for tournament in tournaments %}
+<tbody>
+  <tr {% if is_member %} onclick=window.location="{% url 'show_club' club.id %}" {% endif %}>
+      {% include 'tournament_partials/tournament_list_row_basics.html' with tournament=tournament %}
+      {% include 'tournament_partials/tournament_list_row_extras.html' with tournament=tournament %}
+  </tr>
+</tbody>
+    {% endfor %}
+  {% endif %}
 {% endif %}
