@@ -223,10 +223,26 @@ class TournamentModelTestCase(TestCase):
         self.assertEqual(len(set(next_round.get_player_occurences())), 16)
 
     def test_round_after_knockout_is_knockout(self):
-        pass
+        self.tournament.capacity = 16
+        self._adjust_num_participants_to_capacity()
+        first_round = self.tournament.generate_next_round()
+        self.assertIsInstance(first_round, KnockoutStage)
+        self._complete_round_with_single_matchset(first_round)
+
+        next_round = self.tournament.generate_next_round()
+        self.assertIsInstance(next_round, KnockoutStage)
+        self.assertEqual(len(next_round.get_matches()), 4)
+        self.assertEqual(len(set(next_round.get_player_occurences())), 8)
 
     def test_round_after_2_player_knockout_is_None(self):
-        pass
+        self.tournament.capacity = 2
+        self._adjust_num_participants_to_capacity()
+        first_round = self.tournament.generate_next_round()
+        self.assertIsInstance(first_round, KnockoutStage)
+        self._complete_round_with_single_matchset(first_round)
+
+        next_round = self.tournament.generate_next_round()
+        self.assertEqual(next_round, None)
 
     # Helper functions.
     def _adjust_num_participants_to_capacity(self):

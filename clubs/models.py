@@ -195,8 +195,8 @@ class Tournament(models.Model):
             next_num = 1
         
         num_participants = len(participants)
-        if num_participants == 0:
-            return None # Round not complete or no one signed up
+        if num_participants < 2:
+            return None # Round not complete, no one signed up, or tourney complete
 
         # KNOCKOUT CASE
         if num_participants <= 16 and (num_participants & (num_participants - 1) == 0):
