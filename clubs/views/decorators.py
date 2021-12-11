@@ -56,7 +56,7 @@ def ban_exists(view_function):
 
 def tournament_exists(view_function):
     def modified_view_fuction(request, tournament_id, **kwargs):
-        if not Ban.objects.filter(id=tournament_id).exists():
+        if not Tournament.objects.filter(id=tournament_id).exists():
             messages.error(request, 'No tournament with id ' + str(tournament_id) + ' exists.')
             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         else:
