@@ -28,12 +28,12 @@ class OrganiseTournamentView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['current_user'] = self.request.user
         context['club'] = Club.objects.get(id=self.kwargs['club_id'])
         return context
 
     def form_valid(self, form):
         desired_club = self.get_context_data()['club']
-
         self.object = form.save(desired_club)
         return super().form_valid(form)
 

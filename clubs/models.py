@@ -57,7 +57,7 @@ class User(AbstractUser):
     )
 
     USERNAME_FIELD = 'email' # set default auth user to email
-    REQUIRED_FIELDS = [] # Django error told me to do this
+    REQUIRED_FIELDS = ['username'] # Required fields for a user creation. e.g. when creating a superuser.
 
     bio = models.CharField(max_length=520, blank = True, default = '')
 
@@ -151,6 +151,7 @@ class Tournament(models.Model):
     name = models.CharField(max_length=50, blank=False, unique = True)
     description =  models.CharField(max_length=280, blank=False)
     capacity = models.PositiveIntegerField(default=16, blank=False, validators=[MinValueValidator(2), MaxValueValidator(96)])
+    deadline = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
     start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
     end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
 
@@ -166,6 +167,8 @@ class Tournament(models.Model):
         if self.capacity < Participant.objects.filter(tournament=self).count():
             raise ValidationError("At no point can there be more participants than capacity.")
         if self.start < now():
+            raise ValidationError("The start date cannot be in the past!")
+        if self.deadline < now():
             raise ValidationError("The start date cannot be in the past!")
         if self.end < now():
             raise ValidationError("The end date cannot be in the past!")
@@ -275,6 +278,7 @@ class Organiser(MemberTournamentRelationship):
 class Participant(MemberTournamentRelationship):
     """Relationship between member and tournament where member will play."""
     round_eliminated = models.IntegerField(default=-1)
+    joined = models.DateTimeField(auto_now_add=True, blank=False)
 
 class GenericRoundOfMatches(models.Model):
     """Model for some group of matches together that, when complete, produce some winners."""

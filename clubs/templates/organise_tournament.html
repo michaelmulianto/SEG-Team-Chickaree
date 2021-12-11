@@ -7,7 +7,7 @@
     <div class="row">
       <div class="col-sm-12 col-md-6 offset-md-3">
         <h1>Organise Tournament</h1>
-        <form action="{% url 'create_club' %}" method="post">
+        <form action="{% url 'organise_tournament' club.id %}" method="post">
           {% csrf_token %}
           {% include 'partials/bootstrap_form.html' with form=form %}
           <input type="submit" value="Create" class="btn btn-primary">
@@ -15,4 +15,17 @@
       </div>
     </div>
   </div>
+  <script>
+  $(function () {
+    $("#id_deadline").datetimepicker({
+      format: 'Y-m-d H:i:00',
+    });
+    $("#id_start").datetimepicker({
+      format: 'Y-m-d H:i:00',
+    });
+    $("#id_end").datetimepicker({
+      format: 'Y-m-d H:i:00',
+    });
+  });
+</script>
 {% endblock %}

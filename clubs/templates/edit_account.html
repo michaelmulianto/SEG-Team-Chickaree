@@ -11,6 +11,7 @@
         <form action="{% url 'edit_account' %}" method="post">
           {% csrf_token %}
           {% include 'partials/bootstrap_form.html' with form=form %}
+          <a href='{% url 'account' %}' class="btn btn-outline-danger">Cancel</a>&nbsp;
           <input type="submit" value="Update" class="btn btn-primary">
         </form>
       </div>

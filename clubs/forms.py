@@ -11,7 +11,7 @@ from django.core.validators import RegexValidator
 
 class LogInForm(forms.Form):
     """Form to grant access to a returning user's personalised content"""
-    email = forms.CharField(label='email')
+    email = forms.CharField(label='Email')
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
 
 
@@ -112,7 +112,11 @@ class EditClubInfoForm(forms.ModelForm):
 class OrganiseTournamentForm(forms.ModelForm):
     class Meta:
         model = Tournament
-        fields = ['name', 'description', 'capacity', 'start', 'end']
+        fields = ['name', 'description', 'capacity', 'deadline', 'start', 'end']
+        deadline = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
+        start = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
+        end = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
+
         widgets = {'description': forms.Textarea()}
 
     #Create new tournament using the tournament form data
@@ -123,6 +127,7 @@ class OrganiseTournamentForm(forms.ModelForm):
             name = self.cleaned_data.get('name'),
             description = self.cleaned_data.get('description'),
             capacity = self.cleaned_data.get('capacity'),
+            deadline = self.cleaned_data.get('deadline'),
             start = self.cleaned_data.get('start'),
             end = self.cleaned_data.get('end')
         )

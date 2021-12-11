@@ -27,6 +27,7 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
         "capacity" : 16,
         "start" : "2099-12-10T00:00:00+00:00",
         "end" : "2099-12-20T00:00:00+00:00"
+        "deadline" : "2099-12-14T00:00:00+00:00",
         }
         self.url = reverse('organise_tournament', kwargs={'club_id': self.club.id})
 
