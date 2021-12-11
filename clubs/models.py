@@ -450,8 +450,13 @@ class SingleGroup(GenericRoundOfMatches):
 
         # https://www.geeksforgeeks.org/python-sort-list-by-dictionary-values/
         res = sorted(scores.keys(), key = lambda ele: scores[ele])
-        winner_ids = res[self.winners_required + 1:]
-        loser_ids = res[:self.winners_required + 1]
+        winner_ids = []
+        for i in range(0,self.winners_required):
+            winner_ids.append(res[i])
+
+        loser_ids = []
+        for i in range(self.winners_required, len(res)):
+            loser_ids.append(res[i])
 
         winners = []
         for p_id in winner_ids:

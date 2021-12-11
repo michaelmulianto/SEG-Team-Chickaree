@@ -201,13 +201,7 @@ class TournamentModelTestCase(TestCase):
         # 96 Participants = 6 player group, tested above
         first_round = self.tournament.generate_next_round()
         self.assertIsInstance(first_round, GroupStage)
-        groups = SingleGroup.objects.filter(group_stage=first_round)
-        # Complete the round
-        for group in groups:
-            matches = group.get_matches()
-            for match in matches:
-                match.result = 1 # Let white win, we don't care about specifics
-                match.save()
+        self._complete_group_round(first_round)
 
         next_round = self.tournament.generate_next_round()
         self.assertIsInstance(next_round, GroupStage)
@@ -216,8 +210,17 @@ class TournamentModelTestCase(TestCase):
         # Check num members in one group, as 8*4=32
         self.assertEqual(len(set(groups[0].get_player_occurences())), 4)
 
-    def test_round_after_4_player_group_stage_is_knockout(self):
-        pass
+    def test_round_after_4_player_group_stage_is_knockout_with_16_players(self):
+        self.tournament.capacity = 32
+        self._adjust_num_participants_to_capacity()
+        first_round = self.tournament.generate_next_round()
+        self.assertIsInstance(first_round, GroupStage)
+        self._complete_group_round(first_round)
+
+        next_round = self.tournament.generate_next_round()
+        self.assertIsInstance(next_round, KnockoutStage)
+        self.assertEqual(len(next_round.get_matches()), 8)
+        self.assertEqual(len(set(next_round.get_player_occurences())), 16)
 
     def test_round_after_knockout_is_knockout(self):
         pass
@@ -234,6 +237,17 @@ class TournamentModelTestCase(TestCase):
                 break
             p.delete()
             i += 1
+
+    def _complete_group_round(self, my_round):
+        groups = SingleGroup.objects.filter(group_stage=my_round)
+        for group in groups:
+            self._complete_round_with_single_matchset(group)
+
+    def _complete_round_with_single_matchset(self, my_round):
+        matches = my_round.get_matches()
+        for match in matches:
+            match.result = 1 # Let white win, we don't care about specifics
+            match.save()
 
     # Generic assertions.
     def _assert_tournament_is_valid(self):
