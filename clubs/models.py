@@ -88,6 +88,9 @@ class Club(models.Model):
     #Automatically use current time as the club creation date
     created_on = models.DateTimeField(auto_now_add=True, blank=False)
 
+    def __str__(self):
+        return f'{self.name}'
+
     class Meta:
         ordering = ['-created_on']
 
@@ -97,6 +100,9 @@ class Membership(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE, unique=False, blank=False)
     is_officer = models.BooleanField(default=False)
     is_owner = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'User: {self.user.first_name} {self.user.last_name} at Club: {self.club}'
 
     class Meta:
         ordering = ['club']
@@ -122,6 +128,9 @@ class Application(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
     personal_statement = models.CharField(max_length=580, blank=False, default = "")
 
+    def __str__(self):
+        return f'User: {self.user.first_name} {self.user.last_name} to Club: {self.club}'
+
     class Meta:
         ordering = ['club']
         constraints = [
@@ -135,6 +144,9 @@ class Ban(models.Model):
     "Model for a ban to a club for some user."
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
+
+    def __str__(self):
+        return f'User: {self.user.first_name} {self.user.last_name} from Club: {self.club}'
 
     class Meta:
         ordering = ['club']
@@ -154,6 +166,9 @@ class Tournament(models.Model):
     deadline = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
     start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
     end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+
+    def __str__(self):
+        return f'{self.name} by {self.club}'
 
     class Meta:
         ordering = ['start']
@@ -198,7 +213,7 @@ class Tournament(models.Model):
         else: # No round has occured yet.
             participants = list(Participant.objects.filter(tournament=self))
             next_num = 1
-        
+
         num_participants = len(participants)
         if num_participants < 2:
             return None # Round not complete, no one signed up, or tourney complete
@@ -230,10 +245,10 @@ class Tournament(models.Model):
             else:
                 group_size = 6
                 required_winners = 32
-            
+
             num_groups = num_participants // group_size
             winners_per_group = required_winners // num_groups
-            
+
             for i in range(0, num_groups):
                 group = SingleGroup.objects.create(
                     group_stage = my_stage,
@@ -250,14 +265,14 @@ class Tournament(models.Model):
                         white_player = pair[0],
                         black_player = pair[1]
                     )).save()
-                
+
                 group.full_clean()
                 group.save()
 
         my_stage.full_clean()
         my_stage.save()
         return my_stage
-            
+
 
 class MemberTournamentRelationship(models.Model):
     """Represent a single relationship between a member of a club and its tournament."""
@@ -277,10 +292,16 @@ class Organiser(MemberTournamentRelationship):
     """Relationship between member and tournament where member has an admin role."""
     is_lead_organiser = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f'{self.member.user.first_name} {self.member.user.last_name} organising {self.tournament.name} by {self.tournament.club}'
+
 class Participant(MemberTournamentRelationship):
     """Relationship between member and tournament where member will play."""
     round_eliminated = models.IntegerField(default=-1)
     joined = models.DateTimeField(auto_now_add=True, blank=False)
+
+    def __str__(self):
+        return f'{self.member.user.first_name} {self.member.user.last_name} in {self.tournament.name} by {self.tournament.club}'
 
 class GenericRoundOfMatches(models.Model):
     """Model for some group of matches together that, when complete, produce some winners."""
@@ -301,7 +322,7 @@ class GenericRoundOfMatches(models.Model):
             player_occurences.append(match.black_player)
 
         return player_occurences
-    
+
     def get_is_complete(self):
         return not self.get_matches().filter(result = 0).exists()
 
@@ -392,7 +413,7 @@ class GroupStage(StageInterface):
         for group in groups:
             if not group.get_is_complete():
                 return False
-        return True 
+        return True
 
     def full_clean(self):
         super().full_clean()
@@ -427,7 +448,7 @@ class SingleGroup(GenericRoundOfMatches):
         # Check total number of matches, in case of edge case.
         if self.get_matches().count() != ((num_players-1)/2.0) * num_players: # Triangle number: (n/2)*(n+1)
             raise ValidationError("The incorrect number of matches are linked to this group.")
-    
+
     def get_is_complete(self):
         matches = self.get_matches()
         for match in matches:
@@ -470,6 +491,5 @@ class SingleGroup(GenericRoundOfMatches):
 
         for p_id in loser_ids:
             Participant.objects.filter(id = p_id).round_eliminated = self.group_stage.round_num
-        
-        return winners
 
+        return winners
