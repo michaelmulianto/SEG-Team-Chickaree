@@ -3,7 +3,7 @@
 from django.views import View
 from django.views.generic.edit import FormView
 
-from .helpers import is_user_owner_of_club, is_user_officer_of_club, get_clubs_of_user
+from .helpers import is_user_owner_of_club, is_user_officer_of_club
 from .decorators import club_exists, membership_exists, not_banned, application_exists
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -32,7 +32,6 @@ class ApplyToClubView(FormView):
         context = super().get_context_data(**kwargs)
         context['current_user'] = self.request.user
         context['club'] = Club.objects.get(id=self.kwargs['club_id'])
-        context['my_clubs'] = get_clubs_of_user(self.get_object())
         return context
 
     def get_object(self):
