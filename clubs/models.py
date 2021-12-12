@@ -174,6 +174,9 @@ class Tournament(models.Model):
     class Meta:
         ordering = ['start']
 
+    def get_is_complete(self):
+        return len(self.get_current_round().get_winners())==1
+
     def full_clean(self, *args, **kwargs):
         super().full_clean(*args, **kwargs)
         if self.capacity > 16 and ((self.capacity % 4 != 0) or (self.capacity % 6 != 0)) and self.capacity !=32:
