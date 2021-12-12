@@ -232,7 +232,13 @@ class Tournament(models.Model):
 
     def generate_next_round(self):
         self.full_clean() # Constraints are needed for this to work.
+
+        if self.get_is_complete():
+            # Whole tournament is complete already
+            return None
+            
         curr_round = self.get_current_round()
+        
         if curr_round != None:
             participants = curr_round.get_winners()
             next_num = curr_round.round_num+1
@@ -240,9 +246,11 @@ class Tournament(models.Model):
             participants = list(Participant.objects.filter(tournament=self))
             next_num = 1
 
+        if participants == None:
+            # Current round is not yet complete
+            return None
+        
         num_participants = len(participants)
-        if num_participants < 2:
-            return None # Round not complete, no one signed up, or tourney complete
 
         # KNOCKOUT CASE
         if num_participants <= 16 and (num_participants & (num_participants - 1) == 0):
