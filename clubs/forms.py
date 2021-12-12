@@ -109,7 +109,7 @@ class EditClubInfoForm(forms.ModelForm):
         fields = ['name', 'location', 'description']
         widgets = {'description': forms.Textarea()}
 
-class OrganiseTournamentForm(forms.ModelForm):
+class OrganiseTournamentForm(forms.ModelForm): #2,4,8,16,24,32,48,96
     class Meta:
         model = Tournament
         fields = ['name', 'description', 'capacity', 'deadline', 'start', 'end']
@@ -117,6 +117,18 @@ class OrganiseTournamentForm(forms.ModelForm):
         start = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
         end = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
 
+        capacity_choices = (
+            ('2',2),
+            ('4',4),
+            ('8',8),
+            ('16',16),
+            ('24',24),
+            ('32',32),
+            ('48',48),
+            ('96',96),
+        )
+
+        capacity = forms.ChoiceField(choices = capacity_choices
         widgets = {'description': forms.Textarea()}
 
     #Create new tournament using the tournament form data
