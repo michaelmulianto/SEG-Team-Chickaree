@@ -1,7 +1,7 @@
 """Tests for Tournament model, found in tournaments/models.py"""
 
 from django.test import TestCase
-from clubs.models import Tournament, Membership, User, Participant, GroupStage, KnockoutStage, SingleGroup, Match, StageInterface
+from clubs.models import Tournament, Membership, User, Participant, GroupStage, KnockoutStage, SingleGroup, Match, StageInterface, Club
 from django.core.exceptions import ValidationError
 
 
@@ -9,6 +9,7 @@ class TournamentModelTestCase(TestCase):
     """Test all aspects of a tournament."""
 
     fixtures = ['clubs/tests/fixtures/default_club.json',
+        'clubs/tests/fixtures/other_clubs.json',
         'clubs/tests/fixtures/default_tournament.json',
         'clubs/tests/fixtures/other_tournaments.json', 
         'clubs/tests/fixtures/other_users.json',
@@ -32,9 +33,14 @@ class TournamentModelTestCase(TestCase):
         self.tournament.name = None
         self._assert_tournament_is_invalid()
 
-    def test_name_must_be_unique(self):
+    def test_name_must_be_unique_by_club(self):
         self.tournament.name = self.second_tournament.name
         self._assert_tournament_is_invalid()
+
+    def test_name_not_unique_in_different_clubs(self):
+        self.tournament.club = Club.objects.get(id=2)
+        self.tournament.name = self.second_tournament.name
+        self._assert_tournament_is_valid()
 
     def test_name_must_not_be_over_50_characters(self):
         self.tournament.name = 'x' * 51
