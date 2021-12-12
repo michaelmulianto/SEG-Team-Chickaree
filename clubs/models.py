@@ -195,7 +195,7 @@ class Tournament(models.Model):
     def get_current_round(self):
         rounds = StageInterface.objects.filter(tournament=self)
         if rounds.count() == 0:
-            return None 
+            return None
         curr_round_num = rounds.aggregate(Max('round_num'))['round_num__max']
         curr_round = rounds.get(round_num=curr_round_num)
         if hasattr(curr_round, 'knockoutstage'):
@@ -218,6 +218,9 @@ class Tournament(models.Model):
                 d += 1
                 n = n/2
             return d
+
+    def get_group_stages(self):
+        return GroupStage.objects.filter(tournament=self)
 
     def generate_next_round(self):
         self.full_clean() # Constraints are needed for this to work.
@@ -314,6 +317,9 @@ class Participant(MemberTournamentRelationship):
     """Relationship between member and tournament where member will play."""
     round_eliminated = models.IntegerField(default=-1)
     joined = models.DateTimeField(auto_now_add=True, blank=False)
+
+    def get_points_in_single_group(self, single_group):
+        matches = single_group.get_matches()
 
     def __str__(self):
         return f'{self.member.user.first_name} {self.member.user.last_name} in {self.tournament.name} by {self.tournament.club}'
@@ -412,6 +418,10 @@ class KnockoutStage(StageInterface):
 
 class GroupStage(StageInterface):
     """Tournament round of type group. Is associated with multiple groups."""
+
+    def get_single_groups(self):
+        return SingleGroup.objects.filter(group_stage=self)
+
     def get_winners(self):
         if not self.get_is_complete():
             return None
