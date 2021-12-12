@@ -242,7 +242,7 @@ class Command(BaseCommand):
 
         # Add other members to kerbal chess club
         other_kerbal_members = sample(list(User.objects.exclude(is_staff=True)
-        .exclude(id=val.id).exclude(id=jeb.id).exclude(id=billie.id)), 80)
+            .exclude(id=val.id).exclude(id=jeb.id).exclude(id=billie.id)), 80)
 
         for user in other_kerbal_members[:70]:
             (Membership.objects.create(
@@ -275,12 +275,13 @@ class Command(BaseCommand):
             end =  seedtime + timedelta(hours=49)
         )
         (Organiser.objects.create(
-            member = m2, # val's membership
+            member = val_member, # val's membership
             tournament = t1,
             is_lead_organiser = True
         )).save()
 
-        t1_participants = sample(list(Membership.objects.exclude(id=m2.id).filter(club=kerbal)), t1.capacity-1)
+        t1_participants = sample(list(Membership.objects.exclude(id=val_member.id)
+            .exclude(id=jeb_member.id).filter(club=kerbal)), t1.capacity-1)
 
         for membership in t1_participants:
             (Participant.objects.create(
@@ -304,17 +305,18 @@ class Command(BaseCommand):
         t2.created_on = seedtime - timedelta(hours=2)
 
         (Organiser.objects.create(
-            member = m2, # val's membership
+            member = val_member,
             tournament = t2,
             is_lead_organiser = True
         )).save()
 
         (Participant.objects.create(
-            member = m1, # jeb's membership
+            member = jeb_member,
             tournament = t2
         )).save()
 
-        t2_participants = sample(list(Membership.objects.exclude(id=m2.id).exclude(id=m1.id).filter(club=kerbal)), t2.capacity-1)
+        t2_participants = sample(list(Membership.objects.exclude(id=val_member.id)
+            .exclude(id=jeb_member.id).filter(club=kerbal)), t2.capacity-1)
 
         for membership in t2_participants:
             (Participant.objects.create(
