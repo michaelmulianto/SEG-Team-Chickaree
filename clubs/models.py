@@ -242,7 +242,7 @@ class Tournament(models.Model):
         if self.get_is_complete():
             # Whole tournament is complete already
             return None
-            
+
         curr_round = self.get_current_round()
         
         if curr_round != None:
@@ -257,6 +257,10 @@ class Tournament(models.Model):
             return None
         
         num_participants = len(participants)
+
+        if num_participants == 0:
+            # No one joined!!!
+            return None
 
         # KNOCKOUT CASE
         if num_participants <= 16 and (num_participants & (num_participants - 1) == 0):
