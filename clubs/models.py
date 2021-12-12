@@ -160,7 +160,7 @@ class Ban(models.Model):
 class Tournament(models.Model):
     """Model representing a single tournament."""
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
-    name = models.CharField(max_length=50, blank=False, unique = True)
+    name = models.CharField(max_length=50, blank=False, unique = False)
     description =  models.CharField(max_length=280, blank=False)
     capacity = models.PositiveIntegerField(default=16, blank=False, validators=[MinValueValidator(2), MaxValueValidator(96)])
     deadline = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
@@ -173,6 +173,12 @@ class Tournament(models.Model):
 
     class Meta:
         ordering = ['start']
+        constraints = [
+            UniqueConstraint(
+                name='tournament_name_must_be_unique_by_club',
+                fields=['club', 'name'],
+            ),
+        ]
 
     def get_is_complete(self):
         r = self.get_current_round()

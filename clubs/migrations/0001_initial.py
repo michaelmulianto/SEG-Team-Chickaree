@@ -128,7 +128,7 @@ class Migration(migrations.Migration):
             name='Tournament',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50, unique=True)),
+                ('name', models.CharField(max_length=50)),
                 ('description', models.CharField(max_length=280)),
                 ('capacity', models.PositiveIntegerField(default=16, validators=[django.core.validators.MinValueValidator(2), django.core.validators.MaxValueValidator(96)])),
                 ('deadline', models.DateTimeField(default=django.utils.timezone.now)),
@@ -193,6 +193,10 @@ class Migration(migrations.Migration):
                 ('stageinterface_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='clubs.stageinterface')),
             ],
             bases=('clubs.stageinterface',),
+        ),
+        migrations.AddConstraint(
+            model_name='tournament',
+            constraint=models.UniqueConstraint(fields=('club', 'name'), name='tournament_name_must_be_unique_by_club'),
         ),
         migrations.AddField(
             model_name='stageinterface',
