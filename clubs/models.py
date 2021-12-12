@@ -186,7 +186,13 @@ class Tournament(models.Model):
             raise ValidationError("The deadline date cannot be after the start!")
         if self.start > self.end:
             raise ValidationError("The tournament should have a positive duration.")
-        if self.deadline > self.created_on:
+        
+        if self.created_on == None:
+            creation_time = now()
+        else:
+            creation_time = self.created_on
+
+        if self.deadline < creation_time:
             raise ValidationError("Times must be after time of object creation.")
 
     def get_current_round(self):

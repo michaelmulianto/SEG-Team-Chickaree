@@ -112,13 +112,23 @@ class TournamentModelTestCase(TestCase):
         self._assert_tournament_is_invalid()
 
     def test_deadline_must_be_before_the_start_date(self):
-        self.tournament.deadline = "2021-12-20T00:00:00+00:00"
-        self.tournament.start = "2021-12-19T00:00:00+00:00"
+        self.tournament.deadline = "2099-12-20T00:00:00+00:00"
+        self.tournament.start = "2099-12-19T00:00:00+00:00"
+        self._assert_tournament_is_invalid()
+
+    def test_deadline_must_be_after_created_on(self):
+        self.tournament.deadline = "2099-11-20T00:00:00+00:00"
+        self.tournament.created_on = "2099-11-21T00:00:00+00:00"
         self._assert_tournament_is_invalid()
 
     # Test start date time
     def test_start_must_not_be_blank(self):
         self.tournament.start = None
+        self._assert_tournament_is_invalid()
+
+    def test_start_must_be_after_created_on(self):
+        self.tournament.start = "2099-11-20T00:00:00+00:00"
+        self.tournament.created_on = "2099-11-21T00:00:00+00:00"
         self._assert_tournament_is_invalid()
 
     # Test end date time
@@ -127,8 +137,13 @@ class TournamentModelTestCase(TestCase):
         self._assert_tournament_is_invalid()
 
     def test_end_must_not_be_before_the_start_date(self):
-        self.tournament.start = "2021-12-02T00:00:00+00:00"
-        self.tournament.end = "2021-12-01T00:00:00+00:00"
+        self.tournament.start = "2099-12-02T00:00:00+00:00"
+        self.tournament.end = "2099-12-01T00:00:00+00:00"
+        self._assert_tournament_is_invalid()
+
+    def test_end_must_be_after_created_on(self):
+        self.tournament.end = "2099-11-20T00:00:00+00:00"
+        self.tournament.created_on = "2099-11-21T00:00:00+00:00"
         self._assert_tournament_is_invalid()
 
     # Test participant constraints
