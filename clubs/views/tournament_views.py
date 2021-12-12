@@ -1,14 +1,16 @@
 from django.views import View
 from django.views.generic.edit import FormView
 
-from .decorators import login_prohibited, tournament_exists
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from clubs.forms import OrganiseTournamentForm
 from clubs.models import Membership, Tournament, Club
 
-from .decorators import club_exists
+from .decorators import club_exists, tournament_exists
+
+from datetime import datetime
+from django.utils.timezone import now
 
 from django.contrib import messages
 from django.contrib.auth import login
@@ -33,6 +35,10 @@ class OrganiseTournamentView(FormView):
         return context
 
     def form_valid(self, form):
+        if form.cleaned_data['start'] < now() or form.cleaned_data['end'] < now() or form.cleaned_data['deadline'] < now():
+            messages.add_message(self.request, messages.ERROR, "Given time and date must not be in the past.")
+            return super().form_invalid(form)
+
         desired_club = self.get_context_data()['club']
         self.object = form.save(desired_club)
         return super().form_valid(form)

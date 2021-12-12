@@ -104,8 +104,8 @@ def delete_club(request, club_id):
 
     if is_user_owner_of_club(current_user, club_to_delete):
         Club.objects.get(id=club_id).delete()
-        messages.add_message(request, messages.INFO, "The club has successfully been deleted")
+        messages.add_message(request, messages.INFO, "The club has successfully been deleted.")
         return redirect('show_clubs')
     else:
-        messages.add_message(request, messages.ERROR, "You are not the owner of this clubs")
+        messages.add_message(request, messages.ERROR, "You are not the owner of this club.")
         return redirect('show_club', club_id=club_id)
