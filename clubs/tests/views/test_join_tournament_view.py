@@ -3,7 +3,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
-from clubs.models import User, Club, Membership, Participant
+from clubs.models import User, Club, Membership, Participant, Tournament
 from clubs.forms import CreateClubForm
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 
@@ -11,19 +11,21 @@ from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 class JoinTournamentViewTest(TestCase, MenuTesterMixin):
     """Test all aspects of the create club view"""
 
-    fixtures = ['clubs/tests/fixtures/default_user.json']
+    fixtures = ['clubs/tests/fixtures/default_user.json', 'clubs/tests/fixtures/default_tournament.json', 'clubs/tests/fixtures/default_club.json']
 
     def setUp(self):
-        self.url = reverse('join_tournament')
         self.user = User.objects.get(username='johndoe')
+        self.tournament = Tournament.objects.get(name = 'Grand Championship')
+        self.url = reverse('join_tournament', kwargs={'tournament_id': self.tournament.id})
+
         self.data = {
 
         }
 
-    # def test_get_join_tournament_redirects_when_not_logged_in(self):
-    #     response = self.client.post(self.url)
-    #     redirect_url = reverse_with_next('log_in', self.url)
-    #     self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+    def test_get_join_tournament_redirects_when_not_logged_in(self):
+        response = self.client.post(self.url)
+        redirect_url = reverse_with_next('log_in', self.url)
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     # def test_successful_join_tournament(self):
     #     self.client.login(email=self.user.email, password="Password123")
