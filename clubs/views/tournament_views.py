@@ -47,7 +47,13 @@ def show_tournament(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     club = tournament.club
     if Membership.objects.filter(user=request.user, club=club):
-        return render(request, 'show_tournament.html', { 'current_user': request.user, 'tournament': tournament })
+        tournament_group_stages = tournament.get_group_stages()
+        return render(request, 'show_tournament.html', {
+                'current_user': request.user,
+                'tournament': tournament,
+                'tournament_group_stages': tournament_group_stages
+            }
+        )
     else:
         messages.error(request, "You are not a member of the club that organises this tournament, you can view the basic tournament details from the club's page.")
     return redirect('show_club', club_id=club.id)
