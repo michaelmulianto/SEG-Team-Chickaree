@@ -32,7 +32,7 @@ class ShowClubViewTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200) #OK
         self.assert_menu(response)
 
-    def test_promote_redirects_when_not_logged_in(self):
+    def test_show_club_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
         redirect_url = reverse_with_next('log_in', self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
