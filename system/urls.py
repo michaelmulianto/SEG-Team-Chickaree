@@ -61,4 +61,5 @@ urlpatterns = [
     path('member/<int:member_id>/ban/', views.ban_member, name='ban_member'),
 
     path('tournament/<int:tournament_id>/', views.show_tournament, name='show_tournament'),
+    path('tournament/<int:tournament_id>/add_organiser/<int:membership_id>', views.add_organisers_to_tournament, name='add_organiser_to_tournament')
 ]
