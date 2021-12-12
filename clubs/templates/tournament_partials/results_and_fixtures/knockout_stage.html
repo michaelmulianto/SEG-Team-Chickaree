@@ -1,0 +1,9 @@
+<table>
+  <tbody>
+    <tr>
+    {% for match in knockoutstage.get_matches %}
+      {% include 'tournament_partials/results_and_fixtures/knockout_row.html' %}
+    {% endfor %}
+    </tr>
+  </tbody>
+</table>

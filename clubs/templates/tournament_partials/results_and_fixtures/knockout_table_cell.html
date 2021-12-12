@@ -1,0 +1,12 @@
+<td style="text-align: center;">
+  {% if match.result == 0 %}
+  <p> Winner: TBD </p>
+  {% elif match.result == 1 %}
+  <p> Winner: {{ match.white_player.member.user.username }} </p>
+  {% elif match.result == 2 %}
+  <p> Winner: {{ match.black_player.member.user.username }} </p>
+  {% else %}
+  <p> ERROR </p>
+  {% endif %}
+  <p> {{ match.white_player.member.user.username }} vs {{ match.black_player.member.user.username }} </p>
+</td>
