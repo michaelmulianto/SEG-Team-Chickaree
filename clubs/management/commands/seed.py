@@ -12,7 +12,13 @@ class Command(BaseCommand):
     def generate_random_data(self):
         for i in range(100):
             first_name = self.faker.first_name()
+            while len(first_name) > 28:
+                first_name = self.faker.first_name()
+
             last_name = self.faker.last_name()
+            while len(last_name) > 28:
+                last_name = self.faker.last_name()
+
             email = f"{first_name}.{last_name}{i}@example.org"
             username = f"{first_name}{i}"
             bio = self.faker.paragraph(nb_sentences=3)
@@ -32,7 +38,13 @@ class Command(BaseCommand):
 
         for i in range(12):
             name = self.faker.unique.company()
+            while len(name) > 50:
+                name = self.faker.company()
+
             location = self.faker.country()
+            while len(location) > 50:
+                location = self.faker.country()
+
             description = self.faker.paragraph(nb_sentences=3)
 
             club = Club.objects.create(

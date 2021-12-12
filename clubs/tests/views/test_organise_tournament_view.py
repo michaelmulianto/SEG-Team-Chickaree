@@ -96,7 +96,6 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
         organiser_count_before = Organiser.objects.count()
         
         response = self.client.post(self.url, self.data, follow=True)
-        #print("\n\nHEREERERERERERERERERERER\n\n")
         tournament_count_after = Tournament.objects.count()
         organiser_count_after = Organiser.objects.count()
 
