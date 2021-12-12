@@ -24,7 +24,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.url = reverse('members_list', kwargs={'club_id': self.club.id})
 
     def test_members_list_url(self):
-        self.assertEqual('/members_list/'+ str(self.club.id), self.url)
+        self.assertEqual(self.url, f'/club/{self.club.id}/members/')
 
     def test_get_user_list_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)

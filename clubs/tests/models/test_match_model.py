@@ -1,7 +1,7 @@
 """Tests for Club model, found in clubs/models.py"""
 
 from django.test import TestCase
-from clubs.models import Match, Participant, StageInterface, Tournament, Club, User, Membership
+from clubs.models import Match, Participant, GenericRoundOfMatches, Tournament, Club, User, Membership
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
@@ -40,15 +40,12 @@ class MatchModelTestCase(TestCase):
             tournament = Tournament.objects.get(name = "Just A League")
         )
 
-        self.stage = StageInterface.objects.create(
-            tournament = Tournament.objects.get(name = "Just A League"),
-            round_num = 1
-        )
+        self.collection = GenericRoundOfMatches.objects.create()
 
         self.match = Match.objects.create(
             white_player = self.first_par,
             black_player = self.second_par,
-            stage = self.stage,
+            collection = self.collection,
             result = 1,
         )
 
@@ -91,27 +88,28 @@ class MatchModelTestCase(TestCase):
         self.assertTrue(Participant.objects.filter(member = self.second_membership).exists())
 
     # Test stage
-    def test_stage_cannot_be_blank(self):
-        self.match.stage= None
+    def test_collection_cannot_be_blank(self):
+        self.match.collection = None
         self._assert_invalid_match()
 
-    def test_stage_cannot_contain_non_stage_object(self):
+    def test_collection_cannot_contain_non_stage_object(self):
         with self.assertRaises(ValueError):
-            self.match.black_player = self.club
+            self.match.collection = self.club
 
-    def test_match_deletes_when_stage_is_deleted(self):
-        self.stage.delete()
-        self.assertFalse(Match.objects.filter(stage=self.match.stage).exists())
+    def test_match_deletes_when_collection_is_deleted(self):
+        self.collection.delete()
+        self.assertFalse(Match.objects.filter(id=self.match.id).exists())
 
     def test_stage_does_not_delete_when_match_is_deleted(self):
         self.match.delete()
-        self.assertTrue(StageInterface.objects.filter(tournament = self.stage.tournament).exists())
+        self.assertTrue(GenericRoundOfMatches.objects.filter(id=self.collection.id).exists())
 
 
     # Test result
-    def test_result_can_be_blank(self):
+    def test_result_cannot_be_blank(self):
         self.match.result = None
-        self.match.full_clean()
+        with self.assertRaises(ValidationError):
+            self.match.full_clean()
 
     def test_result_must_not_be_other_than_options_given(self):
         self.match.result = 4
@@ -119,14 +117,12 @@ class MatchModelTestCase(TestCase):
             self.match.full_clean()
 
     # Constraints
-    def test_white_player_and_black_plater_together_are_unique(self):
-        try:
+    def test_white_player_and_black_player_cannot_be_same(self):
+        with self.assertRaises(IntegrityError):
             Match.objects.create(
-            white_player = self.first_par,
-            black_player = self.second_par,
-        )
-        except(IntegrityError):
-            self.assertRaises(IntegrityError)
+                white_player = self.first_par,
+                black_player = self.first_par
+            )
 
     # Assertions
     def _assert_valid_match(self):

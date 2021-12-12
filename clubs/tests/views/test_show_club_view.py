@@ -22,7 +22,8 @@ class ShowClubViewTestCase(TestCase, MenuTesterMixin):
         )
 
     def test_show_club_url(self):
-        self.assertEqual(self.url,f'/club/{self.club.id}')
+        self.assertEqual(self.url, f'/club/{self.club.id}/')
+
 
     def test_get_show_club_with_valid_id(self):
         self.client.login(email="johndoe@example.org", password="Password123")

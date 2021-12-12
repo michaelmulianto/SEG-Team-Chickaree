@@ -1,6 +1,9 @@
 {% extends 'base_content.html' %}
 {% block content %}
 {% load define_action %}
+{% check_is_owner club current_user as is_owner %}
+{% check_is_officer club current_user as is_officer %}
+{% get_banned_members club as banned_members %}
   <div class="container">
     <div class="row">
       <div class="col-12">
@@ -20,30 +23,27 @@
           </tr>
         {% else %}
           <tr>
+            {% include 'member_list_partials/table_header_basics.html' with include_counter=True%}
+            {% include 'member_list_partials/table_header_extras.html' with is_owner=is_owner is_officer=is_officer %}
+            {% if is_owner %}
             <th></th>
-            <th></th>
-            <th></th>
-            <th>Name</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Bio</th>
-            <th></th>
+            {% endif %}
 
           </tr>
           {% for ban_member in banned_members %}
           <tr>
-            <td> {{ forloop.counter }} <td>
-            <td> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
-            <td> @{{ ban_member.user.username }} </td>
-            <td> {{ ban_member.user.first_name }} {{ ban_member.user.last_name }} </td>
-            <td> {{ ban_member.user.email }} </td>
-            <!-- <td> {{ban_member.user.level}}<td> -->
-            <td> {{ ban_member.user.bio }} </td>
+            {% include 'member_list_partials/table_row_basics.html' with user=ban_member.user include_counter=True %}
+            {% include 'member_list_partials/table_row_extras.html' with user=ban_member.user is_owner=is_owner is_officer=is_officer %}
+            {% if is_owner %}
             <td style="width: 100px"><a style="width: 100px" href='{% url 'unban_member' ban_member.id %}' class="btn btn-danger">Unban</a></td>
+            {% endif %}
           </tr>
           {% endfor %}
         {% endif %}
         </table>
+        <a href='{% url 'show_club' club.id %}' class="btn btn-info">
+          <i class="bi bi-reply-fill"></i> Back to club page
+        </a>
       </div>
     </div>
   </div>

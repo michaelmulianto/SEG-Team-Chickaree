@@ -15,7 +15,7 @@
 
         <li><a class="dropdown-item" href='{% url 'account' %}'>My Profile</a></li>
         <li> <a class="dropdown-item" href="{% url 'my_clubs_list' %}" aria-labelledby="dropdownMenuButton">My Clubs </a></li>
-        {% include "partials/my_clubs_combobox.html" with my_clubs=my_clubs%}
+        {% include "partials/my_clubs_combobox.html" with current_user=current_user %}
         <li><hr class="dropdown-divider" style="margin:2px"></li>
         <li style="background-color:rgba(220, 53, 69, 0.8)"><a class="dropdown-item" href='{% url 'log_out' %}'>Log out</a></li>
       </ul>

@@ -11,7 +11,7 @@ from django.core.validators import RegexValidator
 
 class LogInForm(forms.Form):
     """Form to grant access to a returning user's personalised content"""
-    email = forms.CharField(label='email')
+    email = forms.CharField(label='Email')
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
 
 
