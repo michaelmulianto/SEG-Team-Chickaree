@@ -11,7 +11,7 @@ class TournamentModelTestCase(TestCase):
     fixtures = ['clubs/tests/fixtures/default_club.json',
         'clubs/tests/fixtures/other_clubs.json',
         'clubs/tests/fixtures/default_tournament.json',
-        'clubs/tests/fixtures/other_tournaments.json', 
+        'clubs/tests/fixtures/other_tournaments.json',
         'clubs/tests/fixtures/other_users.json',
         'clubs/tests/fixtures/default_tournament_participants.json'
         ]
@@ -60,6 +60,11 @@ class TournamentModelTestCase(TestCase):
         self.tournament.capacity = self.second_tournament.capacity
         self._adjust_num_participants_to_capacity()
         self._assert_tournament_is_valid()
+
+    def test_capacity_must_not_be_other_than_options_given(self):
+        self.tournament.capacity = 5
+        with self.assertRaises(ValidationError):
+            self.tournament.full_clean()
 
     def test_capacity_is_positive(self):
         self.tournament.capacity = -1
@@ -153,7 +158,7 @@ class TournamentModelTestCase(TestCase):
     # Test get max round num
     def test_max_round_num_over_32_participants(self):
         self.assertEqual(self.tournament.get_max_round_num(), 6)
-    
+
     def test_max_round_num_over_16_under_33_participants(self):
         self.tournament.capacity = 32
         self._adjust_num_participants_to_capacity()
@@ -183,7 +188,7 @@ class TournamentModelTestCase(TestCase):
         self.tournament.capacity = 0
         self._adjust_num_participants_to_capacity()
         self.assertEqual(self.tournament.get_max_round_num(), 0)
-    
+
     # Test generate initial round
     def test_None_returned_when_generating_next_round_with_no_participants(self):
         Participant.objects.filter(tournament=self.tournament).delete()
@@ -201,7 +206,7 @@ class TournamentModelTestCase(TestCase):
         self.assertEqual(len(set(groups[0].get_player_occurences())), 4)
         # Check number of matches in one group
         self.assertEqual(len(groups[0].get_matches()), 6)
-    
+
     def test_generate_first_round_with_48_participants(self):
         self.tournament.capacity = 48
         self._adjust_num_participants_to_capacity()

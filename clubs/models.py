@@ -176,7 +176,7 @@ class Tournament(models.Model):
         (48, '48'),
         (96, '96'),
     )
-    capacity = models.PositiveIntegerField(default = 2, choices = NUMBERSblank=False, validators=[MinValueValidator(2), MaxValueValidator(96)])
+    capacity = models.PositiveIntegerField(default = 2, choices = NUMBERS, blank=False, validators=[MinValueValidator(2), MaxValueValidator(96)])
 
     def __str__(self):
         return f'{self.name} by {self.club}'
