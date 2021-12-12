@@ -1,0 +1,24 @@
+<script>
+
+  var stage_dic = {
+      "New York" : -74.00,
+      "Los Angeles": -118.24,
+      "Chicago": -87.65,
+      "Seattle": -122.33,
+      "Washington D.C.": -77.03
+  };
+  function displayStage(stage) {
+    document.getElementById("past_tournaments_tab").classList.add('active');
+    document.getElementById("past_tournaments_table_body").style.display = "table";
+
+    if (document.getElementById("upcoming_tournaments_tab").classList.contains('active')) {
+      document.getElementById("upcoming_tournaments_tab").classList.remove('active');
+      document.getElementById("upcoming_tournaments_table_body").style.display = "none";
+    } else if (document.getElementById("ongoing_tournaments_tab").classList.contains('active')) {
+      document.getElementById("ongoing_tournaments_tab").classList.remove('active');
+      document.getElementById("ongoing_tournaments_table_body").style.display = "none";
+    }
+  }
+</script>
+{% for group in stage_1 %}
+{% include 'tournament_partials/results_and_fixtures/results_table.html' %}
