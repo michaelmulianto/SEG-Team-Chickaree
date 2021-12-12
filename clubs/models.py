@@ -175,11 +175,12 @@ class Tournament(models.Model):
         ordering = ['start']
 
     def get_is_complete(self):
-        r = self.get_current_round
+        r = self.get_current_round()
         if r != None:
-            return len(r.get_winners())==1
-        else:
-            return False
+            winners = r.get_winners()
+            if winners != None:
+                return len(winners)==1
+        return False
 
     def full_clean(self, *args, **kwargs):
         super().full_clean(*args, **kwargs)
@@ -432,6 +433,13 @@ class GroupStage(StageInterface):
             winners += group.get_winners()
 
         return winners
+
+    def get_matches(self):
+        groups = list(SingleGroup.objects.filter(group_stage=self))
+        matches = []
+        for group in groups:
+            matches += group.get_matches()
+        return matches
 
     def get_is_complete(self):
         groups = list(SingleGroup.objects.filter(group_stage=self))

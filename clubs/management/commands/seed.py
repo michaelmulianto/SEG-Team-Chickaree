@@ -120,7 +120,7 @@ class Command(BaseCommand):
                     deadline = starttime - timedelta(hours=24),
                 )
                 t.created_on = starttime - timedelta(hours=48)
-                
+
                 org_member = choice(list(Membership.objects.filter(club=club, is_officer=True)))
                 o = Organiser.objects.create(
                     member = org_member,
@@ -143,18 +143,11 @@ class Command(BaseCommand):
             
             # Helper for tournament generation
             def complete_round(my_round):
-                def complete_matches(matches):
                     # Arbitary result
-                    for match in matches:
-                        match.result=1
-                        match.black_player.round_eliminated = my_round.round_num
-
-                if my_round is KnockoutStage:
-                    complete_matches(my_round.get_matches())
-                else:
-                    groups = SingleGroup.objects.filter(group_stage=my_round)
-                    for group in groups:
-                        complete_matches(group.get_matches())
+                matches = my_round.get_matches()
+                for match in matches:
+                    match.result=1
+                    match.black_player.round_eliminated = my_round.round_num
                     
             # Complete all rounds of first tournament
             tpast = tournaments[0]
