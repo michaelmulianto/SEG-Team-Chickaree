@@ -118,14 +118,14 @@ class OrganiseTournamentForm(forms.ModelForm): #2,4,8,16,24,32,48,96
         end = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
 
         capacity_choices = (
-            ('2',2),
-            ('4',4),
-            ('8',8),
-            ('16',16),
-            ('24',24),
-            ('32',32),
-            ('48',48),
-            ('96',96),
+            ('2','2'),
+            ('4','4'),
+            ('8','8'),
+            ('16','16'),
+            ('24','24'),
+            ('32','32'),
+            ('48','48'),
+            ('96','96'),
         )
 
         capacity = forms.ChoiceField(choices = capacity_choices
