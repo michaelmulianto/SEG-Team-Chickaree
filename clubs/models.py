@@ -471,6 +471,30 @@ class SingleGroup(GenericRoundOfMatches):
                 return False
         return True
 
+    def get_standings_players(self):
+        if not self.get_is_complete():
+            return None
+
+        matches = self.get_matches()
+        players = set(self.get_player_occurences())
+        scores = {}
+        for player in players:
+            scores.update({player.id:0})
+
+        for match in matches:
+            if match.result == 1:
+                scores[match.white_player.id] += 1
+            elif match.result == 2:
+                scores[match.black_player.id] += 1
+            else:
+                scores[match.white_player.id] += 0.5
+                scores[match.black_player.id] += 0.5
+
+        # https://www.geeksforgeeks.org/python-sort-list-by-dictionary-values/
+        results = sorted(scores.keys(), key = lambda ele: scores[ele])
+
+        return results
+
     def get_winners(self):
         if not self.get_is_complete():
             return None
