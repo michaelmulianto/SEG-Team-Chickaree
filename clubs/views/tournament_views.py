@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 from clubs.forms import OrganiseTournamentForm
 from clubs.models import Tournament, Club, Organiser, Membership
 
-from .decorators import club_exists, tournament_exists, user_exists
+from .decorators import club_exists, is_head_organiser, membership_exists, tournament_exists, user_exists
 from .helpers import is_user_owner_of_club, is_user_officer_of_club
 
 from datetime import datetime
@@ -76,3 +76,26 @@ def show_tournament(request, tournament_id):
     else:
         messages.error(request, "You are not a member of the club that organises this tournament, you can view the basic tournament details from the club's page.")
     return redirect('show_club', club_id=club.id)
+
+@user_exists
+@login_required
+@membership_exists
+@tournament_exists
+def add_organisers_to_tournament(request, tournament_id, member_id):
+    """Allow the head organiser of a tournament to assign other officers/owner of the club organising the tournament to officer."""
+    tournament = Tournament.objects.get(id = tournament_id)
+    new_organiser_member = Membership.objects.get(id = member_id)
+
+    if is_head_organiser(request.user, tournament):
+        if is_user_owner_of_club(new_organiser_member.user, tournament.club) or is_user_officer_of_club(new_organiser_member.user, tournament.club):
+                Organiser.objects.create(
+                    member = new_organiser_member,
+                    tournament = tournament
+                )
+                messages.success(request, '@' + new_organiser_member.user.username + ' is now an organiser of the tournament: ' + tournament.name + ".")
+        else: #Access denied organiser can only assign organiser roles to other members who are officers or the owner
+            messages.error(request, 'You can only assign officers or the owner to be ')
+    else: # Access denied, member isn't the lead organiser of tournament
+        messages.error(request, 'Only the lead organiser can assign other organisers to their tournament.')
+
+    return redirect('show_tournament', club_id=tournament.club.id)
