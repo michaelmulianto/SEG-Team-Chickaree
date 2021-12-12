@@ -9,6 +9,7 @@
 {% check_is_lead_organiser current_user tournament as is_lead_organiser %}
 
 {% get_organisers tournament as organisers %}
+{% get_officers_and_owner current_user tournament as officers_and_owner %}
 
   <div class="container">
     <div class="row">
@@ -40,7 +41,29 @@
           {% endfor %}
         </table>
         <br>
-        <a style="float: right;" href='{% url 'show_tournament' tournament.id %}' class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Add Co-Organiser</a>
+
+        <table class="table standard-table-spacing">
+          <tr>
+            <h3> Add organisers: </h3>
+
+            <div class="dropdown-menu">
+
+              {% for member in officers_and_owner %}
+
+                {% if is_organser member %}
+                <a class="dropdown-item" href="#">@{{ member.user.username }}</a>
+
+                {% else %}
+                  <a class="dropdown-item" href="#">@{{ member.user.username }}</a>
+                {%endif%}
+              {% endfor %}
+
+            </div>
+
+            <a style="float: right;" href='{% url 'add_organiser_to_tournament' tournament.id member.id %}' class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Add Co-Organiser</a>
+          </tr>
+        </table>
+
         <br>
         <br>
         <a href='{% url 'show_club' tournament.club.id %}' class="btn btn-info">
