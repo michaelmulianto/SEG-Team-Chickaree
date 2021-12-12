@@ -32,17 +32,17 @@ class JoinTournamentViewTest(TestCase, MenuTesterMixin):
         redirect_url = reverse_with_next('log_in', self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
-    def test_successful_join_tournament(self):
-        self.client.login(email=self.user.email, password="Password123")
-
-        # We need to test that participant has been created
-        participant_count_before = Participant.objects.count()
-
-        response = 
-
-        participant_count_after = Participant.objects.count()
-
-        self.assertEqual(participant_count_after, participant_count_before+1)
+    # def test_successful_join_tournament(self):
+    #     self.client.login(email=self.user.email, password="Password123")
+    #
+    #     # We need to test that participant has been created
+    #     participant_count_before = Participant.objects.count()
+    #
+    #     response =
+    #
+    #     participant_count_after = Participant.objects.count()
+    #
+    #     self.assertEqual(participant_count_after, participant_count_before+1)
 
     #
     # def test_unsuccessful_create_club(self):

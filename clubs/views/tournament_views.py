@@ -49,7 +49,7 @@ class OrganiseTournamentView(FormView):
 
 @login_required
 @tournament_exists
-def join_tournament(request,  tournament_id):  #check if user is member of club
+def join_tournament(request,  tournament_id):
     tour = Tournament.objects.get(id = tournament_id)
     currentCapacity = Participant.objects.filter(tournament = tour)
     is_organizer = True
@@ -58,7 +58,7 @@ def join_tournament(request,  tournament_id):  #check if user is member of club
         is_organizer = False
     is_member = False
     member = Membership.objects.get(club = tour.club, user = request.user)
-    if(member.count() > 1):
+    if(member.count() > 0):
         is_member = True
 
     if(tour.capacity < currentCapacity.count() and deadline < datetime.now() and is_organizer == False and is_member == True):
