@@ -22,10 +22,18 @@ def get_clubs(current_user):
     return my_clubs
 
 @register.simple_tag
-def check_is_lead_organiser(user, tournament):
+def check_is_organiser(user, tournament):
     if Membership.objects.filter(user=user, club=tournament.club).exists():
         membership = Membership.objects.get(user=user, club=tournament.club)
         return Organiser.objects.filter(member=membership, tournament=tournament).exists()
+    else:
+        return False
+
+@register.simple_tag
+def check_is_lead_organiser(user, tournament):
+    if Membership.objects.filter(user=user, club=tournament.club).exists():
+        membership = Membership.objects.get(user=user, club=tournament.club)
+        return Organiser.objects.filter(member=membership, tournament=tournament, is_lead_organiser = True).exists()
     else:
         return False
 
