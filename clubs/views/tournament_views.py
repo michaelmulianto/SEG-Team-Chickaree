@@ -1,15 +1,13 @@
 from django.views import View
 from django.views.generic.edit import FormView
 
-from .decorators import login_prohibited, tournament_exists
->>>>>>> Epic3_main
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from clubs.forms import OrganiseTournamentForm
 from clubs.models import Membership, Tournament, Club
 
-from .decorators import club_exists
+from .decorators import club_exists, tournament_exists
 
 from datetime import datetime
 from django.utils.timezone import now
