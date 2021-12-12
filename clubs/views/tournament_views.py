@@ -35,16 +35,19 @@ class OrganiseTournamentView(FormView):
         context['current_user'] = self.request.user
         context['club'] = Club.objects.get(id=self.kwargs['club_id'])
         return context
-
+    
     def form_valid(self, form):
-        self.object = form.save()
-        club = Club.objects.get(id=self.kwargs['club_id'])
+        if not is_user_owner_of_club(self.request.user, self.get_context_data()['club']) and not is_user_officer_of_club(self.request.user, self.get_context_data()['club']):
+            messages.add_message(self.request, messages.ERROR, "Only Owners or Officers of a club can create tournaments")
+            return super().form_invalid(form)
 
-        if is_user_owner_of_club(request.user, club):
-            pass
+        if form.cleaned_data['start'] < now() or form.cleaned_data['end'] < now() or form.cleaned_data['deadline'] < now():
+            messages.add_message(self.request, messages.ERROR, "Given time and date must not be in the past.")
+            return super().form_invalid(form)
 
+        self.object = form.save(self.get_context_data()['club'])
         member = Membership.objects.get(user = self.request.user, 
-                                        club = club)
+                                    club = self.get_context_data()['club'])
 
         Organiser.objects.create(
             member = member,
@@ -52,16 +55,7 @@ class OrganiseTournamentView(FormView):
             is_lead_organiser = True
         )
         return super().form_valid(form)
-
-
-    def form_valid(self, form):
-        if form.cleaned_data['start'] < now() or form.cleaned_data['end'] < now() or form.cleaned_data['deadline'] < now():
-            messages.add_message(self.request, messages.ERROR, "Given time and date must not be in the past.")
-            return super().form_invalid(form)
-
-        desired_club = self.get_context_data()['club']
-        self.object = form.save(desired_club)
-        return super().form_valid(form)
+            
 
     def get_success_url(self):
         club = self.get_context_data()['club']
