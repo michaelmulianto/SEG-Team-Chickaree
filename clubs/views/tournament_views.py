@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 from clubs.forms import OrganiseTournamentForm
 from clubs.models import Tournament, Club
 
-from .decorators import club_exists
+from .decorators import club_exists, tournament_exists
 
 from django.contrib import messages
 from django.contrib.auth import login
@@ -42,12 +42,17 @@ class OrganiseTournamentView(FormView):
 
 @login_required
 @tournament_exists
-def join_tournament(request,  tournament_id): #before deadline, not organizer, not already in tournament, add decorator for tournament
+def join_tournament(request,  tournament_id):  #not already in tournament
     tour = Tournmanent.objects.get(id = tournament_id)
     currentCapacity = Participant.objects.filter(tournament = tour)
-    if(tour.capacity < currentCapacity.count()):
+    isOrganizer = True
+    organizer = Organizer.objects.get(member = Membership.objects.get(user = request.user, club = tour.club), tournament = tour)
+    if(organizer.count() == 0):
+        isOrganizer = False
+
+    if(tour.capacity < currentCapacity.count() and deadline < datetime.now() and isOrganizer == False):
         participant = Participant.objects.create(
-            member = Membership.objects.get(user = request.user, club = tour.club)
+            member = Membership.objects.get(user = request.user, club = tour.club),
             tournament = tour
         )
     return reverse('show_club', kwargs={'club_id': tour.club.id})
