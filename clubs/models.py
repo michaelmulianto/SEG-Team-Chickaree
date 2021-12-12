@@ -162,10 +162,21 @@ class Tournament(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     name = models.CharField(max_length=50, blank=False, unique = False)
     description =  models.CharField(max_length=280, blank=False)
-    capacity = models.PositiveIntegerField(default=16, blank=False, validators=[MinValueValidator(2), MaxValueValidator(96)])
     deadline = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
     start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
     end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+
+    NUMBERS = (
+        (2,'2'),
+        (4, '4'),
+        (8, '8'),
+        (16, '16'),
+        (24, '24'),
+        (32, '32'),
+        (48, '48'),
+        (96, '96'),
+    )
+    capacity = models.IntegerField(default = 2, choices = NUMBERS)
 
     def __str__(self):
         return f'{self.name} by {self.club}'
@@ -195,7 +206,7 @@ class Tournament(models.Model):
     def get_current_round(self):
         rounds = StageInterface.objects.filter(tournament=self)
         if rounds.count() == 0:
-            return None 
+            return None
         curr_round_num = rounds.aggregate(Max('round_num'))['round_num__max']
         curr_round = rounds.get(round_num=curr_round_num)
         if hasattr(curr_round, 'knockoutstage'):
