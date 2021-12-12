@@ -1,8 +1,6 @@
 {% extends 'base_content.html' %}
 {% block content %}
 {% load define_action %}
-{% check_is_owner club current_user as is_owner %}
-{% check_is_officer club current_user as is_officer %}
 {% get_banned_members club as banned_members %}
   <div class="container">
     <div class="row">
@@ -24,7 +22,7 @@
         {% else %}
           <tr>
             {% include 'member_list_partials/table_header_basics.html' with include_counter=True%}
-            {% include 'member_list_partials/table_header_extras.html' with is_owner=is_owner is_officer=is_officer %}
+            {% include 'member_list_partials/table_header_extras.html' with show_email=True %}
             {% if is_owner %}
             <th></th>
             {% endif %}
@@ -33,7 +31,7 @@
           {% for ban_member in banned_members %}
           <tr>
             {% include 'member_list_partials/table_row_basics.html' with user=ban_member.user include_counter=True %}
-            {% include 'member_list_partials/table_row_extras.html' with user=ban_member.user is_owner=is_owner is_officer=is_officer %}
+            {% include 'member_list_partials/table_row_extras.html' with user=ban_member.user show_email=True %}
             {% if is_owner %}
             <td style="width: 100px"><a style="width: 100px" href='{% url 'unban_member' ban_member.id %}' class="btn btn-danger">Unban</a></td>
             {% endif %}
