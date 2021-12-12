@@ -30,7 +30,17 @@ class WithdrawParticipationFromTournamentTestCase(TestCase):
             tournament = self.tournament,
         )
 
-        self.url = reverse('withdraw_from_tournament', kwargs = {'tournament_name': self.tournament.name})
+        self.url = reverse('withdraw_from_tournament', kwargs = {'tournament_id': self.tournament.id})
 
     def test_url_of_withdraw_application_to_club(self):
-        self.assertEqual(self.url, self.tournament.name + '/withdraw/')
+        self.assertEqual(self.url, '/' + str(self.tournament.id) + '/withdraw/')
+
+    def test_withdraw_from_tournament_redirects_when_not_logged_in(self):
+        par_count_before = Participant.objects.count()
+        redirect_url = reverse_with_next('log_in', self.url)
+        response = self.client.post(self.url, follow=True)
+        self.assertRedirects(response, redirect_url,
+            status_code=302, target_status_code=200, fetch_redirect_response=True
+        )
+        par_count_after = Participant.objects.count()
+        self.assertEqual(par_count_after, par_count_before)
