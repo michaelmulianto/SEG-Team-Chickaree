@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from clubs.forms import OrganiseTournamentForm
-from clubs.models import Tournament, Club
+from clubs.models import Club, Tournament, Participant, Organiser, Membership
 
 from .decorators import club_exists, tournament_exists
 
@@ -49,17 +49,21 @@ class OrganiseTournamentView(FormView):
 
 @login_required
 @tournament_exists
-def join_tournament(request,  tournament_id):  #not already in tournament
-    tour = Tournmanent.objects.get(id = tournament_id)
+def join_tournament(request,  tournament_id):  #check if user is member of club
+    tour = Tournament.objects.get(id = tournament_id)
     currentCapacity = Participant.objects.filter(tournament = tour)
-    isOrganizer = True
-    organizer = Organizer.objects.get(member = Membership.objects.get(user = request.user, club = tour.club), tournament = tour)
+    is_organizer = True
+    organizer = Organiser.objects.get(member = Membership.objects.get(user = request.user, club = tour.club), tournament = tour)
     if(organizer.count() == 0):
-        isOrganizer = False
+        is_organizer = False
+    is_member = False
+    member = Membership.objects.get(club = tour.club, user = request.user)
+    if(member.count() > 1):
+        is_member = True
 
-    if(tour.capacity < currentCapacity.count() and deadline < datetime.now() and isOrganizer == False):
+    if(tour.capacity < currentCapacity.count() and deadline < datetime.now() and is_organizer == False and is_member == True):
         participant = Participant.objects.create(
-            member = Membership.objects.get(user = request.user, club = tour.club),
+            member = member,
             tournament = tour
         )
     return reverse('show_club', kwargs={'club_id': tour.club.id})
