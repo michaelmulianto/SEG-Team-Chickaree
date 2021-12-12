@@ -160,7 +160,7 @@ class Ban(models.Model):
 class Tournament(models.Model):
     """Model representing a single tournament."""
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
-    name = models.CharField(max_length=50, blank=False, unique = True)
+    name = models.CharField(max_length=50, blank=False, unique = False)
     description =  models.CharField(max_length=280, blank=False)
     capacity = models.PositiveIntegerField(default=16, blank=False, validators=[MinValueValidator(2), MaxValueValidator(96)])
     deadline = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
@@ -172,6 +172,12 @@ class Tournament(models.Model):
 
     class Meta:
         ordering = ['start']
+        constraints = [
+            UniqueConstraint(
+                name='tournament_name_must_be_unique_by_club',
+                fields=['club', 'name'],
+            ),
+        ]
 
     def full_clean(self, *args, **kwargs):
         super().full_clean(*args, **kwargs)
@@ -181,28 +187,37 @@ class Tournament(models.Model):
             raise ValidationError("The capacity should be divisible by 8 when above 32.")
         if self.capacity < Participant.objects.filter(tournament=self).count():
             raise ValidationError("At no point can there be more participants than capacity.")
-        if self.start < now():
-            raise ValidationError("The start date cannot be in the past!")
-        if self.deadline < now():
-            raise ValidationError("The deadline date cannot be in the past!")
         if self.deadline > self.start:
             raise ValidationError("The deadline date cannot be after the start!")
-        if self.end < now():
-            raise ValidationError("The end date cannot be in the past!")
         if self.start > self.end:
             raise ValidationError("The tournament should have a positive duration.")
 
     def get_current_round(self):
         rounds = StageInterface.objects.filter(tournament=self)
         if rounds.count() == 0:
-            return None
-
+            return None 
         curr_round_num = rounds.aggregate(Max('round_num'))['round_num__max']
         curr_round = rounds.get(round_num=curr_round_num)
         if hasattr(curr_round, 'knockoutstage'):
             return curr_round.knockoutstage
         else:
             return curr_round.groupstage
+
+    def get_num_participants(self):
+        return Participant.objects.filter(tournament=self).count()
+
+    def get_max_round_num(self):
+        n = self.get_num_participants()
+        if n > 32:
+            return 6
+        elif n > 16:
+            return 5
+        else:
+            d = 0
+            while n > 1:
+                d += 1
+                n = n/2
+            return d
 
     def generate_next_round(self):
         self.full_clean() # Constraints are needed for this to work.
@@ -358,9 +373,9 @@ class Match(models.Model):
     class Meta:
         ordering = ['collection']
         constraints = [
-            UniqueConstraint(
+            CheckConstraint(
                 name='cannot_play_self',
-                fields=['white_player', 'black_player'],
+                check=~Q(white_player=F('black_player')),
             ),
         ]
 

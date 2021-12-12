@@ -4,6 +4,11 @@ from clubs.models import User, Club, Application, Membership, Ban, Participant, 
 register = template.Library()
 
 @register.simple_tag
+def boolean_or(a, b):
+    return a or b
+
+
+@register.simple_tag
 def count_members(club_to_count):
     return Membership.objects.filter(club=club_to_count).count()
 
@@ -65,6 +70,10 @@ def get_officers(club):
 def get_owner(club):
     return Membership.objects.get(club=club, is_owner=True)
 
+@register.simple_tag
+def get_organisers(tournament):
+    return Organiser.objects.filter(tournament=tournament)
+
 
 
 @register.simple_tag
@@ -82,3 +91,17 @@ def check_is_officer(club_to_check, user):
 @register.simple_tag
 def check_is_owner(club_to_check, user):
     return Membership.objects.filter(club=club_to_check, user=user, is_owner=True).exists()
+
+@register.simple_tag
+def check_is_lead_organiser(user, tournament):
+    if Membership.objects.filter(user=user, club=tournament.club).exists():
+        membership = Membership.objects.get(user=user, club=tournament.club)
+        return Organiser.objects.filter(member=membership, tournament=tournament).exists()
+    return False
+
+@register.simple_tag
+def check_has_joined_tournament(user, tournament):
+    if Membership.objects.filter(user=user, club=tournament.club).exists():
+        membership = Membership.objects.get(user=user, club=tournament.club)
+        return Participant.objects.filter(member=membership, tournament=tournament).exists()
+    return False

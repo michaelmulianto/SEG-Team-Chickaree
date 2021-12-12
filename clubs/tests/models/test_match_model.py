@@ -117,14 +117,12 @@ class MatchModelTestCase(TestCase):
             self.match.full_clean()
 
     # Constraints
-    def test_white_player_and_black_plater_together_are_unique(self):
-        try:
+    def test_white_player_and_black_player_cannot_be_same(self):
+        with self.assertRaises(IntegrityError):
             Match.objects.create(
-            white_player = self.first_par,
-            black_player = self.second_par,
-        )
-        except(IntegrityError):
-            self.assertRaises(IntegrityError)
+                white_player = self.first_par,
+                black_player = self.first_par
+            )
 
     # Assertions
     def _assert_valid_match(self):
