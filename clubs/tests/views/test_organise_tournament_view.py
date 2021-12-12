@@ -74,33 +74,3 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
 
         self.assertEqual(tournament_count_after, tournament_count_before)
         self.assertTemplateUsed(response, 'organise_tournament.html')
-
-    def test_start_time_in_past_fails(self):
-        self.client.login(email=self.user.email, password='Password123')
-        tournament_count_before = Tournament.objects.count()
-        self.data['start'] = "1999-12-11T00:00:00+00:00"
-        response = self.client.post(self.url, self.data, follow=True)
-        tournament_count_after = Tournament.objects.count()
-
-        self.assertEqual(tournament_count_after, tournament_count_before)
-        self.assertTemplateUsed(response, 'organise_tournament.html')
-
-    def test_end_time_in_past_fails(self):
-        self.client.login(email=self.user.email, password='Password123')
-        tournament_count_before = Tournament.objects.count()
-        self.data['end'] = "1999-12-11T00:00:00+00:00"
-        response = self.client.post(self.url, self.data, follow=True)
-        tournament_count_after = Tournament.objects.count()
-
-        self.assertEqual(tournament_count_after, tournament_count_before)
-        self.assertTemplateUsed(response, 'organise_tournament.html')
-
-    def test_deadline_time_in_past_fails(self):
-        self.client.login(email=self.user.email, password='Password123')
-        tournament_count_before = Tournament.objects.count()
-        self.data['deadline'] = "1999-12-11T00:00:00+00:00"
-        response = self.client.post(self.url, self.data, follow=True)
-        tournament_count_after = Tournament.objects.count()
-
-        self.assertEqual(tournament_count_after, tournament_count_before)
-        self.assertTemplateUsed(response, 'organise_tournament.html')

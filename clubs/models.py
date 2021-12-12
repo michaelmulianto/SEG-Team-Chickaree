@@ -166,6 +166,7 @@ class Tournament(models.Model):
     deadline = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
     start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
     end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+    created_on = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self):
         return f'{self.name} by {self.club}'
@@ -185,6 +186,8 @@ class Tournament(models.Model):
             raise ValidationError("The deadline date cannot be after the start!")
         if self.start > self.end:
             raise ValidationError("The tournament should have a positive duration.")
+        if self.deadline > self.created_on:
+            raise ValidationError("Times must be after time of object creation.")
 
     def get_current_round(self):
         rounds = StageInterface.objects.filter(tournament=self)
