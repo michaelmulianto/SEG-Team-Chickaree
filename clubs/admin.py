@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Club, Application, Membership, Ban, Tournament, Participant, Organiser
+from .models import User, Club, Application, Membership, Ban, Tournament, Participant, Organiser, GroupStage
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -57,4 +57,10 @@ class ParticipantAdmin(admin.ModelAdmin):
 class OrganiserAdmin(admin.ModelAdmin):
     list_display = [
              'member', 'tournament', 'is_lead_organiser'
+    ]
+
+@admin.register(GroupStage)
+class GroupStageAdmin(admin.ModelAdmin):
+    list_display = [
+             'tournament'
     ]
