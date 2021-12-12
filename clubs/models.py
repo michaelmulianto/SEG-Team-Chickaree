@@ -175,7 +175,11 @@ class Tournament(models.Model):
         ordering = ['start']
 
     def get_is_complete(self):
-        return len(self.get_current_round().get_winners())==1
+        r = self.get_current_round
+        if r != None:
+            return len(r.get_winners())==1
+        else:
+            return False
 
     def full_clean(self, *args, **kwargs):
         super().full_clean(*args, **kwargs)

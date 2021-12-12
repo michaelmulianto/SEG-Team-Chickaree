@@ -3,7 +3,7 @@ from faker import Faker
 from random import sample, choice
 from django.utils.timezone import now
 from datetime import timedelta
-from clubs.models import User, Club, Membership, Application, Ban, Tournament, Organiser, KnockoutStage, SingleGroup
+from clubs.models import User, Club, Membership, Application, Ban, Tournament, Organiser, KnockoutStage, SingleGroup, Participant
 
 class Command(BaseCommand):
     """Fill the database with pseudorandom data and some mandated test cases."""
@@ -57,7 +57,7 @@ class Command(BaseCommand):
             club.full_clean()
             club.save()
 
-            members = sample(list(User.objects.exclude(is_staff=True)), 125-(i%10))
+            members = list(sample(list(User.objects.exclude(is_staff=True)), 125-(i%10)))
 
             owner = Membership.objects.create(
                 club = club,
@@ -118,9 +118,10 @@ class Command(BaseCommand):
                     start = starttime,
                     end = starttime + timedelta(hours=24),
                     deadline = starttime - timedelta(hours=24),
-                    created_on = starttime - timedelta(hours=48)
                 )
-                org_member = choice(list(Member.objects.filter(club=club, is_officer=True)))
+                t.created_on = starttime - timedelta(hours=48)
+                
+                org_member = choice(list(Membership.objects.filter(club=club, is_officer=True)))
                 o = Organiser.objects.create(
                     member = org_member,
                     tournament = t,
@@ -129,7 +130,7 @@ class Command(BaseCommand):
                 o.full_clean()
                 o.save()
 
-                participants = sample(list(Member.objects.exclude(id=org_member.id).filter(club=club)))
+                participants = list(sample(list(Membership.objects.exclude(id=org_member.id).filter(club=club)), t.capacity))
                 for p in participants:
                     (Participant.objects.create(
                         member = p,
@@ -139,7 +140,8 @@ class Command(BaseCommand):
                 t.full_clean()
                 t.save()
                 tournaments.append(t)
-
+            
+            # Helper for tournament generation
             def complete_round(my_round):
                 def complete_matches(matches):
                     # Arbitary result
@@ -155,16 +157,16 @@ class Command(BaseCommand):
                         complete_matches(group.get_matches())
                     
             # Complete all rounds of first tournament
-            tpast = t[0]
+            tpast = tournaments[0]
             curr_round = tpast.generate_next_round()
             while not tpast.get_is_complete():
                 complete_round(curr_round)
                 curr_round = tpast.generate_next_round()
             
             # Complete 1 round of second tournament
-            curr_round = t[1].generate_next_round()
+            curr_round = tournaments[1].generate_next_round()
             complete_round(curr_round)
-            t[1].generate_next_round()
+            tournaments[1].generate_next_round()
 
     def generate_required_data(self):
         """This is the data needed as part of non-functional requirements"""
@@ -327,7 +329,9 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
+        print("Seeding database... Please be patient...")
         # It is VERY important that random data is generated first, so we can fully control the memberships of the mandated users
         self.generate_random_data()
         self.generate_required_data()
         self.generate_edge_cases()
+        print("Seeding Complete.")
