@@ -3,7 +3,7 @@
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView, DeleteView
 
-from .helpers import is_user_owner_of_club, is_user_officer_of_club, get_clubs_of_user
+from .helpers import is_user_owner_of_club, is_user_officer_of_club
 from .decorators import club_exists, membership_exists
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -38,11 +38,11 @@ class CreateClubView(FormView):
         )
         return super().form_valid(form)
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        user = self.get_object()
-        context['my_clubs'] = get_clubs_of_user(user)
-        return context
+    # def get_context_data(self, *args, **kwargs):
+    #     context = super().get_context_data(*args, **kwargs)
+    #     user = self.get_object()
+    #     context['my_clubs'] = get_clubs_of_user(user)
+    #     return context
 
     def get_object(self):
         """Return the object (user) to be updated."""
@@ -106,10 +106,10 @@ class EditClubInfoView(UpdateView):
         messages.add_message(self.request, messages.SUCCESS, "Club Details updated!")
         return reverse('show_clubs')
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context['my_clubs'] = get_clubs_of_user(self.request.user)
-        return context
+    # def get_context_data(self, *args, **kwargs):
+    #     context = super().get_context_data(*args, **kwargs)
+    #     context['my_clubs'] = get_clubs_of_user(self.request.user)
+    #     return context
 
 @login_required
 @club_exists
