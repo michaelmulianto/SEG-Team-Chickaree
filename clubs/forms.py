@@ -128,7 +128,7 @@ class OrganiseTournamentForm(forms.ModelForm): #2,4,8,16,24,32,48,96
             ('96','96'),
         )
 
-        capacity = forms.ChoiceField(choices = capacity_choices
+        capacity = forms.ChoiceField(choices = capacity_choices)
         widgets = {'description': forms.Textarea()}
 
     #Create new tournament using the tournament form data
