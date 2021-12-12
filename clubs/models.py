@@ -181,14 +181,8 @@ class Tournament(models.Model):
             raise ValidationError("The capacity should be divisible by 8 when above 32.")
         if self.capacity < Participant.objects.filter(tournament=self).count():
             raise ValidationError("At no point can there be more participants than capacity.")
-        if self.start < now():
-            raise ValidationError("The start date cannot be in the past!")
-        if self.deadline < now():
-            raise ValidationError("The deadline date cannot be in the past!")
         if self.deadline > self.start:
             raise ValidationError("The deadline date cannot be after the start!")
-        if self.end < now():
-            raise ValidationError("The end date cannot be in the past!")
         if self.start > self.end:
             raise ValidationError("The tournament should have a positive duration.")
 
