@@ -160,7 +160,7 @@ class Ban(models.Model):
 class Tournament(models.Model):
     """Model representing a single tournament."""
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
-    name = models.CharField(max_length=50, blank=False, unique = True)
+    name = models.CharField(max_length=50, blank=False, unique = False)
     description =  models.CharField(max_length=280, blank=False)
     capacity = models.PositiveIntegerField(default=16, blank=False, validators=[MinValueValidator(2), MaxValueValidator(96)])
     deadline = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
@@ -172,6 +172,12 @@ class Tournament(models.Model):
 
     class Meta:
         ordering = ['start']
+        constraints = [
+            UniqueConstraint(
+                name='tournament_name_must_be_unique_by_club',
+                fields=['club', 'name'],
+            ),
+        ]
 
     def full_clean(self, *args, **kwargs):
         super().full_clean(*args, **kwargs)
@@ -181,14 +187,8 @@ class Tournament(models.Model):
             raise ValidationError("The capacity should be divisible by 8 when above 32.")
         if self.capacity < Participant.objects.filter(tournament=self).count():
             raise ValidationError("At no point can there be more participants than capacity.")
-        if self.start < now():
-            raise ValidationError("The start date cannot be in the past!")
-        if self.deadline < now():
-            raise ValidationError("The deadline date cannot be in the past!")
         if self.deadline > self.start:
             raise ValidationError("The deadline date cannot be after the start!")
-        if self.end < now():
-            raise ValidationError("The end date cannot be in the past!")
         if self.start > self.end:
             raise ValidationError("The tournament should have a positive duration.")
 
@@ -373,9 +373,9 @@ class Match(models.Model):
     class Meta:
         ordering = ['collection']
         constraints = [
-            UniqueConstraint(
+            CheckConstraint(
                 name='cannot_play_self',
-                fields=['white_player', 'black_player'],
+                check=~Q(white_player=F('black_player')),
             ),
         ]
 
