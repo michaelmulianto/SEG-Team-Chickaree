@@ -373,9 +373,9 @@ class Match(models.Model):
     class Meta:
         ordering = ['collection']
         constraints = [
-            UniqueConstraint(
+            CheckConstraint(
                 name='cannot_play_self',
-                fields=['white_player', 'black_player'],
+                check=~Q(white_player=F('black_player')),
             ),
         ]
 
