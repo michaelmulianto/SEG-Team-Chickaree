@@ -40,5 +40,13 @@ class StageInterface(GenericRoundOfMatches):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
     round_num = models.IntegerField(default = 1, blank = False)
 
+    def get_round(self):
+        if hasattr(curr_round, 'knockoutstage'):
+            return curr_round.knockoutstage
+        elif hasattr(curr_round, 'groupstage'):
+            return curr_round.groupstage
+        else:
+            return None
+
     class Meta:
         ordering = ['tournament']
