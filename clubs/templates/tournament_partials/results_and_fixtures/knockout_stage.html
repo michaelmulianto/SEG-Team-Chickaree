@@ -1,8 +1,11 @@
+{% load define_action %}
+{% get_matches knockout_stage as matches %}
+
 <table>
   <tbody>
     <tr>
-    {% for match in knockoutstage.get_matches %}
-      {% include 'tournament_partials/results_and_fixtures/knockout_row.html' %}
+    {% for match in matches %}
+      {% include 'tournament_partials/results_and_fixtures/knockout_table_cell.html' %}
     {% endfor %}
     </tr>
   </tbody>
