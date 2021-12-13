@@ -66,13 +66,12 @@ def join_tournament(request, tournament_id):
     is_member = False
     if(member != None):
         is_member = True
-    is_organiser = Organiser.objects.filter(member = member, tournament = tour).count() == 0
+    is_not_organiser = Organiser.objects.filter(member = member, tournament = tour).count() == 0
     is_in_tournament = Participant.objects.filter(member = member, tournament = tour).count() > 0
-
 
     current_capacity = Participant.objects.filter(tournament = tour)
     if(current_capacity.count() < tour.capacity):
-        if(is_organiser == True):
+        if(is_not_organiser == True):
             if(is_member == True):
                 if(is_in_tournament == False):
                     participant = Participant.objects.create(

@@ -55,7 +55,6 @@ class JoinTournamentViewTest(TestCase, MenuTesterMixin):
             tournament = self.tournament
         )
 
-
         participant_count_before = Participant.objects.count()
         response = self.client.get(self.url, follow=True)
         participant_count_after = Participant.objects.count()
@@ -74,8 +73,6 @@ class JoinTournamentViewTest(TestCase, MenuTesterMixin):
         participant_count_after = Participant.objects.count()
 
         self.assertEqual(participant_count_after, participant_count_before)
-
-
 
     def test_user_is_organiser(self):
         self.client.login(email=self.user.email, password='Password123')
