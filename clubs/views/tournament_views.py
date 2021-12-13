@@ -83,16 +83,16 @@ def show_tournament(request, tournament_id):
 
 @login_required
 @tournament_exists
-def add_organisers_to_tournament(request, tournament_id, membership_id):
+def add_organisers_to_tournament(request, tournament_id, member_id):
     """Allow the head organiser of a tournament to assign other officers/owner of the club organising the tournament to officer."""
 
-    if not Membership.objects.filter(id=membership_id).exists(): #View function takes various arguments, so decorator to check for it throws an error
-        messages.error(request, 'No membership with id ' + str(membership_id) + ' exists.')
+    if not Membership.objects.filter(id=member_id).exists(): #View function takes various arguments, so decorator to check for it throws an error
+        messages.error(request, 'No membership with id ' + str(member_id) + ' exists.')
         return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
     else:
 
         tournament = Tournament.objects.get(id = tournament_id)
-        new_organiser_member = Membership.objects.get(id = membership_id)
+        new_organiser_member = Membership.objects.get(id = member_id)
 
         if is_lead_organiser_of_tournament(request.user, tournament):
             if not is_lead_organiser_of_tournament(new_organiser_member.user, tournament):
