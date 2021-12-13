@@ -55,6 +55,7 @@ class EditAccountView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['current_user'] = self.request.user
+        context['form'].outcomes
         return context
 
     def get_object(self):
