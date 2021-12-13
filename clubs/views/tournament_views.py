@@ -128,20 +128,17 @@ def add_organisers_to_tournament(request, tournament_id, membership_id):
 def join_tournament(request, tournament_id):
     tour = Tournament.objects.get(id = tournament_id)
     member = get_object_or_404(Membership, user = request.user, club = tour.club)
-    is_member = False
-    if(member != None):
-        is_member = True
     is_not_organiser = Organiser.objects.filter(member = member, tournament = tour).count() == 0
     is_in_tournament = Participant.objects.filter(member = member, tournament = tour).count() > 0
 
     current_capacity = Participant.objects.filter(tournament = tour)
     if(current_capacity.count() < tour.capacity):
         if(is_not_organiser == True):
-            if(is_member == True):
+            if(member != None):
                 if(is_in_tournament == False):
                     participant = Participant.objects.create(
-                    member = member,
-                    tournament = tour
+                        member = member,
+                        tournament = tour
                     )
                 else:
                     messages.error(request, 'You are already enrolled in the tournament')
