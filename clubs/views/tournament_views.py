@@ -60,7 +60,7 @@ def show_tournament(request, tournament_id):
 
 @login_required
 @tournament_exists
-def join_tournament(request, tournament_id):  #not already in tournament, has to be member,
+def join_tournament(request, tournament_id):
     tour = Tournament.objects.get(id = tournament_id)
     member = Membership.objects.get(user = request.user, club = tour.club)
     is_organiser = True
@@ -73,7 +73,7 @@ def join_tournament(request, tournament_id):  #not already in tournament, has to
         is_member = False
 
     is_in_tournament = False
-    check_tournament = MemberTournamentRelationship.objects.filter(member = member, tournament = tour)
+    check_tournament = Participant.objects.filter(member = member, tournament = tour)
     if(check_tournament.count() > 0):
         is_in_tournament = True
 
@@ -83,4 +83,5 @@ def join_tournament(request, tournament_id):  #not already in tournament, has to
             member = member,
             tournament = tour
         )
+
     return redirect('show_club', club_id=tour.club.id)
