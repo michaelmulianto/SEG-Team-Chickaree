@@ -236,9 +236,6 @@ class Tournament(models.Model):
                 n = n/2
             return d
 
-    def get_group_stages(self):
-        return GroupStage.objects.filter(tournament=self)
-
     def generate_next_round(self):
         self.full_clean() # Constraints are needed for this to work.
 
@@ -347,9 +344,6 @@ class Participant(MemberTournamentRelationship):
     round_eliminated = models.IntegerField(default=-1)
     joined = models.DateTimeField(auto_now_add=True, blank=False)
 
-    def get_points_in_single_group(self, single_group):
-        matches = single_group.get_matches()
-
     def __str__(self):
         return f'{self.member.user.first_name} {self.member.user.last_name} in {self.tournament.name} by {self.tournament.club}'
 
@@ -448,9 +442,6 @@ class KnockoutStage(StageInterface):
 class GroupStage(StageInterface):
     """Tournament round of type group. Is associated with multiple groups."""
 
-    def get_single_groups(self):
-        return SingleGroup.objects.filter(group_stage=self)
-
     def get_winners(self):
         if not self.get_is_complete():
             return None
@@ -475,6 +466,7 @@ class GroupStage(StageInterface):
             if not group.get_is_complete():
                 return False
         return True
+
 
     def full_clean(self):
         super().full_clean()
@@ -517,7 +509,8 @@ class SingleGroup(GenericRoundOfMatches):
                 return False
         return True
 
-    def get_standings_players(self):
+    #CURRENTLY NOT WORKING
+    def get_standings(self):
         if not self.get_is_complete():
             return None
 
@@ -537,9 +530,9 @@ class SingleGroup(GenericRoundOfMatches):
                 scores[match.black_player.id] += 0.5
 
         # https://www.geeksforgeeks.org/python-sort-list-by-dictionary-values/
-        results = sorted(scores.keys(), key = lambda ele: scores[ele])
+        res = sorted(scores.keys(), key = lambda ele: scores[ele])
 
-        return results
+        return res
 
     def get_winners(self):
         if not self.get_is_complete():
