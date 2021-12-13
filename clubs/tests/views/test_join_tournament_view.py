@@ -4,30 +4,25 @@ from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
 from clubs.models import User, Club, Membership, Participant, Tournament
-from clubs.forms import CreateClubForm
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 
 
 class JoinTournamentViewTest(TestCase, MenuTesterMixin):
-    """Test all aspects of the create club view"""
+    """Test all aspects of the join tournament view"""
 
     fixtures = ['clubs/tests/fixtures/default_user.json', 'clubs/tests/fixtures/default_tournament.json', 'clubs/tests/fixtures/default_club.json']
 
     def setUp(self):
         self.user = User.objects.get(username='johndoe')
         self.tournament = Tournament.objects.get(name = 'Grand Championship')
-        self.url = reverse('join_tournament', kwargs={'tournament_id': self.tournament.id})
-        self.member = Membership.objects.create(
-            club = Club.objects.get(name = "King's Knights"),
+        Membership.objects.create(
+            club = Club.objects.get(id = 1),
             user = self.user
         )
 
-        self.data = {
-            'member': self.member,
-            'tournament': self.tournament
-        }
+        self.url = reverse('join_tournament', kwargs={'tournament_id': self.tournament.id})
 
-    def test_join_url(self):
+    def test_join_tournament_url(self):
         self.assertEqual(self.url, f'/club/{self.tournament.id}/join_tournament/')
 
     def test_get_join_tournament_redirects_when_not_logged_in(self):
@@ -41,14 +36,14 @@ class JoinTournamentViewTest(TestCase, MenuTesterMixin):
         # We need to test that participant has been created
         participant_count_before = Participant.objects.count()
 
-        response = self.client.post(self.url, self.data, follow=True)
+        response = self.client.get(self.url, follow=True)
 
         participant_count_after = Participant.objects.count()
 
         self.assertEqual(participant_count_after, participant_count_before+1)
 
     #
-    # def test_unsuccessful_create_club(self):
+    # def test_unsuccessful_join_tournament(self):
     #     self.client.login(email=self.user.email, password='Password123')
     #
     #     participant_count_before = Participant.objects.count()
