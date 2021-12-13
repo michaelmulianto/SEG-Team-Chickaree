@@ -25,7 +25,7 @@ class WithdrawParticipationFromTournamentTestCase(TestCase):
             user = self.user,
             club = self.club,
             is_officer = False,
-            is_owner = False,
+            is_owner = True,
         )
         self.participant = Participant.objects.create(
             member = self.member,
@@ -62,7 +62,7 @@ class WithdrawParticipationFromTournamentTestCase(TestCase):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'show_club.html')
 
     def test_unsuccessful_withdrawal_after_passed_deadline(self):
         self.client.login(email=self.user.email, password="Password123")
@@ -83,7 +83,7 @@ class WithdrawParticipationFromTournamentTestCase(TestCase):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'show_club.html')
 
     def test_successful_withdrawal(self):
         self.client.login(email=self.user.email, password="Password123")
@@ -99,4 +99,4 @@ class WithdrawParticipationFromTournamentTestCase(TestCase):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'show_club.html')

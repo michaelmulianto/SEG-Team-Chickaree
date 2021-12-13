@@ -47,7 +47,7 @@ class OrganiseTournamentView(FormView):
             return super().form_invalid(form)
 
         self.object = form.save(self.get_context_data()['club'])
-        if Membership.objects.filter(club = self.get_context_data()['club'], user=current_user).exists():
+        if Membership.objects.filter(club = self.get_context_data()['club'], user=self.request.user).exists():
             member = Membership.objects.get(user = self.request.user, club = self.get_context_data()['club'])
 
         Organiser.objects.create(
@@ -82,7 +82,6 @@ def show_tournament(request, tournament_id):
 @tournament_exists
 def withdraw_participation_from_tournament(request, tournament_id):
     """Have currently logged in user withdraw from a tournament, if it exists."""
-    current_user = request.user
     tournament = Tournament.objects.get(id=tournament_id)
     member = get_object_or_404(Membership, user = request.user, club = tournament.club)
 
