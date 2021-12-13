@@ -162,11 +162,22 @@ class Tournament(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     name = models.CharField(max_length=50, blank=False, unique = False)
     description =  models.CharField(max_length=280, blank=False)
-    capacity = models.PositiveIntegerField(default=16, blank=False, validators=[MinValueValidator(2), MaxValueValidator(96)])
     deadline = models.DateTimeField(blank=False)
     start = models.DateTimeField(blank=False)
     end = models.DateTimeField(blank=False)
     created_on = models.DateTimeField(auto_now_add=True, blank=False)
+
+    # LOL
+    NUMBERS = (
+        (2,'2'),
+        (4, '4'),
+        (8, '8'),
+        (16, '16'),
+        (32, '32'),
+        (48, '48'),
+        (96, '96'),
+    )
+    capacity = models.PositiveIntegerField(default = 2, choices = NUMBERS, blank=False, validators=[MinValueValidator(2), MaxValueValidator(96)])
 
     def __str__(self):
         return f'{self.name} by {self.club}'
