@@ -47,8 +47,14 @@
           <i class="bi bi-reply-fill"></i> Back to club
         </a>
         <br>
+        <br>
+        {% for knockout_stage in tournament_knockout_stages %}
+          {% include 'tournament_partials/results_and_fixtures/knockout_stage.html' %}
+          <br>
+        {% endfor %}
         {% for group_stage in tournament_group_stages %}
           {% include 'tournament_partials/results_and_fixtures/group_stage.html' %}
+          <br>
         {% endfor %}
         <br>
         <br>
