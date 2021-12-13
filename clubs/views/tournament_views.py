@@ -1,3 +1,4 @@
+from django.http import request
 from django.views import View
 from django.views.generic.edit import FormView
 
@@ -5,9 +6,12 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from clubs.forms import OrganiseTournamentForm
-from clubs.models import Membership, Tournament, Club, Organiser, Participant, MemberTournamentRelationship
 
-from .decorators import club_exists, tournament_exists
+from clubs.models import Tournament, Club, Organiser, Membership, Participant, MemberTournamentRelationship
+
+from .decorators import club_exists, tournament_exists, user_exists
+from .helpers import is_user_owner_of_club, is_user_officer_of_club
+
 
 from datetime import datetime
 from django.utils.timezone import now
@@ -33,19 +37,38 @@ class OrganiseTournamentView(FormView):
         context['current_user'] = self.request.user
         context['club'] = Club.objects.get(id=self.kwargs['club_id'])
         return context
-
+    
     def form_valid(self, form):
+        if not is_user_owner_of_club(self.request.user, self.get_context_data()['club']) and not is_user_officer_of_club(self.request.user, self.get_context_data()['club']):
+            messages.add_message(self.request, messages.ERROR, "Only Owners or Officers of a club can create tournaments")
+            return super().form_invalid(form)
+
         if form.cleaned_data['start'] < now() or form.cleaned_data['end'] < now() or form.cleaned_data['deadline'] < now():
             messages.add_message(self.request, messages.ERROR, "Given time and date must not be in the past.")
             return super().form_invalid(form)
 
-        desired_club = self.get_context_data()['club']
-        self.object = form.save(desired_club)
+        self.object = form.save(self.get_context_data()['club'])
+        member = Membership.objects.get(user = self.request.user, 
+                                    club = self.get_context_data()['club'])
+
+        Organiser.objects.create(
+            member = member,
+            tournament = self.object,
+            is_lead_organiser = True
+        )
         return super().form_valid(form)
+            
 
     def get_success_url(self):
         club = self.get_context_data()['club']
         return reverse('show_club', kwargs={'club_id': club.id})
+
+    
+    @method_decorator(user_exists)
+    def create_organiser(self, user):
+        pass
+
+
 
 @login_required
 @tournament_exists
@@ -57,6 +80,7 @@ def show_tournament(request, tournament_id):
     else:
         messages.error(request, "You are not a member of the club that organises this tournament, you can view the basic tournament details from the club's page.")
     return redirect('show_club', club_id=club.id)
+
 
 @login_required
 @tournament_exists
@@ -88,3 +112,4 @@ def join_tournament(request, tournament_id):
         messages.error(request, 'Tournament is full')
 
     return redirect('show_club', club_id=tour.club.id)
+

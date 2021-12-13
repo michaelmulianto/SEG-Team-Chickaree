@@ -162,10 +162,22 @@ class Tournament(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     name = models.CharField(max_length=50, blank=False, unique = False)
     description =  models.CharField(max_length=280, blank=False)
-    capacity = models.PositiveIntegerField(default=16, blank=False, validators=[MinValueValidator(2), MaxValueValidator(96)])
-    deadline = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
-    start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
-    end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+    deadline = models.DateTimeField(blank=False)
+    start = models.DateTimeField(blank=False)
+    end = models.DateTimeField(blank=False)
+    created_on = models.DateTimeField(auto_now_add=True, blank=False)
+
+    # LOL
+    NUMBERS = (
+        (2,'2'),
+        (4, '4'),
+        (8, '8'),
+        (16, '16'),
+        (32, '32'),
+        (48, '48'),
+        (96, '96'),
+    )
+    capacity = models.PositiveIntegerField(default = 2, choices = NUMBERS, blank=False, validators=[MinValueValidator(2), MaxValueValidator(96)])
 
     def __str__(self):
         return f'{self.name} by {self.club}'
@@ -178,6 +190,14 @@ class Tournament(models.Model):
                 fields=['club', 'name'],
             ),
         ]
+
+    def get_is_complete(self):
+        r = self.get_current_round()
+        if r != None:
+            winners = r.get_winners()
+            if winners != None:
+                return len(winners)==1
+        return False
 
     def full_clean(self, *args, **kwargs):
         super().full_clean(*args, **kwargs)
@@ -192,10 +212,18 @@ class Tournament(models.Model):
         if self.start > self.end:
             raise ValidationError("The tournament should have a positive duration.")
 
+        if self.created_on == None:
+            creation_time = now()
+        else:
+            creation_time = self.created_on
+
+        if self.deadline < creation_time:
+            raise ValidationError("Times must be after time of object creation.")
+
     def get_current_round(self):
         rounds = StageInterface.objects.filter(tournament=self)
         if rounds.count() == 0:
-            return None 
+            return None
         curr_round_num = rounds.aggregate(Max('round_num'))['round_num__max']
         curr_round = rounds.get(round_num=curr_round_num)
         if hasattr(curr_round, 'knockoutstage'):
@@ -221,7 +249,13 @@ class Tournament(models.Model):
 
     def generate_next_round(self):
         self.full_clean() # Constraints are needed for this to work.
+
+        if self.get_is_complete():
+            # Whole tournament is complete already
+            return None
+
         curr_round = self.get_current_round()
+
         if curr_round != None:
             participants = curr_round.get_winners()
             next_num = curr_round.round_num+1
@@ -229,9 +263,15 @@ class Tournament(models.Model):
             participants = list(Participant.objects.filter(tournament=self))
             next_num = 1
 
+        if participants == None:
+            # Current round is not yet complete
+            return None
+
         num_participants = len(participants)
-        if num_participants < 2:
-            return None # Round not complete, no one signed up, or tourney complete
+
+        if num_participants == 0:
+            # No one joined!!!
+            return None
 
         # KNOCKOUT CASE
         if num_participants <= 16 and (num_participants & (num_participants - 1) == 0):
@@ -422,6 +462,13 @@ class GroupStage(StageInterface):
             winners += group.get_winners()
 
         return winners
+
+    def get_matches(self):
+        groups = list(SingleGroup.objects.filter(group_stage=self))
+        matches = []
+        for group in groups:
+            matches += group.get_matches()
+        return matches
 
     def get_is_complete(self):
         groups = list(SingleGroup.objects.filter(group_stage=self))

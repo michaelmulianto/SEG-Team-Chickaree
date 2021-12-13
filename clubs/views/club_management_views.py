@@ -81,11 +81,6 @@ class EditClubInfoView(UpdateView):
     def dispatch(self, request, club_id):
         return super().dispatch(request)
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['current_user'] = self.request.user
-    #     return context
-
     def get_object(self):
         """Return the object (club) to be updated."""
         return Club.objects.get(id=self.kwargs['club_id'])
