@@ -37,6 +37,7 @@ class Command(BaseCommand):
             bio = ""
 
             user = User.objects.create_user(
+                id = 999-i,
                 username = username,
                 first_name = first_name,
                 last_name = last_name,
@@ -50,12 +51,14 @@ class Command(BaseCommand):
             user.save()
 
             member=Membership.objects.create(
+                id = 999-i,
                 user=user,
                 club=c,
             )    
             member.save()
 
             (Participant.objects.create(
+                id = 999-i,
                 tournament=t,
                 member=member
             )).save()

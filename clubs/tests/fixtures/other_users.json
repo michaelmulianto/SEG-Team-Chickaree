@@ -1,7 +1,7 @@
 [
   {
     "model": "clubs.user",
-    "pk": 998,
+    "pk": 2,
     "fields": {
       "first_name": "Jane",
       "last_name": "Doe",
@@ -15,7 +15,7 @@
   },
   {
     "model": "clubs.user",
-    "pk": 997,
+    "pk": 3,
     "fields": {
       "first_name": "Richard",
       "last_name": "Doe",
@@ -28,7 +28,7 @@
   },
   {
     "model": "clubs.user",
-    "pk": 996,
+    "pk": 4,
     "fields": {
       "first_name": "Maria",
       "last_name": "Dandy",
