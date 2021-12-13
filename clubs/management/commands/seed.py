@@ -1,7 +1,9 @@
 from django.core.management.base import BaseCommand, CommandError
 from faker import Faker
 from random import sample, choice
-from clubs.models import User, Club, Membership, Application, Ban
+from django.utils.timezone import now
+from datetime import timedelta
+from clubs.models import User, Club, Membership, Application, Ban, Tournament, Organiser, Participant
 
 class Command(BaseCommand):
     """Fill the database with pseudorandom data and some mandated test cases."""
@@ -10,7 +12,7 @@ class Command(BaseCommand):
         self.faker = Faker('en_GB')
 
     def generate_random_data(self):
-        for i in range(100):
+        for i in range(750):
             first_name = self.faker.first_name()
             while len(first_name) > 28:
                 first_name = self.faker.first_name()
@@ -36,10 +38,10 @@ class Command(BaseCommand):
             user.full_clean()
             user.save()
 
-        for i in range(12):
-            name = self.faker.unique.company()
+        for i in range(6):
+            name = self.faker.unique.slug()
             while len(name) > 50:
-                name = self.faker.company()
+                name = self.faker.unique.slug()
 
             location = self.faker.country()
             while len(location) > 50:
@@ -55,7 +57,7 @@ class Command(BaseCommand):
             club.full_clean()
             club.save()
 
-            members = sample(list(User.objects.exclude(is_staff=True)), (i%5)+6)
+            members = sample(list(User.objects.exclude(is_staff=True)), 125-(i%10))
 
             owner = Membership.objects.create(
                 club = club,
@@ -66,28 +68,98 @@ class Command(BaseCommand):
             owner.full_clean()
             owner.save()
 
-            for i in range(1,len(members)-3):
+            n = len(members)
+
+            for j in range(1,n-15):
                 m = Membership.objects.create(
                     club = club,
-                    user = members[i],
-                    is_officer = not(bool(i%4)),
+                    user = members[j],
+                    is_officer = not(bool(j%10)),
                 )
                 m.full_clean()
                 m.save()
 
-            for i in range(len(members)-3,len(members)-1):
+            for j in range(n-15,n-5):
                 a = Application.objects.create(
                     club = club,
-                    user = members[i],
+                    user = members[j],
                     personal_statement = self.faker.paragraph(nb_sentences=3),
                 )
                 a.full_clean()
                 a.save()
 
-            b = Ban.objects.create(
-                club = club,
-                user = members[len(members)-1],
-            )
+            for j in range(n-5,n):
+                b = Ban.objects.create(
+                    club = club,
+                    user = members[j],
+                )
+                b.full_clean()
+                b.save()
+
+            # Generate 3 Tournaments, one complete, one partially complete, one not started.
+            tournaments = []
+            for j in range(0,3):
+                if j == 0:
+                    starttime = now() - timedelta(hours=48)
+                elif j == 1:
+                    starttime = now() - timedelta(hours=12)
+                else:
+                    starttime = now() + timedelta(hours=24)
+
+                name = self.faker.unique.slug()
+                while len(name) > 50:
+                    name = self.faker.unique.slug()
+
+                t = Tournament.objects.create(
+                    club = club,
+                    name = name,
+                    description = self.faker.paragraph(nb_sentences=3),
+                    capacity = 16 * (j+1),
+                    start = starttime,
+                    end = starttime + timedelta(hours=24),
+                    deadline = starttime - timedelta(hours=24),
+                )
+                t.created_on = starttime - timedelta(hours=48)
+
+                org_member = choice(list(Membership.objects.filter(club=club, is_officer=True)))
+                o = Organiser.objects.create(
+                    member = org_member,
+                    tournament = t,
+                    is_lead_organiser = True
+                )
+                o.full_clean()
+                o.save()
+
+                participants = sample(list(Membership.objects.exclude(id=org_member.id).filter(club=club)), t.capacity)
+                for p in participants:
+                    (Participant.objects.create(
+                        member = p,
+                        tournament = t
+                    )).save()
+
+                t.full_clean()
+                t.save()
+                tournaments.append(t)
+            
+            # Helper for tournament generation
+            def complete_round(my_round):
+                # Arbitary result
+                matches = my_round.get_matches()
+                for match in matches:
+                    match.result=1
+                    match.black_player.round_eliminated = my_round.round_num
+                    
+            # Complete all rounds of first tournament
+            tpast = tournaments[0]
+            curr_round = tpast.generate_next_round()
+            while curr_round != None: # Returns None when tournament complete.
+                complete_round(curr_round)
+                curr_round = tpast.generate_next_round()
+            
+            # Complete 1 round of second tournament
+            curr_round = tournaments[1].generate_next_round()
+            complete_round(curr_round)
+            tournaments[1].generate_next_round()
 
     def generate_required_data(self):
         """This is the data needed as part of non-functional requirements"""
@@ -95,6 +167,8 @@ class Command(BaseCommand):
         # 3 Users jeb val and billie
         # All to be members of one club "kerbal chess club"
         # Billie is owner, val officer and jeb member
+        # Val should organise 2 tournaments, of which Jeb has joined one.
+
         # They should all also be part of at least 1 other club each
         # As member, owner and officer respective to billie, val and jeb
 
@@ -143,27 +217,117 @@ class Command(BaseCommand):
         billie.save()
 
         # Memberships to Kerbal
-        m1 = Membership.objects.create(
+        jeb_member = Membership.objects.create(
             club = kerbal,
             user = jeb
         )
-        m1.full_clean()
-        m1.save()
+        jeb_member.full_clean()
+        jeb_member.save()
 
-        m2 = Membership.objects.create(
+        val_member = Membership.objects.create(
             club = kerbal,
             user = val,
             is_officer = True
         )
-        m2.full_clean()
-        m2.save()
+        val_member.full_clean()
+        val_member.save()
 
-        m3 = Membership.objects.create(
+        billie_member = Membership.objects.create(
             club = kerbal,
             user = billie,
             is_owner = True
         )
-        # Other memberships
+        billie_member.full_clean()
+        billie_member.save()
+
+        # Add other members to kerbal chess club
+        other_kerbal_members = sample(list(User.objects.exclude(is_staff=True)
+            .exclude(id=val.id).exclude(id=jeb.id).exclude(id=billie.id)), 80)
+
+        for user in other_kerbal_members[:70]:
+            (Membership.objects.create(
+                user = user,
+                club = kerbal
+            )).save()
+
+        for user in other_kerbal_members[70:75]:
+            (Application.objects.create(
+                user = user,
+                club = kerbal
+            )).save()
+
+        for user in other_kerbal_members[75:len(other_kerbal_members)]:
+            (Ban.objects.create(
+                user = user,
+                club = kerbal
+            )).save()
+
+        # Create Kerbal's tournaments
+        seedtime = now()
+        # Firstly, the tournament where the deadline is in 24 hours, Jeb not signed up.
+        t1 = Tournament.objects.create(
+            club = kerbal,
+            name = "Tournament 2",
+            description = "The sequel to the much loved Tournament.",
+            capacity = 32,
+            deadline = seedtime + timedelta(hours=24),
+            start = seedtime + timedelta(hours=25),
+            end =  seedtime + timedelta(hours=49)
+        )
+        (Organiser.objects.create(
+            member = val_member, # val's membership
+            tournament = t1,
+            is_lead_organiser = True
+        )).save()
+
+        t1_participants = sample(list(Membership.objects.exclude(id=val_member.id)
+            .exclude(id=jeb_member.id).filter(club=kerbal)), t1.capacity-1)
+
+        for membership in t1_participants:
+            (Participant.objects.create(
+                member = membership,
+                tournament = t1
+            )).save()
+
+        t1.full_clean()
+        t1.save()
+
+        # Secondly, the tournament where the deadline has already passed and Jeb has signed up.
+        t2 = Tournament.objects.create(
+            club = kerbal,
+            name = "Tournament",
+            description = "The original tournament.",
+            capacity = 32,
+            deadline = seedtime - timedelta(hours=1),
+            start = seedtime + timedelta(hours=23),
+            end =  seedtime + timedelta(hours=47)
+        )
+        t2.created_on = seedtime - timedelta(hours=2)
+
+        (Organiser.objects.create(
+            member = val_member,
+            tournament = t2,
+            is_lead_organiser = True
+        )).save()
+
+        (Participant.objects.create(
+            member = jeb_member,
+            tournament = t2
+        )).save()
+
+        t2_participants = sample(list(Membership.objects.exclude(id=val_member.id)
+            .exclude(id=jeb_member.id).filter(club=kerbal)), t2.capacity-1)
+
+        for membership in t2_participants:
+            (Participant.objects.create(
+                member = membership,
+                tournament = t2
+            )).save()
+
+        t2.full_clean()
+        t2.save()
+
+        # Other memberships required.....
         other_clubs = sample(list(Club.objects.exclude(id = kerbal.id)),3)
 
         jeb_officer = Membership.objects.create(
@@ -185,7 +349,7 @@ class Command(BaseCommand):
         val_owner.save()
 
         billie_member = Membership.objects.create(
-            club = other_clubs[1],
+            club = other_clubs[2],
             user = billie,
         )
         billie_member.full_clean()
@@ -250,7 +414,9 @@ class Command(BaseCommand):
 
 
     def handle(self, *args, **options):
+        print("Seeding database... Please be patient as we are creating ~750 users and distributing them among clubs and tournaments.")
         # It is VERY important that random data is generated first, so we can fully control the memberships of the mandated users
         self.generate_random_data()
         self.generate_required_data()
-        self.generate_edge_cases()
+        #self.generate_edge_cases()
+        print("Seeding Complete.")
