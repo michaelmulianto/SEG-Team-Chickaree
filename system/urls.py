@@ -50,7 +50,7 @@ urlpatterns = [
     path('club/<int:club_id>/banned_members/', views.banned_members, name='banned_members'),
     path('club/<int:club_id>/organise_tournament/', views.OrganiseTournamentView.as_view(), name='organise_tournament'),
 
-    path('join_tournament/<int:tournament_id>', views.join_tournament, name='join_tournament'),
+    path('club/<int:tournament_id>/join_tournament/', views.join_tournament, name='join_tournament'),
 
 
     path('application/<int:app_id>/respond/<bool:is_accepted>/', views.respond_to_application, name='respond_to_application'),
