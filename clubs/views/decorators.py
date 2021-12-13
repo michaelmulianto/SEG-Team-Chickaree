@@ -14,6 +14,16 @@ def login_prohibited(view_function):
 
     return modified_view_fuction
 
+def user_exists(view_function):
+    def modified_view_fuction(request, user_id, **kwargs):
+        if not User.objects.filter(id=user_id).exists():
+            messages.error(request, 'No user with id ' + str(user_id) + ' exists.')
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+        else:
+            return view_function(request, user_id, **kwargs)
+
+    return modified_view_fuction
+
 def club_exists(view_function):
     def modified_view_fuction(request, club_id, **kwargs):
         if not Club.objects.filter(id=club_id).exists():
