@@ -9,7 +9,7 @@ from clubs.forms import OrganiseTournamentForm
 from clubs.models import Tournament, Club, Organiser, Membership, Participant, MemberTournamentRelationship
 
 from .decorators import club_exists, tournament_exists, user_exists, membership_exists
-from .helpers import is_user_organiser_of_tournament, is_user_owner_of_club, is_user_officer_of_club,  is_lead_organiser_of_tournament, is_participant_in_tournament
+from .helpers import is_user_organiser_of_tournament, is_user_owner_of_club, is_user_officer_of_club, is_lead_organiser_of_tournament, is_participant_in_tournament
 
 
 from datetime import datetime
@@ -47,8 +47,8 @@ class OrganiseTournamentView(FormView):
             return super().form_invalid(form)
 
         self.object = form.save(self.get_context_data()['club'])
-        member = Membership.objects.get(user = self.request.user,
-                                    club = self.get_context_data()['club'])
+        if Membership.objects.filter(club = self.get_context_data()['club'], user=current_user).exists():
+            member = Membership.objects.get(user = self.request.user, club = self.get_context_data()['club'])
 
         Organiser.objects.create(
             member = member,
@@ -84,12 +84,17 @@ def withdraw_participation_from_tournament(request, tournament_id):
     """Have currently logged in user withdraw from a tournament, if it exists."""
     current_user = request.user
     tournament = Tournament.objects.get(id=tournament_id)
-    member = Membership.objects.get(club=tournament.club, user=current_user)
+    member = get_object_or_404(Membership, user = request.user, club = tournament.club)
+
     if Participant.objects.filter(tournament=tournament, member=member).exists():
         if tournament.deadline > now():
             Participant.objects.get(tournament=tournament, member=member).delete()
+        else:
+            messages.error(request, 'You cannot withdraw from the tournament as the deadline has passed.')
+    else:
+        messages.error(request, 'You have not participated in this tournament, ' + str(tournament.name) + '.')
 
-    return redirect('show_clubs')
+    return redirect('show_club', club_id=tournament.club.id)
 
 @login_required
 @tournament_exists

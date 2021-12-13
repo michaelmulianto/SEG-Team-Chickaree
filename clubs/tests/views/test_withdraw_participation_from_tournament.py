@@ -56,7 +56,7 @@ class WithdrawParticipationFromTournamentTestCase(TestCase):
         participant_count_after = Participant.objects.count()
         self.assertEqual(participant_count_after, participant_count_before)
 
-        response_url = reverse('show_clubs')
+        response_url = reverse('show_club', kwargs = {'club_id': self.tournament.club.id})
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,
@@ -77,7 +77,7 @@ class WithdrawParticipationFromTournamentTestCase(TestCase):
         participant_count_after = Participant.objects.count()
         self.assertEqual(participant_count_after, participant_count_before)
 
-        response_url = reverse('show_clubs')
+        response_url = reverse('show_club', kwargs = {'club_id': self.tournament.club.id})
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,
@@ -88,14 +88,12 @@ class WithdrawParticipationFromTournamentTestCase(TestCase):
     def test_successful_withdrawal(self):
         self.client.login(email=self.user.email, password="Password123")
         participant_count_before = Participant.objects.count()
-        print(participant_count_before)
         response = self.client.post(self.url, follow=True)
         participant_count_after = Participant.objects.count()
-        print(participant_count_after)
         self.assertEqual(participant_count_after, participant_count_before-1)
 
         # Should redirect user somewhere appropriate, indicating success.
-        response_url = reverse('show_clubs')
+        response_url = reverse('show_club', kwargs = {'club_id': self.tournament.club.id})
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,
