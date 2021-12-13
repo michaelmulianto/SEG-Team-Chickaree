@@ -63,23 +63,16 @@ def show_tournament(request, tournament_id):
 def join_tournament(request, tournament_id):
     tour = Tournament.objects.get(id = tournament_id)
     member = get_object_or_404(Membership, user = request.user, club = tour.club)
-    is_organiser = True
-    organiser = Organiser.objects.filter(member = member, tournament = tour)
-    if(organiser.count() == 0):
-        is_organiser = False
-
     is_member = False
     if(member != None):
         is_member = True
+    is_organiser = Organiser.objects.filter(member = member, tournament = tour).count() == 0
+    is_in_tournament = Participant.objects.filter(member = member, tournament = tour).count() > 0
 
-    is_in_tournament = False
-    check_tournament = Participant.objects.filter(member = member, tournament = tour)
-    if(check_tournament.count() > 0):
-        is_in_tournament = True
 
     current_capacity = Participant.objects.filter(tournament = tour)
     if(current_capacity.count() < tour.capacity):
-        if(is_organiser == False):
+        if(is_organiser == True):
             if(is_member == True):
                 if(is_in_tournament == False):
                     participant = Participant.objects.create(
@@ -90,7 +83,6 @@ def join_tournament(request, tournament_id):
                     messages.error(request, 'You are already enrolled in the tournament')
             else:
                 messages.error(request, 'You are not a member of the club and cannot join the tournament')
-
         else:
             messages.error(request, 'You are the organizer of the tournament and are not allowed to join it')
     else:
