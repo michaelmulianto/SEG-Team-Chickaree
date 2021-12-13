@@ -74,9 +74,9 @@ def get_owner(club):
 def get_organisers(tournament):
     return Organiser.objects.filter(tournament=tournament)
 
-@register.simple_tag
-def get_officers_and_owner(current_user, tournament):
-    return Membership.objects.filter(club = tournament.club, is_officer=True) + Membership.objects.filter(club = tournament.club, is_owner=True) -  Membership.objects.filter(club = tournament.club, user = current_user)
+# @register.simple_tag
+# def get_officers_and_owner(current_user, tournament):
+#     return Membership.objects.filter(club = tournament.club, is_officer=True) + Membership.objects.filter(club = tournament.club, is_owner=True) -  Membership.objects.filter(club = tournament.club, user = current_user)
 
 
 

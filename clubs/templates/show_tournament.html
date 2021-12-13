@@ -9,7 +9,6 @@
 {% check_is_lead_organiser current_user tournament as is_lead_organiser %}
 
 {% get_organisers tournament as organisers %}
-{% get_officers_and_owner current_user tournament as officers_and_owner %}
 
   <div class="container">
     <div class="row">
@@ -41,34 +40,7 @@
           {% endfor %}
         </table>
         <br>
-
-        <table class="table standard-table-spacing">
-          <tr>
-
-            <td><h3> Add organisers: </h3></td>
-
-
-            <td><select class="form-select" aria-label="Default select example" id="other_possible_organisers">
-              
-              {% for member in officers_and_owner %}
-                {% if officers_and_owner.count == 0 %}
-                  <p>No other possible organisers</p>
-                {% else %}
-                  <option selected>Select other organiser</option>
-                    {% if is_organser member %}
-                      <a class="dropdown-item" href="#" aria-disabled="true" >@{{ member.user.username }}</a>
-                    {% else %}
-                      <a class="dropdown-item" href="#" value= {{member.id}}>@{{ member.user.username }}</a>
-                    {%endif%}
-                {% endif %}
-              {% endfor %}
-
-            </select></td>
-
-            <td><a style="float: right;" href='{% url "add_organiser_to_tournament" tournament.id document.getElementById("other_possible_organisers").value %}' class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Add Co-Organiser</a></td>
-          </tr>
-        </table>
-
+        <a style="float: right;" href='{% url "show_tournament" tournament.id %}' class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Add Co-Organiser</a>
         <br>
         <br>
         <a href='{% url 'show_club' tournament.club.id %}' class="btn btn-info">
