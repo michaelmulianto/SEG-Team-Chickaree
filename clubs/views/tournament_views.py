@@ -117,7 +117,8 @@ def add_organisers_to_tournament(request, tournament_id, membership_id):
 
         return redirect('show_tournament', tournament_id=tournament.id)
 
-        
+@login_required
+@tournament_exists
 def join_tournament(request, tournament_id):
     tour = Tournament.objects.get(id = tournament_id)
     member = get_object_or_404(Membership, user = request.user, club = tour.club)
