@@ -26,6 +26,8 @@ class JoinTournamentViewTest(TestCase, MenuTesterMixin):
             is_owner = True
         )
 
+        Participant.objects.get(id=999).delete()
+
         self.url = reverse('join_tournament', kwargs={'tournament_id': self.tournament.id})
 
     def test_join_tournament_url(self):

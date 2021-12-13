@@ -69,7 +69,6 @@ class OrganiseTournamentView(FormView):
         pass
 
 
-
 @login_required
 @tournament_exists
 def show_tournament(request, tournament_id):
