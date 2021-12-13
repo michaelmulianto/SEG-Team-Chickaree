@@ -22,17 +22,24 @@ class AddResultView(UpdateView):
 
     @method_decorator(login_required)
     def dispatch(self, request, match_id):
+        match = self.get_object()
+        if match.result != 0:
+            return redirect('show_clubs')
         return super().dispatch(request)
+
+    def get_form(self):
+        my_form = super().get_form()
+        my_form._meta.outcome_list = [2,3]
+        return my_form
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['current_user'] = self.request.user
-        context['match'] = Match.objects.get(id=kwargs['match_id'])
         return context
 
     def get_object(self):
         """Return the object (match) to be updated."""
-        return self.get_context_data()['match']
+        return Match.objects.get(id=self.kwargs['match_id'])
 
     def get_success_url(self):
         """Return redirect URL after successful update."""
