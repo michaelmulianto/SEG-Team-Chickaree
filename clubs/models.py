@@ -163,9 +163,9 @@ class Tournament(models.Model):
     name = models.CharField(max_length=50, blank=False, unique = False)
     description =  models.CharField(max_length=280, blank=False)
     capacity = models.PositiveIntegerField(default=16, blank=False, validators=[MinValueValidator(2), MaxValueValidator(96)])
-    deadline = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
-    start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
-    end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+    deadline = models.DateTimeField(blank=False)
+    start = models.DateTimeField(blank=False)
+    end = models.DateTimeField(blank=False)
     created_on = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self):
