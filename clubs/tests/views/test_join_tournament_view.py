@@ -10,13 +10,14 @@ from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 class JoinTournamentViewTest(TestCase, MenuTesterMixin):
     """Test all aspects of the join tournament view"""
 
-    fixtures = ['clubs/tests/fixtures/default_user.json', 'clubs/tests/fixtures/default_tournament.json', 'clubs/tests/fixtures/default_club.json']
+    fixtures = ['clubs/tests/fixtures/default_user.json', 'clubs/tests/fixtures/other_clubs.json', 'clubs/tests/fixtures/default_tournament.json', 'clubs/tests/fixtures/default_club.json']
 
     def setUp(self):
-        self.user = User.objects.get(username='johndoe')
+        self.user = User.objects.get(username = 'johndoe')
+        self.club = Club.objects.get(name = "King's Knights")
         self.tournament = Tournament.objects.get(name = 'Grand Championship')
-        Membership.objects.create(
-            club = Club.objects.get(id = 1),
+        self.member = Membership.objects.create(
+            club = self.club,
             user = self.user
         )
 
@@ -40,15 +41,12 @@ class JoinTournamentViewTest(TestCase, MenuTesterMixin):
 
         self.assertEqual(participant_count_after, participant_count_before+1)
 
-    #
-    # def test_unsuccessful_join_tournament(self):
-    #     self.client.login(email=self.user.email, password='Password123')
-    #
-    #     participant_count_before = Participant.objects.count()
-    #
-    #     # self.data['name'] = ""
-    #     # response = self.client.post(self.url, self.data, follow=True)
-    #
-    #     participant_count_after = Club.objects.count()
-    #
-    #     self.assertEqual(participant_count_after, participant_count_before)
+    def test_unsuccessful_join_tournament(self):
+        self.client.login(email=self.user.email, password='Password123')
+
+        participant_count_before = Participant.objects.count()
+        self.member.club = Club.objects.get(name = "Queen's Rooks")
+        response = self.client.get(self.url, follow=True)
+        participant_count_after = Club.objects.count()
+
+        self.assertEqual(participant_count_after, participant_count_before)
