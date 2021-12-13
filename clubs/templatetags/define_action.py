@@ -20,11 +20,35 @@ def count_participants(tournament):
 
 @register.simple_tag
 def get_clubs(current_user):
-    memberships = Membership.objects.filter(user=current_user)
     my_clubs = []
-    for membership in memberships:
-      my_clubs.append(membership.club)
+    for club in Club.objects.all():
+        if Membership.objects.filter(club=club, user=current_user):
+            my_clubs.append(club)
     return my_clubs
+
+@register.simple_tag
+def check_is_organiser(user, tournament):
+    if Membership.objects.filter(user=user, club=tournament.club).exists():
+        membership = Membership.objects.get(user=user, club=tournament.club)
+        return Organiser.objects.filter(member=membership, tournament=tournament).exists()
+    else:
+        return False
+
+@register.simple_tag
+def check_is_lead_organiser(user, tournament):
+    if Membership.objects.filter(user=user, club=tournament.club).exists():
+        membership = Membership.objects.get(user=user, club=tournament.club)
+        return Organiser.objects.filter(member=membership, tournament=tournament, is_lead_organiser = True).exists()
+    else:
+        return False
+
+@register.simple_tag
+def check_has_joined_tournament(user, tournament):
+    if Membership.objects.filter(user=user, club=tournament.club).exists():
+        membership = Membership.objects.get(user=user, club=tournament.club)
+        return Participant.objects.filter(member=membership, tournament=tournament).exists()
+    else:
+        return False
 
 @register.simple_tag
 def get_members(club):

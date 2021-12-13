@@ -11,7 +11,7 @@ class TournamentModelTestCase(TestCase):
     fixtures = ['clubs/tests/fixtures/default_club.json',
         'clubs/tests/fixtures/other_clubs.json',
         'clubs/tests/fixtures/default_tournament.json',
-        'clubs/tests/fixtures/other_tournaments.json', 
+        'clubs/tests/fixtures/other_tournaments.json',
         'clubs/tests/fixtures/other_users.json',
         'clubs/tests/fixtures/default_tournament_participants.json'
         ]
@@ -118,13 +118,23 @@ class TournamentModelTestCase(TestCase):
         self._assert_tournament_is_invalid()
 
     def test_deadline_must_be_before_the_start_date(self):
-        self.tournament.deadline = "2021-12-20T00:00:00+00:00"
-        self.tournament.start = "2021-12-19T00:00:00+00:00"
+        self.tournament.deadline = "2099-12-20T00:00:00+00:00"
+        self.tournament.start = "2099-12-19T00:00:00+00:00"
+        self._assert_tournament_is_invalid()
+
+    def test_deadline_must_be_after_created_on(self):
+        self.tournament.deadline = "2099-11-20T00:00:00+00:00"
+        self.tournament.created_on = "2099-11-21T00:00:00+00:00"
         self._assert_tournament_is_invalid()
 
     # Test start date time
     def test_start_must_not_be_blank(self):
         self.tournament.start = None
+        self._assert_tournament_is_invalid()
+
+    def test_start_must_be_after_created_on(self):
+        self.tournament.start = "2099-11-20T00:00:00+00:00"
+        self.tournament.created_on = "2099-11-21T00:00:00+00:00"
         self._assert_tournament_is_invalid()
 
     # Test end date time
@@ -133,8 +143,13 @@ class TournamentModelTestCase(TestCase):
         self._assert_tournament_is_invalid()
 
     def test_end_must_not_be_before_the_start_date(self):
-        self.tournament.start = "2021-12-02T00:00:00+00:00"
-        self.tournament.end = "2021-12-01T00:00:00+00:00"
+        self.tournament.start = "2099-12-02T00:00:00+00:00"
+        self.tournament.end = "2099-12-01T00:00:00+00:00"
+        self._assert_tournament_is_invalid()
+
+    def test_end_must_be_after_created_on(self):
+        self.tournament.end = "2099-11-20T00:00:00+00:00"
+        self.tournament.created_on = "2099-11-21T00:00:00+00:00"
         self._assert_tournament_is_invalid()
 
     # Test participant constraints
@@ -153,7 +168,7 @@ class TournamentModelTestCase(TestCase):
     # Test get max round num
     def test_max_round_num_over_32_participants(self):
         self.assertEqual(self.tournament.get_max_round_num(), 6)
-    
+
     def test_max_round_num_over_16_under_33_participants(self):
         self.tournament.capacity = 32
         self._adjust_num_participants_to_capacity()
@@ -183,7 +198,7 @@ class TournamentModelTestCase(TestCase):
         self.tournament.capacity = 0
         self._adjust_num_participants_to_capacity()
         self.assertEqual(self.tournament.get_max_round_num(), 0)
-    
+
     # Test generate initial round
     def test_None_returned_when_generating_next_round_with_no_participants(self):
         Participant.objects.filter(tournament=self.tournament).delete()
@@ -201,7 +216,7 @@ class TournamentModelTestCase(TestCase):
         self.assertEqual(len(set(groups[0].get_player_occurences())), 4)
         # Check number of matches in one group
         self.assertEqual(len(groups[0].get_matches()), 6)
-    
+
     def test_generate_first_round_with_48_participants(self):
         self.tournament.capacity = 48
         self._adjust_num_participants_to_capacity()
