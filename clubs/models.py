@@ -167,12 +167,12 @@ class Tournament(models.Model):
     end = models.DateTimeField(blank=False)
     created_on = models.DateTimeField(auto_now_add=True, blank=False)
 
+    # LOL
     NUMBERS = (
         (2,'2'),
         (4, '4'),
         (8, '8'),
         (16, '16'),
-        (24, '24'),
         (32, '32'),
         (48, '48'),
         (96, '96'),
