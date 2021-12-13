@@ -1,6 +1,6 @@
 from django import template
 from datetime import datetime
-from clubs.models import User, Club, Application, Membership, Ban, Participant, Organiser, Tournament
+from clubs.models import User, Club, Application, Membership, Ban, Participant, Organiser, Tournament, SingleGroup, Match
 register = template.Library()
 
 @register.simple_tag
@@ -109,3 +109,36 @@ def check_has_joined_tournament(user, tournament):
         membership = Membership.objects.get(user=user, club=tournament.club)
         return Participant.objects.filter(member=membership, tournament=tournament).exists()
     return False
+
+@register.simple_tag
+def get_single_groups(group_stage):
+    return SingleGroup.objects.filter(group_stage=group_stage)
+
+@register.simple_tag
+def get_matches(stage):
+    return Match.objects.filter(collection=stage)
+
+@register.simple_tag
+def get_standings(single_group):
+        if not single_group.get_is_complete():
+            return None
+
+        matches = single_group.get_matches()
+        players = set(single_group.get_player_occurences())
+        scores = {}
+        for player in players:
+            scores.update({player.id:0})
+
+        for match in matches:
+            if match.result == 1:
+                scores[match.white_player.id] += 1
+            elif match.result == 2:
+                scores[match.black_player.id] += 1
+            else:
+                scores[match.white_player.id] += 0.5
+                scores[match.black_player.id] += 0.5
+
+        # https://www.geeksforgeeks.org/python-sort-list-by-dictionary-values/
+        res = sorted(scores.keys(), key = lambda ele: scores[ele])
+
+        return res
