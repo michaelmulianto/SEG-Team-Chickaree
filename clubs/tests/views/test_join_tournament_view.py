@@ -35,9 +35,7 @@ class JoinTournamentViewTest(TestCase, MenuTesterMixin):
 
         # We need to test that participant has been created
         participant_count_before = Participant.objects.count()
-
         response = self.client.get(self.url, follow=True)
-
         participant_count_after = Participant.objects.count()
 
         self.assertEqual(participant_count_after, participant_count_before+1)

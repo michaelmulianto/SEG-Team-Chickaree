@@ -16,7 +16,7 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.urls import reverse
 from django.conf import settings
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 class OrganiseTournamentView(FormView):
     """Create a new tournament."""
@@ -62,26 +62,28 @@ def show_tournament(request, tournament_id):
 @tournament_exists
 def join_tournament(request, tournament_id):
     tour = Tournament.objects.get(id = tournament_id)
-    member = Membership.objects.get(user = request.user, club = tour.club)
+    member = get_object_or_404(Membership, user = request.user, club = tour.club)
     is_organiser = True
     organiser = Organiser.objects.filter(member = member, tournament = tour)
     if(organiser.count() == 0):
         is_organiser = False
 
-    is_member = True
+    is_member = False
     if(member != None):
-        is_member = False
+        is_member = True
 
     is_in_tournament = False
     check_tournament = Participant.objects.filter(member = member, tournament = tour)
     if(check_tournament.count() > 0):
         is_in_tournament = True
 
-    currentCapacity = Participant.objects.filter(tournament = tour)
-    if(tour.capacity < currentCapacity.count() and deadline < datetime.now() and is_organiser == False and is_member == True and is_in_tournament == False):
+    current_capacity = Participant.objects.filter(tournament = tour)
+    if(current_capacity.count() < tour.capacity and is_organiser == False and is_member == True and is_in_tournament == False):
         participant = Participant.objects.create(
             member = member,
             tournament = tour
         )
+    else:
+        messages.warning(request, 'Unable to join Tournament')
 
     return redirect('show_club', club_id=tour.club.id)
