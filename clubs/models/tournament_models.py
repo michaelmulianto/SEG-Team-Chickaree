@@ -68,17 +68,18 @@ class Tournament(models.Model):
         if self.deadline < creation_time:
             raise ValidationError("Times must be after time of object creation.")
 
+    def get_all_stage_interfaces(self):
+        return StageInterface.objects.filter(tournament=self)
+
     def get_current_round(self):
         from .interface_models import StageInterface
-        rounds = StageInterface.objects.filter(tournament=self)
+        rounds = self.get_all_stage_interfaces()
         if rounds.count() == 0:
             return None
         curr_round_num = rounds.aggregate(Max('round_num'))['round_num__max']
-        curr_round = rounds.get(round_num=curr_round_num)
-        if hasattr(curr_round, 'knockoutstage'):
-            return curr_round.knockoutstage
-        else:
-            return curr_round.groupstage
+        stage_interface_of_round = rounds.get(round_num=curr_round_num)
+        return stage_interface_of_round.get_round()
+        
 
     def get_num_participants(self):
         return Participant.objects.filter(tournament=self).count()
