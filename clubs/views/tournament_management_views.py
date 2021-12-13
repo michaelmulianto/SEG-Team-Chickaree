@@ -24,7 +24,15 @@ class AddResultView(UpdateView):
     def dispatch(self, request, match_id):
         match = self.get_object()
         if match.result != 0:
+            messages.add_message(self.request, messages.ERROR, "The match has already had the result registered!")
             return redirect('show_clubs')
+
+        if hasattr(match.collection, 'stageinterface'):
+            t= match.collection.stageinterface.tournament
+            if Organiser.objects.filter(tournament=t, member=Member.objects.get(club=t.club,user=request.user)).exists():
+                messages.add_message(self.request, messages.ERROR, "Only organisers can set match results!")
+                return redirect('show_clubs')
+
         return super().dispatch(request)
 
     def get_form(self):
