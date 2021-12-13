@@ -163,9 +163,9 @@ class Tournament(models.Model):
     name = models.CharField(max_length=50, blank=False, unique = False)
     description =  models.CharField(max_length=280, blank=False)
     capacity = models.PositiveIntegerField(default=16, blank=False, validators=[MinValueValidator(2), MaxValueValidator(96)])
-    deadline = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
-    start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
-    end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+    deadline = models.DateTimeField(blank=False)
+    start = models.DateTimeField(blank=False)
+    end = models.DateTimeField(blank=False)
     created_on = models.DateTimeField(auto_now_add=True, blank=False)
 
     def __str__(self):
@@ -200,7 +200,7 @@ class Tournament(models.Model):
             raise ValidationError("The deadline date cannot be after the start!")
         if self.start > self.end:
             raise ValidationError("The tournament should have a positive duration.")
-        
+
         if self.created_on == None:
             creation_time = now()
         else:
@@ -212,7 +212,7 @@ class Tournament(models.Model):
     def get_current_round(self):
         rounds = StageInterface.objects.filter(tournament=self)
         if rounds.count() == 0:
-            return None 
+            return None
         curr_round_num = rounds.aggregate(Max('round_num'))['round_num__max']
         curr_round = rounds.get(round_num=curr_round_num)
         if hasattr(curr_round, 'knockoutstage'):
@@ -244,7 +244,7 @@ class Tournament(models.Model):
             return None
 
         curr_round = self.get_current_round()
-        
+
         if curr_round != None:
             participants = curr_round.get_winners()
             next_num = curr_round.round_num+1
@@ -255,7 +255,7 @@ class Tournament(models.Model):
         if participants == None:
             # Current round is not yet complete
             return None
-        
+
         num_participants = len(participants)
 
         if num_participants == 0:
