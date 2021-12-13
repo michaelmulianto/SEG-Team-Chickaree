@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 
 from clubs.forms import OrganiseTournamentForm
 
-from clubs.models import Tournament, Club, Organiser, Membership, Participant, MemberTournamentRelationship
+from clubs.models import Tournament, Club, Organiser, Membership, Participant, GroupStage, KnockoutStage, MemberTournamentRelationship
 
 from .decorators import club_exists, tournament_exists, user_exists, membership_exists
 from .helpers import is_user_organiser_of_tournament, is_user_owner_of_club, is_user_officer_of_club,  is_lead_organiser_of_tournament, is_participant_in_tournament
@@ -75,11 +75,13 @@ def show_tournament(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     club = tournament.club
     if Membership.objects.filter(user=request.user, club=club):
-        tournament_group_stages = tournament.get_group_stages()
+        tournament_group_stages = GroupStage.objects.filter(tournament=tournament)
+        tournament_knockout_stages = KnockoutStage.objects.filter(tournament=tournament)
         return render(request, 'show_tournament.html', {
                 'current_user': request.user,
                 'tournament': tournament,
-                'tournament_group_stages': tournament_group_stages
+                'tournament_group_stages': tournament_group_stages,
+                'tournament_knockout_stages': tournament_knockout_stages,
             }
         )
     else:
