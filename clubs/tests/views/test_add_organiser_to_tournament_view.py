@@ -65,8 +65,8 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
             is_lead_organiser = True
         )
 
-        self.url_owner_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_owner_organiser.id, 'membership_id': self.officer_member.id})
-        self.url_officer_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id, 'membership_id': self.owner_member.id})
+        self.url_owner_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_owner_organiser.id, 'member_id': self.officer_member.id})
+        self.url_officer_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id, 'member_id': self.owner_member.id})
 
     def test_assign_organiser_url_owner_organiser(self):
         self.assertEqual(self.url_owner_organiser, f'/tournament/{self.tournament_owner_organiser.id}/add_organiser/{self.officer_member.id}')
@@ -87,7 +87,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         self.assertFalse(self._is_member_organiser(tournament = self.tournament_officer_organiser, membership = self.owner_member))
 
     def test_assign_organiser_redirects_when_invalid_tournament_id_entered_form_owner_organiser(self):
-        self.url_owner_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': 999, 'membership_id':self.officer_member.id})
+        self.url_owner_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': 999, 'member_id':self.officer_member.id})
         self.client.login(email=self.owner_user.email, password="Password123")
         response = self.client.get(self.url_owner_organiser, follow=True)
         redirect_url = reverse('show_clubs')
@@ -96,7 +96,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         self.assertFalse(self._is_member_organiser(tournament = self.tournament_owner_organiser, membership = self.officer_member))
 
     def test_assign_organiser_redirects_when_invalid_tournament_id_entered_form_officer_organiser(self):
-        self.url_officer_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': 999, 'membership_id':self.owner_member.id})
+        self.url_officer_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': 999, 'member_id':self.owner_member.id})
         self.client.login(email=self.officer_user.email, password="Password123")
         response = self.client.get(self.url_officer_organiser, follow=True)
         redirect_url = reverse('show_clubs')
@@ -105,7 +105,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         self.assertFalse(self._is_member_organiser(tournament = self.tournament_officer_organiser, membership = self.owner_member))
 
     def test_assign_organiser_redirects_when_invalid_member_id_entered_from_owner_organiser(self):
-        self.url_owner_organiser = reverse('add_organiser_to_tournament', kwargs = {'membership_id': 999, 'tournament_id': self.tournament_owner_organiser.id})
+        self.url_owner_organiser = reverse('add_organiser_to_tournament', kwargs = {'member_id': 999, 'tournament_id': self.tournament_owner_organiser.id})
         self.client.login(email=self.owner_user.email, password="Password123")
         response = self.client.get(self.url_owner_organiser, follow=True)
         redirect_url = reverse('show_clubs')
@@ -114,7 +114,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         self.assertFalse(self._is_member_organiser(tournament = self.tournament_owner_organiser, membership = self.officer_member))
 
     def test_assign_organiser_redirects_when_invalid_member_id_entered_from_officer_organiser(self):
-        self.url_officer_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id, 'membership_id': 999 })
+        self.url_officer_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id, 'member_id': 999 })
         self.client.login(email=self.officer_user.email, password="Password123")
         response = self.client.get(self.url_officer_organiser, follow=True)
         redirect_url = reverse('show_clubs')
@@ -148,7 +148,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
 
     def test_assign_organiser_redirects_when_organiser_assigning_themselves_from_owner_organiser(self):
         self.client.login(email=self.owner_user.email, password="Password123")
-        self.url_owner_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_owner_organiser.id, 'membership_id': self.owner_member.id })
+        self.url_owner_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_owner_organiser.id, 'member_id': self.owner_member.id })
         response = self.client.get(self.url_owner_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id': self.tournament_owner_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -162,7 +162,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
 
     def test_assign_organiser_redirects_when_organiser_assigning_themselves_from_officer_organiser(self):
         self.client.login(email=self.officer_user.email, password="Password123")
-        self.url_officer_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id, 'membership_id': self.officer_member.id })
+        self.url_officer_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id, 'member_id': self.officer_member.id })
         response = self.client.get(self.url_officer_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -176,7 +176,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
 
     def test_assign_organiser_redirects_when_assigning_organiser_to_a_regular_member_from_owner_organiser(self):
         self.client.login(email=self.owner_user.email, password="Password123")
-        self.url_owner_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_owner_organiser.id, 'membership_id': self.regular_member.id })
+        self.url_owner_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_owner_organiser.id, 'member_id': self.regular_member.id })
         response = self.client.get(self.url_owner_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id': self.tournament_owner_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -191,7 +191,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
 
     def test_assign_organiser_redirects_when_assigning_organiser_to_a_regular_member_from_officer_organiser(self):
         self.client.login(email=self.officer_user.email, password="Password123")
-        url_add_regular_member_as_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id, 'membership_id': self.regular_member.id })
+        url_add_regular_member_as_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id, 'member_id': self.regular_member.id })
         response = self.client.get(url_add_regular_member_as_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -212,7 +212,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         new_participant.save()
         
         self.client.login(email=self.owner_user.email, password="Password123")
-        self.url_owner_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_owner_organiser.id, 'membership_id': self.officer_member.id })
+        self.url_owner_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_owner_organiser.id, 'member_id': self.officer_member.id })
         response = self.client.get(self.url_owner_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id': self.tournament_owner_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
@@ -233,7 +233,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         new_participant.save()
         
         self.client.login(email=self.officer_user.email, password="Password123")
-        self.url_officer_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id, 'membership_id': self.owner_member.id })
+        self.url_officer_organiser = reverse('add_organiser_to_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id, 'member_id': self.owner_member.id })
         response = self.client.get(self.url_officer_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
