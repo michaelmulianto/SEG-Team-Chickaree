@@ -77,7 +77,8 @@ class Tournament(models.Model):
         if rounds.count() == 0:
             return None
         curr_round_num = rounds.aggregate(Max('round_num'))['round_num__max']
-        curr_round = rounds.get(round_num=curr_round_num)
+        stage_interface_of_round = rounds.get(round_num=curr_round_num)
+        return stage_interface_of_round.get_round()
         
 
     def get_num_participants(self):
