@@ -3,7 +3,7 @@
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.conf import settings
-from clubs.models import User, Club, Membership, Application, Ban, Tournament
+from clubs.models import Organiser, User, Club, Membership, Application, Ban, Tournament
 
 def login_prohibited(view_function):
     def modified_view_fuction(request):
@@ -31,6 +31,16 @@ def club_exists(view_function):
             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         else:
             return view_function(request, club_id, **kwargs)
+
+    return modified_view_fuction
+
+def tournament_exists(view_function):
+    def modified_view_fuction(request, tournament_id, **kwargs):
+        if not Tournament.objects.filter(id=tournament_id).exists():
+            messages.error(request, 'No tournament with id ' + str(tournament_id) + ' exists.')
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+        else:
+            return view_function(request, tournament_id, **kwargs)
 
     return modified_view_fuction
 
@@ -85,3 +95,15 @@ def not_banned(view_function):
             return view_function(request, club_id, **kwargs)
 
     return modified_view_fuction
+
+def is_head_organiser(view_function):
+    def modified_view_function(request, tournament_id, membership_id, **kwargs):
+        tournament = Tournament.objects.get(id=tournament_id) #Must be used is @tournament_exists
+        member = Membership.objects.get(id=membership_id) #Must be used with @membership_exists
+        if not Organiser.objects.filter(tournament = tournament, member = member, is_head_organiser = True).exists():
+            messages.error(request, 'The membership with id ' + str(membership_id) + ' for tournament ' + str(tournament_id) + " exists.")
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+        else:
+            return view_function(request, tournament_id, membership_id, **kwargs)
+    
+    return modified_view_function

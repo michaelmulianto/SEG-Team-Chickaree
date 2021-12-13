@@ -61,6 +61,11 @@ class TournamentModelTestCase(TestCase):
         self._adjust_num_participants_to_capacity()
         self._assert_tournament_is_valid()
 
+    def test_capacity_must_not_be_other_than_options_given(self):
+        self.tournament.capacity = 5
+        with self.assertRaises(ValidationError):
+            self.tournament.full_clean()
+
     def test_capacity_is_positive(self):
         self.tournament.capacity = -1
         Participant.objects.filter(tournament=self.tournament).delete()

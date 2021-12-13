@@ -50,6 +50,9 @@ urlpatterns = [
     path('club/<int:club_id>/banned_members/', views.banned_members, name='banned_members'),
     path('club/<int:club_id>/organise_tournament/', views.OrganiseTournamentView.as_view(), name='organise_tournament'),
 
+    path('club/<int:tournament_id>/join_tournament/', views.join_tournament, name='join_tournament'),
+
+
     path('application/<int:app_id>/respond/<bool:is_accepted>/', views.respond_to_application, name='respond_to_application'),
 
     path('banned/<int:ban_id>/unban/', views.unban_member, name='unban_member'),
@@ -61,4 +64,5 @@ urlpatterns = [
     path('member/<int:member_id>/ban/', views.ban_member, name='ban_member'),
 
     path('tournament/<int:tournament_id>/', views.show_tournament, name='show_tournament'),
+    path('tournament/<int:tournament_id>/add_organiser/<int:membership_id>', views.add_organisers_to_tournament, name='add_organiser_to_tournament')
 ]
