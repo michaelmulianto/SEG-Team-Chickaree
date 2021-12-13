@@ -15,12 +15,11 @@ class JoinTournamentViewTest(TestCase, MenuTesterMixin):
     def setUp(self):
         self.user = User.objects.get(username = 'johndoe')
         self.club = Club.objects.get(name = "King's Knights")
-        self.tournament = Tournament.objects.get(name = 'Grand Championship')
         self.member = Membership.objects.create(
+            user = self.user,
             club = self.club,
-            user = self.user
         )
-
+        self.tournament = Tournament.objects.get(name = 'Grand Championship')
         self.url = reverse('join_tournament', kwargs={'tournament_id': self.tournament.id})
 
     def test_join_tournament_url(self):
@@ -47,6 +46,6 @@ class JoinTournamentViewTest(TestCase, MenuTesterMixin):
         participant_count_before = Participant.objects.count()
         self.member.club = Club.objects.get(name = "Queen's Rooks")
         response = self.client.get(self.url, follow=True)
-        participant_count_after = Club.objects.count()
+        participant_count_after = Participant.objects.count()
 
         self.assertEqual(participant_count_after, participant_count_before)
