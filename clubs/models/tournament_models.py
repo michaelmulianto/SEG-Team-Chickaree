@@ -69,10 +69,10 @@ class Tournament(models.Model):
             raise ValidationError("Times must be after time of object creation.")
 
     def get_all_stage_interfaces(self):
+        from .interface_models import StageInterface
         return StageInterface.objects.filter(tournament=self)
 
     def get_current_round(self):
-        from .interface_models import StageInterface
         rounds = self.get_all_stage_interfaces()
         if rounds.count() == 0:
             return None

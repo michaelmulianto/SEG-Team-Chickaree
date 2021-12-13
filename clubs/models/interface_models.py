@@ -41,10 +41,10 @@ class StageInterface(GenericRoundOfMatches):
     round_num = models.IntegerField(default = 1, blank = False)
 
     def get_round(self):
-        if hasattr(curr_round, 'knockoutstage'):
-            return curr_round.knockoutstage
-        elif hasattr(curr_round, 'groupstage'):
-            return curr_round.groupstage
+        if hasattr(self, 'knockoutstage'):
+            return self.knockoutstage
+        elif hasattr(self, 'groupstage'):
+            return self.groupstage
         else:
             return None
 
