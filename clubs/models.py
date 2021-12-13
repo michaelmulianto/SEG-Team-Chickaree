@@ -162,9 +162,10 @@ class Tournament(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     name = models.CharField(max_length=50, blank=False, unique = False)
     description =  models.CharField(max_length=280, blank=False)
-    deadline = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
-    start = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
-    end = models.DateTimeField(default=now, auto_now=False, auto_now_add=False, blank=False)
+    deadline = models.DateTimeField(blank=False)
+    start = models.DateTimeField(blank=False)
+    end = models.DateTimeField(blank=False)
+    created_on = models.DateTimeField(auto_now_add=True, blank=False)
 
     NUMBERS = (
         (2,'2'),
