@@ -14,12 +14,12 @@ class Match(models.Model):
 
     collection = models.ForeignKey(GenericRoundOfMatches, on_delete=models.CASCADE, unique=False, blank=False)
 
-    OUTCOMES = (
+    OUTCOMES = [
         (0, 'Incomplete'),
         (1,'White Victory'),
         (2, 'Black Victory'),
         (3, 'Stalemate'),
-    )
+    ]
     result = models.IntegerField(default = 0, choices = OUTCOMES, blank = False)
 
     class Meta:
