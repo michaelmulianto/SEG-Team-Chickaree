@@ -1,6 +1,7 @@
 """Decorators representing requirements of views to be accessed"""
 
 from django.contrib import messages
+from django.utils.timezone import now
 from django.shortcuts import redirect
 from django.conf import settings
 from clubs.models import User, Club, Membership, Application, Ban, Tournament
