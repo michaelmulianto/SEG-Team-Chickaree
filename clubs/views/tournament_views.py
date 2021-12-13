@@ -68,9 +68,7 @@ def join_tournament(request, tournament_id):
     if(organiser.count() == 0):
         is_organiser = False
 
-    is_member = False
-    if(member != None):
-        is_member = True
+    is_member = member != None
 
     is_in_tournament = False
     check_tournament = Participant.objects.filter(member = member, tournament = tour)
