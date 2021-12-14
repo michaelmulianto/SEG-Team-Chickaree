@@ -1,6 +1,5 @@
 from django import template
-from datetime import datetime
-from clubs.models import User, Club, Application, Membership, Ban, Participant, Organiser, Tournament, SingleGroup, Match
+from clubs.models import Club, Application, Membership, Participant, Organiser
 register = template.Library()
 
 @register.simple_tag
