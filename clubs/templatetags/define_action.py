@@ -151,4 +151,4 @@ def get_standings(single_group):
             standing = [Participant.objects.get(id=participant), ordered_scores[participant], matches_played[participant]]
             standings.append(standing)
 
-        return standings
+        return list(reversed(standings))
