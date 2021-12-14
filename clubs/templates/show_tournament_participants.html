@@ -9,7 +9,6 @@
 
 {% check_is_lead_organiser current_user tournament as is_lead_organiser %}
 
-{% get_participants tournament as participants %}
 
   <div class="container">
     <div class="row">
@@ -28,7 +27,7 @@
             {% include 'member_list_partials/table_header_extras.html' with show_email=show_email %}
             <th></th>
           </tr>
-        {% for participant in participants %}
+        {% for participant in tournament.get_participants %}
         <tr>
           {% include 'member_list_partials/table_row_basics.html' with user=participant.member.user include_counter=True %}
           {% include 'member_list_partials/table_row_extras.html' with user=participant.member.user show_email=True %}
