@@ -16,29 +16,29 @@ class AddTournamentOrganiserListViewTestCase(TestCase, MenuTesterMixin):
     ]
 
     def setUp(self):
-        self.owner_user = User.objects.get(username='johndoe')
-        self.officer_user = User.objects.get(username='jamiedoe')
-        self.second_officer_user = User.objects.get(username='tomdoe')
+        self.lead_organiser_user = User.objects.get(username='johndoe')
+        self.standard_organiser_user = User.objects.get(username='richarddoe')
+        self.officer_organiser_candidate_user = User.objects.get(username='jamie')
         self.non_member_user = User.objects.get(username='janedoe')
-        self.participant_user = User.objects.get(username='richarddoe')
 
         self.club = Club.objects.get(name='King\'s Knights')
 
-        self.owner_member = Membership.objects.create(
+        self.lead_organiser_member = Membership.objects.create(
             club = self.club,
             user = self.owner_user,
             is_owner = True,
         )
 
-        self.officer_member = Membership.objects.create(
+        self.standard_organiser_member = Membership.objects.create(
             club = self.club,
-            user = self.owner_user,
+            user = self.officer_user,
             is_officer = True,
         )
 
-        self.participant_member = Membership.objects.create(
-            user = self.participant_user,
+        self.officer_organiser_candidate_member = Membership.objects.create(
             club = self.club,
+            user = self.officer_organiser_candidate_user,
+            is_officer = True,
         )
 
         self.tournament = Tournament.objects.get(name="Grand Championship")
@@ -54,9 +54,39 @@ class AddTournamentOrganiserListViewTestCase(TestCase, MenuTesterMixin):
             tournament = self.tournament,
         )
 
-        self.participant = Participant.objects.create(
-            member = self.participant_member,
-            tournament = self.tournament
-        )
-
         self.url = reverse('add_tournament_organiser_list', kwargs={'tournament_id': self.tournament.id})
+
+
+    def test_get_add_tournament_organiser_list_url(self):
+        self.assertEqual(self.url, f'/tournament/{self.tournament.id}/add_tournament_organiser_list')
+
+    def test_get_add_tournament_organiser_list_redirects_when_not_logged_in(self):
+        response = self.client.get(self.url)
+        redirect_url = reverse_with_next('log_in', self.url)
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+
+    def test_get_add_tournament_organiser_list_with_invalid_id(self):
+        self.client.login(email=self.lead_organiser_user.email, password="Password123")
+        self.url = reverse('add_tournament_organiser_list', kwargs={'tournament_id': 999})
+        response = self.client.get(self.url)
+        redirect_url = reverse("show_clubs")
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+
+    def test_get_add_tournament_organiser_list_redirects_when_not_member(self):
+        self.client.login(email=self.non_member_user.email, password="Password123")
+        response = self.client.get(self.url)
+        redirect_url = reverse("show_club", kwargs={'club_id': self.club.id})
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+
+    def test_get_add_tournament_organiser_list_redirects_not_lead_organiser(self):
+        self.client.login(email=self.standard_organiser_user.email, password="Password123")
+        response = self.client.get(self.url)
+        redirect_url = reverse("show_club", kwargs={'club_id': self.club.id})
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+
+    def test_get_add_tournament_organiser_list_with_valid_id(self):
+        self.client.login(email=self.lead_organiser_user.email, password="Password123")
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200) #OK
+        self.assertTemplateUsed(response, "add_tournament_organiser_list.html")
+        self.assert_menu(response)
