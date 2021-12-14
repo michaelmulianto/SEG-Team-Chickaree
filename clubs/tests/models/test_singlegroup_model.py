@@ -15,48 +15,48 @@ class SingleGroupModelTestCase(TestCase):
     # Test setup
     def setUp(self):
         self.user = User.objects.get(username='johndoe')
-        self.GroupStage = GroupStage.objects.create(
+        self.stage = GroupStage.objects.create(
             tournament = Tournament.objects.get(name = "Grand Championship"),
             round_num = 1
         )
-        self.SingleGroup = SingleGroup.objects.create(
-            group_stage = self.GroupStage,
+        self.group = SingleGroup.objects.create(
+            group_stage = self.stage,
             winners_required = 1
         )
     
-    # def test_valid_singlegroup(self):
-    #     self._assert_valid_singlegroup()
+    def test_valid_singlegroup(self):
+        self._assert_valid_singlegroup()
 
-    # Test group_stage
+    # Test group_stage field
     def test_group_stage_cannot_be_blank(self):
-        self.SingleGroup.group_stage= None
+        self.group.group_stage= None
         self._assert_invalid_singlegroup()
 
     def test_group_stage_cannot_contain_non_group_stage_object(self):
         with self.assertRaises(ValueError):
-            self.SingleGroup.group_stage = self.user
+            self.group.group_stage = self.user
 
     def test_single_group_deletes_when_group_stage_is_deleted(self):
-        self.GroupStage.delete()
-        self.assertFalse(SingleGroup.objects.filter(group_stage=self.SingleGroup.group_stage).exists())
+        self.stage.delete()
+        self.assertFalse(SingleGroup.objects.filter(group_stage=self.group.group_stage).exists())
 
     def test_group_stage_does_not_delete_when_single_group_is_deleted(self):
-        self.SingleGroup.delete()
-        self.assertTrue(GroupStage.objects.filter(tournament = self.GroupStage.tournament).exists())
+        self.group.delete()
+        self.assertTrue(GroupStage.objects.filter(tournament = self.stage.tournament).exists())
 
     # Test winners_required
     def test_winners_required_must_not_be_blank(self):
-        self.SingleGroup.winners_required = None
+        self.group.winners_required = None
         with self.assertRaises(ValidationError):
-            self.SingleGroup.full_clean()
+            self.group.full_clean()
 
     # Assertions
     def _assert_valid_singlegroup(self):
         try:
-            self.SingleGroup.full_clean()
+            self.group.full_clean()
         except (ValidationError):
             self.fail("Test SingleGroup should be valid")
 
     def _assert_invalid_singlegroup(self):
         with self.assertRaises(ValidationError):
-            self.SingleGroup.full_clean()
+            self.group.full_clean()
