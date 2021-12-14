@@ -1,9 +1,8 @@
 {% with forloop.counter as participant_position %}
 <tr>
   <td> {{ participant_position }} </td>
-  <td> {{ standing }} </td>
-  <td> <img src="{{ standing.0.user.mini_gravatar }}" alt="Gravatar" style="border-radius: 50%"> </td>
-  <td> {{ standing.0.user.username }} </td>
+  <td> <img src="{{ standing.0.member.user.mini_gravatar }}" alt="Gravatar" style="border-radius: 50%"> </td>
+  <td> {{ standing.0.member.user.username }} </td>
   <td> {{ standing.2 }} </td>
   <td> {{ standing.1 }} </td>
 </tr>
