@@ -41,9 +41,9 @@ class KnockoutStage(TournamentStageBase, StageMethodInterface):
         if (len(matches) & (len(matches) - 1) != 0):
             raise ValidationError("The number of matches must be a power of two.")
 
-        player_occurences = self.get_player_occurences()
+        player_occurrences = self.get_player_occurrences()
 
-        if(len(player_occurences) != len(set(player_occurences))):
+        if(len(player_occurrences) != len(set(player_occurrences))):
             raise ValidationError("Each player must only play 1 match.")
 
     def get_winners(self):

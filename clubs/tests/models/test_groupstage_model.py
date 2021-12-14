@@ -46,7 +46,7 @@ class GroupStageModelTestCase(TestCase):
         self.assertEqual(set(actual_winners), set(expected_winners))
         self.assertEqual(len(actual_winners), len(set(actual_winners)))
 
-    def test_get_player_occurences_returns_size_of_group_minus_one_per_player(self):
+    def test_get_player_occurrences_returns_size_of_group_minus_one_per_player(self):
         test_participant = Participant.objects.filter(tournament=self.tournament)[0]
         count = 0
         for occurrence in self.group_stage.get_player_occurrences():
