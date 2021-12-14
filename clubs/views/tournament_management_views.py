@@ -39,7 +39,7 @@ class AddResultView(UpdateView):
             
         member = Membership.objects.get(club=t.club,user=request.user)
 
-        if Organiser.objects.filter(tournament=t, member=member).exists():
+        if not Organiser.objects.filter(tournament=t, member=member).exists():
             messages.add_message(self.request, messages.ERROR, "Only organisers can set match results!")
             return redirect('show_clubs')
 
@@ -48,8 +48,9 @@ class AddResultView(UpdateView):
     def get_form(self):
         my_form = super().get_form()
         try:
-            match.collection.stageinterface.knockoutstage
+            match.collection.tournamentstagebase.knockoutstage
         except:
+            # Not knockoutstage: do nothing
             pass
         else:
             my_form.fields["result"].choices = my_form.fields["result"].choices[:2]

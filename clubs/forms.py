@@ -136,6 +136,6 @@ class OrganiseTournamentForm(forms.ModelForm):
 class AddResultForm(forms.ModelForm):
     class Meta:
         model = Match
-        fields = []
+        fields = ['result']
             
     result = forms.ChoiceField(choices=Match.OUTCOMES[1:])
