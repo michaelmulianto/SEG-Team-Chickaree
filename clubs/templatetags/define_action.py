@@ -13,12 +13,6 @@ def count_members(club_to_count):
     return Membership.objects.filter(club=club_to_count).count()
 
 @register.simple_tag
-def count_participants(tournament):
-    return Participant.objects.filter(tournament=tournament).count()
-
-
-
-@register.simple_tag
 def get_clubs(current_user):
     my_clubs = []
     for club in Club.objects.all():
@@ -70,15 +64,6 @@ def get_officers(club):
 def get_owner(club):
     return Membership.objects.get(club=club, is_owner=True)
 
-@register.simple_tag
-def get_organisers(tournament):
-    return Organiser.objects.filter(tournament=tournament)
-
-# @register.simple_tag
-# def get_officers_and_owner(current_user, tournament):
-#     return Membership.objects.filter(club = tournament.club, is_officer=True) + Membership.objects.filter(club = tournament.club, is_owner=True) -  Membership.objects.filter(club = tournament.club, user = current_user)
-
-
 
 @register.simple_tag
 def check_has_applied(club_to_check, user):
@@ -111,11 +96,6 @@ def check_has_joined_tournament(user, tournament):
         membership = Membership.objects.get(user=user, club=tournament.club)
         return Participant.objects.filter(member=membership, tournament=tournament).exists()
     return False
-
-@register.simple_tag
-def get_participants(tournament):
-    return Participant.objects.filter(tournament=tournament)
-
 @register.simple_tag
 def get_single_groups(group_stage):
     return SingleGroup.objects.filter(group_stage=group_stage)
