@@ -6,11 +6,10 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from clubs.forms import OrganiseTournamentForm
-
 from clubs.models import Tournament, Club, Organiser, Membership, Participant, MemberTournamentRelationship
 
 from .decorators import club_exists, tournament_exists, user_exists, membership_exists
-from .helpers import is_user_organiser_of_tournament, is_user_owner_of_club, is_user_officer_of_club,  is_lead_organiser_of_tournament, is_participant_in_tournament
+from .helpers import is_user_organiser_of_tournament, is_user_owner_of_club, is_user_officer_of_club, is_lead_organiser_of_tournament, is_participant_in_tournament
 
 
 from datetime import datetime
@@ -37,7 +36,7 @@ class OrganiseTournamentView(FormView):
         context['current_user'] = self.request.user
         context['club'] = Club.objects.get(id=self.kwargs['club_id'])
         return context
-    
+
     def form_valid(self, form):
         if not is_user_owner_of_club(self.request.user, self.get_context_data()['club']) and not is_user_officer_of_club(self.request.user, self.get_context_data()['club']):
             messages.add_message(self.request, messages.ERROR, "Only Owners or Officers of a club can create tournaments")
@@ -48,8 +47,8 @@ class OrganiseTournamentView(FormView):
             return super().form_invalid(form)
 
         self.object = form.save(self.get_context_data()['club'])
-        member = Membership.objects.get(user = self.request.user, 
-                                    club = self.get_context_data()['club'])
+        if Membership.objects.filter(club = self.get_context_data()['club'], user=self.request.user).exists():
+            member = Membership.objects.get(user = self.request.user, club = self.get_context_data()['club'])
 
         Organiser.objects.create(
             member = member,
@@ -57,13 +56,12 @@ class OrganiseTournamentView(FormView):
             is_lead_organiser = True
         )
         return super().form_valid(form)
-            
+
 
     def get_success_url(self):
         club = self.get_context_data()['club']
         return reverse('show_club', kwargs={'club_id': club.id})
 
-    
     @method_decorator(user_exists)
     def create_organiser(self, user):
         pass
@@ -80,6 +78,22 @@ def show_tournament(request, tournament_id):
         messages.error(request, "You are not a member of the club that organises this tournament, you can view the basic tournament details from the club's page.")
     return redirect('show_club', club_id=club.id)
 
+@login_required
+@tournament_exists
+def withdraw_participation_from_tournament(request, tournament_id):
+    """Have currently logged in user withdraw from a tournament, if it exists."""
+    tournament = Tournament.objects.get(id=tournament_id)
+    member = get_object_or_404(Membership, user = request.user, club = tournament.club)
+
+    if Participant.objects.filter(tournament=tournament, member=member).exists():
+        if tournament.deadline > now():
+            Participant.objects.get(tournament=tournament, member=member).delete()
+        else:
+            messages.error(request, 'You cannot withdraw from the tournament as the deadline has passed.')
+    else:
+        messages.error(request, 'You have not participated in this tournament, ' + str(tournament.name) + '.')
+
+    return redirect('show_club', club_id=tournament.club.id)
 
 @login_required
 @tournament_exists
@@ -147,4 +161,3 @@ def join_tournament(request, tournament_id):
         messages.error(request, 'Tournament is full')
 
     return redirect('show_club', club_id=tour.club.id)
-
