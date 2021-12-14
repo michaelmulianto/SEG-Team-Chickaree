@@ -105,3 +105,20 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
             fetch_redirect_response=True
         )
         self.assertTemplateUsed(response, 'show_clubs.html')
+        
+    def test_add_result_when_result_already_set(self):
+        self.client.login(email=self.user.email, password="Password123")
+        self.match.result = 2
+        
+        response = self.client.post(self.url, self.data, follow=True)
+
+        self.assertEqual(Match.objects.get(id=self.match.id).result, 2)
+
+        # Response tests
+        response_url = reverse('show_clubs')
+        self.assertRedirects(
+            response, response_url,
+            status_code=302, target_status_code=200,
+            fetch_redirect_response=True
+        )
+        self.assertTemplateUsed(response, 'show_clubs.html')
