@@ -1,4 +1,4 @@
-"""Tests for Club model, found in clubs/models.py"""
+"""Tests for single group model, found in clubs/models.py"""
 
 from django.test import TestCase
 from clubs.models import Match, Participant, Tournament, Club, User, Membership, GroupStage, SingleGroup
@@ -7,7 +7,7 @@ from django.db.utils import IntegrityError
 
 
 class SingleGroupModelTestCase(TestCase):
-    """Test all aspects of a match."""
+    """Test all aspects of a single group model."""
 
     fixtures = ['clubs/tests/fixtures/default_user.json','clubs/tests/fixtures/other_users.json','clubs/tests/fixtures/default_club.json',
     'clubs/tests/fixtures/other_clubs.json', 'clubs/tests/fixtures/other_tournaments.json', 'clubs/tests/fixtures/default_tournament.json']
