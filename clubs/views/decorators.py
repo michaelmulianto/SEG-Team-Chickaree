@@ -3,7 +3,7 @@
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.conf import settings
-from clubs.models import Organiser, User, Club, Membership, Application, Ban, Tournament
+from clubs.models import Organiser, User, Club, Membership, Application, Ban, Tournament, Match
 
 def login_prohibited(view_function):
     def modified_view_fuction(request):
@@ -81,6 +81,16 @@ def tournament_exists(view_function):
             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         else:
             return view_function(request, tournament_id, **kwargs)
+
+    return modified_view_fuction
+
+def match_exists(view_function):
+    def modified_view_fuction(request, match_id, **kwargs):
+        if not Match.objects.filter(id=match_id).exists():
+            messages.error(request, 'No match with id ' + str(match_id) + ' exists.')
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+        else:
+            return view_function(request, match_id, **kwargs)
 
     return modified_view_fuction
 

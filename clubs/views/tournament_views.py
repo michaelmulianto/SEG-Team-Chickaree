@@ -10,7 +10,7 @@ from clubs.forms import OrganiseTournamentForm
 from clubs.models import Tournament, Club, Organiser, Membership, Participant, GroupStage, KnockoutStage, MemberTournamentRelationship
 
 from .decorators import club_exists, tournament_exists, user_exists, membership_exists
-from .helpers import is_user_organiser_of_tournament, is_user_owner_of_club, is_user_officer_of_club,  is_lead_organiser_of_tournament, is_participant_in_tournament
+from .helpers import is_user_organiser_of_tournament, is_user_owner_of_club, is_user_officer_of_club, is_lead_organiser_of_tournament, is_participant_in_tournament
 
 
 from datetime import datetime
@@ -48,8 +48,8 @@ class OrganiseTournamentView(FormView):
             return super().form_invalid(form)
 
         self.object = form.save(self.get_context_data()['club'])
-        member = Membership.objects.get(user = self.request.user,
-                                    club = self.get_context_data()['club'])
+        if Membership.objects.filter(club = self.get_context_data()['club'], user=self.request.user).exists():
+            member = Membership.objects.get(user = self.request.user, club = self.get_context_data()['club'])
 
         Organiser.objects.create(
             member = member,
@@ -62,7 +62,6 @@ class OrganiseTournamentView(FormView):
     def get_success_url(self):
         club = self.get_context_data()['club']
         return reverse('show_club', kwargs={'club_id': club.id})
-
 
     @method_decorator(user_exists)
     def create_organiser(self, user):
@@ -88,19 +87,35 @@ def show_tournament(request, tournament_id):
         messages.error(request, "You are not a member of the club that organises this tournament, you can view the basic tournament details from the club's page.")
     return redirect('show_club', club_id=club.id)
 
+@login_required
+@tournament_exists
+def withdraw_participation_from_tournament(request, tournament_id):
+    """Have currently logged in user withdraw from a tournament, if it exists."""
+    tournament = Tournament.objects.get(id=tournament_id)
+    member = get_object_or_404(Membership, user = request.user, club = tournament.club)
+
+    if Participant.objects.filter(tournament=tournament, member=member).exists():
+        if tournament.deadline > now():
+            Participant.objects.get(tournament=tournament, member=member).delete()
+        else:
+            messages.error(request, 'You cannot withdraw from the tournament as the deadline has passed.')
+    else:
+        messages.error(request, 'You have not participated in this tournament, ' + str(tournament.name) + '.')
+
+    return redirect('show_club', club_id=tournament.club.id)
 
 @login_required
 @tournament_exists
-def add_organisers_to_tournament(request, tournament_id, membership_id):
+def add_organisers_to_tournament(request, tournament_id, member_id):
     """Allow the head organiser of a tournament to assign other officers/owner of the club organising the tournament to officer."""
 
-    if not Membership.objects.filter(id=membership_id).exists(): #View function takes various arguments, so decorator to check for it throws an error
-        messages.error(request, 'No membership with id ' + str(membership_id) + ' exists.')
+    if not Membership.objects.filter(id=member_id).exists(): #View function takes various arguments, so decorator to check for it throws an error
+        messages.error(request, 'No membership with id ' + str(member_id) + ' exists.')
         return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
     else:
 
         tournament = Tournament.objects.get(id = tournament_id)
-        new_organiser_member = Membership.objects.get(id = membership_id)
+        new_organiser_member = Membership.objects.get(id = member_id)
 
         if is_lead_organiser_of_tournament(request.user, tournament):
             if not is_lead_organiser_of_tournament(new_organiser_member.user, tournament):
