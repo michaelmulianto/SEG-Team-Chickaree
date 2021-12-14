@@ -1,0 +1,18 @@
+{% load define_action %}
+{% get_standings single_group as standings %}
+<table class="table">
+  <thead>
+    <th></th>
+    <th colspan="2">Participant</th>
+    <th>Matches played</th>
+    <th>Points</th>
+  </thead>
+  <tbody>
+    <p>
+      {{results}}
+    </p>
+    {% for standing in standings %}
+      {% include 'tournament_partials/results_and_fixtures/results_table_row.html' %}
+    {% endfor %}
+  </tbody>
+</table>

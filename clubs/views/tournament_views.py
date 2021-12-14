@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from clubs.forms import OrganiseTournamentForm
-from clubs.models import Tournament, Club, Organiser, Membership, Participant, MemberTournamentRelationship
+
+from clubs.models import Tournament, Club, Organiser, Membership, Participant, GroupStage, KnockoutStage, MemberTournamentRelationship
 
 from .decorators import club_exists, tournament_exists, user_exists, membership_exists
 from .helpers import is_user_organiser_of_tournament, is_user_owner_of_club, is_user_officer_of_club, is_lead_organiser_of_tournament, is_participant_in_tournament
@@ -73,7 +74,15 @@ def show_tournament(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     club = tournament.club
     if Membership.objects.filter(user=request.user, club=club):
-        return render(request, 'show_tournament.html', { 'current_user': request.user, 'tournament': tournament })
+        tournament_group_stages = GroupStage.objects.filter(tournament=tournament)
+        tournament_knockout_stages = list(reversed(KnockoutStage.objects.filter(tournament=tournament)))
+        return render(request, 'show_tournament.html', {
+                'current_user': request.user,
+                'tournament': tournament,
+                'tournament_group_stages': tournament_group_stages,
+                'tournament_knockout_stages': tournament_knockout_stages,
+            }
+        )
     else:
         messages.error(request, "You are not a member of the club that organises this tournament, you can view the basic tournament details from the club's page.")
     return redirect('show_club', club_id=club.id)
@@ -136,20 +145,17 @@ def add_organisers_to_tournament(request, tournament_id, member_id):
 def join_tournament(request, tournament_id):
     tour = Tournament.objects.get(id = tournament_id)
     member = get_object_or_404(Membership, user = request.user, club = tour.club)
-    is_member = False
-    if(member != None):
-        is_member = True
     is_not_organiser = Organiser.objects.filter(member = member, tournament = tour).count() == 0
     is_in_tournament = Participant.objects.filter(member = member, tournament = tour).count() > 0
 
     current_capacity = Participant.objects.filter(tournament = tour)
     if(current_capacity.count() < tour.capacity):
         if(is_not_organiser == True):
-            if(is_member == True):
+            if(member != None):
                 if(is_in_tournament == False):
                     participant = Participant.objects.create(
-                    member = member,
-                    tournament = tour
+                        member = member,
+                        tournament = tour
                     )
                 else:
                     messages.error(request, 'You are already enrolled in the tournament')

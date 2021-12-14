@@ -1,6 +1,6 @@
 {% extends 'base_content.html'%}
 {% block title %}
-| {{club.name}}
+| {{tournament.name}}
 {% endblock %}
 {% block content %}
 {% include 'partials/js_confirm_messages.html'%}
@@ -43,10 +43,20 @@
         <a style="float: right;" href='{% url "show_tournament" tournament.id %}' class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Add Co-Organiser</a>
         <br>
         <br>
+        <br>
+        <h3><b>Knockout Stage</b></h3>
+        <br>
+        {% for knockout_stage in tournament_knockout_stages %}
+          {% include 'tournament_partials/results_and_fixtures/knockout_stage.html' %}
+        <br>
+        {% endfor %}
+        {% for group_stage in tournament_group_stages %}
+          {% include 'tournament_partials/results_and_fixtures/group_stage.html' %}
+        <br>
+        {% endfor %}
         <a href='{% url 'show_club' tournament.club.id %}' class="btn btn-info">
           <i class="bi bi-reply-fill"></i> Back to club
         </a>
-        <br>
         <br>
         <br>
       </div>
