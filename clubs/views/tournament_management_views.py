@@ -48,7 +48,7 @@ class AddResultView(UpdateView):
     def get_form(self):
         my_form = super().get_form()
         try:
-            match.collection.tournamentstagebase.knockoutstage
+            self.get_object().collection.tournamentstagebase.knockoutstage
         except:
             # Not knockoutstage: do nothing
             pass

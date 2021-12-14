@@ -1,7 +1,7 @@
 """Tests for model of a single group within a group stage."""
 
 from django.test import TestCase
-from clubs.models import Participant, Tournament, User, GroupStage, SingleGroup
+from clubs.models import Participant, Tournament, User, GroupStage, SingleGroup, Match
 from django.core.exceptions import ValidationError
 
 class SingleGroupModelTestCase(TestCase):
@@ -51,6 +51,7 @@ class SingleGroupModelTestCase(TestCase):
         match1 = matches[0]
         match2 = matches[1]
         surplus_player = match1.white_player
+        
         i = 2
         while (match2.white_player == surplus_player or 
         match2.black_player == surplus_player):
@@ -58,17 +59,7 @@ class SingleGroupModelTestCase(TestCase):
             i+=1
 
         match2.white_player = surplus_player
-
-        player_occurrences = self.group.get_player_occurrences()
-        unique_players = set(player_occurrences)
-        num_occurrences = {}
-        for player in unique_players:
-            num_occurrences.update({player.id : 0})
-
-        for occurrence in player_occurrences:
-            num_occurrences.update({occurrence.id : num_occurrences[occurrence.id]+1})
-
-        print(num_occurrences)
+        match2.save()
 
         self._assert_invalid_singlegroup()
 
@@ -77,8 +68,15 @@ class SingleGroupModelTestCase(TestCase):
         self.group.get_matches()[0].delete()
         self._assert_invalid_singlegroup()
 
-    def test_too_many_games_assigned_to_group(self):
-        pass
+    def test_too_many_matches_assigned_to_group(self):
+        participants = list(Participant.objects.filter(tournament=self.tournament))[:2]
+        (Match.objects.create(
+            white_player = participants[0],
+            black_player = participants[1],
+            collection = self.group
+        )).save()
+        
+        self._assert_invalid_singlegroup()
 
     # Assertions
     def _assert_valid_singlegroup(self):
