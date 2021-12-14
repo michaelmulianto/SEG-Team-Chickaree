@@ -9,7 +9,7 @@ from clubs.forms import OrganiseTournamentForm
 
 from clubs.models import Tournament, Club, Organiser, Membership, Participant, GroupStage, KnockoutStage, MemberTournamentRelationship
 
-from .decorators import club_exists, tournament_exists, user_exists, membership_exists
+from .decorators import club_exists, tournament_exists, user_exists, membership_exists, allowed_users
 from .helpers import is_user_organiser_of_tournament, is_user_owner_of_club, is_user_officer_of_club, is_lead_organiser_of_tournament, is_participant_in_tournament
 
 
@@ -29,6 +29,7 @@ class OrganiseTournamentView(FormView):
 
     @method_decorator(login_required)
     @method_decorator(club_exists)
+    @method_decorator(allowed_users(allowed_roles=[]))
     def dispatch(self, request, club_id):
         return super().dispatch(request)
 
