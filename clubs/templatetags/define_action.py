@@ -126,8 +126,10 @@ def get_standings(single_group):
         matches = single_group.get_matches()
         players = set(single_group.get_player_occurences())
         scores = {}
+        matches_played = {}
         for player in players:
             scores.update({player.id:0})
+            matches_played.update({player.id:0})
 
         for match in matches:
             if match.result == 1:
@@ -138,7 +140,15 @@ def get_standings(single_group):
                 scores[match.white_player.id] += 0.5
                 scores[match.black_player.id] += 0.5
 
-        # https://www.geeksforgeeks.org/python-sort-list-by-dictionary-values/
-        res = sorted(scores.keys(), key = lambda ele: scores[ele])
+            matches_played[match.white_player.id] += 1
+            matches_played[match.black_player.id] += 1
 
-        return res
+        # https://www.geeksforgeeks.org/python-sort-list-by-dictionary-values/
+        ordered_scores = dict(sorted(scores.items(), key = lambda item: item[1]))
+
+        standings = []
+        for participant in ordered_scores.keys():
+            standing = [Participant.objects.get(id=participant), ordered_scores[participant], matches_played[participant]]
+            standings.append(standing)
+
+        return standings

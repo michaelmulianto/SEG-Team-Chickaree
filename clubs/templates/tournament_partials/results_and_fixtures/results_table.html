@@ -1,5 +1,5 @@
 {% load define_action %}
-{% get_standings single_group as standings_dic %}
+{% get_standings single_group as standings %}
 <table class="table">
   <thead>
     <th></th>
@@ -7,10 +7,11 @@
     <th>Points</th>
   </thead>
   <tbody>
-    {% with standings_dic.keys as results %}
-    {% for participant in standings_dic.values %}
+    <p>
+      {{results}}
+    </p>
+    {% for standing in standings %}
       {% include 'tournament_partials/results_and_fixtures/results_table_row.html' %}
     {% endfor %}
-    {% endwith %}
   </tbody>
 </table>
