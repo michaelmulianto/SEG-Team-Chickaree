@@ -8,7 +8,7 @@ passing in many variables in the view.
 """
 
 from django import template
-from clubs.models import Club, Application, Membership, Participant, Organiser
+from clubs.models import Application, Membership, Participant, Organiser
 register = template.Library()
 
 # BASIC tags
