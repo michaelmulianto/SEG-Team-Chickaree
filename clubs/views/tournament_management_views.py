@@ -36,7 +36,7 @@ class AddResultView(UpdateView):
         if not Membership.objects.filter(club=t.club,user=request.user).exists():
             messages.add_message(self.request, messages.ERROR, "The tournament is for members only!")
             return redirect('show_clubs')
-            
+
         member = Membership.objects.get(club=t.club,user=request.user)
 
         if not Organiser.objects.filter(tournament=t, member=member).exists():
@@ -69,3 +69,21 @@ class AddResultView(UpdateView):
         """Return redirect URL after successful update."""
         messages.add_message(self.request, messages.SUCCESS, "Result Registered!")
         return reverse('show_clubs')
+
+
+@login_required
+@tournament_exists
+def add_tournament_organiser_list(request, tournament_id):
+    tournament = Tournament.objects.get(id=tournament_id)
+    club = tournament.club
+    if Membership.objects.filter(user=request.user, club=club).exists():
+        member =  Membership.objects.get(user=request.user, club=club)
+        if Organiser.objects.get(member=member, tournament=tournament).is_lead_organiser: # Every tournament must have a lead organiser (and therefore an organiser)
+            return render(request, 'show_tournament_participants.html', {
+                    'current_user': request.user,
+                    'tournament': tournament
+                }
+            )
+    else:
+        messages.error(request, "You are not a member of the club that organises this tournament, you can view the basic tournament details from the club's page.")
+    return redirect('show_club', club_id=club.id)
