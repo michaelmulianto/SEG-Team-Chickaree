@@ -66,3 +66,10 @@ class User(AbstractUser):
         gravatar_object = Gravatar(self.email)
         gravatar_url = gravatar_object.get_image(size=size, default='mp')
         return gravatar_url
+
+    def get_clubs(self):
+        my_clubs = []
+        from .club_models import Membership
+        for membership in Membership.objects.filter(user=self):
+            my_clubs.append(membership.club)
+        return my_clubs

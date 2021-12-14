@@ -6,13 +6,6 @@ register = template.Library()
 def boolean_or(a, b):
     return a or b
 
-@register.simple_tag
-def get_clubs(current_user):
-    my_clubs = []
-    for club in Club.objects.all():
-        if Membership.objects.filter(club=club, user=current_user):
-            my_clubs.append(club)
-    return my_clubs
 
 @register.simple_tag
 def check_is_organiser(user, tournament):
