@@ -1,0 +1,48 @@
+{% extends 'base_content.html' %}
+{% block content %}
+{% include 'partials/js_confirm_messages.html'%}
+{% load define_action %}
+
+{% check_is_owner tournament.club current_user as is_owner %}
+{% check_is_officer tournament.club current_user as is_officer %}
+{% boolean_or is_owner is_officer as show_email %}
+
+{% check_is_lead_organiser current_user tournament as is_lead_organiser %}
+
+
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <style>
+          .standard-table-spacing{
+            vertical-align: middle;
+            border-spacing: 10px 2px;
+          }
+        </style>
+        <h1>{{ tournament.club.name }} Participants: </h1>
+        <br>
+        <table class="table standard-table-spacing">
+          <tr>
+            {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}
+            {% include 'member_list_partials/table_header_extras.html' with show_email=show_email %}
+            <th></th>
+          </tr>
+        {% for participant in tournament.get_participants %}
+        <tr>
+          {% include 'member_list_partials/table_row_basics.html' with user=participant.member.user include_counter=True %}
+          {% include 'member_list_partials/table_row_extras.html' with user=participant.member.user show_email=True %}
+          {% if participant.round_eliminated == -1 %}
+          <td class="text-success" style="text-align: center; width: 200px"><b> Competing <b></td>
+          {% else %}
+          <td class="text-danger" style="text-align: center; width: 200px"><b> Eliminated <b></td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+        </table>
+        <a href='{% url 'show_tournament' tournament.id %}' class="btn btn-info">
+          <i class="bi bi-reply-fill"></i> Back to tournament page
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

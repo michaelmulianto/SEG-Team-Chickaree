@@ -74,7 +74,7 @@ class OrganiseTournamentView(FormView):
 def show_tournament(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     club = tournament.club
-    if Membership.objects.filter(user=request.user, club=club):
+    if Membership.objects.filter(user=request.user, club=club).exists():
         tournament_group_stages = GroupStage.objects.filter(tournament=tournament)
         tournament_knockout_stages = list(reversed(KnockoutStage.objects.filter(tournament=tournament)))
         return render(request, 'show_tournament.html', {
@@ -82,6 +82,21 @@ def show_tournament(request, tournament_id):
                 'tournament': tournament,
                 'tournament_group_stages': tournament_group_stages,
                 'tournament_knockout_stages': tournament_knockout_stages,
+            }
+        )
+    else:
+        messages.error(request, "You are not a member of the club that organises this tournament, you can view the basic tournament details from the club's page.")
+    return redirect('show_club', club_id=club.id)
+
+@login_required
+@tournament_exists
+def show_tournament_participants(request, tournament_id):
+    tournament = Tournament.objects.get(id=tournament_id)
+    club = tournament.club
+    if Membership.objects.filter(user=request.user, club=club).exists():
+        return render(request, 'show_tournament_participants.html', {
+                'current_user': request.user,
+                'tournament': tournament
             }
         )
     else:
