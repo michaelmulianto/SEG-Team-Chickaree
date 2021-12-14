@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import CheckConstraint, Q, F
 
-from .interface_models import GenericRoundOfMatches, StageInterface
+from .interface_models import RoundOfMatches, StageMethodInterface
 from .tournament_models import Participant
 
 class Match(models.Model):
@@ -12,7 +12,7 @@ class Match(models.Model):
     white_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False, related_name='white')
     black_player = models.ForeignKey(Participant, on_delete=models.CASCADE, unique=False, blank=False, related_name='black')
 
-    collection = models.ForeignKey(GenericRoundOfMatches, on_delete=models.CASCADE, unique=False, blank=False)
+    collection = models.ForeignKey(RoundOfMatches, on_delete=models.CASCADE, unique=False, blank=False)
 
     OUTCOMES = [
         (0, 'Incomplete'),
@@ -31,7 +31,7 @@ class Match(models.Model):
             ),
         ]
 
-class KnockoutStage(StageInterface):
+class KnockoutStage(TournamentStageBase, StageMethodInterface):
     """Tournament round of type knockout."""
     def full_clean(self):
         super().full_clean()
@@ -62,7 +62,7 @@ class KnockoutStage(StageInterface):
         # Case draw not considered: To-do
         return winners
 
-class GroupStage(StageInterface):
+class GroupStage(TournamentStageBase, StageMethodInterface):
     """Tournament round of type group. Is associated with multiple groups."""
     def get_winners(self):
         if not self.get_is_complete():
@@ -94,7 +94,7 @@ class GroupStage(StageInterface):
         if SingleGroup.objects.filter(group_stage=self).count() < 1:
             raise ValidationError("No groups assigned to the stage!")
 
-class SingleGroup(GenericRoundOfMatches):
+class SingleGroup(RoundOfMatches):
     """Represent a single round robin group within a larger group stage."""
     group_stage = models.ForeignKey(GroupStage, on_delete=models.CASCADE, unique=False, blank=False)
     winners_required = models.IntegerField(default = 1, blank=False)

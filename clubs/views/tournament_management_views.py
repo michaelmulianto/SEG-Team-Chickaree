@@ -31,10 +31,11 @@ class AddResultView(UpdateView):
             return redirect('show_clubs')
 
         # If match is tied to a tournament we must verify permissions...
+        collection = match.collection
         if hasattr(match.collection, 'stageinterface'):
-            t = match.collection.stageinterface.tournament
+            t = collection.stageinterface.tournament
         elif hasattr(match.collection, 'singlegroup'):
-            t = match.group_stage.tournament
+            t = collection.group_stage.tournament
         else:
             return super().dispatch(request)
 

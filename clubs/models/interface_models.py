@@ -13,10 +13,16 @@ from django.db.models import UniqueConstraint
 from .tournament_models import Tournament
 from .club_models import Membership
 
-class GenericRoundOfMatches(models.Model):
-    """Model for some group of matches together that, when complete, produce some winners."""
+class RoundOfMatches(models.Model):
+    """Model for collecting together all models that control a set of matches."""
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
+
+class StageMethodInterface(models.Model):
+    class Meta:
+        abstract = True
+
     def get_winners(self):
-        return None
+        raise NotImplementedError
 
     def get_matches(self):
         from .round_models import Match
@@ -35,12 +41,11 @@ class GenericRoundOfMatches(models.Model):
     def get_is_complete(self):
         return not self.get_matches().filter(result = 0).exists()
 
-class StageInterface(GenericRoundOfMatches):
+class TournamentStageBase(RoundOfMatches):
     """Model for single round in the tournament."""
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
     round_num = models.IntegerField(default = 1, blank = False)
 
-    def get_round(self):
+    def get_stage(self):
         if hasattr(self, 'knockoutstage'):
             return self.knockoutstage
         elif hasattr(self, 'groupstage'):
