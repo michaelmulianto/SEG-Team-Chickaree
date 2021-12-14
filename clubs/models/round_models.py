@@ -82,6 +82,9 @@ class GroupStage(TournamentStageBase, StageMethodInterface):
             matches += group.get_matches()
         return matches
 
+    def get_single_groups(self):
+        return SingleGroup.objects.filter(group_stage=self)
+
     def get_is_complete(self):
         groups = list(SingleGroup.objects.filter(group_stage=self))
         for group in groups:
@@ -126,6 +129,40 @@ class SingleGroup(RoundOfMatches, StageMethodInterface):
         # Check total number of matches, in case of edge case.
         if self.get_matches().count() != ((num_players-1)/2.0) * num_players: # Triangle number: (n/2)*(n+1)
             raise ValidationError("The incorrect number of matches are linked to this group.")
+
+    def get_standings(self):
+        if not self.get_is_complete():
+            return None
+
+        matches = self.get_matches()
+        players = set(self.get_player_occurrences())
+        scores = {}
+        matches_played = {}
+        for player in players:
+            scores.update({player.id:0})
+            matches_played.update({player.id:0})
+
+        for match in matches:
+            if match.result == 1:
+                scores[match.white_player.id] += 1
+            elif match.result == 2:
+                scores[match.black_player.id] += 1
+            else:
+                scores[match.white_player.id] += 0.5
+                scores[match.black_player.id] += 0.5
+
+            matches_played[match.white_player.id] += 1
+            matches_played[match.black_player.id] += 1
+
+        # https://www.geeksforgeeks.org/python-sort-list-by-dictionary-values/
+        ordered_scores = dict(sorted(scores.items(), key = lambda item: item[1]))
+
+        standings = []
+        for participant in ordered_scores.keys():
+            standing = [Participant.objects.get(id=participant), ordered_scores[participant], matches_played[participant]]
+            standings.append(standing)
+
+        return list(reversed(standings))
 
     def get_winners(self):
         if not self.get_is_complete():
