@@ -19,13 +19,23 @@ from clubs.models import Match, Tournament, Membership
 @login_required
 @tournament_exists
 def begin_tournament(request, tournament_id):
+    """View to """
     tournament = Tournament.objects.get(id=tournament_id)
-    if not is_user_organiser_of_tournament(self.request.user, tournament):
-        messages.add_message(self.request, messages.ERROR, "Only organisers can set match results!")
-        return redirect('show_club', kwargs={'club_id': tournament.club.id})
+    
+    if not is_user_member_of_club(request.user, tournament.club):
+        messages.add_message(self.request, messages.ERROR, "The tournament is for members only!")
+    elif not is_user_organiser_of_tournament(self.request.user, tournament):
+        messages.add_message(self.request, messages.ERROR, "Only organisers can begin the tournament!")
+    elif tournament.get_current_round != None:
+        messages.add_message(self.request, messages.ERROR, "The tournament has already begun!")
+    else:
+        tournament.generate_next_round()
+        messages.add_message(self.request, messages.SUCCESS, "Tournament begun!")
+        
+    return redirect('show_tournament', kwargs={'tournament_id': tournament_id})
 
 class AddResultView(UpdateView):
-    """Edit the details of the currently logged in user."""
+    """Edit the result of a match, if result not already set."""
 
     model = Match
     template_name = "temporary_add_result.html"
@@ -42,9 +52,9 @@ class AddResultView(UpdateView):
         # We must verify permissions...
         t = match.collection.tournament
 
-        # if not is_user_member_of_club(request.user, t.club):
-        #     messages.add_message(self.request, messages.ERROR, "The tournament is for members only!")
-        #     return redirect('show_clubs')
+        if not is_user_member_of_club(request.user, t.club):
+            messages.add_message(self.request, messages.ERROR, "The tournament is for members only!")
+            return redirect('show_clubs')
             
         if not is_user_organiser_of_tournament(self.request.user, t):
             messages.add_message(self.request, messages.ERROR, "Only organisers can set match results!")
