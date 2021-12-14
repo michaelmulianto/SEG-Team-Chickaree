@@ -218,7 +218,7 @@ class TournamentModelTestCase(TestCase):
         self.assertEqual(groups.count(), 8)
         groups[0].full_clean()
         # Check num members in one group
-        self.assertEqual(len(set(groups[0].get_player_occurences())), 4)
+        self.assertEqual(len(set(groups[0].get_player_occurrences())), 4)
         # Check number of matches in one group
         self.assertEqual(len(groups[0].get_matches()), 6)
 
@@ -231,7 +231,7 @@ class TournamentModelTestCase(TestCase):
         self.assertEqual(groups.count(), 8)
         groups[0].full_clean()
         # Check num members in one group
-        self.assertEqual(len(set(groups[0].get_player_occurences())), 6)
+        self.assertEqual(len(set(groups[0].get_player_occurrences())), 6)
         # Check number of matches in one group
         self.assertEqual(len(groups[0].get_matches()), 15)
 
@@ -243,7 +243,7 @@ class TournamentModelTestCase(TestCase):
         self.assertEqual(groups.count(), 16)
         groups[0].full_clean()
         # Check num members in one group
-        self.assertEqual(len(set(groups[0].get_player_occurences())), 6)
+        self.assertEqual(len(set(groups[0].get_player_occurrences())), 6)
         # Check number of matches in one group
         self.assertEqual(len(groups[0].get_matches()), 15)
 
@@ -253,7 +253,7 @@ class TournamentModelTestCase(TestCase):
         next_round = self.tournament.generate_next_round()
         self.assertIsInstance(next_round, KnockoutStage)
         # Check num members in round
-        self.assertEqual(len(set(next_round.get_player_occurences())), 16)
+        self.assertEqual(len(set(next_round.get_player_occurrences())), 16)
         # Check correct number of matches played
         self.assertEqual(len(next_round.get_matches()), 8)
 
@@ -277,7 +277,7 @@ class TournamentModelTestCase(TestCase):
         groups = SingleGroup.objects.filter(group_stage=next_round)
         self.assertEqual(groups.count(), 8)
         # Check num members in one group, as 8*4=32
-        self.assertEqual(len(set(groups[0].get_player_occurences())), 4)
+        self.assertEqual(len(set(groups[0].get_player_occurrences())), 4)
 
     def test_round_after_4_player_group_stage_is_knockout_with_16_players(self):
         self.tournament.capacity = 32
@@ -289,7 +289,7 @@ class TournamentModelTestCase(TestCase):
         next_round = self.tournament.generate_next_round()
         self.assertIsInstance(next_round, KnockoutStage)
         self.assertEqual(len(next_round.get_matches()), 8)
-        self.assertEqual(len(set(next_round.get_player_occurences())), 16)
+        self.assertEqual(len(set(next_round.get_player_occurrences())), 16)
 
     def test_round_after_knockout_is_knockout(self):
         self.tournament.capacity = 16
@@ -301,7 +301,7 @@ class TournamentModelTestCase(TestCase):
         next_round = self.tournament.generate_next_round()
         self.assertIsInstance(next_round, KnockoutStage)
         self.assertEqual(len(next_round.get_matches()), 4)
-        self.assertEqual(len(set(next_round.get_player_occurences())), 8)
+        self.assertEqual(len(set(next_round.get_player_occurrences())), 8)
 
     def test_round_after_2_player_knockout_is_None(self):
         self.tournament.capacity = 2

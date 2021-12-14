@@ -41,7 +41,7 @@ class KnockoutStage(TournamentStageBase, StageMethodInterface):
         if (len(matches) & (len(matches) - 1) != 0):
             raise ValidationError("The number of matches must be a power of two.")
 
-        player_occurences = self.get_player_occurences()
+        player_occurences = self.get_player_occurrences()
 
         if(len(player_occurences) != len(set(player_occurences))):
             raise ValidationError("Each player must only play 1 match.")
@@ -105,7 +105,7 @@ class SingleGroup(RoundOfMatches, StageMethodInterface):
 
     def full_clean(self):
         super().full_clean()
-        player_occurences = self.get_player_occurences()
+        player_occurences = self.get_player_occurrences()
 
         # We must calculate the number of players each player plays.
         unique_players = set(player_occurences)
@@ -139,7 +139,7 @@ class SingleGroup(RoundOfMatches, StageMethodInterface):
             return None
 
         matches = self.get_matches()
-        players = set(self.get_player_occurences())
+        players = set(self.get_player_occurrences())
         scores = {}
         for player in players:
             scores.update({player.id:0})

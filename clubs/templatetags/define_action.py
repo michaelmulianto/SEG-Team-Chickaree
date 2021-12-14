@@ -124,7 +124,7 @@ def get_standings(single_group):
             return None
 
         matches = single_group.get_matches()
-        players = set(single_group.get_player_occurences())
+        players = set(single_group.get_player_occurrences())
         scores = {}
         matches_played = {}
         for player in players:

@@ -30,7 +30,7 @@ class StageMethodInterface(models.Model):
         return Match.objects.filter(collection=self)
 
     # 1 entry in list per match player is in
-    def get_player_occurences(self):
+    def get_player_occurrences(self):
         matches = self.get_matches()
         player_occurences = []
         for match in matches:
