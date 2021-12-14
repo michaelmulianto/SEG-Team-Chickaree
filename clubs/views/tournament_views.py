@@ -73,7 +73,7 @@ class OrganiseTournamentView(FormView):
 def show_tournament(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     club = tournament.club
-    if Membership.objects.filter(user=request.user, club=club):
+    if Membership.objects.filter(user=request.user, club=club).exists():
         tournament_group_stages = GroupStage.objects.filter(tournament=tournament)
         tournament_knockout_stages = list(reversed(KnockoutStage.objects.filter(tournament=tournament)))
         return render(request, 'show_tournament.html', {
@@ -92,8 +92,8 @@ def show_tournament(request, tournament_id):
 def show_tournament_participants(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     club = tournament.club
-    if Membership.objects.filter(user=request.user, club=club):
-        return render(request, 'show_tournament.html', {
+    if Membership.objects.filter(user=request.user, club=club).exists():
+        return render(request, 'show_tournament_participants.html', {
                 'current_user': request.user,
                 'tournament': tournament
             }
