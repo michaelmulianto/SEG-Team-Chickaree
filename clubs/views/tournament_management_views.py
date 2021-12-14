@@ -4,7 +4,8 @@ from django.views.generic.edit import UpdateView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from .decorators import match_exists
+from .decorators import match_exists, tournament_exists
+from .helpers import is_user_organiser_of_tournament
 
 from django.contrib import messages
 from django.contrib.auth import login
@@ -14,6 +15,11 @@ from django.shortcuts import render, redirect
 
 from clubs.forms import AddResultForm
 from clubs.models import Match, Organiser, Membership
+
+@login_required
+@tournament_exists
+def begin_tournament(request, tournament_id):
+    pass
 
 class AddResultView(UpdateView):
     """Edit the details of the currently logged in user."""
@@ -39,7 +45,7 @@ class AddResultView(UpdateView):
             
         member = Membership.objects.get(club=t.club,user=request.user)
 
-        if not Organiser.objects.filter(tournament=t, member=member).exists():
+        if not is_user_organiser_of_tournament(self.request.user, t):
             messages.add_message(self.request, messages.ERROR, "Only organisers can set match results!")
             return redirect('show_clubs')
 
