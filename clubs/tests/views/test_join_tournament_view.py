@@ -10,7 +10,7 @@ from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 class JoinTournamentViewTest(TestCase, MenuTesterMixin):
     """Test all aspects of the join tournament view"""
 
-    fixtures = ['clubs/tests/fixtures/default_tournament_participants.json','clubs/tests/fixtures/default_user.json', 'clubs/tests/fixtures/other_users.json', 'clubs/tests/fixtures/other_clubs.json', 'clubs/tests/fixtures/default_tournament.json', 'clubs/tests/fixtures/default_club.json']
+    fixtures = ['clubs/tests/fixtures/default_tournament_participants_two.json','clubs/tests/fixtures/default_user.json', 'clubs/tests/fixtures/other_users.json', 'clubs/tests/fixtures/other_clubs.json', 'clubs/tests/fixtures/default_tournament.json', 'clubs/tests/fixtures/default_club.json']
 
     def setUp(self):
         self.user = User.objects.get(username = 'johndoe')

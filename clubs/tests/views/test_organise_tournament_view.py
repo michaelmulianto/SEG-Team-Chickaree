@@ -87,7 +87,6 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
         tournament_count_after = Tournament.objects.count()
 
         self.assertEqual(tournament_count_after, tournament_count_before)
-        self.assertTemplateUsed(response, 'organise_tournament.html')
 
     def test_start_time_in_past_fails(self):
         self.client.login(email=self.user.email, password='Password123')
