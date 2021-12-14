@@ -1,16 +1,16 @@
 """Tests for model of a single group within a group stage."""
 
 from django.test import TestCase
-from clubs.models import Match, Participant, Tournament, Club, User, Membership, GroupStage, SingleGroup
+from clubs.models import Participant, Tournament, User, GroupStage, SingleGroup
 from django.core.exceptions import ValidationError
-from django.db.utils import IntegrityError
-
 
 class SingleGroupModelTestCase(TestCase):
     """Test all aspects of a match."""
 
-    fixtures = ['clubs/tests/fixtures/default_user.json','clubs/tests/fixtures/other_users.json','clubs/tests/fixtures/default_club.json',
-    'clubs/tests/fixtures/other_clubs.json', 'clubs/tests/fixtures/other_tournaments.json', 'clubs/tests/fixtures/default_tournament.json']
+    fixtures = ['clubs/tests/fixtures/default_user.json',
+    'clubs/tests/fixtures/default_club.json',
+    'clubs/tests/fixtures/default_tournament.json'
+    ]
 
     # Test setup
     def setUp(self):
