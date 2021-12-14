@@ -47,7 +47,31 @@ class SingleGroupModelTestCase(TestCase):
 
     # Mischallaneous Validation
     def test_one_player_plays_too_many_games_and_one_not_enough(self):
-        pass
+        matches = list(self.group.get_matches())
+        match1 = matches[0]
+        match2 = matches[1]
+        surplus_player = match1.white_player
+        i = 2
+        while (match2.white_player == surplus_player or 
+        match2.black_player == surplus_player):
+            match2 = matches[i]
+            i+=1
+
+        match2.white_player = surplus_player
+
+        player_occurrences = self.group.get_player_occurrences()
+        unique_players = set(player_occurrences)
+        num_occurrences = {}
+        for player in unique_players:
+            num_occurrences.update({player.id : 0})
+
+        for occurrence in player_occurrences:
+            num_occurrences.update({occurrence.id : num_occurrences[occurrence.id]+1})
+
+        print(num_occurrences)
+
+        self._assert_invalid_singlegroup()
+
     
     def test_too_few_matches_assigned_to_group(self):
         self.group.get_matches()[0].delete()
