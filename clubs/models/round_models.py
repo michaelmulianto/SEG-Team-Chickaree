@@ -105,11 +105,7 @@ class SingleGroup(RoundOfMatches, StageMethodInterface):
 
     def full_clean(self):
         super().full_clean()
-<<<<<<< HEAD
-        player_occurences = self.get_player_occurrences()
-=======
         player_occurrences = self.get_player_occurrences()
->>>>>>> Epic3_main
 
         # We must calculate the number of players each player plays.
         unique_players = set(player_occurrences)
