@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from .decorators import match_exists, tournament_exists
-from .helpers import is_user_organiser_of_tournament
+from .helpers import is_user_organiser_of_tournament, is_user_member_of_club
 
 from django.contrib import messages
 from django.contrib.auth import login
@@ -39,7 +39,7 @@ class AddResultView(UpdateView):
         # We must verify permissions...
         t = match.collection.tournament
 
-        if not Membership.objects.filter(club=t.club,user=request.user).exists():
+        if not is_user_member_of_club(request.user, t.club):
             messages.add_message(self.request, messages.ERROR, "The tournament is for members only!")
             return redirect('show_clubs')
             
