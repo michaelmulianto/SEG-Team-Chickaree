@@ -35,7 +35,7 @@ class ShowClubViewTestCase(TestCase, MenuTesterMixin):
         )
 
 
-        self.url = reverse('show_tournament', kwargs={'tournament_id': self.club.id})
+        self.url = reverse('show_tournament', kwargs={'tournament_id': self.tournament.id})
 
     def test_show_tournament_url(self):
         self.assertEqual(self.url, f'/tournament/{self.tournament.id}/')
