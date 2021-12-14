@@ -30,7 +30,8 @@ class ShowClubViewTestCase(TestCase, MenuTesterMixin):
 
         self.organiser = Organiser.objects.create(
             member = self.owner_member,
-            tournament = self.tournament
+            tournament = self.tournament,
+            is_lead_organiser = True
         )
 
 
