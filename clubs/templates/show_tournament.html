@@ -27,13 +27,13 @@
         </style>
         <table id="owner" class="table standard-chess-table">
           <tr>
-            {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}
-            {% include 'member_list_partials/table_header_extras.html' with show_email=True %}
+            {% include 'user_list_partials/table_header_basics.html' with include_counter=True %}
+            {% include 'user_list_partials/table_header_extras.html' with show_email=True %}
           </tr>
           {% for organiser in tournament.get_organisers %}
           <tr>
-            {% include 'member_list_partials/table_row_basics.html' with user=organiser.member.user include_counter=True %}
-            {% include 'member_list_partials/table_row_extras.html' with user=organiser.member.user show_email=True %}
+            {% include 'user_list_partials/table_row_basics.html' with user=organiser.member.user include_counter=True %}
+            {% include 'user_list_partials/table_row_extras.html' with user=organiser.member.user show_email=True %}
           </tr>
           {% endfor %}
         </table>
