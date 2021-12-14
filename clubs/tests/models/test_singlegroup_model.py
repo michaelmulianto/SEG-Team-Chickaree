@@ -5,7 +5,7 @@ from clubs.models import Participant, Tournament, User, GroupStage, SingleGroup
 from django.core.exceptions import ValidationError
 
 class SingleGroupModelTestCase(TestCase):
-    """Test all aspects of a match."""
+    """Test all aspects of a single group model."""
 
     fixtures = ['clubs/tests/fixtures/default_user.json',
     'clubs/tests/fixtures/default_club.json',
