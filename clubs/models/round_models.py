@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import CheckConstraint, Q, F
 
-from .interface_models import RoundOfMatches, StageMethodInterface
+from .interface_models import RoundOfMatches, StageMethodInterface, TournamentStageBase
 from .tournament_models import Participant
 
 class Match(models.Model):
@@ -94,10 +94,14 @@ class GroupStage(TournamentStageBase, StageMethodInterface):
         if SingleGroup.objects.filter(group_stage=self).count() < 1:
             raise ValidationError("No groups assigned to the stage!")
 
-class SingleGroup(RoundOfMatches):
+class SingleGroup(RoundOfMatches, StageMethodInterface):
     """Represent a single round robin group within a larger group stage."""
     group_stage = models.ForeignKey(GroupStage, on_delete=models.CASCADE, unique=False, blank=False)
     winners_required = models.IntegerField(default = 1, blank=False)
+
+    def save(self, *args, **kwargs):
+        self.tournament = self.group_stage.tournament
+        super().save(*args, **kwargs)
 
     def full_clean(self):
         super().full_clean()

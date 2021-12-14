@@ -15,9 +15,10 @@ from .club_models import Membership
 
 class RoundOfMatches(models.Model):
     """Model for collecting together all models that control a set of matches."""
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, unique=False, blank=False, related_name='tournament')
 
 class StageMethodInterface(models.Model):
+    """Enforces child models to have/implement particular methods"""
     class Meta:
         abstract = True
 

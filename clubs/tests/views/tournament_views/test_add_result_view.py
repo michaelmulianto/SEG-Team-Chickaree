@@ -2,7 +2,7 @@
 
 from django.test import TestCase
 from django.urls import reverse
-from clubs.models import Organiser, User, Club, Tournament, Membership, Participant
+from clubs.models import Organiser, User, Club, Tournament, Membership, Participant, Match
 from clubs.forms import OrganiseTournamentForm
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 from django.contrib import messages
@@ -22,7 +22,8 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
         self.club = Club.objects.get(name='King\'s Knights')
         self.membership = Membership.objects.create(
             club = self.club,
-            user=self.user
+            user=self.user,
+            is_officer=True
         )
         
         self.tournament = Tournament.objects.get(id=1)
@@ -61,7 +62,7 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
 
         response = self.client.post(self.url, self.data, follow=True)
 
-        self.assertEqual(self.match.result, self.data['result'])
+        self.assertEqual(Match.objects.get(id=self.match.id).result, self.data['result'])
 
         # Response tests
         response_url = reverse('show_clubs')

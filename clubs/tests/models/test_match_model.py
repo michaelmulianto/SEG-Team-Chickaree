@@ -104,7 +104,7 @@ class MatchModelTestCase(TestCase):
 
     def test_stage_does_not_delete_when_match_is_deleted(self):
         self.match.delete()
-        self.assertTrue(GenericRoundOfMatches.objects.filter(id=self.collection.id).exists())
+        self.assertTrue(RoundOfMatches.objects.filter(id=self.collection.id).exists())
 
 
     # Test result

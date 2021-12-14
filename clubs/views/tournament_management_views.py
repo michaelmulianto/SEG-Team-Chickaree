@@ -30,14 +30,8 @@ class AddResultView(UpdateView):
             messages.add_message(self.request, messages.ERROR, "The match has already had the result registered!")
             return redirect('show_clubs')
 
-        # If match is tied to a tournament we must verify permissions...
-        collection = match.collection
-        if hasattr(match.collection, 'stageinterface'):
-            t = collection.stageinterface.tournament
-        elif hasattr(match.collection, 'singlegroup'):
-            t = collection.group_stage.tournament
-        else:
-            return super().dispatch(request)
+        # We must verify permissions...
+        t = match.collection.tournament
 
         if not Membership.objects.filter(club=t.club,user=request.user).exists():
             messages.add_message(self.request, messages.ERROR, "The tournament is for members only!")
@@ -49,8 +43,7 @@ class AddResultView(UpdateView):
             messages.add_message(self.request, messages.ERROR, "Only organisers can set match results!")
             return redirect('show_clubs')
 
-        # We shouldn't get here but this ensures graceful handling of an unexpected case.
-        return redirect('show_clubs')
+        return super().dispatch(request)
 
     def get_form(self):
         my_form = super().get_form()
