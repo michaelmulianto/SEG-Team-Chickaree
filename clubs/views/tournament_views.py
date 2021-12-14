@@ -89,6 +89,21 @@ def show_tournament(request, tournament_id):
 
 @login_required
 @tournament_exists
+def show_tournament_participants(request, tournament_id):
+    tournament = Tournament.objects.get(id=tournament_id)
+    club = tournament.club
+    if Membership.objects.filter(user=request.user, club=club):
+        return render(request, 'show_tournament.html', {
+                'current_user': request.user,
+                'tournament': tournament
+            }
+        )
+    else:
+        messages.error(request, "You are not a member of the club that organises this tournament, you can view the basic tournament details from the club's page.")
+    return redirect('show_club', club_id=club.id)
+
+@login_required
+@tournament_exists
 def withdraw_participation_from_tournament(request, tournament_id):
     """Have currently logged in user withdraw from a tournament, if it exists."""
     tournament = Tournament.objects.get(id=tournament_id)
