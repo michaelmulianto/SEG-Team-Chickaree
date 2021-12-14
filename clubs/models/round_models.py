@@ -41,9 +41,9 @@ class KnockoutStage(TournamentStageBase, StageMethodInterface):
         if (len(matches) & (len(matches) - 1) != 0):
             raise ValidationError("The number of matches must be a power of two.")
 
-        player_occurences = self.get_player_occurrences()
+        player_occurrences = self.get_player_occurrences()
 
-        if(len(player_occurences) != len(set(player_occurences))):
+        if(len(player_occurrences) != len(set(player_occurrences))):
             raise ValidationError("Each player must only play 1 match.")
 
     def get_winners(self):
@@ -105,34 +105,31 @@ class SingleGroup(RoundOfMatches, StageMethodInterface):
 
     def full_clean(self):
         super().full_clean()
+<<<<<<< HEAD
         player_occurences = self.get_player_occurrences()
+=======
+        player_occurrences = self.get_player_occurrences()
+>>>>>>> Epic3_main
 
         # We must calculate the number of players each player plays.
-        unique_players = set(player_occurences)
+        unique_players = set(player_occurrences)
         num_players = len(unique_players)
 
-        num_occurences = {}
+        num_occurrences = {}
         for player in unique_players:
-            num_occurences.update({player.id : 0})
+            num_occurrences.update({player.id : 0})
 
-        for occurence in player_occurences:
-            num_occurences.update({occurence.id : num_occurences[occurence.id]+1})
+        for occurrence in player_occurrences:
+            num_occurrences.update({occurrence.id : num_occurrences[occurrence.id]+1})
 
         # Now we ensure all players have played exactly n-1 games i.e. everyone once
-        for k in num_occurences.values():
+        for k in num_occurrences.values():
             if k != num_players-1:
                 raise ValidationError("Not all players play the correct number of games.")
 
         # Check total number of matches, in case of edge case.
         if self.get_matches().count() != ((num_players-1)/2.0) * num_players: # Triangle number: (n/2)*(n+1)
             raise ValidationError("The incorrect number of matches are linked to this group.")
-
-    def get_is_complete(self):
-        matches = self.get_matches()
-        for match in matches:
-            if match.result == 0:
-                return False
-        return True
 
     def get_winners(self):
         if not self.get_is_complete():
