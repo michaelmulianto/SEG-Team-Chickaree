@@ -7,11 +7,6 @@ register = template.Library()
 def boolean_or(a, b):
     return a or b
 
-
-@register.simple_tag
-def count_members(club_to_count):
-    return Membership.objects.filter(club=club_to_count).count()
-
 @register.simple_tag
 def get_clubs(current_user):
     my_clubs = []
@@ -43,27 +38,6 @@ def check_has_joined_tournament(user, tournament):
         return Participant.objects.filter(member=membership, tournament=tournament).exists()
     else:
         return False
-
-@register.simple_tag
-def get_members(club):
-    return Membership.objects.filter(club=club)
-
-@register.simple_tag
-def get_banned_members(club):
-    return Ban.objects.filter(club=club)
-
-@register.simple_tag
-def get_applications(club):
-    return Application.objects.filter(club=club)
-
-@register.simple_tag
-def get_officers(club):
-    return Membership.objects.filter(club=club, is_officer=True)
-
-@register.simple_tag
-def get_owner(club):
-    return Membership.objects.get(club=club, is_owner=True)
-
 
 @register.simple_tag
 def check_has_applied(club_to_check, user):

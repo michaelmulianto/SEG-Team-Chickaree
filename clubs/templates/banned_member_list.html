@@ -1,7 +1,5 @@
 {% extends 'base_content.html' %}
 {% block content %}
-{% load define_action %}
-{% get_banned_members club as banned_members %}
   <div class="container">
     <div class="row">
       <div class="col-12">
@@ -14,7 +12,7 @@
         </style>
         <table class="table standard-table-spacing">
 
-        {% if banned_members.count == 0 %}
+        {% if not club.get_banned_members %}
           <br>
           <tr>
             <b><p style="font-size: 250%;"> No banned members </p> </b>
@@ -28,7 +26,7 @@
             {% endif %}
 
           </tr>
-          {% for ban_member in banned_members %}
+          {% for ban_member in club.get_banned_members %}
           <tr>
             {% include 'user_list_partials/table_row_basics.html' with user=ban_member.user include_counter=True %}
             {% include 'user_list_partials/table_row_extras.html' with user=ban_member.user show_email=True %}
