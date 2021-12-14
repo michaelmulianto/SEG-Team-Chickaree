@@ -1,7 +1,7 @@
 """Tests for Club model, found in clubs/models.py"""
 
 from django.test import TestCase
-from clubs.models import Match, Participant, StageInterface, Tournament, Club, User, Membership, GroupStage, SingleGroup
+from clubs.models import Match, Participant, Tournament, Club, User, Membership, GroupStage, SingleGroup
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 

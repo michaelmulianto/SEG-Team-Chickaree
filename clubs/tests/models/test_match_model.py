@@ -1,7 +1,7 @@
 """Tests for Club model, found in clubs/models.py"""
 
 from django.test import TestCase
-from clubs.models import Match, Participant, GenericRoundOfMatches, Tournament, Club, User, Membership
+from clubs.models import Match, Participant, RoundOfMatches, Tournament, Club, User, Membership
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
@@ -29,18 +29,20 @@ class MatchModelTestCase(TestCase):
             club = self.club
         )
 
+        self.tourn = Tournament.objects.get(name = "Just A League")
+
         self.first_par = Participant.objects.create(
             round_eliminated = 1,
             member = self.membership,
-            tournament = Tournament.objects.get(name = "Just A League")
+            tournament = self.tourn
         )
         self.second_par = Participant.objects.create(
             round_eliminated = 1,
             member = self.second_membership,
-            tournament = Tournament.objects.get(name = "Just A League")
+            tournament = self.tourn
         )
 
-        self.collection = GenericRoundOfMatches.objects.create()
+        self.collection = RoundOfMatches.objects.create(tournament=self.tourn)
 
         self.match = Match.objects.create(
             white_player = self.first_par,
@@ -102,7 +104,7 @@ class MatchModelTestCase(TestCase):
 
     def test_stage_does_not_delete_when_match_is_deleted(self):
         self.match.delete()
-        self.assertTrue(GenericRoundOfMatches.objects.filter(id=self.collection.id).exists())
+        self.assertTrue(RoundOfMatches.objects.filter(id=self.collection.id).exists())
 
 
     # Test result

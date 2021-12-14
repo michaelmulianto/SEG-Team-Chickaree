@@ -1,7 +1,7 @@
 """Tests for Tournament model, found in tournaments/models.py"""
 
 from django.test import TestCase
-from clubs.models import Tournament, Membership, User, Participant, GroupStage, KnockoutStage, SingleGroup, Match, StageInterface, Club
+from clubs.models import Tournament, Membership, User, Participant, GroupStage, KnockoutStage, SingleGroup, Match, Club
 from django.core.exceptions import ValidationError
 
 
