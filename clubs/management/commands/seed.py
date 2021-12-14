@@ -132,15 +132,15 @@ class Command(BaseCommand):
 
                 participants = sample(list(Membership.objects.exclude(id=org_member.id).filter(club=club)), t.capacity)
                 for p in participants:
-                    (Participant.objects.create(
+                    Participant.objects.create(
                         member = p,
                         tournament = t
-                    )).save()
+                    ).save()
 
                 t.full_clean()
                 t.save()
                 tournaments.append(t)
-            
+
             # Helper for tournament generation
             def complete_round(my_round):
                 # Arbitary result
@@ -148,14 +148,15 @@ class Command(BaseCommand):
                 for match in matches:
                     match.result=1
                     match.black_player.round_eliminated = my_round.round_num
-                    
+                    match.save()
+
             # Complete all rounds of first tournament
             tpast = tournaments[0]
             curr_round = tpast.generate_next_round()
             while curr_round != None: # Returns None when tournament complete.
                 complete_round(curr_round)
                 curr_round = tpast.generate_next_round()
-            
+
             # Complete 1 round of second tournament
             curr_round = tournaments[1].generate_next_round()
             complete_round(curr_round)

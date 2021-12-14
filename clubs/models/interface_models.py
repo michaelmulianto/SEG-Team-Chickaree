@@ -30,14 +30,14 @@ class StageMethodInterface(models.Model):
         return Match.objects.filter(collection=self)
 
     # 1 entry in list per match player is in
-    def get_player_occurences(self):
+    def get_player_occurrences(self):
         matches = self.get_matches()
-        player_occurences = []
+        player_occurrences = []
         for match in matches:
-            player_occurences.append(match.white_player)
-            player_occurences.append(match.black_player)
+            player_occurrences.append(match.white_player)
+            player_occurrences.append(match.black_player)
 
-        return player_occurences
+        return player_occurrences
 
     def get_is_complete(self):
         return not self.get_matches().filter(result = 0).exists()

@@ -1,0 +1,12 @@
+<td>
+  {% if match.result == 0 %}
+  <p><i class="bi bi-award-fill"></i> TBD </p>
+  {% elif match.result == 1 %}
+  <p><i class="bi bi-award-fill"></i> {{ match.white_player.member.user.username }} </p>
+  {% elif match.result == 2 %}
+  <p><i class="bi bi-award-fill"></i> {{ match.black_player.member.user.username }} </p>
+  {% else %}
+  <p> ERROR </p>
+  {% endif %}
+  <p> {{ match.white_player.member.user.username }} vs {{ match.black_player.member.user.username }} </p>
+</td>
