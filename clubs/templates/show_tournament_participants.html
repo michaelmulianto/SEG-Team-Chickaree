@@ -23,14 +23,14 @@
         <br>
         <table class="table standard-table-spacing">
           <tr>
-            {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}
-            {% include 'member_list_partials/table_header_extras.html' with show_email=show_email %}
+            {% include 'user_list_partials/table_header_basics.html' with include_counter=True %}
+            {% include 'user_list_partials/table_header_extras.html' with show_email=show_email %}
             <th></th>
           </tr>
         {% for participant in tournament.get_participants %}
         <tr>
-          {% include 'member_list_partials/table_row_basics.html' with user=participant.member.user include_counter=True %}
-          {% include 'member_list_partials/table_row_extras.html' with user=participant.member.user show_email=True %}
+          {% include 'user_list_partials/table_row_basics.html' with user=participant.member.user include_counter=True %}
+          {% include 'user_list_partials/table_row_extras.html' with user=participant.member.user show_email=True %}
           {% if participant.round_eliminated == -1 %}
           <td class="text-success" style="text-align: center; width: 200px"><b> Competing <b></td>
           {% else %}

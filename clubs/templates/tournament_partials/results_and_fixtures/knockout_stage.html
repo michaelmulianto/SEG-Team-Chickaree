@@ -1,9 +1,7 @@
-{% load define_action %}
-{% get_matches knockout_stage as matches %}
 <table class="table" style="text-align: center;">
   <tbody>
     <tr>
-    {% for match in matches %}
+    {% for match in knockout_stage.get_matches %}
       {% include 'tournament_partials/results_and_fixtures/knockout_table_cell.html' %}
     {% endfor %}
     </tr>

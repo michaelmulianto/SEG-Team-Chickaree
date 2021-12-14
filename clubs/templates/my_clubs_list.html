@@ -28,8 +28,7 @@
                 <td><div style="max-height:60px; max-width:max-content; overflow:hidden; text-overflow: ellipsis; overflow-y:auto;white-space: nowrap">{{ club.description }}</div></td>
               </tr>
               <tr>
-                {% count_members club as members %}
-                <td><i class="bi bi-people-fill"></i> {{ members }} </td>
+                <td><i class="bi bi-people-fill"></i> {{ club.get_memberships.count }} </td>
               </tr>
             </table>
           </td>

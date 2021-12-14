@@ -5,7 +5,6 @@
 {% check_is_owner club current_user as is_owner %}
 {% check_is_officer club current_user as is_officer %}
 {% boolean_or is_owner is_officer as show_email %}
-{% get_members club as members %}
   <div class="container">
     <div class="row">
       <div class="col-12">
@@ -19,9 +18,9 @@
         <br>
         <table class="table standard-table-spacing">
           <tr>
-            {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}
-            {% include 'member_list_partials/table_header_extras.html' with show_email=show_email %}
-            {% if is_owner%}
+            {% include 'user_list_partials/table_header_basics.html' with include_counter=True %}
+            {% include 'user_list_partials/table_header_extras.html' with show_email=show_email %}
+            {% if is_owner %}
             <th></th>
             <th></th>
             <th></th>
@@ -30,12 +29,12 @@
             {% endif %}
 
           </tr>
-        {% for member in members %}
+        {% for member in club.get_memberships %}
           {% check_is_officer club member.user as is_member_an_officer %}
           {% check_is_owner club member.user as is_member_an_owner %}
           <tr>
-            {% include 'member_list_partials/table_row_basics.html' with user=member.user include_counter=True %}
-            {% include 'member_list_partials/table_row_extras.html' with user=member.user show_email=show_email %}
+            {% include 'user_list_partials/table_row_basics.html' with user=member.user include_counter=True %}
+            {% include 'user_list_partials/table_row_extras.html' with user=member.user show_email=show_email %}
 
             {% if member.user == current_user %}
               {% if is_owner %}

@@ -1,3 +1,1 @@
-{% load define_action %}
-{% count_participants tournament as number_of_participants %}
-<td> {{number_of_participants}} </td>
+<td> {{ tournament.get_participants.count }} </td>

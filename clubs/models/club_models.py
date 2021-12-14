@@ -18,6 +18,22 @@ class Club(models.Model):
     def __str__(self):
         return f'{self.name}'
 
+    def get_memberships(self):
+        return Membership.objects.filter(club=self)
+
+    def get_banned_members(self):
+        return Ban.objects.filter(club=self)
+
+    def get_applications(self):
+        return Application.objects.filter(club=self)
+
+    def get_officers(self):
+        return Membership.objects.filter(club=self, is_officer=True)
+
+    def get_owner(self):
+        return Membership.objects.get(club=self, is_owner=True)
+
+
     class Meta:
         ordering = ['-created_on']
 

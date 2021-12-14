@@ -11,11 +11,6 @@
 {% check_is_member club current_user as is_member %}
 {% check_has_applied club current_user as has_applied %}
 
-{% count_members club as number_of_members %}
-
-{% get_owner club as owner %}
-{% get_officers club as officers %}
-
   <div class="container">
     <div class="row">
       <div class="col-12">
@@ -24,7 +19,7 @@
         <br>
         <p> {{ club.description }} </p>
         <p><i class="bi bi-geo-alt-fill"></i> {{ club.location }}</p>
-        <p><i class="bi bi-people-fill"></i> {{ number_of_members }}<p>
+        <p><i class="bi bi-people-fill"></i> {{ club.get_memberships.count }}<p>
         <table id="buttons">
           <tr>
             <style>
@@ -64,31 +59,31 @@
         </style>
         <table id="owner" class="table standard-chess-table">
           <tr>
-            {% include 'member_list_partials/table_header_basics.html' with include_counter=False %}
-            {% include 'member_list_partials/table_header_extras.html' with show_email=True %}
+            {% include 'user_list_partials/table_header_basics.html' with include_counter=False %}
+            {% include 'user_list_partials/table_header_extras.html' with show_email=True %}
           </tr>
           <tr>
-            {% include 'member_list_partials/table_row_basics.html' with user=owner.user include_counter=False %}
-            {% include 'member_list_partials/table_row_extras.html' with user=owner.user show_email=True %}
+            {% include 'user_list_partials/table_row_basics.html' with user=club.get_owner.user include_counter=False %}
+            {% include 'user_list_partials/table_row_extras.html' with user=club.get_owner.user show_email=True %}
           </tr>
         </table>
         {% if is_member %}
         <br>
         <h3><b>Officers</b></h3>
         <table id="officer" class="table standard-chess-table">
-          {%if not officers %}
+          {%if not club.get_officers %}
           <tr><td></td></tr>
           <tr><td> No Officers </td></tr>
           {% else %}
 
           <tr>
-            {% include 'member_list_partials/table_header_basics.html' with include_counter=True %}
-            {% include 'member_list_partials/table_header_extras.html' with show_email=True %}
+            {% include 'user_list_partials/table_header_basics.html' with include_counter=True %}
+            {% include 'user_list_partials/table_header_extras.html' with show_email=True %}
           </tr>
-            {% for officer in officers %}
+            {% for officer in club.get_officers %}
           <tr>
-              {% include 'member_list_partials/table_row_basics.html' with user=officer.user include_counter=True %}
-              {% include 'member_list_partials/table_row_extras.html' with user=officer.user show_email=True %}
+              {% include 'user_list_partials/table_row_basics.html' with user=officer.user include_counter=True %}
+              {% include 'user_list_partials/table_row_extras.html' with user=officer.user show_email=True %}
           </tr>
             {% endfor %}
           {% endif %}

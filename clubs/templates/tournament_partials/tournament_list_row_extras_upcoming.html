@@ -1,6 +1,4 @@
-{% load define_action %}
-{% count_participants tournament as number_of_participants %}
-<td style="max-width: 30px;"> {{number_of_participants}}/{{ tournament.capacity }} </td>
+<td style="max-width: 30px;"> {{ tournament.get_participants.count }}/{{ tournament.capacity }} </td>
 <td style="width: 100px;">
   <div class="progress">
     <div class="progress-bar" role="progressbar" aria-valuenow="number_of_participants" aria-valuemin="0" aria-valuemax="{{ tournament.capacity }}"></div>

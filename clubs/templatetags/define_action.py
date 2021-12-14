@@ -1,30 +1,43 @@
+"""
+Django provides many built in tags to use within templates but some may be
+missing and they are implemented here.
+
+In addition, functions in templates cannot take parameters so when a method
+would need to more than one parameter it may be implemented here to avoid
+passing in many variables in the view.
+"""
+
 from django import template
-from datetime import datetime
-from clubs.models import User, Club, Application, Membership, Ban, Participant, Organiser, Tournament, SingleGroup, Match
+from clubs.models import Application, Membership, Participant, Organiser
 register = template.Library()
+
+# BASIC tags
 
 @register.simple_tag
 def boolean_or(a, b):
     return a or b
 
 
-@register.simple_tag
-def count_members(club_to_count):
-    return Membership.objects.filter(club=club_to_count).count()
+# CLUB tags
 
 @register.simple_tag
-def count_participants(tournament):
-    return Participant.objects.filter(tournament=tournament).count()
-
-
+def check_has_applied(club_to_check, user):
+    return Application.objects.filter(club=club_to_check, user=user).exists()
 
 @register.simple_tag
-def get_clubs(current_user):
-    my_clubs = []
-    for club in Club.objects.all():
-        if Membership.objects.filter(club=club, user=current_user):
-            my_clubs.append(club)
-    return my_clubs
+def check_is_member(club_to_check, user):
+    return Membership.objects.filter(club=club_to_check, user=user).exists()
+
+@register.simple_tag
+def check_is_officer(club_to_check, user):
+    return Membership.objects.filter(club=club_to_check, user=user, is_officer=True).exists()
+
+@register.simple_tag
+def check_is_owner(club_to_check, user):
+    return Membership.objects.filter(club=club_to_check, user=user, is_owner=True).exists()
+
+
+# TOURNAMENT tags
 
 @register.simple_tag
 def check_is_organiser(user, tournament):
@@ -49,112 +62,3 @@ def check_has_joined_tournament(user, tournament):
         return Participant.objects.filter(member=membership, tournament=tournament).exists()
     else:
         return False
-
-@register.simple_tag
-def get_members(club):
-    return Membership.objects.filter(club=club)
-
-@register.simple_tag
-def get_banned_members(club):
-    return Ban.objects.filter(club=club)
-
-@register.simple_tag
-def get_applications(club):
-    return Application.objects.filter(club=club)
-
-@register.simple_tag
-def get_officers(club):
-    return Membership.objects.filter(club=club, is_officer=True)
-
-@register.simple_tag
-def get_owner(club):
-    return Membership.objects.get(club=club, is_owner=True)
-
-@register.simple_tag
-def get_organisers(tournament):
-    return Organiser.objects.filter(tournament=tournament)
-
-# @register.simple_tag
-# def get_officers_and_owner(current_user, tournament):
-#     return Membership.objects.filter(club = tournament.club, is_officer=True) + Membership.objects.filter(club = tournament.club, is_owner=True) -  Membership.objects.filter(club = tournament.club, user = current_user)
-
-
-
-@register.simple_tag
-def check_has_applied(club_to_check, user):
-    return Application.objects.filter(club=club_to_check, user=user).exists()
-
-@register.simple_tag
-def check_is_member(club_to_check, user):
-    return Membership.objects.filter(club=club_to_check, user=user).exists()
-
-@register.simple_tag
-def check_is_officer(club_to_check, user):
-    return Membership.objects.filter(club=club_to_check, user=user, is_officer=True).exists()
-
-@register.simple_tag
-def check_is_owner(club_to_check, user):
-    return Membership.objects.filter(club=club_to_check, user=user, is_owner=True).exists()
-
-
-
-@register.simple_tag
-def check_is_lead_organiser(user, tournament):
-    if Membership.objects.filter(user=user, club=tournament.club).exists():
-        membership = Membership.objects.get(user=user, club=tournament.club)
-        return Organiser.objects.filter(member=membership, tournament=tournament).exists()
-    return False
-
-@register.simple_tag
-def check_has_joined_tournament(user, tournament):
-    if Membership.objects.filter(user=user, club=tournament.club).exists():
-        membership = Membership.objects.get(user=user, club=tournament.club)
-        return Participant.objects.filter(member=membership, tournament=tournament).exists()
-    return False
-
-@register.simple_tag
-def get_participants(tournament):
-    return Participant.objects.filter(tournament=tournament)
-
-@register.simple_tag
-def get_single_groups(group_stage):
-    return SingleGroup.objects.filter(group_stage=group_stage)
-
-@register.simple_tag
-def get_matches(stage):
-    return Match.objects.filter(collection=stage)
-
-@register.simple_tag
-def get_standings(single_group):
-        if not single_group.get_is_complete():
-            return None
-
-        matches = single_group.get_matches()
-        players = set(single_group.get_player_occurrences())
-        scores = {}
-        matches_played = {}
-        for player in players:
-            scores.update({player.id:0})
-            matches_played.update({player.id:0})
-
-        for match in matches:
-            if match.result == 1:
-                scores[match.white_player.id] += 1
-            elif match.result == 2:
-                scores[match.black_player.id] += 1
-            else:
-                scores[match.white_player.id] += 0.5
-                scores[match.black_player.id] += 0.5
-
-            matches_played[match.white_player.id] += 1
-            matches_played[match.black_player.id] += 1
-
-        # https://www.geeksforgeeks.org/python-sort-list-by-dictionary-values/
-        ordered_scores = dict(sorted(scores.items(), key = lambda item: item[1]))
-
-        standings = []
-        for participant in ordered_scores.keys():
-            standing = [Participant.objects.get(id=participant), ordered_scores[participant], matches_played[participant]]
-            standings.append(standing)
-
-        return list(reversed(standings))
