@@ -24,8 +24,8 @@ class SingleGroupModelTestCase(TestCase):
             winners_required = 1
         )
     
-    # def test_valid_singlegroup(self):
-    #     self._assert_valid_singlegroup()
+    def test_valid_singlegroup(self):
+        self._assert_valid_singlegroup()
 
     # Test group_stage
     def test_group_stage_cannot_be_blank(self):
