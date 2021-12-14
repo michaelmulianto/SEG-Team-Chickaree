@@ -14,12 +14,15 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 
 from clubs.forms import AddResultForm
-from clubs.models import Match, Organiser, Membership
+from clubs.models import Match, Tournament, Membership
 
 @login_required
 @tournament_exists
 def begin_tournament(request, tournament_id):
-    pass
+    tournament = Tournament.objects.get(id=tournament_id)
+    if not is_user_organiser_of_tournament(self.request.user, tournament):
+        messages.add_message(self.request, messages.ERROR, "Only organisers can set match results!")
+        return redirect('show_club', kwargs={'club_id': tournament.club.id})
 
 class AddResultView(UpdateView):
     """Edit the details of the currently logged in user."""
@@ -39,12 +42,10 @@ class AddResultView(UpdateView):
         # We must verify permissions...
         t = match.collection.tournament
 
-        if not is_user_member_of_club(request.user, t.club):
-            messages.add_message(self.request, messages.ERROR, "The tournament is for members only!")
-            return redirect('show_clubs')
+        # if not is_user_member_of_club(request.user, t.club):
+        #     messages.add_message(self.request, messages.ERROR, "The tournament is for members only!")
+        #     return redirect('show_clubs')
             
-        member = Membership.objects.get(club=t.club,user=request.user)
-
         if not is_user_organiser_of_tournament(self.request.user, t):
             messages.add_message(self.request, messages.ERROR, "Only organisers can set match results!")
             return redirect('show_clubs')

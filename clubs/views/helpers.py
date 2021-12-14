@@ -14,13 +14,28 @@ def is_user_member_of_club(user, club):
     return Membership.objects.filter(user=user, club=club).exists()
 
 def is_user_organiser_of_tournament(user, tournament):
-    return Organiser.objects.filter(member = Membership.objects.get(user=user, club=tournament.club), tournament = tournament).exists()
+    try:
+        possible_organiser_member = Membership.objects.get(club = tournament.club, user = user)
+    except(ObjectDoesNotExist):
+        return False
+    else:
+        return Organiser.objects.filter(member = possible_organiser_member, tournament = tournament).exists()
 
 def is_lead_organiser_of_tournament(user, tournament):
-    return Organiser.objects.filter(member = Membership.objects.get(user=user, club=tournament.club), tournament = tournament, is_lead_organiser = True).exists()
+    try:
+        possible_organiser_member = Membership.objects.get(club = tournament.club, user = user)
+    except(ObjectDoesNotExist):
+        return False
+    else:
+        return Organiser.objects.filter(member = possible_organiser_member, tournament = tournament, is_lead_organiser = True).exists()
 
 def is_participant_in_tournament(user, tournament):
-    return Participant.objects.filter(member = Membership.objects.get(user=user, club=tournament.club), tournament = tournament).exists()
+    try:
+        possible_organiser_member = Membership.objects.get(club = tournament.club, user = user)
+    except(ObjectDoesNotExist):
+        return False
+    else:
+        return Participant.objects.filter(member = possible_organiser_member, tournament = tournament).exists()
 
 def sort_clubs(param, order):
     if order == None:
