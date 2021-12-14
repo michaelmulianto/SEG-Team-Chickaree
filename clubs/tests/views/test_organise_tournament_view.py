@@ -75,7 +75,7 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
         self.assertEqual(tournament_count_after, tournament_count_before)
         self.assertTemplateUsed(response, 'organise_tournament.html')
 
-    def test_user_is_not_owner_or_officer(self):
+    def test_user_is_not_owner_or_officer_cannot_submit(self):
         self.client.login(email=self.user.email, password='Password123')
         tournament_count_before = Tournament.objects.count()
         self.member.delete()

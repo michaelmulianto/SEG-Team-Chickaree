@@ -9,7 +9,7 @@ from clubs.forms import OrganiseTournamentForm
 
 from clubs.models import Tournament, Club, Organiser, Membership, Participant, MemberTournamentRelationship
 
-from .decorators import club_exists, tournament_exists, user_exists, membership_exists
+from .decorators import club_exists, tournament_exists, user_exists, membership_exists, allowed_users
 from .helpers import is_user_organiser_of_tournament, is_user_owner_of_club, is_user_officer_of_club,  is_lead_organiser_of_tournament, is_participant_in_tournament
 
 
@@ -22,6 +22,7 @@ from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 
+
 class OrganiseTournamentView(FormView):
     """Create a new tournament."""
     form_class = OrganiseTournamentForm
@@ -29,6 +30,7 @@ class OrganiseTournamentView(FormView):
 
     @method_decorator(login_required)
     @method_decorator(club_exists)
+    @method_decorator(allowed_users(allowed_roles=[]))
     def dispatch(self, request, club_id):
         return super().dispatch(request)
 
@@ -37,7 +39,6 @@ class OrganiseTournamentView(FormView):
         context['current_user'] = self.request.user
         context['club'] = Club.objects.get(id=self.kwargs['club_id'])
         return context
-
 
     def form_valid(self, form):
         if not is_user_owner_of_club(self.request.user, self.get_context_data()['club']) and not is_user_officer_of_club(self.request.user, self.get_context_data()['club']):

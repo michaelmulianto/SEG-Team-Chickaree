@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.conf import settings
 from clubs.models import Organiser, User, Club, Membership, Application, Ban, Tournament
+from django.http import HttpResponse
 
 def login_prohibited(view_function):
     def modified_view_fuction(request):
@@ -105,5 +106,21 @@ def is_head_organiser(view_function):
             return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         else:
             return view_function(request, tournament_id, membership_id, **kwargs)
-    
+
     return modified_view_function
+
+def allowed_users(allowed_roles=[]):
+    def decorator(view_func):
+        def wrapper_func(request, club_id, **kwargs):
+            club = Club.objects.get(id=club_id)
+            member = Membership.objects.get(user = request.user, club = club)
+            group = None
+            if member.is_owner == True or member.is_officer == True:
+                group = True
+            if group == True:
+                return view_func(request, club_id, **kwargs)
+            else:
+                return HttpResponse('You are not authorized to view this page')
+
+        return wrapper_func
+    return decorator
