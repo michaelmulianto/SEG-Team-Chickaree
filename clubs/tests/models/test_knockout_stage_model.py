@@ -93,7 +93,7 @@ class KnockOutStageModelTestCase(TestCase):
         knockout_round = self.tournament.generate_next_round()
         self.assertIsInstance(knockout_round, KnockoutStage)
         self.assertEqual(len(knockout_round.get_matches()), 8)
-        self.assertEqual(len(set(knockout_round.get_player_occurences())), 16)
+        self.assertEqual(len(set(knockout_round.get_player_occurrences())), 16)
 
     def test_get_matches_does_not_return_matches_in_other_stages(self):
         self.knockoutStage.delete() #Create a knockout stage from within a tournament
@@ -103,7 +103,7 @@ class KnockOutStageModelTestCase(TestCase):
         self.assertIsInstance(first_knockout_round, KnockoutStage)
         first_set_of_matches = first_knockout_round.get_matches()
         self.assertEqual(len(first_set_of_matches), 8)
-        self.assertEqual(len(set(first_knockout_round.get_player_occurences())), 16)
+        self.assertEqual(len(set(first_knockout_round.get_player_occurrences())), 16)
 
         self._complete_round_with_single_matchset(first_knockout_round)
 
@@ -111,7 +111,7 @@ class KnockOutStageModelTestCase(TestCase):
         self.assertIsInstance(second_knockout_round, KnockoutStage)
         second_set_of_matches = second_knockout_round.get_matches()
         self.assertEqual(len(second_set_of_matches), 4)
-        self.assertEqual(len(set(second_knockout_round.get_player_occurences())), 8)
+        self.assertEqual(len(set(second_knockout_round.get_player_occurrences())), 8)
 
         self.assertTrue(set(first_set_of_matches).isdisjoint(second_set_of_matches))
 
@@ -123,8 +123,8 @@ class KnockOutStageModelTestCase(TestCase):
         self.assertIsInstance(knockout_round, KnockoutStage)
         first_set_of_matches = knockout_round.get_matches()
         self.assertEqual(len(first_set_of_matches), 8)
-        self.assertEqual(len(set(knockout_round.get_player_occurences())), 16)
-        self.assertEqual(len(knockout_round.get_player_occurences()), len(set(knockout_round.get_player_occurences())))
+        self.assertEqual(len(set(knockout_round.get_player_occurrences())), 16)
+        self.assertEqual(len(knockout_round.get_player_occurrences()), len(set(knockout_round.get_player_occurrences())))
 
     def test_incomplete_round_returns_false(self):
         self.knockoutStage.delete() #Create a knockout stage from within a tournament
@@ -134,7 +134,7 @@ class KnockOutStageModelTestCase(TestCase):
         self.assertIsInstance(knockout_round, KnockoutStage)
         first_set_of_matches = knockout_round.get_matches()
         self.assertEqual(len(first_set_of_matches), 8)
-        self.assertEqual(len(set(knockout_round.get_player_occurences())), 16)
+        self.assertEqual(len(set(knockout_round.get_player_occurrences())), 16)
 
         matches = knockout_round.get_matches()
         i = 0
@@ -155,7 +155,7 @@ class KnockOutStageModelTestCase(TestCase):
         self.assertIsInstance(knockout_round, KnockoutStage)
         first_set_of_matches = knockout_round.get_matches()
         self.assertEqual(len(first_set_of_matches), 8)
-        self.assertEqual(len(set(knockout_round.get_player_occurences())), 16)
+        self.assertEqual(len(set(knockout_round.get_player_occurrences())), 16)
 
         self._complete_round_with_single_matchset(knockout_round)
 
@@ -170,7 +170,7 @@ class KnockOutStageModelTestCase(TestCase):
         self.assertIsInstance(knockout_round, KnockoutStage)
         first_set_of_matches = knockout_round.get_matches()
         self.assertEqual(len(first_set_of_matches), 8)
-        self.assertEqual(len(set(knockout_round.get_player_occurences())), 16)
+        self.assertEqual(len(set(knockout_round.get_player_occurrences())), 16)
 
         matches = knockout_round.get_matches()
         artificial_winners = []
@@ -189,7 +189,7 @@ class KnockOutStageModelTestCase(TestCase):
         self.assertIsInstance(knockout_round, KnockoutStage)
         first_set_of_matches = knockout_round.get_matches()
         self.assertEqual(len(first_set_of_matches), 8)
-        self.assertEqual(len(set(knockout_round.get_player_occurences())), 16)
+        self.assertEqual(len(set(knockout_round.get_player_occurrences())), 16)
 
         matches = knockout_round.get_matches()
         i = 0

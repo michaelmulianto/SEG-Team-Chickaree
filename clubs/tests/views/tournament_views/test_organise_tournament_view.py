@@ -82,13 +82,15 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
 
 
     def test_successful_officer_organise_tournament(self):
-        self.client.login(email=self.user.email, password="Password123")
-        Membership.objects.create(
+        self.client.login(email=self.second_user.email, password="Password123")
+        
+        member_officer = Membership.objects.create(
             user = self.second_user,
             club = self.club,
-            is_owner = True
+            is_officer = True
         )
-        member_officer = self.member
+        member_officer.save()
+
         tournament_count_before = Tournament.objects.count()
         organiser_count_before = Organiser.objects.count()
 
@@ -99,6 +101,7 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
         self.assertEqual(tournament_count_after, tournament_count_before+1)
         self.assertEqual(organiser_count_after, organiser_count_before+1)
         new_tournament = Tournament.objects.all()[0]
+
         organiser = Organiser.objects.get(member = member_officer, tournament = new_tournament)
         self.assertFalse(member_officer.is_owner)
         self.assertTrue(member_officer.is_officer)
