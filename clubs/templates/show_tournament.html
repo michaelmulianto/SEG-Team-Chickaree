@@ -38,8 +38,8 @@
           {% endfor %}
         </table>
         <br>
-        <a style="float: left;" href='{% url "show_tournament_participants" tournament.id %}' class="btn btn-primary"><i class="bi bi-people-fill"></i> Participant List</a>
-        <a style="float: right;" href='{% url "show_tournament" tournament.id %}' class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Add Co-Organiser</a>
+        <a href='{% url "show_tournament_participants" tournament.id %}' class="btn btn-primary"><i class="bi bi-people-fill"></i> Participant List</a>
+        <a href='{% url "add_tournament_organiser_list" tournament.id %}' class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Add Co-Organiser</a>
         <br>
         <br>
         <br>
