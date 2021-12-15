@@ -14,13 +14,14 @@ class Match(models.Model):
 
     collection = models.ForeignKey(RoundOfMatches, on_delete=models.CASCADE, unique=False, blank=False)
 
-    OUTCOMES = [
-        (0, 'Incomplete'),
-        (1,'White Victory'),
-        (2, 'Black Victory'),
-        (3, 'Stalemate'),
-    ]
-    result = models.IntegerField(default = 0, choices = OUTCOMES, blank = False)
+    class Result(models.IntegerChoices):
+        Incomplete = 0, 'Incomplete'
+        White_Victory = 1, f'White Victory'
+        Black_Victory = 2, f'Black Victor'
+        Stalemate = 3, 'Stalemate'
+
+
+    result = models.IntegerField(default = 0, choices = Result.choices, blank = False)
 
     class Meta:
         ordering = ['collection']
