@@ -67,6 +67,7 @@ class AddResultView(UpdateView):
 
     def get_form(self):
         my_form = super().get_form()
+        # Here we check if the match is linked to a knockout stage.
         try:
             self.get_object().collection.tournamentstagebase.knockoutstage
         except:
