@@ -23,6 +23,7 @@ def begin_tournament(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     if not is_user_member_of_club(request.user, tournament.club):
         messages.add_message(request, messages.ERROR, "The tournament is for members only!")
+        return redirect('show_clubs')
         
     elif not is_user_organiser_of_tournament(request.user, tournament):
         messages.add_message(request, messages.ERROR, "Only organisers can begin the tournament!")

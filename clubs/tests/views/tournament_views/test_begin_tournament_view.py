@@ -49,8 +49,45 @@ class BeginTournamentViewTest(TestCase):
         response = self.client.get(self.url, follow=True)
         
         self.assertNotEqual(self.tournament.get_current_round(), None)
+        self._assert_tournament_page_response(response)
         
-        # Response tests
+    def test_begin_tournament_fails_when_not_member(self):
+        self.membership.delete()
+        
+        self.client.login(email=self.user.email, password="Password123")
+        response = self.client.get(self.url, follow=True)
+        
+        self.assertEqual(self.tournament.get_current_round(), None)
+        
+        # Has different redirect to other cases
+        response_url = reverse('show_clubs')
+        self.assertRedirects(
+            response, response_url,
+            status_code=302, target_status_code=200,
+            fetch_redirect_response=True
+        )
+        self.assertTemplateUsed(response, 'show_clubs.html')
+        
+    def test_begin_tournament_fails_when_not_organiser(self):
+        self.organiser.delete()
+        
+        self.client.login(email=self.user.email, password="Password123")
+        response = self.client.get(self.url, follow=True)
+        
+        self.assertEqual(self.tournament.get_current_round(), None)
+        self._assert_tournament_page_response(response)
+        
+    def test_begin_tournament_fails_when_already_begun(self):
+        premade_round = self.tournament.generate_next_round()
+        
+        self.client.login(email=self.user.email, password="Password123")
+        response = self.client.get(self.url, follow=True)
+        
+        self.assertEqual(self.tournament.get_current_round(), premade_round)
+        self._assert_tournament_page_response(response)
+        
+    # Assertions    
+    def _assert_tournament_page_response(self, response):
         response_url = reverse('show_tournament', kwargs={'tournament_id':self.tournament.id})
         self.assertRedirects(
             response, response_url,
