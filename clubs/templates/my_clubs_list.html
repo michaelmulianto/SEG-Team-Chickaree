@@ -12,10 +12,10 @@
 
         {% include 'partials/searchbar.html' %}
 
-        {% bootstrap_paginate page_obj range=6 show_first_last="false" %}
+        {% bootstrap_paginate my_clubs range=6 show_first_last="false" %}
         <table class="table table-hover">
           <hr style="opacity: 0.15;">
-        {% for club in page_obj %}
+        {% for club in my_clubs %}
         <tr onclick=window.location="{% url 'show_club' club.id %}">
           <td style="width:0.1%; white-space: nowrap"><img src={% static 'images/pawn.jpg' %} style="max-width: 150px" alt="Club image, default pawn"<td>
 
@@ -52,7 +52,7 @@
 
         {% endfor %}
         </table>
-        {% bootstrap_paginate page_obj range=6 show_first_last="false" %}
+        {% bootstrap_paginate my_clubs range=6 show_first_last="false" %}
     </div>
   </div>
 </div>
