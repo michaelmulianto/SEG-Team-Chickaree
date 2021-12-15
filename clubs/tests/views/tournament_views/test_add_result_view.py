@@ -25,7 +25,7 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
             user=self.user,
             is_officer=True
         )
-        
+
         self.tournament = Tournament.objects.get(id=1)
         self.organiser = Organiser.objects.create(
             member = self.membership,
@@ -65,26 +65,26 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
         self.assertEqual(Match.objects.get(id=self.match.id).result, self.data['result'])
 
         # Response tests
-        response_url = reverse('show_clubs')
+        response_url = reverse('show_tournament', kwargs={'tournament_id': self.tournament.id})
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'club/show_clubs.html')
-        
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
+
     def test_non_organiser_attempts_to_add_result(self):
         self.client.login(email=self.participant_user.email, password='Password123')
-    
+
         response = self.client.post(self.url, self.data, follow=True)
 
         self.assertEqual(self.match.result, 0)
-        
+
         # Response tests
-        response_url = reverse('show_clubs')
+        response_url = reverse('show_tournament', kwargs={'tournament_id': self.tournament.id})
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'club/show_clubs.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
