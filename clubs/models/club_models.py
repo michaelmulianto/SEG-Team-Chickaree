@@ -4,6 +4,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import UniqueConstraint
 from django.contrib.auth.models import AbstractUser
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.conf import settings
 
 from .user_models import User
 
@@ -23,6 +25,20 @@ class Club(models.Model):
 
     def get_banned_members(self):
         return Ban.objects.filter(club=self)
+
+    def get_banned_members_paginated(self):
+        banned_members = self.get_banned_members()
+        paginator = Paginator(banned_members, settings.BANNED_MEMBERS_PER_PAGE)
+
+        # page = request.GET.get('page')
+        # try:
+        #     page_obj = paginator.page(page)
+        # except PageNotAnInteger:
+        #     page_obj  = paginator.page(1)
+        # except EmptyPage:
+        #     page_obj  = paginator.page(paginator.num_pages)
+
+        return paginator
 
     def get_applications(self):
         return Application.objects.filter(club=self)
