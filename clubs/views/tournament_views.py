@@ -122,42 +122,6 @@ def withdraw_participation_from_tournament(request, tournament_id):
 
 @login_required
 @tournament_exists
-def add_organisers_to_tournament(request, tournament_id, member_id):
-    """Allow the head organiser of a tournament to assign other officers/owner of the club organising the tournament to officer."""
-
-    if not Membership.objects.filter(id=member_id).exists(): #View function takes various arguments, so decorator to check for it throws an error
-        messages.error(request, 'No membership with id ' + str(member_id) + ' exists.')
-        return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
-    else:
-
-        tournament = Tournament.objects.get(id = tournament_id)
-        new_organiser_member = Membership.objects.get(id = member_id)
-
-        if is_lead_organiser_of_tournament(request.user, tournament):
-            if not is_lead_organiser_of_tournament(new_organiser_member.user, tournament):
-                if not is_participant_in_tournament(new_organiser_member.user, tournament):
-                    if not is_user_organiser_of_tournament(new_organiser_member.user, tournament):
-                        if is_user_owner_of_club(new_organiser_member.user, tournament.club) or is_user_officer_of_club(new_organiser_member.user, tournament.club):
-                                Organiser.objects.create(
-                                    member = new_organiser_member,
-                                    tournament = tournament
-                                )
-                                messages.success(request, '@' + new_organiser_member.user.username + ' is now an organiser of the tournament: ' + tournament.name + ".")
-                        else: #Access denied organiser can only assign organiser roles to other members who are officers or the owner
-                            messages.error(request, 'You can only assign officers or the owner to be organisers for tournaments.')
-                    else:
-                        messages.warning(request, '@' + new_organiser_member.user.username + ' is already an organiser of tournament ' + tournament.name)
-                else:
-                    messages.warning(request, '@' + new_organiser_member.user.username + ' is already a participant of tournament ' + tournament.name)
-            else:
-                messages.error(request, "You are the lead organiser. You cannot add yourself as organiser.")
-        else: # Access denied, member isn't the lead organiser of tournament
-            messages.warning(request, 'Only the lead organiser can assign other organisers to their tournament.')
-
-        return redirect('show_tournament', tournament_id=tournament.id)
-
-@login_required
-@tournament_exists
 def join_tournament(request, tournament_id):
     tour = Tournament.objects.get(id = tournament_id)
     member = get_object_or_404(Membership, user = request.user, club = tour.club)
