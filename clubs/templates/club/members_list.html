@@ -2,6 +2,7 @@
 {% block content %}
 {% include 'partials/js_confirm_messages.html'%}
 {% load define_action %}
+{% load bootstrap_pagination %}
 {% check_is_owner club current_user as is_owner %}
 {% check_is_officer club current_user as is_officer %}
 {% boolean_or is_owner is_officer as show_email %}
@@ -16,6 +17,9 @@
         </style>
         <h1>{{club.name}} Members: </h1>
         <br>
+        {% if memberships.has_other_pages %}
+          {% bootstrap_paginate memberships range=6 show_first_last="false" %}
+        {% endif %}
         <table class="table standard-table-spacing">
           <tr>
             {% include 'user_list_partials/table_header_basics.html' with include_counter=True %}
@@ -29,7 +33,7 @@
             {% endif %}
 
           </tr>
-        {% for member in club.get_memberships %}
+        {% for member in memberships %}
           {% check_is_officer club member.user as is_member_an_officer %}
           {% check_is_owner club member.user as is_member_an_owner %}
           <tr>
@@ -69,6 +73,9 @@
           </tr>
         {% endfor %}
         </table>
+        {% if memberships.has_other_pages %}
+          {% bootstrap_paginate memberships range=6 show_first_last="false" %}
+        {% endif %}
         <a href='{% url 'show_club' club.id %}' class="btn btn-info">
           <i class="bi bi-reply-fill"></i> Back to club page
         </a>

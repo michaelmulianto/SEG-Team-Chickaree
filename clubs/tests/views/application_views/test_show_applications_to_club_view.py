@@ -6,6 +6,7 @@ from django.contrib.auth.hashers import check_password
 from clubs.models import User, Club, Membership, Application
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 from with_asserts.mixin import AssertHTMLMixin
+from django.conf import settings
 
 class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
     """Test all aspects of the show applications to club view"""
@@ -113,3 +114,72 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         with self.assertHTML(response) as html:
             TableTextContainer = html.find('body/div/div/div/table/tr/th')
             self.assertEqual(TableTextContainer.text, None)
+
+    def test_get_applications_to_my_clubs_for_applications_with_pagination(self):
+        self.client.login(email=self.user_owner.email, password="Password123")
+        self._create_test_applications_for_default_club(settings.APPLICATIONS_PER_PAGE*2+3-1)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'application_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['applications']), settings.APPLICATIONS_PER_PAGE)
+        applications_page = response.context['applications']
+        self.assertFalse(applications_page.has_previous())
+        self.assertTrue(applications_page.has_next())
+        page_one_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=1'
+        response = self.client.get(page_one_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'application_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['applications']), settings.APPLICATIONS_PER_PAGE)
+        applications_page = response.context['applications']
+        self.assertFalse(applications_page.has_previous())
+        self.assertTrue(applications_page.has_next())
+        page_two_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=2'
+        response = self.client.get(page_two_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'application_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['applications']), settings.APPLICATIONS_PER_PAGE)
+        applications_page = response.context['applications']
+        self.assertTrue(applications_page.has_previous())
+        self.assertTrue(applications_page.has_next())
+        page_three_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=3'
+        response = self.client.get(page_three_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'application_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['applications']), 3)
+        applications_page = response.context['applications']
+        self.assertTrue(applications_page.has_previous())
+        self.assertFalse(applications_page.has_next())
+
+    def test_show_applications_list_with_pagination_does_not_contain_page_traversers_if_not_enough_applications(self):
+        self.client.login(email=self.user_owner.email, password="Password123")
+        self._create_test_applications_for_default_club(settings.APPLICATIONS_PER_PAGE-2)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'application_list.html')
+        self.assert_menu(response)
+        applications_page = response.context['applications']
+        self.assertFalse(applications_page.has_previous())
+        self.assertFalse(applications_page.has_next())
+        self.assertFalse(applications_page.has_other_pages())
+
+    def _create_test_applications_for_default_club(self, banned_members_count = 10):
+        for future_applicant in range(banned_members_count):
+            
+            user = User.objects.create(
+                username = f'USERNAME{future_applicant}',
+                last_name = f'LASTNAME{future_applicant}',
+                first_name = f'FIRSTNAME{future_applicant}',
+                email = f'EMAIL{future_applicant}@gmail.com',
+                bio = f'BIO{future_applicant}',
+                experience = 1
+            )
+
+            Application.objects.create(
+                club = self.club,
+                user = user,
+                personal_statement = "PERSONAL STATEMENT"
+            )

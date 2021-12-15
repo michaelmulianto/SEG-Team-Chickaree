@@ -10,6 +10,9 @@ def is_user_officer_of_club(user, club):
 def is_user_owner_of_club(user, club):
     return Membership.objects.filter(user=user, club=club, is_owner=True).exists()
 
+def is_user_member_of_club(user, club):
+    return Membership.objects.filter(user=user, club=club).exists()
+
 def is_user_organiser_of_tournament(user, tournament):
     try:
         possible_organiser_member = Membership.objects.get(club = tournament.club, user = user)

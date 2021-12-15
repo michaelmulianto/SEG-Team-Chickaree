@@ -6,6 +6,7 @@ from django.contrib.auth.hashers import check_password
 from clubs.models import User, Club, Membership, Application, Ban
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 from with_asserts.mixin import AssertHTMLMixin
+from django.conf import settings
 
 class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
     """Test all aspects of the show bans to club view"""
@@ -61,3 +62,71 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         response = self.client.get(self.url, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/banned_member_list.html')
+
+    def test_get_banned_members_of_my_club_list_with_pagination(self):
+        self.client.login(email=self.user_club_owner.email, password="Password123")
+        self._create_test_ban_for_default_club(settings.BANNED_MEMBERS_PER_PAGE*2+3 -1)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/banned_member_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['banned_members']), settings.BANNED_MEMBERS_PER_PAGE)
+        banned_members_page = response.context['banned_members']
+        self.assertFalse(banned_members_page.has_previous())
+        self.assertTrue(banned_members_page.has_next())
+        page_one_url = reverse('banned_members', kwargs = {'club_id': self.club.id}) + '?page=1'
+        response = self.client.get(page_one_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/banned_member_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['banned_members']), settings.BANNED_MEMBERS_PER_PAGE)
+        banned_members_page = response.context['banned_members']
+        self.assertFalse(banned_members_page.has_previous())
+        self.assertTrue(banned_members_page.has_next())
+        page_two_url = reverse('banned_members', kwargs = {'club_id': self.club.id}) + '?page=2'
+        response = self.client.get(page_two_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/banned_member_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['banned_members']), settings.BANNED_MEMBERS_PER_PAGE)
+        banned_members_page = response.context['banned_members']
+        self.assertTrue(banned_members_page.has_previous())
+        self.assertTrue(banned_members_page.has_next())
+        page_three_url = reverse('banned_members', kwargs = {'club_id': self.club.id}) + '?page=3'
+        response = self.client.get(page_three_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/banned_member_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['banned_members']), 3)# plus one becase we have already banned a member
+        banned_members_page = response.context['banned_members']
+        self.assertTrue(banned_members_page.has_previous())
+        self.assertFalse(banned_members_page.has_next())
+
+    def test_show_banned_members_list_with_pagination_does_not_contain_page_traversers_if_not_enough_banned_members(self):
+        self.client.login(email=self.user_club_owner.email, password="Password123")
+        self._create_test_ban_for_default_club(settings.BANNED_MEMBERS_PER_PAGE-2)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/banned_member_list.html')
+        self.assert_menu(response)
+        banned_members_page = response.context['banned_members']
+        self.assertFalse(banned_members_page.has_previous())
+        self.assertFalse(banned_members_page.has_next())
+        self.assertFalse(banned_members_page.has_other_pages())
+
+    def _create_test_ban_for_default_club(self, banned_members_count = 10):
+        for future_banned_member in range(banned_members_count):
+
+            user = User.objects.create(
+                username = f'USERNAME{future_banned_member}',
+                last_name = f'LASTNAME{future_banned_member}',
+                first_name = f'FIRSTNAME{future_banned_member}',
+                email = f'EMAIL{future_banned_member}@gmail.com',
+                bio = f'BIO{future_banned_member}',
+                experience = 1
+            )
+
+            Ban.objects.create(
+                club = self.club,
+                user = user
+            )
