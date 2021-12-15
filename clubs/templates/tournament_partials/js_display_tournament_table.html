@@ -1,41 +1,25 @@
 <script>
-  function displayPastTournaments() {
-    document.getElementById("past_tournaments_tab").classList.add('active');
-    document.getElementById("past_tournaments_table_body").style.display = "table";
+  var tabs_dic = {
+    "past" : "past_tournaments_tab",
+    "ongoing" : "ongoing_tournaments_tab",
+    "upcoming" : "upcoming_tournaments_tab"
+  };
+  var tables_dic = {
+    "past" : "past_tournaments_table_body",
+    "ongoing" : "ongoing_tournaments_table_body",
+    "upcoming" : "upcoming_tournaments_table_body"
+  };
 
-    if (document.getElementById("upcoming_tournaments_tab").classList.contains('active')) {
-      document.getElementById("upcoming_tournaments_tab").classList.remove('active');
-      document.getElementById("upcoming_tournaments_table_body").style.display = "none";
-    } else if (document.getElementById("ongoing_tournaments_tab").classList.contains('active')) {
-      document.getElementById("ongoing_tournaments_tab").classList.remove('active');
-      document.getElementById("ongoing_tournaments_table_body").style.display = "none";
+  /*
+  * Method to hide and display tables when tab is clicked.
+  */
+  function displayTournaments(new_active_keyword) {
+    for (const prev_active_keyword of Object.keys(tabs_dic)) {
+      document.getElementById(tabs_dic[prev_active_keyword]).classList.remove('active');
+      document.getElementById(tables_dic[prev_active_keyword]).style.display = "none";
     }
 
-  }
-  function displayOngoingTournaments() {
-    document.getElementById("ongoing_tournaments_tab").classList.add('active');
-    document.getElementById("ongoing_tournaments_table_body").style.display = "table";
-
-    if (document.getElementById("upcoming_tournaments_tab").classList.contains('active')) {
-      document.getElementById("upcoming_tournaments_tab").classList.remove('active');
-      document.getElementById("upcoming_tournaments_table_body").style.display = "none";
-    } else if (document.getElementById("past_tournaments_tab").classList.contains('active')) {
-      document.getElementById("past_tournaments_tab").classList.remove('active');
-      document.getElementById("past_tournaments_table_body").style.display = "none";
-    }
-
-  }
-  function displayUpcomingTournaments() {
-    document.getElementById("upcoming_tournaments_tab").classList.add('active');
-    document.getElementById("upcoming_tournaments_table_body").style.display = "table";
-
-    if (document.getElementById("past_tournaments_tab").classList.contains('active')) {
-      document.getElementById("past_tournaments_tab").classList.remove('active');
-      document.getElementById("past_tournaments_table_body").style.display = "none";
-    } else if (document.getElementById("ongoing_tournaments_tab").classList.contains('active')) {
-      document.getElementById("ongoing_tournaments_tab").classList.remove('active');
-      document.getElementById("ongoing_tournaments_table_body").style.display = "none";
-    }
-
+    document.getElementById(tabs_dic[new_active_keyword]).classList.add('active');
+    document.getElementById(tables_dic[new_active_keyword]).style.display = "table";
   }
 </script>
