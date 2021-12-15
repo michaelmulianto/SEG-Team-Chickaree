@@ -117,7 +117,7 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
 
     def test_get_applications_to_my_clubs_for_applications_with_pagination(self):
         self.client.login(email=self.user_owner.email, password="Password123")
-        self._create_test_applications_for_default_club(settings.APPLICATIONS_PER_PAGE*2+3)
+        self._create_test_applications_for_default_club(settings.APPLICATIONS_PER_PAGE*2+3-1)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'application_list.html')
@@ -149,10 +149,22 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'application_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['applications']), 3 + 1)
+        self.assertEqual(len(response.context['applications']), 3)
         applications_page = response.context['applications']
         self.assertTrue(applications_page.has_previous())
         self.assertFalse(applications_page.has_next())
+
+    def test_show_applications_list_with_pagination_does_not_contain_page_traversers_if_not_enough_applications(self):
+        self.client.login(email=self.user_owner.email, password="Password123")
+        self._create_test_applications_for_default_club(settings.APPLICATIONS_PER_PAGE-2)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'application_list.html')
+        self.assert_menu(response)
+        applications_page = response.context['applications']
+        self.assertFalse(applications_page.has_previous())
+        self.assertFalse(applications_page.has_next())
+        self.assertFalse(applications_page.has_other_pages())
 
     def _create_test_applications_for_default_club(self, banned_members_count = 10):
         for future_applicant in range(banned_members_count):

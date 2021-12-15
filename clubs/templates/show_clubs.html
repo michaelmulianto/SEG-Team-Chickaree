@@ -51,7 +51,7 @@
   <h1>You searched for {{ searched }}</h1>
   {% endif %}
 
-  {% if clubs <= clubs.per_page %}
+  {% if clubs.has_other_pages %}
     {% bootstrap_paginate clubs range=6 show_first_last="false" %}    
   {% endif %}
 
@@ -93,7 +93,7 @@
     </tr>
     {% endfor %}
   </table>
-  {% if clubs <= clubs.per_page %}
+  {% if clubs.has_other_pages %}
     {% bootstrap_paginate clubs range=6 show_first_last="false" %}
   {% endif %}
 

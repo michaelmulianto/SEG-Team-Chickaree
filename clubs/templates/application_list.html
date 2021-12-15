@@ -22,7 +22,7 @@
             <tr><td><b style="font-family: verdana; font-size: 250%;">No more applications</b></td></tr>
 
             {% else %}
-            {% if applications <= applications.per_page %}
+            {% if applications.has_other_pages %}
               {% bootstrap_paginate applications range=6 show_first_last="false" %}
             {% endif %}
             <tr>
@@ -43,7 +43,7 @@
               {% endfor %}
             {% endif %}
         </table>
-        {% if applications <= applications.per_page %}
+        {% if applications.has_other_pages %}
           {% bootstrap_paginate applications range=6 show_first_last="false" %}
         {% endif %}
         <a href='{% url 'show_club' club.id %}' class="btn btn-info">

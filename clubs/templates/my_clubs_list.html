@@ -11,7 +11,7 @@
         <h1>My Clubs</h1>
 
         {% include 'partials/searchbar.html' %}
-        {% if my_clubs <= my_clubs.per_page %}
+        {% if my_clubs.has_other_pages %}
           {% bootstrap_paginate my_clubs range=6 show_first_last="false" %}
         {% endif %}
         <table class="table table-hover">
@@ -53,7 +53,7 @@
 
         {% endfor %}
         </table>
-        {% if my_clubs <= my_clubs.per_page %}
+        {% if my_clubs.has_other_pages %}
           {% bootstrap_paginate my_clubs range=6 show_first_last="false" %}
         {% endif %}
     </div>

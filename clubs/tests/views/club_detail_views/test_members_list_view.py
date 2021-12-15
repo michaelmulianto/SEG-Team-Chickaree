@@ -41,7 +41,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
 
     def test_get_applications_to_my_clubs_for_applications_with_pagination(self):
         self.client.login(email=self.user.email, password="Password123")
-        self._create_test_memberships_for_default_club(settings.MEMBERSHIPS_PER_PAGE*2+3)
+        self._create_test_memberships_for_default_club(settings.MEMBERSHIPS_PER_PAGE*2+3 -1)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'members_list.html')
@@ -73,11 +73,22 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'members_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['memberships']), 3 + 1)
+        self.assertEqual(len(response.context['memberships']), 3)
         memberships_page = response.context['memberships']
         self.assertTrue(memberships_page.has_previous())
         self.assertFalse(memberships_page.has_next())
 
+    def test_show_members_list_with_pagination_does_not_contain_page_traversers_if_not_enough_members(self):
+        self.client.login(email=self.user.email, password="Password123")
+        self._create_test_memberships_for_default_club(settings.MEMBERSHIPS_PER_PAGE-2)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'members_list.html')
+        self.assert_menu(response)
+        memberships_page = response.context['memberships']
+        self.assertFalse(memberships_page.has_previous())
+        self.assertFalse(memberships_page.has_next())
+        self.assertFalse(memberships_page.has_other_pages())
 
     def _create_test_memberships_for_default_club(self, banned_members_count = 10):
         for future_member in range(banned_members_count):

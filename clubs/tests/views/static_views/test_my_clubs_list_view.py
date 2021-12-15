@@ -206,6 +206,17 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         self.assertTrue(my_clubs_page.has_previous())
         self.assertFalse(my_clubs_page.has_next())
 
+    def test_show_my_clubs_list_with_pagination_does_not_contain_page_traversers_if_not_enough_clubs(self):
+        self.client.login(email=self.user.email, password="Password123")
+        self._create_test_clubs_and_apply_default_user(settings.CLUBS_PER_PAGE-1)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
+        my_clubs_page = response.context['my_clubs']
+        self.assertFalse(my_clubs_page.has_previous())
+        self.assertFalse(my_clubs_page.has_next())
+        self.assertFalse(my_clubs_page.has_other_pages())
 
     def _create_test_clubs_and_apply_default_user(self, club_count=10):
         for club_id in range(club_count):
