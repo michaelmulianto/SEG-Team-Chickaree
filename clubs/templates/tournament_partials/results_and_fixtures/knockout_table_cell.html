@@ -9,4 +9,11 @@
   <p> ERROR </p>
   {% endif %}
   <p> {{ match.white_player.member.user.username }} vs {{ match.black_player.member.user.username }} </p>
+  <p>
+    <form action="{% url 'add_result' match.id %}" method="post">
+      {% csrf_token %}
+      {% include 'partials/bootstrap_form.html' with form=form %}
+      <input type="submit" value="Add" class="btn btn-primary">
+    </form>
+  </p>
 </td>
