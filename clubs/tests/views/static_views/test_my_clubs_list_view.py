@@ -222,6 +222,7 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
 
     def _create_test_clubs_and_make_member_default_user(self, club_count=10):
         for club_id in range(club_count):
+
             Membership.objects.create(
                 club = Club.objects.create(
                     name = f'NEW_CLUB{club_id}',

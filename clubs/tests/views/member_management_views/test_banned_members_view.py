@@ -64,53 +64,57 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         self.assertTemplateUsed(response, 'banned_member_list.html')
 
     def test_get_my_clubs_list_with_pagination(self):
-        self.client.login(email=self.user.email, password="Password123")
+        self.client.login(email=self.user_club_owner.email, password="Password123")
         self._create_test_clubs_and_ban_default_user(settings.CLUBS_PER_PAGE*2+3)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assertTemplateUsed(response, 'banned_member_list.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['banned_members']), settings.CLUBS_PER_PAGE)
         banned_members_page = response.context['banned_members']
         self.assertFalse(banned_members_page.has_previous())
         self.assertTrue(banned_members_page.has_next())
-        page_one_url = reverse('my_clubs_list') + '?page=1'
+        page_one_url = reverse('banned_members', kwargs = {'club_id': self.club.id}) + '?page=1'
         response = self.client.get(page_one_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assertTemplateUsed(response, 'banned_member_list.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['banned_members']), settings.CLUBS_PER_PAGE)
         banned_members_page = response.context['banned_members']
         self.assertFalse(banned_members_page.has_previous())
         self.assertTrue(banned_members_page.has_next())
-        page_two_url = reverse('my_clubs_list') + '?page=2'
+        page_two_url = reverse('banned_members', kwargs = {'club_id': self.club.id}) + '?page=2'
         response = self.client.get(page_two_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assertTemplateUsed(response, 'banned_member_list.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['banned_members']), settings.CLUBS_PER_PAGE)
         banned_members_page = response.context['banned_members']
         self.assertTrue(banned_members_page.has_previous())
         self.assertTrue(banned_members_page.has_next())
-        page_three_url = reverse('my_clubs_list') + '?page=3'
+        page_three_url = reverse('banned_members', kwargs = {'club_id': self.club.id}) + '?page=3'
         response = self.client.get(page_three_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assertTemplateUsed(response, 'banned_member_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['banned_members']), 3)
+        self.assertEqual(len(response.context['banned_members']), 3 + 1)# plus one becase we have already banned a member
         banned_members_page = response.context['banned_members']
         self.assertTrue(banned_members_page.has_previous())
         self.assertFalse(banned_members_page.has_next())
 
     def _create_test_clubs_and_ban_default_user(self, banned_members_count = 10):
-        for member in range(banned_members_count):
+        for future_banned_member in range(banned_members_count):
             
-            User.objects.create(
-                
+            user = User.objects.create(
+                username = f'USERNAME{future_banned_member}',
+                last_name = f'LASTNAME{future_banned_member}',
+                first_name = f'FIRSTNAME{future_banned_member}',
+                email = f'EMAIL{future_banned_member}@gmail.com',
+                bio = f'BIO{future_banned_member}',
+                experience = 1
             )
 
             Ban.objects.create(
-
-                user = self.user,
-                personal_statement = f'PERSONAL STATEMENT FOR CLUB {club_id}'
+                club = self.club,
+                user = user
             )
