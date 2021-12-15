@@ -3,7 +3,7 @@
 | {{tournament.name}}
 {% endblock %}
 {% block content %}
-{% include 'partials/js_confirm_messages.html'%}
+
 {% load static %}
 {% load define_action %}
 {% check_is_lead_organiser current_user tournament as is_lead_organiser %}
