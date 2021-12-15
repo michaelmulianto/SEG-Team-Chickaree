@@ -74,13 +74,13 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
         self.assertEqual(self.match.collection.tournament.get_current_round(), curr_round)
 
         # Response tests
-        response_url = reverse('show_clubs')
+        response_url = reverse('show_tournament', kwargs={'tournament_id': self.tournament.id})
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'club/show_clubs.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
 
     def test_successful_add_result_completes_round(self):
         self.client.login(email=self.user.email, password="Password123")
@@ -101,13 +101,13 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
         self.assertNotEqual(self.match.collection.tournament.get_current_round(), curr_round)
 
         # Response tests
-        response_url = reverse('show_clubs')
+        response_url = reverse('show_tournament', kwargs={'tournament_id': self.tournament.id})
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'club/show_clubs.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
 
     def test_non_organiser_attempts_to_add_result(self):
         self.client.login(email=self.participant_user.email, password='Password123')
@@ -117,13 +117,13 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
         self.assertEqual(self.match.result, 0)
 
         # Response tests
-        response_url = reverse('show_clubs')
+        response_url = reverse('show_tournament', kwargs={'tournament_id': self.tournament.id})
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'club/show_clubs.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
 
     def test_non_member_add_result(self):
         self.client.login(email=self.user.email, password="Password123")
@@ -134,13 +134,13 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
         self.assertEqual(Match.objects.get(id=self.match.id).result, 0)
 
         # Response tests
-        response_url = reverse('show_clubs')
+        response_url = reverse('show_club', kwargs={'club_id': self.club.id})
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'club/show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_club.html')
 
     def test_add_result_when_result_already_set(self):
         self.client.login(email=self.user.email, password="Password123")
@@ -152,10 +152,10 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
         self.assertEqual(Match.objects.get(id=self.match.id).result, 2)
 
         # Response tests
-        response_url = reverse('show_clubs')
+        response_url = reverse('show_tournament', kwargs={'tournament_id': self.tournament.id})
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'club/show_clubs.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')

@@ -37,6 +37,7 @@ def begin_tournament(request, tournament_id):
 
     return redirect('show_tournament', tournament_id= tournament_id)
 
+
 class AddResultView(UpdateView):
     """Edit the result of a match, if result not already set."""
 
@@ -48,25 +49,29 @@ class AddResultView(UpdateView):
     @method_decorator(login_required)
     def dispatch(self, request, match_id):
         match = self.get_object()
-        if match.result != 0:
-            messages.add_message(self.request, messages.ERROR, "The match has already had the result registered!")
-            return redirect('show_clubs')
-
-        # We must verify permissions...
         t = match.collection.tournament
 
+        # We must verify permissions...
         if not is_user_member_of_club(request.user, t.club):
             messages.add_message(self.request, messages.ERROR, "The tournament is for members only!")
-            return redirect('show_clubs')
+            return redirect('show_club', club_id=t.club.id)
 
         if not is_user_organiser_of_tournament(self.request.user, t):
             messages.add_message(self.request, messages.ERROR, "Only organisers can set match results!")
-            return redirect('show_clubs')
+            return redirect('show_tournament', tournament_id=t.id)
+
+        if match.result != 0:
+            messages.add_message(self.request, messages.ERROR, "The match has already had the result registered!")
+            return redirect('show_tournament', tournament_id=t.id)
 
         return super().dispatch(request)
 
     def get_form(self):
         my_form = super().get_form()
+        match = self.get_object()
+        my_form.fields["result"].choices[0] = (1, f'White Victory - {match.white_player.member.user.username}')
+        my_form.fields["result"].choices[1] = (2, f'Black Victory - {match.black_player.member.user.username}')
+
         # Here we check if the match is linked to a knockout stage.
         try:
             self.get_object().collection.tournamentstagebase.knockoutstage
@@ -95,8 +100,10 @@ class AddResultView(UpdateView):
 
     def get_success_url(self):
         """Return redirect URL after successful update."""
+        match = self.get_object()
+        tournament = match.collection.tournament
         messages.add_message(self.request, messages.SUCCESS, "Result Registered!")
-        return reverse('show_clubs')
+        return reverse('show_tournament', kwargs={'tournament_id': tournament.id})
 
 
 @login_required
