@@ -258,7 +258,6 @@ class TournamentModelTestCase(TestCase):
         self.assertEqual(self.tournament.capacity, 48)
         self.assertEqual(Participant.objects.filter(tournament=self.tournament).count(), 48)
         
-        self.assertEqual(groups.count(), 16)
         self.assertIsInstance(next_round, GroupStage)
         groups = SingleGroup.objects.filter(group_stage=next_round)
         self.assertEqual(groups.count(), 8)

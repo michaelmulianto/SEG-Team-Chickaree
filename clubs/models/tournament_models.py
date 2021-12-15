@@ -126,11 +126,16 @@ class Tournament(models.Model):
         cap_index = self.capacities.index(potential_capacity)
         while participants.count() < potential_capacity:
             cap_index -= 1
+            if cap_index == -1:
+                return participants
             potential_capacity = self.capacities[cap_index]
             
-        excess_participant_count = potential_capacity - participants.count()
-        ordered_participants = participants.order_by('-joined_on')
-        ordered_participants[:excess_participant_count].delete()
+        excess_participant_count = participants.count() - potential_capacity
+        ordered_participants = participants.order_by('-joined')
+        excess_participants = ordered_participants[:excess_participant_count]
+        
+        for p in excess_participants:
+            p.delete()
         
         self.capacity = potential_capacity
         return Participant.objects.filter(tournament=self)
