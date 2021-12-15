@@ -9,6 +9,7 @@ passing in many variables in the view.
 
 from django import template
 from clubs.models import Application, Membership, Participant, Organiser
+
 register = template.Library()
 
 # BASIC tags
@@ -16,6 +17,31 @@ register = template.Library()
 @register.simple_tag
 def boolean_or(a, b):
     return a or b
+
+@register.simple_tag
+def append_to_queryset(qset_a, b):
+    """
+    Method to append an instance of an objects to a queryset.
+    Allows for object to be appended to an empty queryset
+    """
+    list = []
+    for x in qset_a:
+        list.append(x)
+    list.append(b)
+    return list
+
+@register.simple_tag
+def remove_from_queryset(qset_a, qset_b):
+    """
+    Method to remove matching
+    """
+    list = []
+    for x in qset_a:
+        list.append(x)
+    for y in qset_b:
+        if y in list:
+            list.remove(y)
+    return list
 
 
 # CLUB tags
