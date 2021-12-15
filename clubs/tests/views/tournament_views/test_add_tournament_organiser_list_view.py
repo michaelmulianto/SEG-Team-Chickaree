@@ -18,20 +18,20 @@ class AddTournamentOrganiserListViewTestCase(TestCase, MenuTesterMixin):
     def setUp(self):
         self.lead_organiser_user = User.objects.get(username='johndoe')
         self.standard_organiser_user = User.objects.get(username='richarddoe')
-        self.officer_organiser_candidate_user = User.objects.get(username='jamie')
+        self.officer_organiser_candidate_user = User.objects.get(username='jamiedoe')
         self.non_member_user = User.objects.get(username='janedoe')
 
         self.club = Club.objects.get(name='King\'s Knights')
 
         self.lead_organiser_member = Membership.objects.create(
             club = self.club,
-            user = self.owner_user,
+            user = self.lead_organiser_user,
             is_owner = True,
         )
 
         self.standard_organiser_member = Membership.objects.create(
             club = self.club,
-            user = self.officer_user,
+            user = self.standard_organiser_user,
             is_officer = True,
         )
 
@@ -44,13 +44,13 @@ class AddTournamentOrganiserListViewTestCase(TestCase, MenuTesterMixin):
         self.tournament = Tournament.objects.get(name="Grand Championship")
 
         self.lead_organiser = Organiser.objects.create(
-            member = self.owner_member,
+            member = self.lead_organiser_member,
             tournament = self.tournament,
             is_lead_organiser = True
         )
 
         self.standard_organiser = Organiser.objects.create(
-            member = self.officer_member,
+            member = self.standard_organiser_member,
             tournament = self.tournament,
         )
 
@@ -58,7 +58,7 @@ class AddTournamentOrganiserListViewTestCase(TestCase, MenuTesterMixin):
 
 
     def test_get_add_tournament_organiser_list_url(self):
-        self.assertEqual(self.url, f'/tournament/{self.tournament.id}/add_tournament_organiser_list')
+        self.assertEqual(self.url, f'/tournament/{self.tournament.id}/add_organiser/')
 
     def test_get_add_tournament_organiser_list_redirects_when_not_logged_in(self):
         response = self.client.get(self.url)
@@ -81,7 +81,7 @@ class AddTournamentOrganiserListViewTestCase(TestCase, MenuTesterMixin):
     def test_get_add_tournament_organiser_list_redirects_not_lead_organiser(self):
         self.client.login(email=self.standard_organiser_user.email, password="Password123")
         response = self.client.get(self.url)
-        redirect_url = reverse("show_club", kwargs={'club_id': self.club.id})
+        redirect_url = reverse("show_tournament", kwargs={'tournament_id': self.tournament.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_get_add_tournament_organiser_list_with_valid_id(self):
