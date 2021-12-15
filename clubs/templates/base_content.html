@@ -1,6 +1,6 @@
 {% extends "base.html"%}
 {% block body %}
-  {% include 'partials/navbar.html' with my_clubs=my_clubs%}
+  {% include 'partials/navbar.html' with current_user=current_user%}
   {% include 'partials/messages.html' %}
   {% block content %}
   {% endblock %}

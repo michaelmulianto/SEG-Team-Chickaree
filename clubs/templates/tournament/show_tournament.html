@@ -1,0 +1,78 @@
+{% extends 'base_content.html'%}
+{% block title %}
+| {{tournament.name}}
+{% endblock %}
+{% block content %}
+{% include 'partials/js_confirm_messages.html'%}
+{% load static %}
+{% load define_action %}
+{% check_is_lead_organiser current_user tournament as is_lead_organiser %}
+{% check_is_organiser current_user tournament as is_organiser %}
+
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        {%csrf_token%}
+        <h1 style=font-size:50px><b>{{ tournament.name }}</b></h1>
+        <br>
+        <p>A tournament by {{ tournament.club.name }}. </p>
+        <p>{{ tournament.description }} </p>
+        <p><i class="bi bi-people-fill"></i> {{ tournament.capacity }} participants<p>
+        <br>
+        <h3><b>Organisers</b></h3>
+        <style>
+          .standard-chess-table{
+            vertical-align: middle;
+            border-spacing: 10px 2px;
+          }
+        </style>
+        <table id="owner" class="table standard-chess-table">
+          <tr>
+            {% include 'user_list_partials/table_header_basics.html' with include_counter=True %}
+            {% include 'user_list_partials/table_header_extras.html' with show_email=True %}
+          </tr>
+          {% for organiser in tournament.get_organisers %}
+          <tr>
+            {% include 'user_list_partials/table_row_basics.html' with user=organiser.member.user include_counter=True %}
+            {% include 'user_list_partials/table_row_extras.html' with user=organiser.member.user show_email=True %}
+          </tr>
+          {% endfor %}
+        </table>
+        <table id="buttons">
+          <tr>
+            <style>
+            .button-cell-spacing{
+              padding: 20px;
+            }
+            </style>
+            <td class="button-cell-spacing"><a href='{% url "show_tournament_participants" tournament.id %}' class="btn btn-primary"><i class="bi bi-people-fill"></i> Participant List </a></td>
+            {% if is_lead_organiser %}
+            <td class="button-cell-spacing"><a href='{% url "add_tournament_organiser_list" tournament.id %}' class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Add Co-Organisers </a></td>
+            {% endif %}
+          </tr>
+        </table>
+        <br>
+        <br>
+        <br>
+        {% if tournament_knockout_stages %}
+        <h3><b>Knockout Stage</b></h3>
+        <br>
+        {% endif %}
+        {% for knockout_stage in tournament_knockout_stages %}
+          {% include 'tournament_partials/results_and_fixtures/knockout_stage.html' %}
+        <br>
+        {% endfor %}
+        {% for group_stage in tournament_group_stages %}
+          {% include 'tournament_partials/results_and_fixtures/group_stage.html' %}
+        <br>
+        {% endfor %}
+        <a href='{% url 'show_club' tournament.club.id %}' class="btn btn-info">
+          <i class="bi bi-reply-fill"></i> Back to club
+        </a>
+        <br>
+        <br>
+        <br>
+      </div>
+    </div>
+  </div>
+{% endblock %}

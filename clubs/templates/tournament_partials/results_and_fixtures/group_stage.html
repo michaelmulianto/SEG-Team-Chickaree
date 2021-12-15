@@ -1,0 +1,5 @@
+<h3><b>Group Stage {{ group_stage.round_num }}</b></h3>
+<br>
+{% for single_group in group_stage.get_single_groups %}
+  {% include 'tournament_partials/results_and_fixtures/results_table.html' %}
+{% endfor %}

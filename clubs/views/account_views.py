@@ -3,7 +3,6 @@
 from django.views import View
 from django.views.generic.edit import FormView, UpdateView
 
-from .helpers import get_clubs_of_user
 from .decorators import login_prohibited
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -21,13 +20,13 @@ from django.shortcuts import render
 @login_required
 def account(request):
     """Render a page displaying the attributes of the currently logged in user."""
-    return render(request, 'account.html', {'user': request.user, 'my_clubs':get_clubs_of_user(request.user)})
+    return render(request, 'account/account.html', { 'current_user': request.user })
 
 
 class SignUpView(FormView):
     """Create a new user account."""
     form_class = SignUpForm
-    template_name = "sign_up.html"
+    template_name = "account/sign_up.html"
 
     @method_decorator(login_prohibited)
     def dispatch(self, request):
@@ -46,12 +45,17 @@ class EditAccountView(UpdateView):
     """Edit the details of the currently logged in user."""
 
     model = User
-    template_name = "edit_account.html"
+    template_name = "account/edit_account.html"
     form_class = EditAccountForm
 
     @method_decorator(login_required)
     def dispatch(self, request):
         return super().dispatch(request)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_user'] = self.request.user
+        return context
 
     def get_object(self):
         """Return the object (user) to be updated."""
@@ -67,12 +71,17 @@ class EditAccountView(UpdateView):
 class ChangePasswordView(FormView):
     """Allow currently logged in user to change their password."""
 
-    template_name = 'change_password.html'
+    template_name = 'account/change_password.html'
     form_class = PasswordChangeForm
 
     @method_decorator(login_required)
     def dispatch(self, request):
         return super().dispatch(request)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_user'] = self.request.user
+        return context
 
     def get_form_kwargs(self, **kwargs):
         """Pass the current user to the password change form."""

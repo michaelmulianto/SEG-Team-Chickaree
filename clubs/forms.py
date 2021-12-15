@@ -5,12 +5,12 @@ purpose like loggin in a user with the correct username and password.
 """
 
 from django import forms
-from clubs.models import User, Club, Application, Tournament
+from clubs.models import User, Club, Application, Tournament, Match
 from django.core.validators import RegexValidator
 
 class LogInForm(forms.Form):
     """Form to grant access to a returning user's personalised content"""
-    email = forms.CharField(label='email')
+    email = forms.CharField(label='Email')
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
 
 
@@ -130,3 +130,10 @@ class OrganiseTournamentForm(forms.ModelForm):
             end = self.cleaned_data.get('end')
         )
         return tournament
+
+class AddResultForm(forms.ModelForm):
+    class Meta:
+        model = Match
+        fields = ['result']
+        
+    result = forms.ChoiceField(choices=Match.Result.choices[1:])

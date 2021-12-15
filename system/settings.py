@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-2@dv!r%*_^tovdo*cf0=9hxgl=xq=eer%8am&f)5ah8sz(q&^9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.localhost']
 
 
 # Application definition
@@ -146,3 +146,7 @@ REDIRECT_URL_WHEN_LOGGED_IN = 'show_clubs'
 
 #Page lengths
 CLUBS_PER_PAGE = 10
+MEMBERSHIPS_PER_PAGE = 15
+APPLICATIONS_PER_PAGE = 15
+BANNED_MEMBERS_PER_PAGE = 15
+
