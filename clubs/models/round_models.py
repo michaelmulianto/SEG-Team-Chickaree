@@ -132,8 +132,6 @@ class SingleGroup(RoundOfMatches, StageMethodInterface):
             raise ValidationError("The incorrect number of matches are linked to this group.")
 
     def get_standings(self):
-        if not self.get_is_complete():
-            return None
 
         matches = self.get_matches()
         players = set(self.get_player_occurrences())
@@ -148,7 +146,7 @@ class SingleGroup(RoundOfMatches, StageMethodInterface):
                 scores[match.white_player.id] += 1
             elif match.result == 2:
                 scores[match.black_player.id] += 1
-            else:
+            elif match.result == 3:
                 scores[match.white_player.id] += 0.5
                 scores[match.black_player.id] += 0.5
 
