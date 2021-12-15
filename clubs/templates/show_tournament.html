@@ -37,9 +37,19 @@
           </tr>
           {% endfor %}
         </table>
-        <br>
-        <a style="float: left;" href='{% url "show_tournament_participants" tournament.id %}' class="btn btn-primary"><i class="bi bi-people-fill"></i> Participant List</a>
-        <a style="float: right;" href='{% url "show_tournament" tournament.id %}' class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Add Co-Organiser</a>
+        <table id="buttons">
+          <tr>
+            <style>
+            .button-cell-spacing{
+              padding: 20px;
+            }
+            </style>
+            <td class="button-cell-spacing"><a href='{% url "show_tournament_participants" tournament.id %}' class="btn btn-primary"><i class="bi bi-people-fill"></i> Participant List </a></td>
+            {% if is_lead_organiser %}
+            <td class="button-cell-spacing"><a href='{% url "add_tournament_organiser_list" tournament.id %}' class="btn btn-primary"><i class="bi bi-person-plus-fill"></i> Add Co-Organisers </a></td>
+            {% endif %}
+          </tr>
+        </table>
         <br>
         <br>
         <br>
@@ -56,6 +66,7 @@
         <a href='{% url 'show_club' tournament.club.id %}' class="btn btn-info">
           <i class="bi bi-reply-fill"></i> Back to club
         </a>
+        <br>
         <br>
         <br>
       </div>

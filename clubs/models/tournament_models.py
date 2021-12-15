@@ -45,6 +45,12 @@ class Tournament(models.Model):
     def get_organisers(self):
         return Organiser.objects.filter(tournament=self)
 
+    def get_organisers_as_members(self):
+        organiser_members = []
+        for org in Organiser.objects.filter(tournament=self):
+            organiser_members.append(org.member)
+        return organiser_members
+
     def get_is_complete(self):
         r = self.get_current_round()
         if r != None:
