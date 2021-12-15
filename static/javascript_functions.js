@@ -10,6 +10,7 @@ function displayTournaments(new_active_keyword) {
   document.getElementById(tabs_dic[new_active_keyword]).classList.add('active');
   document.getElementById(tables_dic[new_active_keyword]).style.display = "table";
 }
+<<<<<<< HEAD
 
 var msgDic = {
   "kick": "Are you sure you want to kick this user from the club?",
@@ -33,3 +34,5 @@ function confirmMsg(msgType){
     event.stopPropagation(); event.preventDefault();
   }
 }
+=======
+>>>>>>> 1dee8cbc1b92e054599e6a13f7c6e6d4a69e279d
