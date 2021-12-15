@@ -42,7 +42,7 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
 
         self.url = reverse('add_result', kwargs={'match_id': self.match.id})
 
-    def test_organise_url(self):
+    def test_add_result_url(self):
         self.assertEqual(self.url, f'/match/{self.match.id}/add_result/')
 
     def test_get_add_result_loads_empty_form(self):
@@ -80,6 +80,41 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
 
         self.assertEqual(self.match.result, 0)
         
+        # Response tests
+        response_url = reverse('show_clubs')
+        self.assertRedirects(
+            response, response_url,
+            status_code=302, target_status_code=200,
+            fetch_redirect_response=True
+        )
+        self.assertTemplateUsed(response, 'show_clubs.html')
+        
+    def test_non_member_add_result(self):
+        self.client.login(email=self.user.email, password="Password123")
+        self.membership.delete()
+        
+        response = self.client.post(self.url, self.data, follow=True)
+
+        self.assertEqual(Match.objects.get(id=self.match.id).result, 0)
+
+        # Response tests
+        response_url = reverse('show_clubs')
+        self.assertRedirects(
+            response, response_url,
+            status_code=302, target_status_code=200,
+            fetch_redirect_response=True
+        )
+        self.assertTemplateUsed(response, 'show_clubs.html')
+        
+    def test_add_result_when_result_already_set(self):
+        self.client.login(email=self.user.email, password="Password123")
+        self.match.result = 2
+        self.match.save()
+        
+        response = self.client.post(self.url, self.data, follow=True)
+
+        self.assertEqual(Match.objects.get(id=self.match.id).result, 2)
+
         # Response tests
         response_url = reverse('show_clubs')
         self.assertRedirects(

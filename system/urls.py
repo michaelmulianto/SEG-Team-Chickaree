@@ -64,6 +64,7 @@ urlpatterns = [
     path('member/<int:member_id>/ban/', views.ban_member, name='ban_member'),
 
     path('tournament/<int:tournament_id>/', views.show_tournament, name='show_tournament'),
+    path('tournament/<int:tournament_id>/begin/', views.begin_tournament, name='begin_tournament'),
     path('tournament/<int:tournament_id>/participants', views.show_tournament_participants, name='show_tournament_participants'),
     path('tournament/<int:tournament_id>/withdraw/', views.withdraw_participation_from_tournament, name='withdraw_from_tournament'),
     path('tournament/<int:tournament_id>/add_organiser/', views.add_tournament_organiser_list, name='add_tournament_organiser_list'),

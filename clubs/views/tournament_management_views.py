@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from .decorators import match_exists, tournament_exists
-from .helpers import is_lead_organiser_of_tournament, is_user_organiser_of_tournament, is_participant_in_tournament, is_user_owner_of_club, is_user_officer_of_club
+from .helpers import is_lead_organiser_of_tournament, is_user_organiser_of_tournament, is_participant_in_tournament, is_user_owner_of_club, is_user_officer_of_club, is_user_member_of_club
 
 from django.contrib import messages
 from django.contrib.auth import login
@@ -14,10 +14,31 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 
 from clubs.forms import AddResultForm
-from clubs.models import Match, Organiser, Membership, Tournament
+from clubs.models import Match, Tournament, Membership, Organiser
+
+@login_required
+@tournament_exists
+def begin_tournament(request, tournament_id):
+    """View to begin a tournament."""
+    tournament = Tournament.objects.get(id=tournament_id)
+    if not is_user_member_of_club(request.user, tournament.club):
+        messages.add_message(request, messages.ERROR, "The tournament is for members only!")
+        return redirect('show_clubs')
+        
+    elif not is_user_organiser_of_tournament(request.user, tournament):
+        messages.add_message(request, messages.ERROR, "Only organisers can begin the tournament!")
+        
+    elif tournament.get_current_round() != None:
+        messages.add_message(request, messages.ERROR, "The tournament has already begun!")
+        
+    else:
+        tournament.generate_next_round()
+        messages.add_message(request, messages.SUCCESS, "Tournament begun!")
+        
+    return redirect('show_tournament', tournament_id= tournament_id)
 
 class AddResultView(UpdateView):
-    """Edit the details of the currently logged in user."""
+    """Edit the result of a match, if result not already set."""
 
     model = Match
     template_name = "temporary_add_result.html"
@@ -34,13 +55,11 @@ class AddResultView(UpdateView):
         # We must verify permissions...
         t = match.collection.tournament
 
-        if not Membership.objects.filter(club=t.club,user=request.user).exists():
+        if not is_user_member_of_club(request.user, t.club):
             messages.add_message(self.request, messages.ERROR, "The tournament is for members only!")
             return redirect('show_clubs')
-
-        member = Membership.objects.get(club=t.club,user=request.user)
-
-        if not Organiser.objects.filter(tournament=t, member=member).exists():
+            
+        if not is_user_organiser_of_tournament(self.request.user, t):
             messages.add_message(self.request, messages.ERROR, "Only organisers can set match results!")
             return redirect('show_clubs')
 
