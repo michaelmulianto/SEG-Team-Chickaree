@@ -19,20 +19,22 @@ from clubs.models import Match, Tournament, Membership
 @login_required
 @tournament_exists
 def begin_tournament(request, tournament_id):
-    """View to """
+    """View to begin a tournament."""
     tournament = Tournament.objects.get(id=tournament_id)
-    
     if not is_user_member_of_club(request.user, tournament.club):
-        messages.add_message(self.request, messages.ERROR, "The tournament is for members only!")
-    elif not is_user_organiser_of_tournament(self.request.user, tournament):
-        messages.add_message(self.request, messages.ERROR, "Only organisers can begin the tournament!")
-    elif tournament.get_current_round != None:
-        messages.add_message(self.request, messages.ERROR, "The tournament has already begun!")
+        messages.add_message(request, messages.ERROR, "The tournament is for members only!")
+        
+    elif not is_user_organiser_of_tournament(request.user, tournament):
+        messages.add_message(request, messages.ERROR, "Only organisers can begin the tournament!")
+        
+    elif tournament.get_current_round() != None:
+        messages.add_message(request, messages.ERROR, "The tournament has already begun!")
+        
     else:
         tournament.generate_next_round()
-        messages.add_message(self.request, messages.SUCCESS, "Tournament begun!")
+        messages.add_message(request, messages.SUCCESS, "Tournament begun!")
         
-    return redirect('show_tournament', kwargs={'tournament_id': tournament_id})
+    return redirect('show_tournament', tournament_id= tournament_id)
 
 class AddResultView(UpdateView):
     """Edit the result of a match, if result not already set."""

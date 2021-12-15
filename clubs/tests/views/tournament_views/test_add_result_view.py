@@ -42,7 +42,7 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
 
         self.url = reverse('add_result', kwargs={'match_id': self.match.id})
 
-    def test_organise_url(self):
+    def test_add_result_url(self):
         self.assertEqual(self.url, f'/match/{self.match.id}/add_result/')
 
     def test_get_add_result_loads_empty_form(self):
@@ -109,6 +109,7 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
     def test_add_result_when_result_already_set(self):
         self.client.login(email=self.user.email, password="Password123")
         self.match.result = 2
+        self.match.save()
         
         response = self.client.post(self.url, self.data, follow=True)
 
