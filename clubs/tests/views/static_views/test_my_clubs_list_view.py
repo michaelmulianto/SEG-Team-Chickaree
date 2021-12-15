@@ -31,12 +31,12 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         current_user = response.context['current_user']
-        # note: page_obj holds the clubs on the list
-        page_obj = response.context['page_obj']
-        for club in page_obj:
+        # note: my_clubs_list holds the clubs on the list
+        my_clubs_list = response.context['my_clubs']
+        for club in my_clubs_list:
             self.assertTrue(isinstance(club, List))
         self.assertEqual(self.user, current_user)
-        self.assertTrue(isinstance(page_obj, Page))
+        self.assertTrue(isinstance(my_clubs_list, Page))
         self.assert_menu(response)
 
     def test_get_my_clubs_redirects_when_not_logged_in(self):
@@ -61,8 +61,8 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
         self.assert_menu(response)
-        page_obj = response.context['page_obj']
-        self.assertEqual(len(page_obj), 0)
+        my_clubs_page = response.context['my_clubs']
+        self.assertEqual(len(my_clubs_page), 0)
 
         Application.objects.create(
             club = self.club,
@@ -74,8 +74,8 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
         self.assert_menu(response)
-        page_obj = response.context['page_obj']
-        self.assertEqual(len(page_obj), 1)
+        my_clubs_page = response.context['my_clubs']
+        self.assertEqual(len(my_clubs_page), 1)
 
     def test_club_user_has_not_applied_not_on_list(self):
         self.client.login(email=self.user.email, password='Password123')
@@ -83,8 +83,8 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
         self.assert_menu(response)
-        page_obj = response.context['page_obj']
-        self.assertEqual(len(page_obj), 0)
+        my_clubs_page = response.context['my_clubs']
+        self.assertEqual(len(my_clubs_page), 0)
 
     def test_make_new_application_makes_it_onto_the_list(self):
         self.client.login(email=self.user.email, password='Password123')
@@ -92,16 +92,16 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
         self.assert_menu(response)
-        page_obj = response.context['page_obj']
-        self.assertEqual(len(page_obj), 0)
+        my_clubs_page = response.context['my_clubs']
+        self.assertEqual(len(my_clubs_page), 0)
 
         self._make_new_membership(self.club, self.user)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
         self.assert_menu(response)
-        page_obj = response.context['page_obj']
-        self.assertEqual(len(page_obj), 1)
+        my_clubs_page = response.context['my_clubs']
+        self.assertEqual(len(my_clubs_page), 1)
 
     def test_withdraw_application_makes_club_not_on_list(self):
         self.client.login(email=self.user.email, password='Password123')
@@ -109,64 +109,114 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
         self.assert_menu(response)
-        page_obj = response.context['page_obj']
-        self.assertEqual(len(page_obj), 0)
+        my_clubs_page = response.context['my_clubs']
+        self.assertEqual(len(my_clubs_page), 0)
 
         self._make_new_membership(self.club, self.user)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
         self.assert_menu(response)
-        page_obj = response.context['page_obj']
-        self.assertEqual(len(page_obj), 1)
+        my_clubs_page = response.context['my_clubs']
+        self.assertEqual(len(my_clubs_page), 1)
 
         Membership.objects.all().delete()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
         self.assert_menu(response)
-        page_obj = response.context['page_obj']
-        self.assertEqual(len(page_obj), 0)
+        my_clubs_page = response.context['my_clubs']
+        self.assertEqual(len(my_clubs_page), 0)
 
-    def test_get_my_clubs_list_with_pagination(self):
+    def test_get_my_clubs_list_for_applications_with_pagination(self):
         self.client.login(email=self.user.email, password="Password123")
         self._create_test_clubs_and_apply_default_user(settings.CLUBS_PER_PAGE*2+3)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['page_obj']), settings.CLUBS_PER_PAGE)
-        page_obj = response.context['page_obj']
-        self.assertFalse(page_obj.has_previous())
-        self.assertTrue(page_obj.has_next())
+        self.assertEqual(len(response.context['my_clubs']), settings.CLUBS_PER_PAGE)
+        my_clubs_page = response.context['my_clubs']
+        self.assertFalse(my_clubs_page.has_previous())
+        self.assertTrue(my_clubs_page.has_next())
         page_one_url = reverse('my_clubs_list') + '?page=1'
         response = self.client.get(page_one_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['page_obj']), settings.CLUBS_PER_PAGE)
-        page_obj = response.context['page_obj']
-        self.assertFalse(page_obj.has_previous())
-        self.assertTrue(page_obj.has_next())
+        self.assertEqual(len(response.context['my_clubs']), settings.CLUBS_PER_PAGE)
+        my_clubs_page = response.context['my_clubs']
+        self.assertFalse(my_clubs_page.has_previous())
+        self.assertTrue(my_clubs_page.has_next())
         page_two_url = reverse('my_clubs_list') + '?page=2'
         response = self.client.get(page_two_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['page_obj']), settings.CLUBS_PER_PAGE)
-        page_obj = response.context['page_obj']
-        self.assertTrue(page_obj.has_previous())
-        self.assertTrue(page_obj.has_next())
+        self.assertEqual(len(response.context['my_clubs']), settings.CLUBS_PER_PAGE)
+        my_clubs_page = response.context['my_clubs']
+        self.assertTrue(my_clubs_page.has_previous())
+        self.assertTrue(my_clubs_page.has_next())
         page_three_url = reverse('my_clubs_list') + '?page=3'
         response = self.client.get(page_three_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'my_clubs_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['page_obj']), 3)
-        page_obj = response.context['page_obj']
-        self.assertTrue(page_obj.has_previous())
-        self.assertFalse(page_obj.has_next())
+        self.assertEqual(len(response.context['my_clubs']), 3)
+        my_clubs_page = response.context['my_clubs']
+        self.assertTrue(my_clubs_page.has_previous())
+        self.assertFalse(my_clubs_page.has_next())
 
+    def test_get_my_clubs_list_for_memberships_with_pagination(self):
+        self.client.login(email=self.user.email, password="Password123")
+        self._create_test_clubs_and_make_member_default_user(settings.CLUBS_PER_PAGE*2+3)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['my_clubs']), settings.CLUBS_PER_PAGE)
+        my_clubs_page = response.context['my_clubs']
+        self.assertFalse(my_clubs_page.has_previous())
+        self.assertTrue(my_clubs_page.has_next())
+        page_one_url = reverse('my_clubs_list') + '?page=1'
+        response = self.client.get(page_one_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['my_clubs']), settings.CLUBS_PER_PAGE)
+        my_clubs_page = response.context['my_clubs']
+        self.assertFalse(my_clubs_page.has_previous())
+        self.assertTrue(my_clubs_page.has_next())
+        page_two_url = reverse('my_clubs_list') + '?page=2'
+        response = self.client.get(page_two_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['my_clubs']), settings.CLUBS_PER_PAGE)
+        my_clubs_page = response.context['my_clubs']
+        self.assertTrue(my_clubs_page.has_previous())
+        self.assertTrue(my_clubs_page.has_next())
+        page_three_url = reverse('my_clubs_list') + '?page=3'
+        response = self.client.get(page_three_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['my_clubs']), 3)
+        my_clubs_page = response.context['my_clubs']
+        self.assertTrue(my_clubs_page.has_previous())
+        self.assertFalse(my_clubs_page.has_next())
+
+    def test_show_my_clubs_list_with_pagination_does_not_contain_page_traversers_if_not_enough_clubs(self):
+        self.client.login(email=self.user.email, password="Password123")
+        self._create_test_clubs_and_apply_default_user(settings.CLUBS_PER_PAGE-1)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
+        my_clubs_page = response.context['my_clubs']
+        self.assertFalse(my_clubs_page.has_previous())
+        self.assertFalse(my_clubs_page.has_next())
+        self.assertFalse(my_clubs_page.has_other_pages())
 
     def _create_test_clubs_and_apply_default_user(self, club_count=10):
         for club_id in range(club_count):
@@ -179,6 +229,18 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
                     ),
                 user = self.user,
                 personal_statement = f'PERSONAL STATEMENT FOR CLUB {club_id}'
+            )
+
+    def _create_test_clubs_and_make_member_default_user(self, club_count=10):
+        for club_id in range(club_count):
+
+            Membership.objects.create(
+                club = Club.objects.create(
+                    name = f'NEW_CLUB{club_id}',
+                    location = f'LOCATION {club_id}',
+                    description = f'DESCRIPTION {club_id}'
+                    ),
+                user = self.user,
             )
 
     #make a new membership for a user to a club

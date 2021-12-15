@@ -95,37 +95,49 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'show_clubs.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['page_obj']), settings.CLUBS_PER_PAGE)
-        page_obj = response.context['page_obj']
-        self.assertFalse(page_obj.has_previous())
-        self.assertTrue(page_obj.has_next())
+        self.assertEqual(len(response.context['clubs']), settings.CLUBS_PER_PAGE)
+        clubs_page = response.context['clubs']
+        self.assertFalse(clubs_page.has_previous())
+        self.assertTrue(clubs_page.has_next())
         page_one_url = reverse('show_clubs') + '?page=1'
         response = self.client.get(page_one_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'show_clubs.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['page_obj']), settings.CLUBS_PER_PAGE)
-        page_obj = response.context['page_obj']
-        self.assertFalse(page_obj.has_previous())
-        self.assertTrue(page_obj.has_next())
+        self.assertEqual(len(response.context['clubs']), settings.CLUBS_PER_PAGE)
+        clubs_page = response.context['clubs']
+        self.assertFalse(clubs_page.has_previous())
+        self.assertTrue(clubs_page.has_next())
         page_two_url = reverse('show_clubs') + '?page=2'
         response = self.client.get(page_two_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'show_clubs.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['page_obj']), settings.CLUBS_PER_PAGE)
-        page_obj = response.context['page_obj']
-        self.assertTrue(page_obj.has_previous())
-        self.assertTrue(page_obj.has_next())
+        self.assertEqual(len(response.context['clubs']), settings.CLUBS_PER_PAGE)
+        clubs_page = response.context['clubs']
+        self.assertTrue(clubs_page.has_previous())
+        self.assertTrue(clubs_page.has_next())
         page_three_url = reverse('show_clubs') + '?page=3'
         response = self.client.get(page_three_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'show_clubs.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['page_obj']), 3)
-        page_obj = response.context['page_obj']
-        self.assertTrue(page_obj.has_previous())
-        self.assertFalse(page_obj.has_next())
+        self.assertEqual(len(response.context['clubs']), 3)
+        clubs_page = response.context['clubs']
+        self.assertTrue(clubs_page.has_previous())
+        self.assertFalse(clubs_page.has_next())
+
+    def test_show_clubs_with_pagination_does_not_contain_page_traversers_if_not_enough_clubs(self):
+        self.client.login(email=self.user.email, password="Password123")
+        self._create_test_clubs(settings.CLUBS_PER_PAGE-2)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assert_menu(response)
+        clubs_page = response.context['clubs']
+        self.assertFalse(clubs_page.has_previous())
+        self.assertFalse(clubs_page.has_next())
+        self.assertFalse(clubs_page.has_other_pages())
 
     
     def _create_test_clubs(self, club_count=10):
