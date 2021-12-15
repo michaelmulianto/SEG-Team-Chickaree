@@ -48,6 +48,9 @@ class AddResultView(UpdateView):
 
     def get_form(self):
         my_form = super().get_form()
+        match = self.get_object()
+        my_form.fields["result"].choices[0] = (1, f'White Victory - {match.white_player.member.user.username}')
+        my_form.fields["result"].choices[1] = (2, f'Black Victory - {match.black_player.member.user.username}')
         try:
             self.get_object().collection.tournamentstagebase.knockoutstage
         except:
