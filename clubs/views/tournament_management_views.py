@@ -36,13 +36,13 @@ class AddResultView(UpdateView):
 
         if not Membership.objects.filter(club=t.club,user=request.user).exists():
             messages.add_message(self.request, messages.ERROR, "The tournament is for members only!")
-            return redirect('show_clubs')
+            return redirect('show_club', club_id=t.club.id)
 
         member = Membership.objects.get(club=t.club,user=request.user)
 
         if not Organiser.objects.filter(tournament=t, member=member).exists():
             messages.add_message(self.request, messages.ERROR, "Only organisers can set match results!")
-            return redirect('show_clubs')
+            return redirect('show_tournament', tournament_id=t.id)
 
         return super().dispatch(request)
 
@@ -68,8 +68,10 @@ class AddResultView(UpdateView):
 
     def get_success_url(self):
         """Return redirect URL after successful update."""
+        match = self.get_object()
+        tournament = match.collection.tournament
         messages.add_message(self.request, messages.SUCCESS, "Result Registered!")
-        return reverse('show_clubs')
+        return reverse('show_tournament', kwargs={'tournament_id': tournament.id})
 
 
 @login_required
