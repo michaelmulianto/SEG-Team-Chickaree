@@ -4,7 +4,8 @@ from django.views.generic.edit import UpdateView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from .decorators import match_exists
+from .decorators import match_exists, tournament_exists
+from .helpers import is_lead_organiser_of_tournament
 
 from django.contrib import messages
 from django.contrib.auth import login
@@ -13,7 +14,7 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 
 from clubs.forms import AddResultForm
-from clubs.models import Match, Organiser, Membership
+from clubs.models import Match, Organiser, Membership, Tournament
 
 class AddResultView(UpdateView):
     """Edit the details of the currently logged in user."""
@@ -78,12 +79,15 @@ def add_tournament_organiser_list(request, tournament_id):
     club = tournament.club
     if Membership.objects.filter(user=request.user, club=club).exists():
         member =  Membership.objects.get(user=request.user, club=club)
-        if Organiser.objects.get(member=member, tournament=tournament).is_lead_organiser: # Every tournament must have a lead organiser (and therefore an organiser)
-            return render(request, 'show_tournament_participants.html', {
+        if is_lead_organiser_of_tournament(request.user, tournament): # Every tournament must have a lead organiser (and therefore an organiser)
+            return render(request, 'add_tournament_organiser_list.html', {
                     'current_user': request.user,
                     'tournament': tournament
                 }
             )
+        else:
+            messages.error(request, "Only the lead organiser can access add organisers.")
     else:
         messages.error(request, "You are not a member of the club that organises this tournament, you can view the basic tournament details from the club's page.")
-    return redirect('show_club', club_id=club.id)
+        return redirect('show_club', club_id=club.id)
+    return redirect('show_tournament', tournament_id=tournament.id)
