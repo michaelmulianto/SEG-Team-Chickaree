@@ -35,7 +35,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.client.login(email=self.user.email, password='Password123')
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assert_menu(response)
 
     def _create_test_users(self, user_count=10):

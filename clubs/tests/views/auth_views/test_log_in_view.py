@@ -27,7 +27,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
     def test_get_log_in(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'log_in.html')
+        self.assertTemplateUsed(response, 'account/log_in.html')
         form = response.context['form']
         self.assertTrue(isinstance(form, LogInForm))
         self.assertFalse(form.is_bound)
@@ -40,7 +40,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         self.url = reverse_with_next('log_in', destination_url)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'log_in.html')
+        self.assertTemplateUsed(response, 'account/log_in.html')
         form = response.context['form']
         next = response.context['next']
         self.assertTrue(isinstance(form, LogInForm))
@@ -60,7 +60,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         self.form_input['email'] = ''
         response = self.client.post(self.url, self.form_input)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'log_in.html')
+        self.assertTemplateUsed(response, 'account/log_in.html')
         form = response.context['form']
         self.assertTrue(isinstance(form, LogInForm))
         self.assertFalse(form.is_bound)
@@ -73,7 +73,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         self.form_input['password'] = ''
         response = self.client.post(self.url, self.form_input)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'log_in.html')
+        self.assertTemplateUsed(response, 'account/log_in.html')
         form = response.context['form']
         self.assertTrue(isinstance(form, LogInForm))
         self.assertFalse(form.is_bound)
@@ -86,7 +86,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         self.form_input['password'] = 'WrongPassword123'
         response = self.client.post(self.url, self.form_input)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'log_in.html')
+        self.assertTemplateUsed(response, 'account/log_in.html')
         form = response.context['form']
         self.assertTrue(isinstance(form, LogInForm))
         self.assertFalse(form.is_bound)
@@ -134,7 +134,7 @@ class LogInViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         self.user.save()
         response = self.client.post(self.url, self.form_input, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'log_in.html')
+        self.assertTemplateUsed(response, 'account/log_in.html')
         form = response.context['form']
         self.assertTrue(isinstance(form, LogInForm))
         self.assertFalse(form.is_bound)

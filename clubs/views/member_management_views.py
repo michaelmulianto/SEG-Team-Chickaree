@@ -60,7 +60,7 @@ def banned_members(request, club_id):
     """Allow the owner and officer of a club to view banned members to said club."""
     club_to_view = Club.objects.get(id = club_id)
     if is_user_owner_of_club(request.user, club_to_view) or is_user_officer_of_club(request.user, club_to_view):
-        return render(request, 'banned_member_list.html', {'current_user': request.user, 'club': club_to_view})
+        return render(request, 'club/banned_member_list.html', {'current_user': request.user, 'club': club_to_view})
     else: #Access denied
         messages.error(request, "Only the club owner and officers can view banned members")
         return redirect('show_club', club_id=club_id)

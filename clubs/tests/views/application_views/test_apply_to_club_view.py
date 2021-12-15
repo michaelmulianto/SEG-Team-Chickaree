@@ -60,13 +60,13 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
 
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
 
     def test_get_apply(self):
         self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200) #OK
-        self.assertTemplateUsed(response, 'apply_to_club.html')
+        self.assertTemplateUsed(response, 'club/apply_to_club.html')
         form = response.context['form']
         self.assertTrue(isinstance(form, ApplyToClubForm))
         self.assertFalse(form.is_bound)
@@ -86,7 +86,7 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(app_count_after, app_count_before)
 
         self.assertEqual(response.status_code, 200) #OK
-        self.assertTemplateUsed(response, 'apply_to_club.html')
+        self.assertTemplateUsed(response, 'club/apply_to_club.html')
         form = response.context['form']
         self.assertTrue(isinstance(form, ApplyToClubForm))
         self.assertTrue(form.is_bound)
@@ -107,7 +107,7 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(app_count_after, app_count_before)
 
         self.assertEqual(response.status_code, 200) #OK
-        self.assertTemplateUsed(response, 'apply_to_club.html')
+        self.assertTemplateUsed(response, 'club/apply_to_club.html')
         form = response.context['form']
         self.assertTrue(isinstance(form, ApplyToClubForm))
         self.assertTrue(form.is_bound)
@@ -127,7 +127,7 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
 
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
 
     def test_apply_with_invalid_form_input(self):
         self.data['personal_statement'] = ''
@@ -141,7 +141,7 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
 
         # Should send user back to application form.
         self.assertEqual(response.status_code, 200) # not a redirect. Same page.
-        self.assertTemplateUsed(response, 'apply_to_club.html')
+        self.assertTemplateUsed(response, 'club/apply_to_club.html')
 
     def test_successful_application(self):
         self.client.login(email=self.user.email, password="Password123")
@@ -157,4 +157,4 @@ class ApplyToClubViewTestCase(TestCase, MenuTesterMixin):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')

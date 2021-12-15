@@ -46,7 +46,7 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_club', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_club.html')
+        self.assertTemplateUsed(response, 'club/show_club.html')
 
     def test_show_banned_members_redirects_when_invalid_club_id_entered(self):
         self.url = reverse('banned_members', kwargs = {'club_id': 999})
@@ -54,10 +54,10 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
 
     def test_successful_show_banned_members(self):
         self.client.login(email=self.user_club_owner.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'banned_member_list.html')
+        self.assertTemplateUsed(response, 'club/banned_member_list.html')

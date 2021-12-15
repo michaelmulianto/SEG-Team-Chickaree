@@ -33,7 +33,7 @@ class SignUpViewTestCase(TestCase, LogInTester, MenuTesterMixin):
     def test_get_sign_up(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200) #OK
-        self.assertTemplateUsed(response, 'sign_up.html')
+        self.assertTemplateUsed(response, 'account/sign_up.html')
         form = response.context['form']
         self.assertTrue(isinstance(form, SignUpForm))
         self.assertFalse(form.is_bound)
@@ -44,7 +44,7 @@ class SignUpViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
 
     def test_unsuccessful_sign_up(self):
         before_count = User.objects.count()
@@ -53,7 +53,7 @@ class SignUpViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         after_count = User.objects.count()
         self.assertEqual(after_count, before_count)
         self.assertEqual(response.status_code, 200) #OK
-        self.assertTemplateUsed(response, 'sign_up.html')
+        self.assertTemplateUsed(response, 'account/sign_up.html')
         form = response.context['form']
         self.assertTrue(isinstance(form, SignUpForm))
         self.assertTrue(form.is_bound)
@@ -67,7 +67,7 @@ class SignUpViewTestCase(TestCase, LogInTester, MenuTesterMixin):
         self.assertEqual(after_count, before_count+1)
         self.assertRedirects(response, response_url, status_code=302,
         target_status_code=200) #REDIRECT
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         user = User.objects.get(username='janedoe')
         self.assertEqual(user.first_name, 'Jane')
         self.assertEqual(user.last_name, 'Doe')

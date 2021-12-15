@@ -20,7 +20,7 @@ from django.shortcuts import render, redirect
 class ApplyToClubView(FormView):
     """Allow the user to apply to some club."""
     form_class = ApplyToClubForm
-    template_name = "apply_to_club.html"
+    template_name = "club/apply_to_club.html"
 
     @method_decorator(login_required)
     @method_decorator(club_exists)
@@ -72,7 +72,7 @@ def show_applications_to_club(request, club_id):
     """Allow the owner of a club to view all applications to said club."""
     club_to_view = Club.objects.get(id = club_id)
     if is_user_owner_of_club(request.user, club_to_view) or is_user_officer_of_club(request.user, club_to_view):
-        return render(request, 'application_list.html', {'current_user': request.user, 'club': club_to_view})
+        return render(request, 'club/application_list.html', {'current_user': request.user, 'club': club_to_view})
     else: #Access denied
         messages.error(request, "Only the club owner and officers can view applications")
         return redirect('show_club', club_id=club_id)

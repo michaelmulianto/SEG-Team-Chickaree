@@ -58,7 +58,7 @@ class LeaveClubTestCase(TestCase):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
 
 
     def test_unsuccessful_leave_when_not_member(self):
@@ -76,7 +76,7 @@ class LeaveClubTestCase(TestCase):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_club.html')
+        self.assertTemplateUsed(response, 'club/show_club.html')
 
     def test_unsuccessful_leave_when_club_owner(self):
         self.client.login(email=self.user_club_owner.email, password="Password123")
@@ -92,7 +92,7 @@ class LeaveClubTestCase(TestCase):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_club.html')
+        self.assertTemplateUsed(response, 'club/show_club.html')
 
     def test_successful_leave(self):
         self.client.login(email=self.user.email, password="Password123")
@@ -108,4 +108,4 @@ class LeaveClubTestCase(TestCase):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')

@@ -53,7 +53,7 @@ class WithdrawApplicationToClubTestCase(TestCase):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
 
     def test_successful_withdrawal(self):
         self.client.login(email=self.user.email, password="Password123")
@@ -69,4 +69,4 @@ class WithdrawApplicationToClubTestCase(TestCase):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')

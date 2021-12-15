@@ -20,7 +20,7 @@ class AddResultView(UpdateView):
     """Edit the details of the currently logged in user."""
 
     model = Match
-    template_name = "temporary_add_result.html"
+    template_name = "tournament/tournament_add_match_result.html"
     form_class = AddResultForm
 
     @method_decorator(match_exists)
@@ -85,7 +85,7 @@ def add_tournament_organiser_list(request, tournament_id):
     if Membership.objects.filter(user=request.user, club=club).exists():
         member =  Membership.objects.get(user=request.user, club=club)
         if is_lead_organiser_of_tournament(request.user, tournament): # Every tournament must have a lead organiser (and therefore an organiser)
-            return render(request, 'add_tournament_organiser_list.html', {
+            return render(request, 'tournament/add_tournament_organiser_list.html', {
                     'current_user': request.user,
                     'tournament': tournament
                 }
