@@ -85,6 +85,11 @@ class Tournament(models.Model):
                 return len(winners)==1
         return False
 
+    def full_clean(self, *args, **kwargs):
+        super().full_clean(*args, **kwargs)
+        if self.capacity < Participant.objects.filter(tournament=self).count():
+            raise ValidationError("At no point can there be more participants than capacity.")
+
     def get_all_stage_bases(self):
         from .interface_models import TournamentStageBase
         return TournamentStageBase.objects.filter(tournament=self)
