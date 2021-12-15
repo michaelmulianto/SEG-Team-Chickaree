@@ -59,11 +59,11 @@ class ApplicationModelTestCase(TestCase):
         with self.assertRaises(ValueError):
             self.app.user = self.club
 
-    def test_member_deletes_when_user_is_deleted(self):
+    def test_application_deletes_when_user_is_deleted(self):
         self.user.delete()
         self.assertFalse(Application.objects.filter(id=self.app.id).exists())
 
-    def test_user_does_not_delete_when_member_is_deleted(self):
+    def test_user_does_not_delete_when_application_is_deleted(self):
         self.app.delete()
         self.assertTrue(User.objects.filter(id=self.user.id).exists())
 
