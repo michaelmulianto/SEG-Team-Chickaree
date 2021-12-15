@@ -75,6 +75,13 @@ class AddResultView(UpdateView):
         else:
             my_form.fields["result"].choices = my_form.fields["result"].choices[:2]
         return my_form
+    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        t = self.get_object().collection.tournament
+        if t.get_current_round().get_is_complete():
+            t.generate_next_round()
+        return response
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
