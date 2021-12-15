@@ -16,33 +16,22 @@
       <p> Can't find a club that is right for you? Create your own club for free! </p>
     </div>
   </div>
-  <div class="row">
+  <div class="row" style="margin:2%;">
     <div class="col-md-3">
       <a href="{% url 'create_club' %}" class="btn btn-primary btn-lg"><i class="bi bi-plus-lg"></i> Create New Club
       </a>
     </div>
-    <div class="col-md-9">
-      <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-5">
           {% include 'partials/searchbar.html' %}
         </div>
-      </div>
-      <div class="row">
-        <div class="col-md-8"></div>
         <div class="col-md-4">
-          <a class="btn btn-secondary" href="#" id="sort-dropdown" style="width:30%; margin:3%; float: right;" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-sort-down"></i>
+          <a class="btn btn-secondary" href="#" id="sort-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-sort-down"></i>
             Sort
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="sort-dropdown">
             <li><a class="dropdown-item" href="{% url 'show_clubs' "name" "asc" %}">Name (A-Z)</a></li>
             <li><a class="dropdown-item" href="{% url 'show_clubs' "name" "des" %}">Name (Z-A)</a></li>
           </ul>
-          <a class="btn btn-secondary" href="#" id="filter-dropdown" style="width:30%; margin:3%; float: right;" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-funnel-fill"></i>
-            Filter
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filter-dropdown">
-          </ul>
-        </div>
       </div>
     </div>
   </div>

@@ -15,6 +15,9 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
 
 
     def setUp(self):
+        self.form_input = {
+            'searched' : "",
+        }
         self.url = reverse('show_clubs')
         self.user = User.objects.get(username='johndoe')
         self.club = Club.objects.get(name='King\'s Knights')
@@ -76,7 +79,6 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
 
         after_count1 = Club.objects.count()
         self.assertEqual(after_count1, before_count1+1)
-        self._club_is_on_list(new_club)
         before_count2 = Club.objects.count()
 
         self.client.post(reverse('delete_club', kwargs = {'club_id': new_club.id}))
@@ -139,7 +141,27 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.assertFalse(clubs_page.has_next())
         self.assertFalse(clubs_page.has_other_pages())
 
-    
+    def test_successful_empty_search(self):
+        self.client.login(email=self.user.email, password="Password123")
+        self._create_test_clubs()
+        response = self.client.post(self.url, self.form_input)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assert_menu(response)
+        for club in Club.objects.all():
+            self.assertTrue(self._club_is_on_list(club))
+
+    def test_successful_non_empty_search(self):
+        self.client.login(email=self.user.email, password="Password123")
+        self.form_input['searched'] = "a"
+        self._create_test_clubs()
+        response = self.client.post(self.url, self.form_input)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assert_menu(response)
+        for club in Club.objects.filter(name__contains="a"):
+            self.assertTrue(self._club_is_on_list(club))
+
     def _create_test_clubs(self, club_count=10):
         for club_id in range(club_count):
             Club.objects.create(
