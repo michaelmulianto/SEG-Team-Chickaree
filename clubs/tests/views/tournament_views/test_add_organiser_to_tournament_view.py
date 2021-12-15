@@ -92,7 +92,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         response = self.client.get(self.url_owner_organiser, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assertFalse(self._is_member_organiser(tournament = self.tournament_owner_organiser, membership = self.officer_member))
 
     def test_assign_organiser_redirects_when_invalid_tournament_id_entered_form_officer_organiser(self):
@@ -101,7 +101,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         response = self.client.get(self.url_officer_organiser, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assertFalse(self._is_member_organiser(tournament = self.tournament_officer_organiser, membership = self.owner_member))
 
     def test_assign_organiser_redirects_when_invalid_member_id_entered_from_owner_organiser(self):
@@ -110,7 +110,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         response = self.client.get(self.url_owner_organiser, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assertFalse(self._is_member_organiser(tournament = self.tournament_owner_organiser, membership = self.officer_member))
 
     def test_assign_organiser_redirects_when_invalid_member_id_entered_from_officer_organiser(self):
@@ -119,7 +119,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         response = self.client.get(self.url_officer_organiser, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assertFalse(self._is_member_organiser(tournament = self.tournament_officer_organiser, membership = self.owner_member))
 
     def test_assign_organiser_redirects_when_not_lead_organiser_of_tournament_from_owner_organiser(self):
@@ -127,7 +127,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         response = self.client.get(self.url_owner_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id' : self.tournament_owner_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_tournament.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
         self.assertFalse(self._is_member_organiser(tournament = self.tournament_owner_organiser, membership = self.regular_member))
 
         messages_list = list(response.context['messages'])
@@ -139,7 +139,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         response = self.client.get(self.url_officer_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_tournament.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
         self.assertFalse(self._is_member_organiser(tournament = self.tournament_officer_organiser, membership = self.regular_member))
 
         messages_list = list(response.context['messages'])
@@ -152,7 +152,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         response = self.client.get(self.url_owner_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id': self.tournament_owner_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_tournament.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
         self.assertTrue(self._is_member_organiser(tournament = self.tournament_owner_organiser, membership = self.owner_member))
         self.assertTrue(self._is_member_lead_organiser(tournament = self.tournament_owner_organiser, membership = self.owner_member))
 
@@ -166,7 +166,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         response = self.client.get(self.url_officer_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_tournament.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
         self.assertTrue(self._is_member_organiser(tournament = self.tournament_officer_organiser, membership = self.officer_member))
         self.assertTrue(self._is_member_lead_organiser(tournament = self.tournament_officer_organiser, membership = self.officer_member))
 
@@ -180,7 +180,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         response = self.client.get(self.url_owner_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id': self.tournament_owner_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_tournament.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
         self.assertTrue(self._is_member_organiser(tournament = self.tournament_owner_organiser, membership = self.owner_member))
         self.assertTrue(self._is_member_lead_organiser(tournament = self.tournament_owner_organiser, membership = self.owner_member))
         self.assertFalse(self._is_member_organiser(tournament = self.tournament_owner_organiser, membership = self.regular_member))
@@ -195,7 +195,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         response = self.client.get(url_add_regular_member_as_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_tournament.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
         self.assertTrue(self._is_member_organiser(tournament = self.tournament_officer_organiser, membership = self.officer_member))
         self.assertTrue(self._is_member_lead_organiser(tournament = self.tournament_officer_organiser, membership = self.officer_member))
         self.assertFalse(self._is_member_organiser(tournament = self.tournament_officer_organiser, membership = self.regular_member))
@@ -216,7 +216,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         response = self.client.get(self.url_owner_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id': self.tournament_owner_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_tournament.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
         self.assertTrue(self._is_member_organiser(tournament = self.tournament_owner_organiser, membership = self.owner_member))
         self.assertTrue(self._is_member_lead_organiser(tournament = self.tournament_owner_organiser, membership = self.owner_member))
         self.assertFalse(self._is_member_organiser(tournament = self.tournament_owner_organiser, membership = self.officer_member))
@@ -237,7 +237,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         response = self.client.get(self.url_officer_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_tournament.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
         self.assertTrue(self._is_member_organiser(tournament = self.tournament_officer_organiser, membership = self.officer_member))
         self.assertTrue(self._is_member_lead_organiser(tournament = self.tournament_officer_organiser, membership = self.officer_member))
         self.assertFalse(self._is_member_organiser(tournament = self.tournament_officer_organiser, membership = self.owner_member))
@@ -253,7 +253,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         response = self.client.get(self.url_owner_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id': self.tournament_owner_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_tournament.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
         self.assertTrue(self._is_member_organiser(tournament = self.tournament_owner_organiser, membership = self.officer_member))
 
         messages_list = list(response.context['messages'])
@@ -267,7 +267,7 @@ class AddOrganiserToTournamentViewTestCase(TestCase):
         response = self.client.get(self.url_officer_organiser, follow=True)
         redirect_url = reverse('show_tournament', kwargs = {'tournament_id': self.tournament_officer_organiser.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_tournament.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
         self.assertTrue(self._is_member_organiser(tournament = self.tournament_officer_organiser, membership = self.owner_member))
 
         messages_list = list(response.context['messages'])

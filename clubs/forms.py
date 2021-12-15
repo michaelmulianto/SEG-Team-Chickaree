@@ -137,5 +137,5 @@ class AddResultForm(forms.ModelForm):
     class Meta:
         model = Match
         fields = ['result']
-            
-    result = forms.ChoiceField(choices=Match.OUTCOMES[1:])
+        
+    result = forms.ChoiceField(choices=Match.Result.choices[1:])

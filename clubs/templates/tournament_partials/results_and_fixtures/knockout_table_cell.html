@@ -9,4 +9,11 @@
   <p> ERROR </p>
   {% endif %}
   <p> {{ match.white_player.member.user.username }} vs {{ match.black_player.member.user.username }} </p>
+  {% if match.result == 0 and is_organiser %}
+  <p>
+    <a href='{% url 'add_result' match.id %}' class="btn btn-info">
+      <i class="bi bi-pencil-square"></i> Add Result
+    </a>
+  {% endif %}
+  </p>
 </td>

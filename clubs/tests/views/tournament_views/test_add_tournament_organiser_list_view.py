@@ -88,5 +88,5 @@ class AddTournamentOrganiserListViewTestCase(TestCase, MenuTesterMixin):
         self.client.login(email=self.lead_organiser_user.email, password="Password123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200) #OK
-        self.assertTemplateUsed(response, "add_tournament_organiser_list.html")
+        self.assertTemplateUsed(response, "tournament/add_tournament_organiser_list.html")
         self.assert_menu(response)

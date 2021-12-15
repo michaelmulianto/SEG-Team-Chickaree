@@ -30,7 +30,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
 
     def test_get_show_clubs_redirects_when_not_logged_in(self):
@@ -39,7 +39,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.assertRedirects(response, redirect_url,
             status_code=302, target_status_code=200, fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'log_in.html')
+        self.assertTemplateUsed(response, 'account/log_in.html')
 
     def test_inexistent_club_is_cannot_be_on_list(self):
         self.club.name = "@@@BADCLUBNAME"
@@ -49,14 +49,14 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
         before_count = Club.objects.count()
 
         new_club = self._make_new_club()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
 
         after_count = Club.objects.count()
@@ -67,14 +67,14 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
         before_count1 = Club.objects.count()
 
         new_club = self._make_new_club_with_default_user_as_owner()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
 
         after_count1 = Club.objects.count()
@@ -84,7 +84,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.client.post(reverse('delete_club', kwargs = {'club_id': new_club.id}))
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
         after_count2 = Club.objects.count()
         self.assertEqual(after_count2, before_count2-1)
@@ -95,7 +95,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self._create_test_clubs(settings.CLUBS_PER_PAGE*2+3 - 1)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['clubs']), settings.CLUBS_PER_PAGE)
         clubs_page = response.context['clubs']
@@ -104,7 +104,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         page_one_url = reverse('show_clubs') + '?page=1'
         response = self.client.get(page_one_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['clubs']), settings.CLUBS_PER_PAGE)
         clubs_page = response.context['clubs']
@@ -113,7 +113,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         page_two_url = reverse('show_clubs') + '?page=2'
         response = self.client.get(page_two_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['clubs']), settings.CLUBS_PER_PAGE)
         clubs_page = response.context['clubs']
@@ -122,7 +122,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         page_three_url = reverse('show_clubs') + '?page=3'
         response = self.client.get(page_three_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['clubs']), 3)
         clubs_page = response.context['clubs']
@@ -134,7 +134,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self._create_test_clubs(settings.CLUBS_PER_PAGE-2)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
         clubs_page = response.context['clubs']
         self.assertFalse(clubs_page.has_previous())
@@ -146,7 +146,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self._create_test_clubs()
         response = self.client.post(self.url, self.form_input)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
         for club in Club.objects.all():
             self.assertTrue(self._club_is_on_list(club))
@@ -157,7 +157,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self._create_test_clubs()
         response = self.client.post(self.url, self.form_input)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
         for club in Club.objects.filter(name__contains="a"):
             self.assertTrue(self._club_is_on_list(club))

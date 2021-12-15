@@ -63,7 +63,7 @@ class CreateClubViewTest(TestCase, MenuTesterMixin):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
 
     def test_unsuccessful_create_club(self):
         self.client.login(email=self.user.email, password='Password123')
@@ -80,4 +80,4 @@ class CreateClubViewTest(TestCase, MenuTesterMixin):
         self.assertEqual(club_count_after, club_count_before)
         self.assertEqual(member_count_after, member_count_before)
 
-        self.assertTemplateUsed(response, 'create_club.html')
+        self.assertTemplateUsed(response, 'club/create_club.html')

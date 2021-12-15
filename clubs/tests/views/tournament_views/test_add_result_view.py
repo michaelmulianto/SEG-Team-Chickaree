@@ -25,7 +25,7 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
             user=self.user,
             is_officer=True
         )
-        
+
         self.tournament = Tournament.objects.get(id=1)
         self.organiser = Organiser.objects.create(
             member = self.membership,
@@ -69,7 +69,7 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
 
         self.assertEqual(Match.objects.get(id=self.match.id).result, self.data['result'])
         self.assertFalse(curr_round.get_is_complete())
-        
+
         # Assert round has not changed
         self.assertEqual(self.match.collection.tournament.get_current_round(), curr_round)
 
@@ -80,15 +80,15 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
-        
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
+
     def test_successful_add_result_completes_round(self):
         self.client.login(email=self.user.email, password="Password123")
 
         for m in self.other_matches_in_same_round:
             m.result=1
             m.save()
-        
+
         curr_round = self.match.collection.tournament.get_current_round()
         self.assertFalse(curr_round.get_is_complete())
 
@@ -96,7 +96,7 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
 
         self.assertEqual(Match.objects.get(id=self.match.id).result, self.data['result'])
         self.assertTrue(curr_round.get_is_complete())
-        
+
         # Assert round has changed
         self.assertNotEqual(self.match.collection.tournament.get_current_round(), curr_round)
 
@@ -107,15 +107,15 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
-        
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
+
     def test_non_organiser_attempts_to_add_result(self):
         self.client.login(email=self.participant_user.email, password='Password123')
-    
+
         response = self.client.post(self.url, self.data, follow=True)
 
         self.assertEqual(self.match.result, 0)
-        
+
         # Response tests
         response_url = reverse('show_clubs')
         self.assertRedirects(
@@ -123,12 +123,12 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
-        
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
+
     def test_non_member_add_result(self):
         self.client.login(email=self.user.email, password="Password123")
         self.membership.delete()
-        
+
         response = self.client.post(self.url, self.data, follow=True)
 
         self.assertEqual(Match.objects.get(id=self.match.id).result, 0)
@@ -140,13 +140,13 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
-        
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
+
     def test_add_result_when_result_already_set(self):
         self.client.login(email=self.user.email, password="Password123")
         self.match.result = 2
         self.match.save()
-        
+
         response = self.client.post(self.url, self.data, follow=True)
 
         self.assertEqual(Match.objects.get(id=self.match.id).result, 2)
@@ -158,4 +158,4 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')

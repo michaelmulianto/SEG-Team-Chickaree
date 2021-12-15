@@ -23,7 +23,7 @@ from django.conf import settings
 class ApplyToClubView(FormView):
     """Allow the user to apply to some club."""
     form_class = ApplyToClubForm
-    template_name = "apply_to_club.html"
+    template_name = "club/apply_to_club.html"
 
     @method_decorator(login_required)
     @method_decorator(club_exists)
@@ -86,7 +86,7 @@ def show_applications_to_club(request, club_id):
         except EmptyPage:
             page_obj  = paginator.page(paginator.num_pages)
 
-        return render(request, 'application_list.html', {'current_user': request.user, 'club': club_to_view, 'applications': page_obj})
+        return render(request, 'club/application_list.html', {'current_user': request.user, 'club': club_to_view, 'applications': page_obj})
     else: #Access denied
         messages.error(request, "Only the club owner and officers can view applications")
         return redirect('show_club', club_id=club_id)

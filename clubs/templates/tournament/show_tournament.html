@@ -7,6 +7,7 @@
 {% load static %}
 {% load define_action %}
 {% check_is_lead_organiser current_user tournament as is_lead_organiser %}
+{% check_is_organiser current_user tournament as is_organiser %}
 
   <div class="container">
     <div class="row">
@@ -53,8 +54,10 @@
         <br>
         <br>
         <br>
+        {% if tournament_knockout_stages %}
         <h3><b>Knockout Stage</b></h3>
         <br>
+        {% endif %}
         {% for knockout_stage in tournament_knockout_stages %}
           {% include 'tournament_partials/results_and_fixtures/knockout_stage.html' %}
         <br>

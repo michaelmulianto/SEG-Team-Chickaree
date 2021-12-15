@@ -47,7 +47,7 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_club', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_club.html')
+        self.assertTemplateUsed(response, 'club/show_club.html')
 
     def test_show_banned_members_redirects_when_invalid_club_id_entered(self):
         self.url = reverse('banned_members', kwargs = {'club_id': 999})
@@ -55,20 +55,20 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
 
     def test_successful_show_banned_members(self):
         self.client.login(email=self.user_club_owner.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'banned_member_list.html')
+        self.assertTemplateUsed(response, 'club/banned_member_list.html')
 
     def test_get_banned_members_of_my_club_list_with_pagination(self):
         self.client.login(email=self.user_club_owner.email, password="Password123")
         self._create_test_ban_for_default_club(settings.BANNED_MEMBERS_PER_PAGE*2+3 -1)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'banned_member_list.html')
+        self.assertTemplateUsed(response, 'club/banned_member_list.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['banned_members']), settings.BANNED_MEMBERS_PER_PAGE)
         banned_members_page = response.context['banned_members']
@@ -77,7 +77,7 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         page_one_url = reverse('banned_members', kwargs = {'club_id': self.club.id}) + '?page=1'
         response = self.client.get(page_one_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'banned_member_list.html')
+        self.assertTemplateUsed(response, 'club/banned_member_list.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['banned_members']), settings.BANNED_MEMBERS_PER_PAGE)
         banned_members_page = response.context['banned_members']
@@ -86,7 +86,7 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         page_two_url = reverse('banned_members', kwargs = {'club_id': self.club.id}) + '?page=2'
         response = self.client.get(page_two_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'banned_member_list.html')
+        self.assertTemplateUsed(response, 'club/banned_member_list.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['banned_members']), settings.BANNED_MEMBERS_PER_PAGE)
         banned_members_page = response.context['banned_members']
@@ -95,7 +95,7 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         page_three_url = reverse('banned_members', kwargs = {'club_id': self.club.id}) + '?page=3'
         response = self.client.get(page_three_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'banned_member_list.html')
+        self.assertTemplateUsed(response, 'club/banned_member_list.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['banned_members']), 3)# plus one becase we have already banned a member
         banned_members_page = response.context['banned_members']
@@ -107,7 +107,7 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         self._create_test_ban_for_default_club(settings.BANNED_MEMBERS_PER_PAGE-2)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'banned_member_list.html')
+        self.assertTemplateUsed(response, 'club/banned_member_list.html')
         self.assert_menu(response)
         banned_members_page = response.context['banned_members']
         self.assertFalse(banned_members_page.has_previous())
@@ -116,7 +116,7 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
 
     def _create_test_ban_for_default_club(self, banned_members_count = 10):
         for future_banned_member in range(banned_members_count):
-            
+
             user = User.objects.create(
                 username = f'USERNAME{future_banned_member}',
                 last_name = f'LASTNAME{future_banned_member}',

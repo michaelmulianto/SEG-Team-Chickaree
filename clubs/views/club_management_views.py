@@ -18,7 +18,7 @@ from django.shortcuts import redirect
 class CreateClubView(FormView):
     """Create a new club."""
     form_class = CreateClubForm
-    template_name = "create_club.html"
+    template_name = "club/create_club.html"
 
     @method_decorator(login_required)
     def dispatch(self, request):
@@ -73,7 +73,7 @@ class EditClubInfoView(UpdateView):
     """Edit the details of a given club."""
 
     model = Club
-    template_name = "edit_club_info.html"
+    template_name = "club/edit_club_info.html"
     form_class = EditClubInfoForm
 
     @method_decorator(login_required)

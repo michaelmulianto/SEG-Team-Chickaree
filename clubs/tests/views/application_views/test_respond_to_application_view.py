@@ -57,7 +57,7 @@ class RespondToApplicationViewTestCase(TestCase):
         response = self.client.get(url_invalid_id, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
 
     def test_respond_to_application_redirects_when_not_owner_or_officer_of_club(self):
         self.client.login(email=self.user_club_applicant.email, password="Password123")
@@ -65,7 +65,7 @@ class RespondToApplicationViewTestCase(TestCase):
 
         redirect_url = reverse('show_club', kwargs={'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_club.html')
+        self.assertTemplateUsed(response, 'club/show_club.html')
 
     def test_successful_accept_application_to_club_owner(self):
         self.client.login(email=self.user_club_owner.email, password="Password123")
@@ -82,7 +82,7 @@ class RespondToApplicationViewTestCase(TestCase):
 
         redirect_url = reverse('show_applications_to_club', kwargs={'club_id':self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'application_list.html')
+        self.assertTemplateUsed(response, 'club/application_list.html')
 
     def test_successful_reject_application_to_club_owner(self):
         self.client.login(email=self.user_club_owner.email, password="Password123")
@@ -100,7 +100,7 @@ class RespondToApplicationViewTestCase(TestCase):
 
         response_url = reverse('show_applications_to_club', kwargs={'club_id':self.club.id})
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'application_list.html')
+        self.assertTemplateUsed(response, 'club/application_list.html')
 
     def test_successful_accept_application_to_club_officer(self):
         self.client.login(email=self.user_club_officer.email, password="Password123")
@@ -117,7 +117,7 @@ class RespondToApplicationViewTestCase(TestCase):
 
         redirect_url = reverse('show_applications_to_club', kwargs={'club_id':self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'application_list.html')
+        self.assertTemplateUsed(response, 'club/application_list.html')
 
     def test_successful_reject_application_to_club_officer(self):
         self.client.login(email=self.user_club_officer.email, password="Password123")
@@ -135,4 +135,4 @@ class RespondToApplicationViewTestCase(TestCase):
 
         response_url = reverse('show_applications_to_club', kwargs={'club_id':self.club.id})
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'application_list.html')
+        self.assertTemplateUsed(response, 'club/application_list.html')
