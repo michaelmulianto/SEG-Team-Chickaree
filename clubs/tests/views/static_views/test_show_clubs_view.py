@@ -134,7 +134,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self._create_test_clubs(settings.CLUBS_PER_PAGE-2)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
         clubs_page = response.context['clubs']
         self.assertFalse(clubs_page.has_previous())
@@ -146,7 +146,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self._create_test_clubs()
         response = self.client.post(self.url, self.form_input)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
         for club in Club.objects.all():
             self.assertTrue(self._club_is_on_list(club))
@@ -157,7 +157,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self._create_test_clubs()
         response = self.client.post(self.url, self.form_input)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
         for club in Club.objects.filter(name__contains="a"):
             self.assertTrue(self._club_is_on_list(club))

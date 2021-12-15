@@ -120,7 +120,7 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self._create_test_applications_for_default_club(settings.APPLICATIONS_PER_PAGE*2+3-1)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'application_list.html')
+        self.assertTemplateUsed(response, 'club/application_list.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['applications']), settings.APPLICATIONS_PER_PAGE)
         applications_page = response.context['applications']
@@ -129,7 +129,7 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         page_one_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=1'
         response = self.client.get(page_one_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'application_list.html')
+        self.assertTemplateUsed(response, 'club/application_list.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['applications']), settings.APPLICATIONS_PER_PAGE)
         applications_page = response.context['applications']
@@ -138,7 +138,7 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         page_two_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=2'
         response = self.client.get(page_two_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'application_list.html')
+        self.assertTemplateUsed(response, 'club/application_list.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['applications']), settings.APPLICATIONS_PER_PAGE)
         applications_page = response.context['applications']
@@ -147,7 +147,7 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         page_three_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=3'
         response = self.client.get(page_three_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'application_list.html')
+        self.assertTemplateUsed(response, 'club/application_list.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['applications']), 3)
         applications_page = response.context['applications']
@@ -159,7 +159,7 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self._create_test_applications_for_default_club(settings.APPLICATIONS_PER_PAGE-2)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'application_list.html')
+        self.assertTemplateUsed(response, 'club/application_list.html')
         self.assert_menu(response)
         applications_page = response.context['applications']
         self.assertFalse(applications_page.has_previous())

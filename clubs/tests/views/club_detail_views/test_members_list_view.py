@@ -44,7 +44,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self._create_test_memberships_for_default_club(settings.MEMBERSHIPS_PER_PAGE*2+3 -1)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['memberships']), settings.MEMBERSHIPS_PER_PAGE)
         memberships_page = response.context['memberships']
@@ -53,7 +53,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         page_one_url = reverse('members_list', kwargs={'club_id': self.club.id}) + '?page=1'
         response = self.client.get(page_one_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['memberships']), settings.MEMBERSHIPS_PER_PAGE)
         memberships_page = response.context['memberships']
@@ -62,7 +62,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         page_two_url = reverse('members_list', kwargs={'club_id': self.club.id}) + '?page=2'
         response = self.client.get(page_two_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['memberships']), settings.MEMBERSHIPS_PER_PAGE)
         memberships_page = response.context['memberships']
@@ -71,7 +71,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         page_three_url = reverse('members_list', kwargs={'club_id': self.club.id}) + '?page=3'
         response = self.client.get(page_three_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assert_menu(response)
         self.assertEqual(len(response.context['memberships']), 3)
         memberships_page = response.context['memberships']
@@ -83,7 +83,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self._create_test_memberships_for_default_club(settings.MEMBERSHIPS_PER_PAGE-2)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assert_menu(response)
         memberships_page = response.context['memberships']
         self.assertFalse(memberships_page.has_previous())

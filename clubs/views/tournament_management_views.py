@@ -41,7 +41,7 @@ class AddResultView(UpdateView):
     """Edit the result of a match, if result not already set."""
 
     model = Match
-    template_name = "temporary_add_result.html"
+    template_name = "tournament/tournament_add_match_result.html"
     form_class = AddResultForm
 
     @method_decorator(match_exists)
