@@ -8,4 +8,4 @@ class ValueInListValidator(BaseValidator):
     def compare(self, a, b):
         # return false when validation passes.........
         # This is how BaseValidator handles it.
-        return not(a in b)
+        return not(a in b)    

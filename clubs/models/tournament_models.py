@@ -10,7 +10,7 @@ from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from django.db.models import UniqueConstraint
+from django.db.models import UniqueConstraint, CheckConstraint, Q, F
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .validators import ValueInListValidator
 
@@ -36,7 +36,6 @@ class Tournament(models.Model):
             ]
         )
     
-    
     deadline = models.DateTimeField(blank=False)
     start = models.DateTimeField(blank=False)
     end = models.DateTimeField(blank=False)
@@ -51,6 +50,18 @@ class Tournament(models.Model):
             UniqueConstraint(
                 name='tournament_name_must_be_unique_by_club',
                 fields=['club', 'name'],
+            ),
+            CheckConstraint(
+                check = Q(end__gt=F('start')), 
+                name = 'check_end_is_after_start',
+            ),
+            CheckConstraint(
+                check = Q(start__gt=F('deadline')), 
+                name = 'check_start_is_after_deadline',
+            ),
+            CheckConstraint(
+                check = Q(deadline__gt=F('created_on')), 
+                name = 'check_deadline_is_after_created_on',
             ),
         ]
 
