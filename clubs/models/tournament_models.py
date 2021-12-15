@@ -85,23 +85,6 @@ class Tournament(models.Model):
                 return len(winners)==1
         return False
 
-    def full_clean(self, *args, **kwargs):
-        super().full_clean(*args, **kwargs)
-        if self.capacity < Participant.objects.filter(tournament=self).count():
-            raise ValidationError("At no point can there be more participants than capacity.")
-        if self.deadline > self.start:
-            raise ValidationError("The deadline date cannot be after the start!")
-        if self.start > self.end:
-            raise ValidationError("The tournament should have a positive duration.")
-
-        if self.created_on == None:
-            creation_time = now()
-        else:
-            creation_time = self.created_on
-
-        if self.deadline < creation_time:
-            raise ValidationError("Times must be after time of object creation.")
-
     def get_all_stage_bases(self):
         from .interface_models import TournamentStageBase
         return TournamentStageBase.objects.filter(tournament=self)
