@@ -10,7 +10,7 @@ from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from django.db.models import UniqueConstraint, CheckConstraint, Q, F
+from django.db.models import UniqueConstraint
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .validators import ValueInListValidator
 
@@ -33,8 +33,9 @@ class Tournament(models.Model):
             MinValueValidator(2), 
             MaxValueValidator(96),
             ValueInListValidator(capacities)
-            ]
-        )
+                ]
+            )
+    
     
     deadline = models.DateTimeField(blank=False)
     start = models.DateTimeField(blank=False)
@@ -50,18 +51,6 @@ class Tournament(models.Model):
             UniqueConstraint(
                 name='tournament_name_must_be_unique_by_club',
                 fields=['club', 'name'],
-            ),
-            CheckConstraint(
-                check = Q(end__gt=F('start')), 
-                name = 'check_end_is_after_start',
-            ),
-            CheckConstraint(
-                check = Q(start__gt=F('deadline')), 
-                name = 'check_start_is_after_deadline',
-            ),
-            CheckConstraint(
-                check = Q(deadline__gt=F('created_on')), 
-                name = 'check_deadline_is_after_created_on',
             ),
         ]
 
@@ -89,6 +78,18 @@ class Tournament(models.Model):
         super().full_clean(*args, **kwargs)
         if self.capacity < Participant.objects.filter(tournament=self).count():
             raise ValidationError("At no point can there be more participants than capacity.")
+        if self.deadline > self.start:
+            raise ValidationError("The deadline date cannot be after the start!")
+        if self.start > self.end:
+            raise ValidationError("The tournament should have a positive duration.")
+
+        if self.created_on == None:
+            creation_time = now()
+        else:
+            creation_time = self.created_on
+
+        if self.deadline < creation_time:
+            raise ValidationError("Times must be after time of object creation.")
 
     def get_all_stage_bases(self):
         from .interface_models import TournamentStageBase
