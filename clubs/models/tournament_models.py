@@ -26,14 +26,15 @@ class Tournament(models.Model):
     description =  models.CharField(max_length=280, blank=False)
     
     capacities = (2,4,8,16,32,48,96)
-    capacity = models.PositiveIntegerField(default=16, 
-                                           blank=False, 
-                                           validators=[
-                                               MinValueValidator(2), 
-                                               MaxValueValidator(96),
-                                               ValueInListValidator(capacities)
-                                               ]
-                                           )
+    capacity = models.PositiveIntegerField(
+        default=16, 
+        blank=False, 
+        validators=[
+            MinValueValidator(2), 
+            MaxValueValidator(96),
+            ValueInListValidator(capacities)
+            ]
+        )
     
     
     deadline = models.DateTimeField(blank=False)
