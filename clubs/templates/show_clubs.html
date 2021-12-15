@@ -51,8 +51,10 @@
   <h1>You searched for {{ searched }}</h1>
   {% endif %}
 
+  {% if clubs <= clubs.per_page %}
+    {% bootstrap_paginate clubs range=6 show_first_last="false" %}    
+  {% endif %}
 
-  {% bootstrap_paginate clubs range=6 show_first_last="false" %}
 
   <table class="table table-hover">
     {% for club in clubs %}
@@ -91,8 +93,9 @@
     </tr>
     {% endfor %}
   </table>
-
-  {% bootstrap_paginate clubs range=6 show_first_last="false" %}
+  {% if clubs <= clubs.per_page %}
+    {% bootstrap_paginate clubs range=6 show_first_last="false" %}
+  {% endif %}
 
 </div>
 {% endblock %}

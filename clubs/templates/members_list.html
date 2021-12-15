@@ -17,7 +17,9 @@
         </style>
         <h1>{{club.name}} Members: </h1>
         <br>
-        {% bootstrap_paginate memberships range=6 show_first_last="false" %}
+        {% if memberships <= memberships.per_page %}
+          {% bootstrap_paginate memberships range=6 show_first_last="false" %}
+        {% endif %}
         <table class="table standard-table-spacing">
           <tr>
             {% include 'user_list_partials/table_header_basics.html' with include_counter=True %}
@@ -71,7 +73,9 @@
           </tr>
         {% endfor %}
         </table>
-        {% bootstrap_paginate memberships range=6 show_first_last="false" %}
+        {% if memberships <= memberships.per_page %}
+          {% bootstrap_paginate memberships range=6 show_first_last="false" %}
+        {% endif %}
         <a href='{% url 'show_club' club.id %}' class="btn btn-info">
           <i class="bi bi-reply-fill"></i> Back to club page
         </a>

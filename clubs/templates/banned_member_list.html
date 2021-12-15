@@ -19,8 +19,9 @@
             <b><p style="font-size: 250%;"> No banned members </p> </b>
           </tr>
         {% else %}
-
-        {% bootstrap_paginate banned_members range=6 show_first_last="false" %}
+        {% if banned_members <= banned_members.per_page %}
+          {% bootstrap_paginate banned_members range=6 show_first_last="false" %}
+        {% endif %}
           <tr>
             {% include 'user_list_partials/table_header_basics.html' with include_counter=True%}
             {% include 'user_list_partials/table_header_extras.html' with show_email=True %}
@@ -41,8 +42,9 @@
 
         {% endif %}
         </table>
-
-        {% bootstrap_paginate banned_members range=6 show_first_last="false" %}
+        {% if banned_members <= banned_members.per_page %}
+          {% bootstrap_paginate banned_members range=6 show_first_last="false" %}
+        {% endif %}
         <a href='{% url 'show_club' club.id %}' class="btn btn-info">
           <i class="bi bi-reply-fill"></i> Back to club page
         </a>

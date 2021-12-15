@@ -22,7 +22,9 @@
             <tr><td><b style="font-family: verdana; font-size: 250%;">No more applications</b></td></tr>
 
             {% else %}
-            {% bootstrap_paginate applications range=6 show_first_last="false" %}
+            {% if applications <= applications.per_page %}
+              {% bootstrap_paginate applications range=6 show_first_last="false" %}
+            {% endif %}
             <tr>
               {% include 'user_list_partials/table_header_basics.html' with include_counter=True %}
               <th>Experience</th>
@@ -41,7 +43,9 @@
               {% endfor %}
             {% endif %}
         </table>
-        {% bootstrap_paginate applications range=6 show_first_last="false" %}
+        {% if applications <= applications.per_page %}
+          {% bootstrap_paginate applications range=6 show_first_last="false" %}
+        {% endif %}
         <a href='{% url 'show_club' club.id %}' class="btn btn-info">
           <i class="bi bi-reply-fill"></i> Back to club page
         </a>
