@@ -6,6 +6,7 @@ from django.contrib.auth.hashers import check_password
 from clubs.models import User, Club, Membership, Application, Ban
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 from with_asserts.mixin import AssertHTMLMixin
+from django.conf import settings
 
 class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
     """Test all aspects of the show bans to club view"""
@@ -61,3 +62,55 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         response = self.client.get(self.url, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'banned_member_list.html')
+
+    def test_get_my_clubs_list_with_pagination(self):
+        self.client.login(email=self.user.email, password="Password123")
+        self._create_test_clubs_and_ban_default_user(settings.CLUBS_PER_PAGE*2+3)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['banned_members']), settings.CLUBS_PER_PAGE)
+        banned_members_page = response.context['banned_members']
+        self.assertFalse(banned_members_page.has_previous())
+        self.assertTrue(banned_members_page.has_next())
+        page_one_url = reverse('my_clubs_list') + '?page=1'
+        response = self.client.get(page_one_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['banned_members']), settings.CLUBS_PER_PAGE)
+        banned_members_page = response.context['banned_members']
+        self.assertFalse(banned_members_page.has_previous())
+        self.assertTrue(banned_members_page.has_next())
+        page_two_url = reverse('my_clubs_list') + '?page=2'
+        response = self.client.get(page_two_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['banned_members']), settings.CLUBS_PER_PAGE)
+        banned_members_page = response.context['banned_members']
+        self.assertTrue(banned_members_page.has_previous())
+        self.assertTrue(banned_members_page.has_next())
+        page_three_url = reverse('my_clubs_list') + '?page=3'
+        response = self.client.get(page_three_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_clubs_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['banned_members']), 3)
+        banned_members_page = response.context['banned_members']
+        self.assertTrue(banned_members_page.has_previous())
+        self.assertFalse(banned_members_page.has_next())
+
+    def _create_test_clubs_and_ban_default_user(self, banned_members_count = 10):
+        for member in range(banned_members_count):
+            
+            User.objects.create(
+                
+            )
+
+            Ban.objects.create(
+
+                user = self.user,
+                personal_statement = f'PERSONAL STATEMENT FOR CLUB {club_id}'
+            )

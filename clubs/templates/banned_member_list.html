@@ -1,4 +1,5 @@
 {% extends 'base_content.html' %}
+{% load bootstrap_pagination %}
 {% block content %}
   <div class="container">
     <div class="row">
@@ -18,6 +19,8 @@
             <b><p style="font-size: 250%;"> No banned members </p> </b>
           </tr>
         {% else %}
+
+        {% bootstrap_paginate banned_members range=6 show_first_last="false" %}
           <tr>
             {% include 'user_list_partials/table_header_basics.html' with include_counter=True%}
             {% include 'user_list_partials/table_header_extras.html' with show_email=True %}
@@ -26,7 +29,7 @@
             {% endif %}
 
           </tr>
-          {% for ban_member in club.get_banned_members %}
+          {% for ban_member in banned_members %}
           <tr>
             {% include 'user_list_partials/table_row_basics.html' with user=ban_member.user include_counter=True %}
             {% include 'user_list_partials/table_row_extras.html' with user=ban_member.user show_email=True %}
@@ -35,8 +38,11 @@
             {% endif %}
           </tr>
           {% endfor %}
+
         {% endif %}
         </table>
+
+        {% bootstrap_paginate banned_members range=6 show_first_last="false" %}
         <a href='{% url 'show_club' club.id %}' class="btn btn-info">
           <i class="bi bi-reply-fill"></i> Back to club page
         </a>
