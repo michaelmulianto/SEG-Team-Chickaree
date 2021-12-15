@@ -22,6 +22,9 @@ var msgDic = {
   "delete_applications":'Are you sure you want to delete this club?',
   "withdraw_from_tournament": "Are you sure you want to leave this tournament?"
 }
+/*
+* Method to pop up a message from diccionary to confirm action by user.
+*/
 function confirmMsg(msgType){
 
   if(confirm(msgDic[msgType])){
