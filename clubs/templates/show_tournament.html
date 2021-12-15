@@ -7,6 +7,7 @@
 {% load static %}
 {% load define_action %}
 {% check_is_lead_organiser current_user tournament as is_lead_organiser %}
+{% check_is_organiser current_user tournament as is_organiser %}
 
   <div class="container">
     <div class="row">
