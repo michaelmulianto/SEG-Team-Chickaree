@@ -120,7 +120,7 @@ class Tournament(models.Model):
             return d
         
     # If participants do not fill capacity, reduce number of participants to next lowest capacity.
-    def _adjust_capacity_based_on_participants(self):
+    def _participants_to_appropriate_capacity(self):
         participants = Participant.objects.filter(tournament=self)
         potential_capacity = self.capacity
         cap_index = self.capacities.index(potential_capacity)
@@ -131,7 +131,9 @@ class Tournament(models.Model):
         excess_participant_count = potential_capacity - participants.count()
         ordered_participants = participants.order_by('-joined_on')
         ordered_participants[:excess_participant_count].delete()
+        
         self.capacity = potential_capacity
+        return Participant.objects.filter(tournament=self)
 
     def generate_next_round(self):
         self.full_clean() # Constraints are needed for this to work.
@@ -146,8 +148,7 @@ class Tournament(models.Model):
             participants = curr_round.get_winners()
             next_num = curr_round.round_num+1
         else: # No round has occured yet.
-            self._adjust_capacity_based_on_participants()
-            participants = list(Participant.objects.filter(tournament=self))
+            participants = list(self._participants_to_appropriate_capacity())
             next_num = 1
 
         if participants == None:
