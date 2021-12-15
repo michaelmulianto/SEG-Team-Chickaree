@@ -1,5 +1,25 @@
 <h3><b>Group Stage {{ group_stage.round_num }}</b></h3>
 <br>
+<ul class="nav nav-tabs">
+  {% for single_group in group_stage.get_single_groups %}
+  <li class="nav-item">
+    <a id="group{{forloop.counter}}_tab" {% if forloop.counter == 1 %} class="nav-link active" {% else %} class="nav-link" {% endif %} onclick="displayTournaments('group{{forloop.counter}}')" type="button">Group {{forloop.counter}}</a>
+  </li>
+  {% endfor %}
+</ul>
+<script>
+  var tabs_dic = {
+    {% for single_group in group_stage.get_single_groups %}
+    "group{{forloop.counter}}" : "group{{forloop.counter}}_tab",
+    {% endfor %}
+  };
+  var tables_dic = {
+    {% for single_group in group_stage.get_single_groups %}
+    "group{{forloop.counter}}" : "group{{forloop.counter}}_table_body",
+    {% endfor %}
+  };
+</script>
+<br>
 {% for single_group in group_stage.get_single_groups %}
   {% include 'tournament_partials/results_and_fixtures/results_table.html' %}
 {% endfor %}

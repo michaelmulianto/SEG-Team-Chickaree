@@ -1,4 +1,4 @@
-<table class="table">
+<table class="table" id="group{{forloop.counter}}_table_body" {% if not forloop.counter == 1 %} style="display: none" {% endif %}>
   <thead>
     <th></th>
     <th colspan="2">Participant</th>
@@ -6,9 +6,6 @@
     <th>Points</th>
   </thead>
   <tbody>
-    <p>
-      {{results}}
-    </p>
     {% for standing in single_group.get_standings %}
       {% include 'tournament_partials/results_and_fixtures/results_table_row.html' %}
     {% endfor %}
