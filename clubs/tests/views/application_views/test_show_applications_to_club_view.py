@@ -155,14 +155,14 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assertFalse(applications_page.has_next())
 
     def _create_test_applications_for_default_club(self, banned_members_count = 10):
-        for future_banned_member in range(banned_members_count):
+        for future_applicant in range(banned_members_count):
             
             user = User.objects.create(
-                username = f'USERNAME{future_banned_member}',
-                last_name = f'LASTNAME{future_banned_member}',
-                first_name = f'FIRSTNAME{future_banned_member}',
-                email = f'EMAIL{future_banned_member}@gmail.com',
-                bio = f'BIO{future_banned_member}',
+                username = f'USERNAME{future_applicant}',
+                last_name = f'LASTNAME{future_applicant}',
+                first_name = f'FIRSTNAME{future_applicant}',
+                email = f'EMAIL{future_applicant}@gmail.com',
+                bio = f'BIO{future_applicant}',
                 experience = 1
             )
 
