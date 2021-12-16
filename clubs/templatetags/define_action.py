@@ -46,7 +46,7 @@ def remove_from_queryset(qset_a, qset_b):
 
 @register.simple_tag
 def is_later_than(date):
-    return date > timezone.now()
+    return date < timezone.now()
 
 # CLUB tags
 
