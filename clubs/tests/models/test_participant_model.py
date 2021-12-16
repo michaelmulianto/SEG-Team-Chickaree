@@ -63,7 +63,7 @@ class ParticipantModelTestCase(TestCase):
                 round_eliminated = 1
             )
         except(ValidationError):
-            self.fail("A member should be able to organise more than one tournament")
+            self.fail("A member should be able to participate in more than one tournament")
 
     def test_there_can_be_more_than_one_participant_model(self):
         try:
