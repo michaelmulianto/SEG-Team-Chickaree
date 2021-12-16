@@ -19,6 +19,9 @@ from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 
+from django.conf import settings
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+
 @login_required
 @tournament_exists
 def show_tournament(request, tournament_id):
@@ -150,4 +153,3 @@ def my_tournaments_list(request):
                 'organiser_upcoming_tournaments': my_tournaments[1][2],
             }
         )
-            
