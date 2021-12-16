@@ -24,19 +24,19 @@ class Tournament(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     name = models.CharField(max_length=50, blank=False, unique = False)
     description =  models.CharField(max_length=280, blank=False)
-    
+
     capacities = (2,4,8,16,32,48,96)
     capacity = models.PositiveIntegerField(
-        default=16, 
-        blank=False, 
+        default=16,
+        blank=False,
         validators=[
-            MinValueValidator(2), 
+            MinValueValidator(2),
             MaxValueValidator(96),
             ValueInListValidator(capacities)
                 ]
             )
-    
-    
+
+
     deadline = models.DateTimeField(blank=False)
     start = models.DateTimeField(blank=False)
     end = models.DateTimeField(blank=False)
@@ -57,6 +57,12 @@ class Tournament(models.Model):
     def get_participants(self):
         return Participant.objects.filter(tournament=self)
 
+    def get_num_participants(self):
+        return Participant.objects.filter(tournament=self).count()
+
+    def is_full(self):
+        return self.get_num_participants() == self.capacity
+
     def get_organisers(self):
         return Organiser.objects.filter(tournament=self)
 
@@ -76,7 +82,7 @@ class Tournament(models.Model):
 
     def full_clean(self, *args, **kwargs):
         super().full_clean(*args, **kwargs)
-        if self.capacity < Participant.objects.filter(tournament=self).count():
+        if self.capacity < self.get_num_participants():
             raise ValidationError("At no point can there be more participants than capacity.")
         if self.deadline > self.start:
             raise ValidationError("The deadline date cannot be after the start!")
@@ -103,9 +109,6 @@ class Tournament(models.Model):
         stage_base_of_round = rounds.get(round_num=curr_round_num)
         return stage_base_of_round.get_stage()
 
-    def get_num_participants(self):
-        return Participant.objects.filter(tournament=self).count()
-
     def get_max_round_num(self):
         n = self.get_num_participants()
         if n > 32:
@@ -118,7 +121,7 @@ class Tournament(models.Model):
                 d += 1
                 n = n/2
             return d
-        
+
     # If participants do not fill capacity, reduce number of participants to next lowest capacity.
     def _participants_to_appropriate_capacity(self):
         participants = Participant.objects.filter(tournament=self)
@@ -129,14 +132,14 @@ class Tournament(models.Model):
             if cap_index == -1:
                 return participants
             potential_capacity = self.capacities[cap_index]
-            
+
         excess_participant_count = participants.count() - potential_capacity
         ordered_participants = participants.order_by('-joined')
         excess_participants = ordered_participants[:excess_participant_count]
-        
+
         for p in excess_participants:
             p.delete()
-        
+
         self.capacity = potential_capacity
         return Participant.objects.filter(tournament=self)
 
