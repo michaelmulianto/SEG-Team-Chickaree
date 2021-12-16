@@ -1,8 +1,8 @@
-"""unit test for edit club info form"""
+"""Unit tests for edit club info form"""
 from django import forms
 from django.test import TestCase
 from clubs.forms import EditClubInfoForm
-from clubs.models import Club
+from clubs.models import Club, Membership
 
 class EditClubInfoFormTestCase(TestCase):
     """Unit tests of the edit_club_info form."""
