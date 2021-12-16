@@ -128,7 +128,7 @@ def my_tournaments_list(request):
                     
                 my_tournaments[outer_index][inner_index].append(tournament)
     
-    return render(request, 'tournament/my_tournaments_list.html', {
+    return render(request, 'tournament/my_tournament_list.html', {
                 'current_user': request.user,
                 'participant_past_tournaments': my_tournaments[0][0],
                 'participant_ongoing_tournaments': my_tournaments[0][1],

@@ -36,7 +36,7 @@ class MyTournamentListViewTestCase(TestCase):
             tournament=self.t3
         )
         
-        self.url = reverse('my_tournaments_list')
+        self.url = reverse('my_tournament_list')
         
     def test_url_is_correct(self):
         self.assertEqual(self.url, '/tournaments/my/')
@@ -49,7 +49,7 @@ class MyTournamentListViewTestCase(TestCase):
     def test_get_my_tournaments_successful_case(self):
         self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url, follow=True)
-        self.assertTemplateUsed(response, "tournament/my_tournaments_list.html")
+        self.assertTemplateUsed(response, "tournament/my_tournament_list.html")
         self.assertEqual(response.status_code, 200)
         
     def test_get_my_tournaments_with_no_membertournamentrelationships(self):
@@ -59,5 +59,5 @@ class MyTournamentListViewTestCase(TestCase):
         
         self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url, follow=True)
-        self.assertTemplateUsed(response, "tournament/my_tournaments_list.html")
+        self.assertTemplateUsed(response, "tournament/my_tournament_list.html")
         self.assertEqual(response.status_code, 200)
