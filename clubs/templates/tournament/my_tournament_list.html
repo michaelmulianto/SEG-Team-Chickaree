@@ -10,6 +10,8 @@
       <div class="col-12">
         <h1>My Tournaments: participating</h1>
         <br>
+        <p> To participate in a tournament you need to become a member of the organising club and then join the tournament from the upcoming tournament list. </p>
+        <br>
         <script>
           var tabs_dic1 = {
             "past" : "participant_past_tournaments_tab",
@@ -56,6 +58,8 @@
         <br>
         <h1>My Tournaments: organising</h1>
         <br>
+        <p> To organise a tournament you need to be an officer or owner of a club. </p>
+        <br>
         <script>
           var tabs_dic2 = {
             "past" : "organiser_past_tournaments_tab",
@@ -91,7 +95,6 @@
           {% include 'tournament_partials/tournament_list.html' with tournaments=organiser_upcoming_tournaments is_member=True is_upcoming=True %}
         </table>
         <br>
-        <p> To participate in a tournament you need to become a member of the organising club and then join the tournament from the upcoming tournament list. </p>
         <br>
         <a href='{% url 'show_clubs' %}' class="btn btn-info">
           <i class="bi bi-reply-fill"></i> List of all clubs
