@@ -39,10 +39,6 @@ class OrganiseTournamentView(FormView):
         return context
 
     def form_valid(self, form):
-        if form.cleaned_data['start'] < now() or form.cleaned_data['end'] < now() or form.cleaned_data['deadline'] < now():
-            messages.add_message(self.request, messages.ERROR, "Given time and date must not be in the past.")
-            return super().form_invalid(form)
-
         self.object = form.save(self.get_context_data()['club'])
         if Membership.objects.filter(club = self.get_context_data()['club'], user=self.request.user).exists():
             member = Membership.objects.get(user = self.request.user, club = self.get_context_data()['club'])

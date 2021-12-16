@@ -74,23 +74,25 @@ def withdraw_participation_from_tournament(request, tournament_id):
 @tournament_exists
 def join_tournament(request, tournament_id):
     tour = Tournament.objects.get(id = tournament_id)
-    member = get_object_or_404(Membership, user = request.user, club = tour.club)
-    is_not_organiser = Organiser.objects.filter(member = member, tournament = tour).count() == 0
-    is_in_tournament = Participant.objects.filter(member = member, tournament = tour).count() > 0
+    if Membership.objects.filter(club=tour.club, user=request.user).exists():
+        member = Membership.objects.get(club=tour.club, user=request.user)
+    else:
+        messages.error(request, 'You are not a member of the club and cannot join the tournament')
+        return redirect('show_club', club_id=tour.club.id)
+        
+    is_not_organiser = not Organiser.objects.filter(member = member, tournament = tour).exists()
+    is_in_tournament = Participant.objects.filter(member = member, tournament = tour).exists()
 
     current_capacity = Participant.objects.filter(tournament = tour)
     if(current_capacity.count() < tour.capacity):
         if(is_not_organiser == True):
-            if(member != None):
-                if(is_in_tournament == False):
+            if(is_in_tournament == False):
                     participant = Participant.objects.create(
                         member = member,
                         tournament = tour
                     )
-                else:
-                    messages.error(request, 'You are already enrolled in the tournament')
             else:
-                messages.error(request, 'You are not a member of the club and cannot join the tournament')
+                messages.error(request, 'You are already enrolled in the tournament')
         else:
             messages.error(request, 'You are the organizer of the tournament and are not allowed to join it')
     else:

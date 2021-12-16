@@ -3,6 +3,9 @@
 from django.test import TestCase
 from django.urls import reverse
 from clubs.tests.helpers import reverse_with_next
+from datetime import timedelta
+from django.utils.timezone import now
+
 from clubs.models import User, Tournament, Participant, Organiser, Membership, Club
 
 class MyTournamentListViewTestCase(TestCase):
@@ -20,6 +23,13 @@ class MyTournamentListViewTestCase(TestCase):
         self.t1 = Tournament.objects.get(id=1)
         self.t2 = Tournament.objects.get(id=2)
         self.t3 = Tournament.objects.get(id=3)
+        
+        self.t2.deadline = now() - timedelta(hours=2)
+        self.t2.start = now() - timedelta(hours=1)
+        
+        self.t3.deadline = now() - timedelta(hours=3)
+        self.t3.start = now() - timedelta(hours=2)
+        self.t3.end = now() - timedelta(hours=1)
         
         self.member = Membership.objects.create(user=self.user, club=Club.objects.get(id=1))
         
