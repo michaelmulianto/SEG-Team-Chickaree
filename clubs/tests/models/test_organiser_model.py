@@ -8,7 +8,7 @@ class OrganiserModelTestCase(TestCase):
         'clubs/tests/fixtures/other_users.json',
         'clubs/tests/fixtures/default_club.json',
         'clubs/tests/fixtures/default_tournament.json',
-        'clubs/tests/fixtures/other_tournaments.json']  
+        'clubs/tests/fixtures/other_tournaments.json']
 
     def setUp(self):
 
@@ -40,6 +40,7 @@ class OrganiserModelTestCase(TestCase):
     def test_valid_Organiser(self):
         self._assert_organiser_is_valid()
 
+    # is organiser field test
     def test_is_lead_organiser_cannot_be_blank(self):
         self.organiser.is_lead_organiser = None
         self._assert_organiser_is_invalid()
@@ -93,6 +94,10 @@ class OrganiserModelTestCase(TestCase):
     def test_deleting_the_organiser_model_does_not_cause_errors(self):
         self.organiser.delete()
 
+    #Test string
+    def test_str(self):
+        self.assertEqual(self.organiser.__str__(), f'{self.first_membership.user.first_name} {self.first_membership.user.last_name} organising {self.first_tournament.name} by {self.first_tournament.club}')
+
 
     #Assertions
     def _assert_organiser_is_valid(self):
@@ -103,4 +108,4 @@ class OrganiserModelTestCase(TestCase):
 
     def _assert_organiser_is_invalid(self):
         with self.assertRaises(ValidationError):
-            self.organiser.full_clean() 
+            self.organiser.full_clean()
