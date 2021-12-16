@@ -1,14 +1,11 @@
-<table class="table">
-  <thead>
+<table class="table standard-chess-table">
+  <thead class="text-center">
     <th></th>
     <th colspan="2">Participant</th>
     <th>Matches played</th>
     <th>Points</th>
   </thead>
   <tbody>
-    <p>
-      {{results}}
-    </p>
     {% for standing in single_group.get_standings %}
       {% include 'tournament_partials/results_and_fixtures/results_table_row.html' %}
     {% endfor %}

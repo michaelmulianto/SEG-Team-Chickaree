@@ -1,0 +1,25 @@
+<td>
+  <div class="row">
+    <div class="column">
+      {% if match.result == 0 %}
+      <p> Result: TBD </p>
+      {% elif match.result == 1 %}
+      <p><i class="bi bi-award-fill"></i> {{ match.white_player.member.user.username }} </p>
+      {% elif match.result == 2 %}
+      <p><i class="bi bi-award-fill"></i> {{ match.black_player.member.user.username }} </p>
+      {% elif match.result == 3 %}
+      <p> – Stalemate – </p>
+      {% endif %}
+      <p> {{ match.white_player.member.user.username }} vs {{ match.black_player.member.user.username }} </p>
+    </div>
+    {% if match.result == 0 and is_organiser %}
+    <div class="column align-self-center overflow-scroll">
+      <p>
+        <a href='{% url 'add_result' match.id %}' class="btn btn-info">
+          <i class="bi bi-pencil-square"></i> Add Result
+        </a>
+      </p>
+    </div>
+    {% endif %}
+  </div>
+</td>

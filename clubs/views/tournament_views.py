@@ -75,7 +75,7 @@ def show_tournament(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     club = tournament.club
     if Membership.objects.filter(user=request.user, club=club).exists():
-        tournament_group_stages = GroupStage.objects.filter(tournament=tournament)
+        tournament_group_stages = list(reversed(GroupStage.objects.filter(tournament=tournament)))
         tournament_knockout_stages = list(reversed(KnockoutStage.objects.filter(tournament=tournament)))
         return render(request, 'tournament/show_tournament.html', {
                 'current_user': request.user,

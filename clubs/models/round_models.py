@@ -157,16 +157,19 @@ class SingleGroup(RoundOfMatches, StageMethodInterface):
             matches_played.update({player.id:0})
 
         for match in matches:
+            # Add points to total for each played match
             if match.result == 1:
                 scores[match.white_player.id] += 1
             elif match.result == 2:
                 scores[match.black_player.id] += 1
-            else:
+            elif match.result == 3:
                 scores[match.white_player.id] += 0.5
                 scores[match.black_player.id] += 0.5
 
-            matches_played[match.white_player.id] += 1
-            matches_played[match.black_player.id] += 1
+            # Add 1 to matches played if result is not incomplete
+            if not match.result == 0:
+                matches_played[match.white_player.id] += 1
+                matches_played[match.black_player.id] += 1
 
         # https://www.geeksforgeeks.org/python-sort-list-by-dictionary-values/
         ordered_scores = dict(sorted(scores.items(), key = lambda item: item[1]))
