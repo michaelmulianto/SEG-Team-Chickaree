@@ -74,7 +74,7 @@ def banned_members(request, club_id):
         except EmptyPage:
             page_obj  = paginator.page(paginator.num_pages)
 
-        return render(request, 'club/banned_member_list.html', {'current_user': request.user, 'club': club_to_view, 'banned_members':page_obj})
+        return render(request, 'club/banned_member_list.html', {'current_user': request.user, 'club': club_to_view, 'page_obj':page_obj})
     else: #Access denied
         messages.error(request, "Only the club owner and officers can view banned members")
         return redirect('show_club', club_id=club_id)
