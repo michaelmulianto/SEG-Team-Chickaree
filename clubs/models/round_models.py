@@ -90,6 +90,9 @@ class GroupStage(TournamentStageBase, StageMethodInterface):
             # We also ensure 2 players in the same seed are not adjacent.
             for j in range(len(groups)):
                 winners.append(seeds[(i+j)%winners_per_group][j])
+                
+        if len(winners) != num_winners:
+            raise ValidationError("Issue in draw post group stage")
         
         return winners
 

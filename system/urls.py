@@ -69,5 +69,8 @@ urlpatterns = [
     path('tournament/<int:tournament_id>/withdraw/', views.withdraw_participation_from_tournament, name='withdraw_from_tournament'),
     path('tournament/<int:tournament_id>/add_organiser/', views.add_tournament_organiser_list, name='add_tournament_organiser_list'),
     path('tournament/<int:tournament_id>/add_organiser/<int:member_id>', views.add_organiser_to_tournament, name='add_organiser_to_tournament'),
+    
+    path('tournaments/my/', views.my_tournaments_list, name='my_tournament_list'),
+    
     path('match/<int:match_id>/add_result/', views.AddResultView.as_view(), name='add_result')
 ]

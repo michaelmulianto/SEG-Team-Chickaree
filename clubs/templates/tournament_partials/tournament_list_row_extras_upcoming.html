@@ -1,4 +1,6 @@
 {% widthratio tournament.get_participants.count tournament.capacity 100 as tournament_particpant_percentage %}
+{% load define_action %}
+{% is_later_than tournament.deadline as deadline_passed %}
 
 <td style="max-width: 50px;"> {{ tournament.get_participants.count }}/{{ tournament.capacity }} </td>
 <td style="width: 100px;">
@@ -8,9 +10,13 @@
 </td>
 {% if not is_lead_organiser and is_member %}
   {% if not has_joined_tournament %}
-<td style="text-align: center; vertical-align: bottom; padding: 20px"><a href='{% url 'join_tournament' tournament.id %}' class="btn btn-success"><i class="bi bi-person-plus-fill"></i> Join</a></td>
+    <td style="text-align: center; vertical-align: bottom; padding: 20px"><a href='{% url 'join_tournament' tournament.id %}' class="btn btn-success"><i class="bi bi-person-plus-fill"></i> Join</a></td>
   {% else %}
-<td style="text-align: center; vertical-align: bottom; padding: 20px"><a href='{% url 'show_club' club.id %}' onclick="confirmMsg('withdraw_from_tournament')" class="btn btn-warning"><i class="bi bi-person-dash-fill"></i> Withdraw</a></td>
+    {%if not deadline_passed %}
+      <td style="text-align: center; vertical-align: bottom; padding: 20px"><a href='{% url 'withdraw_from_tournament' tournament.id %}' onclick="confirmMsg('withdraw_from_tournament')" class="btn btn-warning"><i class="bi bi-person-dash-fill"></i> Withdraw</a></td>
+    {% else %}
+      <td style="text-align: center; vertical-align: bottom; padding: 20px">You are registered to play. Withdrawal period passed.</td>
+    {% endif %}
   {% endif %}
 {% else %}
 <td></td>
