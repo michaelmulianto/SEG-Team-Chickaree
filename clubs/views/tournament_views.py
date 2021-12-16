@@ -129,12 +129,12 @@ def my_tournaments_list(request):
     
     return render(request, 'tournament/my_tournament_list.html', {
                 'current_user': request.user,
-                'participant_tournaments_past': my_tournaments[0][0],
-                'participant_tournaments_present': my_tournaments[0][1],
-                'participant_tournaments_future': my_tournaments[0][2],
-                'organiser_tournaments_past': my_tournaments[1][0],
-                'organiser_tournaments_present': my_tournaments[1][1],
-                'organiser_tournaments_future': my_tournaments[1][2],
+                'participant_past_tournaments': my_tournaments[0][0],
+                'participant_ongoing_tournaments': my_tournaments[0][1],
+                'participant_upcoming_tournaments': my_tournaments[0][2],
+                'organiser_past_tournaments': my_tournaments[1][0],
+                'organiser_ongoing_tournaments': my_tournaments[1][1],
+                'organiser_upcoming_tournaments': my_tournaments[1][2],
             }
         )
             
