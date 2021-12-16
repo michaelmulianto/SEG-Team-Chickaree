@@ -83,7 +83,7 @@ class CreateClubViewTest(TestCase, MenuTesterMixin, AssertHTMLMixin):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_club.html')
+        self.assertTemplateUsed(response, 'club/show_club.html')
 
         messages_list = list(response.context['messages'])
         self.assertEqual(len(messages_list), 1)
@@ -109,7 +109,7 @@ class CreateClubViewTest(TestCase, MenuTesterMixin, AssertHTMLMixin):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_club.html')
+        self.assertTemplateUsed(response, 'club/show_club.html')
 
         messages_list = list(response.context['messages'])
         self.assertEqual(len(messages_list), 1)
@@ -135,7 +135,7 @@ class CreateClubViewTest(TestCase, MenuTesterMixin, AssertHTMLMixin):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
 
         messages_list = list(response.context['messages'])
         self.assertEqual(len(messages_list), 1)

@@ -66,7 +66,7 @@ class BeginTournamentViewTest(TestCase):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         
     def test_begin_tournament_fails_when_not_organiser(self):
         self.organiser.delete()
@@ -94,4 +94,4 @@ class BeginTournamentViewTest(TestCase):
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_tournament.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')

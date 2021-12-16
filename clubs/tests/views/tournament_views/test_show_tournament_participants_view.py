@@ -73,5 +73,5 @@ class ShowTouramentParticipantsViewTestCase(TestCase, MenuTesterMixin):
         self.client.login(email=self.owner_user.email, password="Password123")
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200) #OK
-        self.assertTemplateUsed(response, "show_tournament_participants.html")
+        self.assertTemplateUsed(response, "tournament/show_tournament_participants.html")
         self.assert_menu(response)

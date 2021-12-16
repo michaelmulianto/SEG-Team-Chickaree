@@ -28,19 +28,32 @@ def show_clubs(request, param=None, order=None):
         searched = request.POST.get('searched')
         clubs = Club.objects.filter(name__contains=searched)
 
+
         paginator = Paginator(clubs, settings.CLUBS_PER_PAGE)
-        page_number = request.GET.get('page')
-        page_obj  = paginator.get_page(page_number)
+
+        page = request.GET.get('page')
+        try:
+            page_obj = paginator.page(page)
+        except PageNotAnInteger:
+            page_obj  = paginator.page(1)
+        except EmptyPage:
+            page_obj  = paginator.page(paginator.num_pages)
 
 
-        return render(request, 'show_clubs.html', {'searched': searched, 'current_user': request.user, 'page_obj':page_obj,})
+        return render(request, 'club/show_clubs.html', {'searched': searched, 'current_user': request.user, 'clubs':page_obj,})
     clubs = sort_clubs(param, order)
 
     paginator = Paginator(clubs, settings.CLUBS_PER_PAGE)
-    page_number = request.GET.get('page')
-    page_obj  = paginator.get_page(page_number)
 
-    return render(request, 'show_clubs.html', {'current_user': request.user, 'order': order, 'page_obj':page_obj})
+    page = request.GET.get('page')
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj  = paginator.page(1)
+    except EmptyPage:
+        page_obj  = paginator.page(paginator.num_pages)
+
+    return render(request, 'club/show_clubs.html', {'current_user': request.user, 'order': order, 'clubs':page_obj})
 
 
 @login_required
@@ -63,7 +76,7 @@ def my_clubs_list(request):
     except EmptyPage:
         page_obj  = paginator.page(paginator.num_pages)
 
-    return render(request, 'my_clubs_list.html', {
-        'current_user':current_user, 
-        'page_obj':page_obj, 
+    return render(request, 'club/my_clubs_list.html', {
+        'current_user':current_user,
+        'my_clubs':page_obj,
     })

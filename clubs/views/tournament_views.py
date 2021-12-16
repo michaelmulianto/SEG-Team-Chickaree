@@ -25,7 +25,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 class OrganiseTournamentView(FormView):
     """Create a new tournament."""
     form_class = OrganiseTournamentForm
-    template_name = "organise_tournament.html"
+    template_name = "tournament/organise_tournament.html"
 
     @method_decorator(login_required)
     @method_decorator(club_exists)
@@ -75,9 +75,9 @@ def show_tournament(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     club = tournament.club
     if Membership.objects.filter(user=request.user, club=club).exists():
-        tournament_group_stages = GroupStage.objects.filter(tournament=tournament)
+        tournament_group_stages = list(reversed(GroupStage.objects.filter(tournament=tournament)))
         tournament_knockout_stages = list(reversed(KnockoutStage.objects.filter(tournament=tournament)))
-        return render(request, 'show_tournament.html', {
+        return render(request, 'tournament/show_tournament.html', {
                 'current_user': request.user,
                 'tournament': tournament,
                 'tournament_group_stages': tournament_group_stages,
@@ -94,7 +94,7 @@ def show_tournament_participants(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     club = tournament.club
     if Membership.objects.filter(user=request.user, club=club).exists():
-        return render(request, 'show_tournament_participants.html', {
+        return render(request, 'tournament/show_tournament_participants.html', {
                 'current_user': request.user,
                 'tournament': tournament
             }

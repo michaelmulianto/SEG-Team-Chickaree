@@ -64,7 +64,7 @@ class UnbanMemberViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assertFalse(self._has_member_been_unbanned())
         self.assertFalse(self._has_member_been_added())
 
@@ -73,7 +73,7 @@ class UnbanMemberViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_club', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_club.html')
+        self.assertTemplateUsed(response, 'club/show_club.html')
         self.assertFalse(self._has_member_been_unbanned())
         self.assertFalse(self._has_member_been_added())
 
@@ -84,14 +84,14 @@ class UnbanMemberViewTestCase(TestCase):
         self.assertFalse(self._has_member_been_added())
         redirect_url = reverse('banned_members', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'banned_member_list.html')
+        self.assertTemplateUsed(response, 'club/banned_member_list.html')
 
     def test_successful_unban_as_owner(self):
         self.client.login(email=self.user_club_owner.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('banned_members', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'banned_member_list.html')
+        self.assertTemplateUsed(response, 'club/banned_member_list.html')
         self.assertTrue(self._has_member_been_unbanned())
         self.assertTrue(self._has_member_been_added())
 

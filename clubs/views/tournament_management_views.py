@@ -24,49 +24,53 @@ def begin_tournament(request, tournament_id):
     if not is_user_member_of_club(request.user, tournament.club):
         messages.add_message(request, messages.ERROR, "The tournament is for members only!")
         return redirect('show_clubs')
-        
+
     elif not is_user_organiser_of_tournament(request.user, tournament):
         messages.add_message(request, messages.ERROR, "Only organisers can begin the tournament!")
-        
+
     elif tournament.get_current_round() != None:
         messages.add_message(request, messages.ERROR, "The tournament has already begun!")
-        
+
     else:
         tournament.generate_next_round()
         messages.add_message(request, messages.SUCCESS, "Tournament begun!")
-        
+
     return redirect('show_tournament', tournament_id= tournament_id)
+
 
 class AddResultView(UpdateView):
     """Edit the result of a match, if result not already set."""
 
     model = Match
-    template_name = "temporary_add_result.html"
+    template_name = "tournament/tournament_add_match_result.html"
     form_class = AddResultForm
 
     @method_decorator(match_exists)
     @method_decorator(login_required)
     def dispatch(self, request, match_id):
         match = self.get_object()
-        if match.result != 0:
-            messages.add_message(self.request, messages.ERROR, "The match has already had the result registered!")
-            return redirect('show_clubs')
-
-        # We must verify permissions...
         t = match.collection.tournament
 
+        # We must verify permissions...
         if not is_user_member_of_club(request.user, t.club):
             messages.add_message(self.request, messages.ERROR, "The tournament is for members only!")
-            return redirect('show_clubs')
-            
+            return redirect('show_club', club_id=t.club.id)
+
         if not is_user_organiser_of_tournament(self.request.user, t):
             messages.add_message(self.request, messages.ERROR, "Only organisers can set match results!")
-            return redirect('show_clubs')
+            return redirect('show_tournament', tournament_id=t.id)
+
+        if match.result != 0:
+            messages.add_message(self.request, messages.ERROR, "The match has already had the result registered!")
+            return redirect('show_tournament', tournament_id=t.id)
 
         return super().dispatch(request)
 
     def get_form(self):
         my_form = super().get_form()
+        match = self.get_object()
+
+        # Here we check if the match is linked to a knockout stage.
         try:
             self.get_object().collection.tournamentstagebase.knockoutstage
         except:
@@ -74,7 +78,18 @@ class AddResultView(UpdateView):
             pass
         else:
             my_form.fields["result"].choices = my_form.fields["result"].choices[:2]
+            
+        my_form.fields["result"].choices[0] = (1, f'White Victory - {match.white_player.member.user.username}')
+        my_form.fields["result"].choices[1] = (2, f'Black Victory - {match.black_player.member.user.username}')
+        
         return my_form
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        t = self.get_object().collection.tournament
+        if t.get_current_round().get_is_complete():
+            t.generate_next_round()
+        return response
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -87,8 +102,10 @@ class AddResultView(UpdateView):
 
     def get_success_url(self):
         """Return redirect URL after successful update."""
+        match = self.get_object()
+        tournament = match.collection.tournament
         messages.add_message(self.request, messages.SUCCESS, "Result Registered!")
-        return reverse('show_clubs')
+        return reverse('show_tournament', kwargs={'tournament_id': tournament.id})
 
 
 @login_required
@@ -99,7 +116,7 @@ def add_tournament_organiser_list(request, tournament_id):
     if Membership.objects.filter(user=request.user, club=club).exists():
         member =  Membership.objects.get(user=request.user, club=club)
         if is_lead_organiser_of_tournament(request.user, tournament): # Every tournament must have a lead organiser (and therefore an organiser)
-            return render(request, 'add_tournament_organiser_list.html', {
+            return render(request, 'tournament/add_tournament_organiser_list.html', {
                     'current_user': request.user,
                     'tournament': tournament
                 }

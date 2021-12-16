@@ -29,4 +29,4 @@ class AccountViewTestCase(TestCase, MenuTesterMixin):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse(settings.REDIRECT_URL_WHEN_LOGGED_IN)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, settings.REDIRECT_URL_WHEN_LOGGED_IN + '.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')

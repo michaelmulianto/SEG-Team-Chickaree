@@ -14,13 +14,13 @@ class Match(models.Model):
 
     collection = models.ForeignKey(RoundOfMatches, on_delete=models.CASCADE, unique=False, blank=False)
 
-    OUTCOMES = [
-        (0, 'Incomplete'),
-        (1,'White Victory'),
-        (2, 'Black Victory'),
-        (3, 'Stalemate'),
-    ]
-    result = models.IntegerField(default = 0, choices = OUTCOMES, blank = False)
+    class Result(models.IntegerChoices):
+        Incomplete = 0, 'Incomplete'
+        White_Victory = 1, f'White Victory'
+        Black_Victory = 2, f'Black Victory'
+        Stalemate = 3, 'Stalemate'
+
+    result = models.IntegerField(default = 0, choices = Result.choices, blank = False)
 
     class Meta:
         ordering = ['collection']
@@ -56,9 +56,11 @@ class KnockoutStage(TournamentStageBase, StageMethodInterface):
             if match.result == 1:
                 winners.append(match.white_player)
                 match.black_player.round_eliminated = self.round_num
+                match.black_player.save()
             elif match.result == 2:
                 winners.append(match.black_player)
                 match.white_player.round_eliminated = self.round_num
+                match.white_player.save()
         # Case draw not considered: To-do
         return winners
 
@@ -68,15 +70,31 @@ class GroupStage(TournamentStageBase, StageMethodInterface):
         if not self.get_is_complete():
             return None
 
-        groups = list(SingleGroup.objects.filter(group_stage=self))
-        winners = []
+        # We assume the number of winners is even, with the current algorithms this should always be the case.
+        
+        groups = list(self.get_single_groups())
+        winners_per_group = groups[0].winners_required
+        num_winners = len(groups)*winners_per_group
+        seeds = []
+        for i in range(winners_per_group):
+            seeds.append([])
+            
         for group in groups:
-            winners += group.get_winners()
-
+            winners_from_group = group.get_winners()
+            for i in range(winners_per_group):
+                seeds[i].append(winners_from_group[i])
+                
+        winners = []
+        for i in range(winners_per_group):
+            # 'Clever' use of modulo to seperate those in the same group.
+            # We also ensure 2 players in the same seed are not adjacent.
+            for j in range(len(groups)):
+                winners.append(seeds[(i+j)%winners_per_group][j])
+        
         return winners
 
     def get_matches(self):
-        groups = list(SingleGroup.objects.filter(group_stage=self))
+        groups = list(self.get_single_groups())
         matches = []
         for group in groups:
             matches += group.get_matches()
@@ -131,9 +149,6 @@ class SingleGroup(RoundOfMatches, StageMethodInterface):
             raise ValidationError("The incorrect number of matches are linked to this group.")
 
     def get_standings(self):
-        if not self.get_is_complete():
-            return None
-
         matches = self.get_matches()
         players = set(self.get_player_occurrences())
         scores = {}
@@ -143,16 +158,19 @@ class SingleGroup(RoundOfMatches, StageMethodInterface):
             matches_played.update({player.id:0})
 
         for match in matches:
+            # Add points to total for each played match
             if match.result == 1:
                 scores[match.white_player.id] += 1
             elif match.result == 2:
                 scores[match.black_player.id] += 1
-            else:
+            elif match.result == 3:
                 scores[match.white_player.id] += 0.5
                 scores[match.black_player.id] += 0.5
 
-            matches_played[match.white_player.id] += 1
-            matches_played[match.black_player.id] += 1
+            # Add 1 to matches played if result is not incomplete
+            if not match.result == 0:
+                matches_played[match.white_player.id] += 1
+                matches_played[match.black_player.id] += 1
 
         # https://www.geeksforgeeks.org/python-sort-list-by-dictionary-values/
         ordered_scores = dict(sorted(scores.items(), key = lambda item: item[1]))
@@ -168,36 +186,17 @@ class SingleGroup(RoundOfMatches, StageMethodInterface):
         if not self.get_is_complete():
             return None
 
-        matches = self.get_matches()
-        players = set(self.get_player_occurrences())
-        scores = {}
-        for player in players:
-            scores.update({player.id:0})
+        standings = self.get_standings()
+        
+        winners_standings = standings[:self.winners_required]
+        losers_standings = standings[self.winners_required:]
+        
+        winners=[]
+        for entry in winners_standings:
+            winners.append(entry[0])
 
-        for match in matches:
-            if match.result == 1:
-                scores[match.white_player.id] += 1
-            elif match.result == 2:
-                scores[match.black_player.id] += 1
-            else:
-                scores[match.white_player.id] += 0.5
-                scores[match.black_player.id] += 0.5
-
-        # https://www.geeksforgeeks.org/python-sort-list-by-dictionary-values/
-        res = sorted(scores.keys(), key = lambda ele: scores[ele])
-        winner_ids = []
-        for i in range(0,self.winners_required):
-            winner_ids.append(res[i])
-
-        loser_ids = []
-        for i in range(self.winners_required, len(res)):
-            loser_ids.append(res[i])
-
-        winners = []
-        for p_id in winner_ids:
-            winners.append(Participant.objects.get(id = p_id))
-
-        for p_id in loser_ids:
-            Participant.objects.filter(id = p_id).round_eliminated = self.group_stage.round_num
+        for entry in losers_standings:
+            entry[0].round_eliminated = self.group_stage.round_num
+            entry[0].save()
 
         return winners

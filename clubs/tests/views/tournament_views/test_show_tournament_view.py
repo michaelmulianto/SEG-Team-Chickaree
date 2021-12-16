@@ -62,6 +62,6 @@ class ShowClubViewTestCase(TestCase, MenuTesterMixin):
     def test_get_show_tournament_with_valid_id(self):
         self.client.login(email=self.owner_user.email, password="Password123")
         response = self.client.get(self.url)
-        self.assertTemplateUsed(response, "show_tournament.html")
+        self.assertTemplateUsed(response, "tournament/show_tournament.html")
         self.assertEqual(response.status_code, 200) #OK
         self.assert_menu(response)

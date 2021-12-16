@@ -246,6 +246,26 @@ class TournamentModelTestCase(TestCase):
         self.assertEqual(len(set(groups[0].get_player_occurrences())), 6)
         # Check number of matches in one group
         self.assertEqual(len(groups[0].get_matches()), 15)
+        
+    def test_generate_first_round_with_95_participants_96_capacity(self):
+        # 96 participants by default in fixture
+        # Do not change capacity here.
+        
+        Participant.objects.filter(tournament=self.tournament)[0].delete()
+        
+        next_round = self.tournament.generate_next_round()
+        
+        self.assertEqual(self.tournament.capacity, 48)
+        self.assertEqual(Participant.objects.filter(tournament=self.tournament).count(), 48)
+        
+        self.assertIsInstance(next_round, GroupStage)
+        groups = SingleGroup.objects.filter(group_stage=next_round)
+        self.assertEqual(groups.count(), 8)
+        groups[0].full_clean()
+        # Check num members in one group
+        self.assertEqual(len(set(groups[0].get_player_occurrences())), 6)
+        # Check number of matches in one group
+        self.assertEqual(len(groups[0].get_matches()), 15)
 
     def test_generate_first_round_with_16_participants(self):
         self.tournament.capacity = 16

@@ -52,7 +52,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assertFalse(self._has_ownership_been_transferred())
 
     def test_transfer_redirects_when_not_owner_of_club(self):
@@ -60,7 +60,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assertFalse(self._has_ownership_been_transferred())
 
     def test_transfer_redirects_transfering_ownership_to_non_officer(self):
@@ -70,7 +70,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assertFalse(self._has_ownership_been_transferred())
 
     def test_successful_transfer(self):
@@ -79,7 +79,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assertTrue(self._has_ownership_been_transferred())
 
     def _has_ownership_been_transferred(self):

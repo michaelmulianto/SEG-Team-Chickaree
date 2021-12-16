@@ -3,7 +3,7 @@
 | Clubs
 {% endblock %}
 {% block content %}
-{% include 'partials/js_confirm_messages.html'%}
+
 {% load static %}
 {% load define_action %}
 {% load bootstrap_pagination %}
@@ -12,37 +12,26 @@
   <div class="row">
     <div class="col-12">
       <h1 style=font-size:85px> Checkmates </h1>
-      <p> Welcome to checkmates, a place to share your love for chess. Join a club from the list below to play with fellow chess enthusiasts. </p>
+      <p> Welcome to Checkmates, a place to share your love for chess. Join a club from the list below to play with fellow chess enthusiasts. </p>
       <p> Can't find a club that is right for you? Create your own club for free! </p>
     </div>
   </div>
-  <div class="row">
+  <div class="row" style="margin:2%;">
     <div class="col-md-3">
       <a href="{% url 'create_club' %}" class="btn btn-primary btn-lg"><i class="bi bi-plus-lg"></i> Create New Club
       </a>
     </div>
-    <div class="col-md-9">
-      <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
           {% include 'partials/searchbar.html' %}
         </div>
-      </div>
-      <div class="row">
-        <div class="col-md-8"></div>
-        <div class="col-md-4">
-          <a class="btn btn-secondary" href="#" id="sort-dropdown" style="width:30%; margin:3%; float: right;" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-sort-down"></i>
+        <div class="col-md-3">
+          <a class="btn btn-secondary" href="#" id="sort-dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-sort-down"></i>
             Sort
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="sort-dropdown">
             <li><a class="dropdown-item" href="{% url 'show_clubs' "name" "asc" %}">Name (A-Z)</a></li>
             <li><a class="dropdown-item" href="{% url 'show_clubs' "name" "des" %}">Name (Z-A)</a></li>
           </ul>
-          <a class="btn btn-secondary" href="#" id="filter-dropdown" style="width:30%; margin:3%; float: right;" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-funnel-fill"></i>
-            Filter
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="filter-dropdown">
-          </ul>
-        </div>
       </div>
     </div>
   </div>
@@ -51,11 +40,13 @@
   <h1>You searched for {{ searched }}</h1>
   {% endif %}
 
+  {% if clubs.has_other_pages %}
+    {% bootstrap_paginate clubs range=6 show_first_last="false" %}
+  {% endif %}
 
-  {% bootstrap_paginate page_obj range=6 show_first_last="false" %}
 
   <table class="table table-hover">
-    {% for club in page_obj %}
+    {% for club in clubs %}
     {% check_has_applied club current_user as has_applied %}
     {% check_is_member club current_user as is_member %}
     {% check_is_owner club current_user as is_owner %}
@@ -91,8 +82,9 @@
     </tr>
     {% endfor %}
   </table>
-
-  {% bootstrap_paginate page_obj range=6 show_first_last="false" %}
+  {% if clubs.has_other_pages %}
+    {% bootstrap_paginate clubs range=6 show_first_last="false" %}
+  {% endif %}
 
 </div>
 {% endblock %}

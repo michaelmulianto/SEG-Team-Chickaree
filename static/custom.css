@@ -72,60 +72,6 @@ ul.errorlist {
 }
 
 /*
- * Typefaces
- */
-
-.low-key {
-  color: #777777;
-  font-weight: 300;
-}
-
-.list-title {
-  margin-top: 10px;
-  margin-bottom: 20px;
-}
-
-/*
- * Profile
- */
-.profile-image {
-  width: 120px;
-  clear:both;
-  float:left;
-}
-
-.profile-text {
-  overflow:hidden;
-  padding-left:20px
-}
-
-h3.profile-title {
-  margin-bottom: 0px;
-}
-
-.profile-username {
-  color: #777777;
-  font-weight: 300;
-  font-style: italic;
-}
-
-.profile-bio {
-  font-size: 1.1rem;
-}
-
-.profile-statistics {
-  color: #777777;
-  font-weight: 300;
-  display: block;
-}
-
-.profile-statistics-item {
-  display: block;
-  padding-right: 50px;
-}
-
-
-/*
  * Hyperlinks
  */
 .content a {
@@ -165,4 +111,11 @@ h3.profile-title {
 
 .btn-risk {
   background-color: orange !important;
+}
+
+/*
+* Table adjustments
+*/
+tbody {
+  border-top: none !important;
 }

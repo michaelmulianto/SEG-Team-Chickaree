@@ -39,7 +39,7 @@ class ChangePasswordViewTestCase(TestCase, MenuTesterMixin):
         response = self.client.get(self.url)
         self.assert_menu(response)
         self.assertEqual(response.status_code, 200) #OK
-        self.assertTemplateUsed(response, 'change_password.html')
+        self.assertTemplateUsed(response, 'account/change_password.html')
         form = response.context['form']
         self.assertTrue(isinstance(form, PasswordChangeForm))
         self.assertFalse(form.is_bound)
@@ -52,7 +52,7 @@ class ChangePasswordViewTestCase(TestCase, MenuTesterMixin):
         new_pass = self.user.password
         self.assertNotEqual(old_pass,new_pass)
         self.assertEqual(response.status_code, 200) #OK
-        self.assertTemplateUsed(response, 'account.html')
+        self.assertTemplateUsed(response, 'account/account.html')
 
     # Test invalid inputs
     def test_password_validation_used(self):
@@ -65,7 +65,7 @@ class ChangePasswordViewTestCase(TestCase, MenuTesterMixin):
         new_pass = self.user.password
         self.assertEqual(old_pass,new_pass)
         self.assertEqual(response.status_code, 200) #OK
-        self.assertTemplateUsed(response, 'change_password.html')
+        self.assertTemplateUsed(response, 'account/change_password.html')
 
     def test_password_confirmation_must_equal_new_password(self):
         self.data['new_password2'] = 'NotSame1'
@@ -76,7 +76,7 @@ class ChangePasswordViewTestCase(TestCase, MenuTesterMixin):
         new_pass = self.user.password
         self.assertEqual(old_pass,new_pass)
         self.assertEqual(response.status_code, 200) #OK
-        self.assertTemplateUsed(response, 'change_password.html')
+        self.assertTemplateUsed(response, 'account/change_password.html')
 
     def test_password_change_fails_when_old_password_is_wrong(self):
         self.data['old_password'] = 'Fail!'
@@ -87,7 +87,7 @@ class ChangePasswordViewTestCase(TestCase, MenuTesterMixin):
         new_pass = self.user.password
         self.assertEqual(old_pass,new_pass)
         self.assertEqual(response.status_code, 200) #OK
-        self.assertTemplateUsed(response, 'change_password.html')
+        self.assertTemplateUsed(response, 'account/change_password.html')
 
     # Helper
     def _get_updated_self_user(self):
