@@ -333,6 +333,10 @@ class TournamentModelTestCase(TestCase):
         next_round = self.tournament.generate_next_round()
         self.assertEqual(next_round, None)
 
+    # Test string
+    def test_str(self):
+        self.assertEqual(self.tournament.__str__(), f'{self.tournament.name} by {self.tournament.club}')
+
     # Helper functions.
     def _adjust_num_participants_to_capacity(self):
         participants = Participant.objects.filter(tournament=self.tournament)
