@@ -39,12 +39,12 @@ def is_participant_in_tournament(user, tournament):
         return Participant.objects.filter(member = possible_organiser_member, tournament = tournament).exists()
 
 def sort_clubs(param, order):
-    if order == None:
-        clubs = Club.objects.all()
-    elif order == "asc":
+    if order == "asc":
         clubs = Club.objects.all().order_by(Lower(param))
         order = "des"
     elif order == "des":
         clubs = Club.objects.all().order_by(Lower(param).desc())
         order = "asc"
+    else:
+        clubs = Club.objects.all()
     return clubs
