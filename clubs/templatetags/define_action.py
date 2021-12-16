@@ -45,8 +45,13 @@ def remove_from_queryset(qset_a, qset_b):
     return list
 
 @register.simple_tag
-def is_later_than(date):
+def is_before_today(date):
     return date < timezone.now()
+
+@register.filter
+def days_until(date):
+    delta = date - timezone.now()
+    return delta.days
 
 # CLUB tags
 
