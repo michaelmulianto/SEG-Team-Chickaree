@@ -120,7 +120,7 @@ def my_tournaments_list(request):
             else:
                 outer_index=None
             
-            if outer_index:
+            if outer_index!=None:
                 if tournament.end <= curr_time:
                     inner_index = 0
                 elif tournament.start <= curr_time:
