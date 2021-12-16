@@ -78,6 +78,10 @@ class ApplicationModelTestCase(TestCase):
         with self.assertRaises(ValidationError):
             self.app.full_clean()
 
+    # Test string
+    def test_str(self):
+        self.assertEqual(self.app.__str__(), f'User: {self.user.first_name} {self.user.last_name} to Club: {self.club}')
+
     #Constraints:
     def test_user_and_club_together_are_unique(self):
         try:
