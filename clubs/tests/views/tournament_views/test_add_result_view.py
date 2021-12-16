@@ -47,17 +47,24 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
     def test_add_result_url(self):
         self.assertEqual(self.url, f'/match/{self.match.id}/add_result/')
 
+    def test_get_add_result_redirects_when_not_logged_in(self):
+        response = self.client.post(self.url)
+        redirect_url = reverse_with_next('log_in', self.url)
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+
+    def test_get_add_result_redirects_for_non_existant_match(self):
+        self.client.login(email=self.user.email, password="Password123")
+        self.url = reverse('add_result', kwargs={'match_id': 999})
+        response = self.client.get(self.url, follow=True)
+        redirect_url = reverse('show_clubs')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+
     def test_get_add_result_loads_empty_form(self):
         self.client.login(email=self.user.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         self.assert_menu(response)
         self.assertEqual(self.match.result, 0)
         self.assertEqual(response.status_code, 200)
-
-    def test_get_add_result_redirects_when_not_logged_in(self):
-        response = self.client.post(self.url)
-        redirect_url = reverse_with_next('log_in', self.url)
-        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
     def test_successful_add_result_incomplete_round(self):
         self.client.login(email=self.user.email, password="Password123")
