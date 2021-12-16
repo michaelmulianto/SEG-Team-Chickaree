@@ -4,12 +4,14 @@
 {% endblock %}
 {% block content %}
   <div class="container">
-    <div class="row">
+    <div class="row d-flex justify-content-center">
       <div class="col-sm-12 col-md-6 col-lg-4">
+        <h2>Log in</h2>
         <form action="{% url 'log_in' %}" method="post">
           {% csrf_token %}
           {% include 'partials/bootstrap_form.html' with form=form %}
-          <input type="submit" value="Log In" class="btn btn-lg btn-primary">
+          <a href='{% url 'home' %}' class="btn btn-outline-danger">Cancel</a>&nbsp;
+          <input type="submit" value="Log In" class="btn btn-primary">
         </form>
       </div>
     </div>

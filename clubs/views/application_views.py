@@ -64,7 +64,8 @@ def withdraw_application_to_club(request, club_id):
     applied_club = Club.objects.get(id=club_id)
     if Application.objects.filter(club=applied_club, user = current_user).exists():
         Application.objects.get(club=applied_club, user=current_user).delete()
-
+    else:
+        messages.error(request, "You have not applied to this club.")
     return redirect('show_clubs')
 
 # Owner viewing application views:
