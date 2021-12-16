@@ -1,3 +1,4 @@
+{% load define_action %}
 {% if tournaments.count == 0 %}
 <thead>
   <tr><td></td></tr>
@@ -10,18 +11,17 @@
 <thead>
   <tr>
     {% include 'tournament_partials/tournament_list_header_basics.html' %}
-    {% include 'tournament_partials/tournament_list_header_extras_upcoming.html' %}
+    {% include 'tournament_partials/tournament_list_header_extras_upcoming.html' with show_join=tournament_is_full %}
   </tr>
 </thead>
     {% for tournament in tournaments %}
 <tbody>
   <tr {% if is_member %} onclick=window.location="{% url 'show_tournament' tournament.id %}" {% endif %}>
-      {% load define_action %}
       {% check_is_lead_organiser current_user tournament as is_lead_organiser %}
       {% check_has_joined_tournament current_user tournament as has_joined_tournament %}
 
       {% include 'tournament_partials/tournament_list_row_basics.html' %}
-      {% include 'tournament_partials/tournament_list_row_extras_upcoming.html' %}
+      {% include 'tournament_partials/tournament_list_row_extras_upcoming.html' with show_join=tournament_is_full %}
   </tr>
 </tbody>
     {% endfor %}

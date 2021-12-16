@@ -1,6 +1,6 @@
-{% widthratio tournament.get_participants.count tournament.capacity 100 as tournament_particpant_percentage %}
+{% widthratio tournament.get_num_participants tournament.capacity 100 as tournament_particpant_percentage %}
 
-<td style="max-width: 50px;"> {{ tournament.get_participants.count }}/{{ tournament.capacity }} </td>
+<td style="max-width: 50px;"> {{ tournament.get_num_participants }}/{{ tournament.capacity }} </td>
 <td style="width: 100px;">
   <div class="progress">
     <div class="progress-bar" role="progressbar" style="width: {{ tournament_particpant_percentage }}%"></div>
