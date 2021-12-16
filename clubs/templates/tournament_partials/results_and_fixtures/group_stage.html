@@ -1,24 +1,24 @@
 <h3><b>Group Stage {{ group_stage.round_num }}</b></h3>
 <br>
-<ul class="nav nav-tabs">
-  {% for single_group in group_stage.get_single_groups %}
-  <li class="nav-item">
-    <a id="group{{forloop.counter}}_tab" {% if forloop.counter == 1 %} class="nav-link active" {% else %} class="nav-link" {% endif %} onclick="displayTournaments('group{{forloop.counter}}', 'flex')" type="button">Group {{forloop.counter}}</a>
-  </li>
-  {% endfor %}
-</ul>
 <script>
-  var tabs_dic = {
+  var tabs_dic{{forloop.counter}} = {
     {% for single_group in group_stage.get_single_groups %}
-    "group{{forloop.counter}}" : "group{{forloop.counter}}_tab",
+    "group{{forloop.counter}}" : "group{{forloop.counter}}_tab{{forloop.parentloop.counter}}",
     {% endfor %}
   };
-  var tables_dic = {
+  var tables_dic{{forloop.counter}} = {
     {% for single_group in group_stage.get_single_groups %}
-    "group{{forloop.counter}}" : "group{{forloop.counter}}_div",
+    "group{{forloop.counter}}" : "group{{forloop.counter}}_div{{forloop.parentloop.counter}}",
     {% endfor %}
   };
 </script>
+<ul class="nav nav-tabs">
+  {% for single_group in group_stage.get_single_groups %}
+  <li class="nav-item">
+    <a id="group{{forloop.counter}}_tab{{forloop.parentloop.counter}}" {% if forloop.counter == 1 %} class="nav-link active" {% else %} class="nav-link" {% endif %} onclick="displayTournaments{{forloop.parentloop.counter}}('group{{forloop.counter}}', 'flex')" type="button">Group {{forloop.counter}}</a>
+  </li>
+  {% endfor %}
+</ul>
 <br>
 <style>
   .row {
@@ -33,7 +33,7 @@
   }
 </style>
 {% for single_group in group_stage.get_single_groups %}
-<div class="row" id="group{{forloop.counter}}_div" {% if not forloop.counter == 1 %} style="display: none" {% endif %}>
+<div class="row" id="group{{forloop.counter}}_div{{forloop.parentloop.counter}}" {% if not forloop.counter == 1 %} style="display: none" {% endif %}>
   <div class="column">
     <h3 class="text-center">Results</h3>
     <br>

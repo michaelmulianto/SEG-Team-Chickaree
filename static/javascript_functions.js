@@ -1,14 +1,28 @@
 /*
-* Method to hide and display tables when tab is clicked.
+* Methods to hide and display tables when tab is clicked. Need to have a way no
+* have the same method used in the same page qouting different diccionaries,
+* taking the dic as a param is not feasible so the next best thing is duplicating
+* the method however many times is needed on the same page. Apologies for the
+* WET code.
 */
-function displayTournaments(new_active_keyword, containerType) {
-  for (const prev_active_keyword of Object.keys(tabs_dic)) {
-    document.getElementById(tabs_dic[prev_active_keyword]).classList.remove('active');
-    document.getElementById(tables_dic[prev_active_keyword]).style.display = "none";
+function displayTournaments1(new_active_keyword, containerType) {
+  for (const prev_active_keyword of Object.keys(tabs_dic1)) {
+    document.getElementById(tabs_dic1[prev_active_keyword]).classList.remove('active');
+    document.getElementById(tables_dic1[prev_active_keyword]).style.display = "none";
   }
 
-  document.getElementById(tabs_dic[new_active_keyword]).classList.add('active');
-  document.getElementById(tables_dic[new_active_keyword]).style.display = containerType;
+  document.getElementById(tabs_dic1[new_active_keyword]).classList.add('active');
+  document.getElementById(tables_dic1[new_active_keyword]).style.display = containerType;
+}
+
+function displayTournaments2(new_active_keyword, containerType) {
+  for (const prev_active_keyword of Object.keys(tabs_dic2)) {
+    document.getElementById(tabs_dic2[prev_active_keyword]).classList.remove('active');
+    document.getElementById(tables_dic2[prev_active_keyword]).style.display = "none";
+  }
+
+  document.getElementById(tabs_dic2[new_active_keyword]).classList.add('active');
+  document.getElementById(tables_dic2[new_active_keyword]).style.display = containerType;
 }
 
 var msgDic = {
