@@ -127,12 +127,16 @@ class Tournament(models.Model):
     def _participants_to_appropriate_capacity(self):
         participants = Participant.objects.filter(tournament=self)
         potential_capacity = self.capacity
-        cap_index = self.capacities.index(potential_capacity)
+        capacities =[]
+        for entry in self.CAPACITIES:
+            capacities.append(entry[0])
+        
+        cap_index = capacities.index(potential_capacity)
         while participants.count() < potential_capacity:
             cap_index -= 1
             if cap_index == -1:
                 return participants
-            potential_capacity = self.capacities[cap_index]
+            potential_capacity = capacities[cap_index]
             
         excess_participant_count = participants.count() - potential_capacity
         ordered_participants = participants.order_by('-joined')
