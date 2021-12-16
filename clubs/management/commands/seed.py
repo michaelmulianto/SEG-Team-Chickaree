@@ -291,7 +291,7 @@ class Command(BaseCommand):
             club = kerbal,
             name = "Jeroen's Tournament 1",
             description = "Tournament with deadline passed and Jeb signed up.",
-            capacity = 32,
+            capacity = 16,
             deadline = seedtime - timedelta(hours=24),
             start = seedtime,
             end =  seedtime + timedelta(hours=47)

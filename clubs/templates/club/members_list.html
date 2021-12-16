@@ -1,6 +1,8 @@
 {% extends 'base_content.html' %}
+{% block title %}
+| Members
+{% endblock %}
 {% block content %}
-
 {% load define_action %}
 {% load bootstrap_pagination %}
 {% check_is_owner club current_user as is_owner %}

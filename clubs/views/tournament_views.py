@@ -1,15 +1,12 @@
 from django.http import request
 from django.views import View
-from django.views.generic.edit import FormView
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from clubs.forms import OrganiseTournamentForm
-
 from clubs.models import Tournament, Club, Organiser, Membership, Participant, GroupStage, KnockoutStage, MemberTournamentRelationship
 
-from .decorators import club_exists, tournament_exists, user_exists, membership_exists, allowed_users
+from .decorators import club_exists, tournament_exists, membership_exists
 from .helpers import is_user_organiser_of_tournament, is_user_owner_of_club, is_user_officer_of_club, is_lead_organiser_of_tournament, is_participant_in_tournament
 
 
@@ -24,53 +21,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-
-class OrganiseTournamentView(FormView):
-    """Create a new tournament."""
-    form_class = OrganiseTournamentForm
-    template_name = "tournament/organise_tournament.html"
-
-    @method_decorator(login_required)
-    @method_decorator(club_exists)
-    @method_decorator(allowed_users(allowed_roles=[]))
-    def dispatch(self, request, club_id):
-        return super().dispatch(request)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['current_user'] = self.request.user
-        context['club'] = Club.objects.get(id=self.kwargs['club_id'])
-        return context
-
-    def form_valid(self, form):
-        if not is_user_owner_of_club(self.request.user, self.get_context_data()['club']) and not is_user_officer_of_club(self.request.user, self.get_context_data()['club']):
-            messages.add_message(self.request, messages.ERROR, "Only Owners or Officers of a club can create tournaments")
-            return super().form_invalid(form)
-
-        if form.cleaned_data['start'] < now() or form.cleaned_data['end'] < now() or form.cleaned_data['deadline'] < now():
-            messages.add_message(self.request, messages.ERROR, "Given time and date must not be in the past.")
-            return super().form_invalid(form)
-
-        self.object = form.save(self.get_context_data()['club'])
-        if Membership.objects.filter(club = self.get_context_data()['club'], user=self.request.user).exists():
-            member = Membership.objects.get(user = self.request.user, club = self.get_context_data()['club'])
-
-        Organiser.objects.create(
-            member = member,
-            tournament = self.object,
-            is_lead_organiser = True
-        )
-        return super().form_valid(form)
-
-
-    def get_success_url(self):
-        club = self.get_context_data()['club']
-        return reverse('show_club', kwargs={'club_id': club.id})
-
-    @method_decorator(user_exists)
-    def create_organiser(self, user):
-        pass
-
 
 @login_required
 @tournament_exists
@@ -162,3 +112,44 @@ def join_tournament(request, tournament_id):
         messages.error(request, 'Tournament is full')
 
     return redirect('show_club', club_id=tour.club.id)
+
+@login_required
+def my_tournaments_list(request):
+    current_user = request.user
+    my_tournaments = [
+        [[],[],[]], # Participant... past/present/future
+        [[],[],[]] # Organiser
+    ]
+
+    curr_time = now()
+
+    for tournament in Tournament.objects.all():
+        if Membership.objects.filter(user=current_user, club=tournament.club).exists():
+            member= Membership.objects.get(user=current_user, club=tournament.club)
+            if Participant.objects.filter(tournament=tournament, member=member).exists():
+                outer_index=0
+            elif Organiser.objects.filter(tournament=tournament, member=member).exists():
+                outer_index=1
+            else:
+                outer_index=None
+
+            if outer_index:
+                if tournament.end <= curr_time:
+                    inner_index = 0
+                elif tournament.start <= curr_time:
+                    inner_index = 1
+                else:
+                    inner_index = 2
+
+                my_tournaments[outer_index][inner_index].append(tournament)
+
+    return render(request, 'tournament/my_tournament_list.html', {
+                'current_user': request.user,
+                'participant_past_tournaments': my_tournaments[0][0],
+                'participant_ongoing_tournaments': my_tournaments[0][1],
+                'participant_upcoming_tournaments': my_tournaments[0][2],
+                'organiser_past_tournaments': my_tournaments[1][0],
+                'organiser_ongoing_tournaments': my_tournaments[1][1],
+                'organiser_upcoming_tournaments': my_tournaments[1][2],
+            }
+        )
