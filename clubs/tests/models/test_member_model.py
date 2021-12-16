@@ -72,28 +72,6 @@ class MembershipModelTestCase(TestCase):
         self.membership.delete()
         self.assertTrue(User.objects.filter(id=self.user.id).exists())
 
-    # Test is officer field
-    def test_is_officer_cannot_be_blank(self):
-        self.membership.is_officer = None
-        self._assert_member_is_invalid()
-
-    def test_is_owner_must_be_boolean(self):
-        self.membership.is_officer = "WRONG INPUT"
-        self._assert_member_is_invalid()
-
-    # Test is owner field
-    def test_is_owner_cannot_be_blank(self):
-        self.membership.is_owner = None
-        self._assert_member_is_invalid()
-
-    def test_is_owner_must_be_boolean(self):
-        self.membership.is_owner = "WRONG INPUT"
-        self._assert_member_is_invalid()
-
-    # Test string
-    def test_str(self):
-        self.assertEqual(self.membership.__str__(), f'User: {self.user.first_name} {self.user.last_name} at Club: {self.club}')
-
     #Constraints:
     def test_user_and_club_together_are_unique(self):
         try:

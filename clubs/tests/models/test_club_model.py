@@ -1,7 +1,7 @@
 """Tests for Club model"""
 
 from django.test import TestCase
-from clubs.models import Club, Membership, User, Ban, Application
+from clubs.models import Club
 from django.core.exceptions import ValidationError
 
 
