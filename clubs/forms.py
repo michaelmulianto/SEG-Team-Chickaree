@@ -117,6 +117,19 @@ class OrganiseTournamentForm(forms.ModelForm):
         end = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
         widgets = {'description': forms.Textarea()}
 
+    # Verify our custom constraints are fullfiled.
+    def full_clean(self):
+        super().full_clean()
+        deadline = self.cleaned_data.get('deadline')
+        start = self.cleaned_data.get('start')
+        end = self.cleaned_data.get('end')
+        if deadline > start:
+            self.add_error('deadline', 'Deadline to join must be before tournament start.')
+            self.add_error('start', 'Deadline to join must be before tournament start.')
+        if start > end:
+            self.add_error('start', 'Start date must be before end date.')
+            self.add_error('end', 'Start date must be before end date.')
+
     #Create new tournament using the tournament form data
     def save(self, desired_club):
         super().save(commit=False)
@@ -135,5 +148,5 @@ class AddResultForm(forms.ModelForm):
     class Meta:
         model = Match
         fields = ['result']
-        
+
     result = forms.ChoiceField(choices=Match.Result.choices[1:])
