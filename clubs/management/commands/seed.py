@@ -4,6 +4,7 @@ from random import sample, choice
 from django.utils.timezone import now
 from datetime import timedelta
 from clubs.models import User, Club, Membership, Application, Ban, Tournament, Organiser, Participant
+from ..helpers import complete_round
 
 class Command(BaseCommand):
     """Fill the database with pseudorandom data and some mandated test cases."""
@@ -235,21 +236,21 @@ class Command(BaseCommand):
 
         # Add other members to kerbal chess club
         other_kerbal_members = sample(list(User.objects.exclude(is_staff=True)
-            .exclude(id=val.id).exclude(id=jeb.id).exclude(id=billie.id)), 80)
+            .exclude(id=val.id).exclude(id=jeb.id).exclude(id=billie.id)), 110)
 
-        for user in other_kerbal_members[:70]:
+        for user in other_kerbal_members[:100]:
             (Membership.objects.create(
                 user = user,
                 club = kerbal
             )).save()
 
-        for user in other_kerbal_members[70:75]:
+        for user in other_kerbal_members[100:105]:
             (Application.objects.create(
                 user = user,
                 club = kerbal
             )).save()
 
-        for user in other_kerbal_members[75:len(other_kerbal_members)]:
+        for user in other_kerbal_members[105:len(other_kerbal_members)]:
             (Ban.objects.create(
                 user = user,
                 club = kerbal
@@ -325,8 +326,8 @@ class Command(BaseCommand):
         for i in range(3):
             t = Tournament.objects.create(
                 club = kerbal,
-                name = "Jeroen's Tournament 1",
-                description = "Tournament with deadline passed and Jeb signed up.",
+                name = f"Past Tourney {i}",
+                description = "This happened in the past.",
                 capacity = set_capacities[i],
                 deadline = seedtime - timedelta(hours=72*(i+1)),
                 start = seedtime - timedelta(hours=48*(i+1)),
@@ -336,7 +337,7 @@ class Command(BaseCommand):
             
             (Organiser.objects.create(
                 member = val_member,
-                tournament = t2,
+                tournament = t,
                 is_lead_organiser = True
             )).save()
             
@@ -352,10 +353,11 @@ class Command(BaseCommand):
             t.full_clean()
             t.save()
             
-            t.generate_next_round()
-            while not t.get_is_complete():
-                complete_round(t.get_current_round())
-                t.generate_next_round()
+            # Complete tournament
+            my_round = t.generate_next_round()
+            while my_round != None:
+                complete_round(my_round)
+                my_round = t.generate_next_round()
                 
         # Other memberships required.....
         other_clubs = sample(list(Club.objects.exclude(id = kerbal.id)),3)
@@ -454,6 +456,8 @@ class Command(BaseCommand):
         print("Seeding database... Please be patient as we are creating ~750 users and distributing them among clubs and tournaments.")
         # It is VERY important that random data is generated first, so we can fully control the memberships of the mandated users
         self.generate_random_data()
+        print("Random data generated")
         self.generate_required_data()
+        print("Kerbal Chess Club data generated")
         #self.generate_edge_cases()
         print("Seeding Complete.")
