@@ -1,6 +1,8 @@
 {% extends 'base_content.html' %}
 {% load bootstrap_pagination %}
 {% block content %}
+{% load define_action %}
+{% check_is_owner club current_user as is_owner %}
   <div class="container">
     <div class="row">
       <div class="col-12">

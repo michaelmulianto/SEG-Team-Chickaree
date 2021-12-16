@@ -3,7 +3,7 @@
 | Clubs
 {% endblock %}
 {% block content %}
-{% include 'partials/js_confirm_messages.html'%}
+
 {% load static %}
 {% load define_action %}
 {% load bootstrap_pagination %}
@@ -41,7 +41,7 @@
   {% endif %}
 
   {% if clubs.has_other_pages %}
-    {% bootstrap_paginate clubs range=6 show_first_last="false" %}    
+    {% bootstrap_paginate clubs range=6 show_first_last="false" %}
   {% endif %}
 
 

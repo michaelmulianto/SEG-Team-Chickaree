@@ -166,3 +166,10 @@ h3.profile-title {
 .btn-risk {
   background-color: orange !important;
 }
+
+/*
+* Table adjustments
+*/
+tbody {
+  border-top: none !important;
+}

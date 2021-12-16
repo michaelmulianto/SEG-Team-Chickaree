@@ -3,7 +3,7 @@
 | {{club.name}}
 {% endblock %}
 {% block content %}
-{% include 'partials/js_confirm_messages.html'%}
+
 {% load static %}
 {% load define_action %}
 {% check_is_owner club current_user as is_owner %}
@@ -93,17 +93,28 @@
         <h3><b>Tournaments</b></h3>
         <br>
 
-        {% include 'tournament_partials/js_display_tournament_table.html' %}
+        <script>
+          var tabs_dic1 = {
+            "past" : "past_tournaments_tab",
+            "ongoing" : "ongoing_tournaments_tab",
+            "upcoming" : "upcoming_tournaments_tab"
+          };
+          var tables_dic1 = {
+            "past" : "past_tournaments_table_body",
+            "ongoing" : "ongoing_tournaments_table_body",
+            "upcoming" : "upcoming_tournaments_table_body"
+          };
+        </script>
 
         <ul class="nav nav-tabs">
           <li class="nav-item">
-            <a id="past_tournaments_tab" class="nav-link" onclick="displayPastTournaments()" type="button">Past</a>
+            <a id="past_tournaments_tab" class="nav-link" onclick="displayTournaments1('past', 'table')" type="button">Past</a>
           </li>
           <li class="nav-item">
-            <a id="ongoing_tournaments_tab" class="nav-link" onclick="displayOngoingTournaments()" type="button">Ongoing</a>
+            <a id="ongoing_tournaments_tab" class="nav-link" onclick="displayTournaments1('ongoing', 'table')" type="button">Ongoing</a>
           </li>
           <li class="nav-item">
-            <a id="upcoming_tournaments_tab" class="nav-link active" onclick="displayUpcomingTournaments()" type="button">Upcoming</a>
+            <a id="upcoming_tournaments_tab" class="nav-link active" onclick="displayTournaments1('upcoming', 'table')" type="button">Upcoming</a>
           </li>
         </ul>
         <br>
