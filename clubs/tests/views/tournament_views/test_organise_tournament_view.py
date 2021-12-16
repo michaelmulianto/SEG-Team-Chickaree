@@ -141,6 +141,14 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
 
         self.assertEqual(tournament_count_after, tournament_count_before)
         self.assertEqual(organiser_count_before, organiser_count_after)
+        
+    def test_unsuccessful_non_officer_owner_get_form(self):
+        self.client.login(email=self.member_user.email, password='Password123')
+        response = self.client.get(self.url, follow=True)
+
+        response_url = reverse('show_clubs')
+        self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
 
     def test_start_time_in_past_fails(self):
         self.client.login(email=self.owner_user.email, password='Password123')
