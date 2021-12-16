@@ -5,104 +5,104 @@
 {% block content %}
 {% load static %}
 
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <h1>My Tournaments: participating</h1>
-        <br>
-        <p> To participate in a tournament you need to become a member of the organising club and then join the tournament from the upcoming tournament list. </p>
-        <br>
-        <script>
-          var tabs_dic1 = {
-            "past" : "participant_past_tournaments_tab",
-            "ongoing" : "participant_ongoing_tournaments_tab",
-            "upcoming" : "participant_upcoming_tournaments_tab"
-          };
-          var tables_dic1 = {
-            "past" : "participant_past_tournaments_table_body",
-            "ongoing" : "participant_ongoing_tournaments_table_body",
-            "upcoming" : "participant_upcoming_tournaments_table_body"
-          };
-        </script>
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h1>My Tournaments: participating</h1>
+      <br>
+      <p> To participate in a tournament you need to become a member of the organising club and then join the tournament from the upcoming tournament list. </p>
+      <br>
+      <script>
+        var tabs_dic1 = {
+          "past" : "participant_past_tournaments_tab",
+          "ongoing" : "participant_ongoing_tournaments_tab",
+          "upcoming" : "participant_upcoming_tournaments_tab"
+        };
+        var tables_dic1 = {
+          "past" : "participant_past_tournaments_table_body",
+          "ongoing" : "participant_ongoing_tournaments_table_body",
+          "upcoming" : "participant_upcoming_tournaments_table_body"
+        };
+      </script>
 
-        <ul class="nav nav-tabs">
-          <li class="nav-item">
-            <a id="participant_past_tournaments_tab" class="nav-link" onclick="displayTournaments1('past', 'table')" type="button">Past</a>
-          </li>
-          <li class="nav-item">
-            <a id="participant_ongoing_tournaments_tab" class="nav-link" onclick="displayTournaments1('ongoing', 'table')" type="button">Ongoing</a>
-          </li>
-          <li class="nav-item">
-            <a id="participant_upcoming_tournaments_tab" class="nav-link active" onclick="displayTournaments1('upcoming', 'table')" type="button">Upcoming</a>
-          </li>
-        </ul>
-        <br>
-        <style>
-          .standard-chess-table{
-            vertical-align: middle;
-            border-spacing: 10px 2px;
-          }
-          tbody {
-            border-top: none !important;
-          }
-        </style>
-        <table class="table standard-chess-table table-hover" id="participant_past_tournaments_table_body" style="display: none">
-          {% include 'tournament_partials/tournament_list.html' with tournaments=participant_past_tournaments is_member=True is_upcoming=False %}
-        </table>
-        <table class="table standard-chess-table table-hover" id="participant_ongoing_tournaments_table_body" style="display: none">
-          {% include 'tournament_partials/tournament_list.html' with tournaments=participant_ongoing_tournaments is_member=True is_upcoming=False %}
-        </table>
-        <table class="table standard-chess-table table-hover" id="participant_upcoming_tournaments_table_body">
-          {% include 'tournament_partials/tournament_list.html' with tournaments=participant_upcoming_tournaments is_member=True is_upcoming=True %}
-        </table>
-        <br>
-        <h1>My Tournaments: organising</h1>
-        <br>
-        <p> To organise a tournament you need to be an officer or owner of a club. </p>
-        <br>
-        <script>
-          var tabs_dic2 = {
-            "past" : "organiser_past_tournaments_tab",
-            "ongoing" : "organiser_ongoing_tournaments_tab",
-            "upcoming" : "organiser_upcoming_tournaments_tab"
-          };
-          var tables_dic2 = {
-            "past" : "organiser_past_tournaments_table_body",
-            "ongoing" : "organiser_ongoing_tournaments_table_body",
-            "upcoming" : "organiser_upcoming_tournaments_table_body"
-          };
-        </script>
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a id="participant_past_tournaments_tab" class="nav-link" onclick="displayTournaments1('past', 'table')" type="button">Past</a>
+        </li>
+        <li class="nav-item">
+          <a id="participant_ongoing_tournaments_tab" class="nav-link" onclick="displayTournaments1('ongoing', 'table')" type="button">Ongoing</a>
+        </li>
+        <li class="nav-item">
+          <a id="participant_upcoming_tournaments_tab" class="nav-link active" onclick="displayTournaments1('upcoming', 'table')" type="button">Upcoming</a>
+        </li>
+      </ul>
+      <br>
+      <style>
+        .standard-chess-table{
+          vertical-align: middle;
+          border-spacing: 10px 2px;
+        }
+        tbody {
+          border-top: none !important;
+        }
+      </style>
+      <table class="table standard-chess-table table-hover" id="participant_past_tournaments_table_body" style="display: none">
+        {% include 'tournament_partials/tournament_list.html' with tournaments=participant_past_tournaments is_member=True is_upcoming=False %}
+      </table>
+      <table class="table standard-chess-table table-hover" id="participant_ongoing_tournaments_table_body" style="display: none">
+        {% include 'tournament_partials/tournament_list.html' with tournaments=participant_ongoing_tournaments is_member=True is_upcoming=False %}
+      </table>
+      <table class="table standard-chess-table table-hover" id="participant_upcoming_tournaments_table_body">
+        {% include 'tournament_partials/tournament_list.html' with tournaments=participant_upcoming_tournaments is_member=True is_upcoming=True %}
+      </table>
+      <br>
+      <h1>My Tournaments: organising</h1>
+      <br>
+      <p> To organise a tournament you need to be an officer or owner of a club. </p>
+      <br>
+      <script>
+        var tabs_dic2 = {
+          "past" : "organiser_past_tournaments_tab",
+          "ongoing" : "organiser_ongoing_tournaments_tab",
+          "upcoming" : "organiser_upcoming_tournaments_tab"
+        };
+        var tables_dic2 = {
+          "past" : "organiser_past_tournaments_table_body",
+          "ongoing" : "organiser_ongoing_tournaments_table_body",
+          "upcoming" : "organiser_upcoming_tournaments_table_body"
+        };
+      </script>
 
-        <ul class="nav nav-tabs">
-          <li class="nav-item">
-            <a id="organiser_past_tournaments_tab" class="nav-link" onclick="displayTournaments2('past', 'table')" type="button">Past</a>
-          </li>
-          <li class="nav-item">
-            <a id="organiser_ongoing_tournaments_tab" class="nav-link" onclick="displayTournaments2('ongoing', 'table')" type="button">Ongoing</a>
-          </li>
-          <li class="nav-item">
-            <a id="organiser_upcoming_tournaments_tab" class="nav-link active" onclick="displayTournaments2('upcoming', 'table')" type="button">Upcoming</a>
-          </li>
-        </ul>
-        <br>
-        <table class="table standard-chess-table table-hover" id="organiser_past_tournaments_table_body" style="display: none">
-          {% include 'tournament_partials/tournament_list.html' with tournaments=organiser_past_tournaments is_member=True is_upcoming=False %}
-        </table>
-        <table class="table standard-chess-table table-hover" id="organiser_ongoing_tournaments_table_body" style="display: none">
-          {% include 'tournament_partials/tournament_list.html' with tournaments=organiser_ongoing_tournaments is_member=True is_upcoming=False %}
-        </table>
-        <table class="table standard-chess-table table-hover" id="organiser_upcoming_tournaments_table_body">
-          {% include 'tournament_partials/tournament_list.html' with tournaments=organiser_upcoming_tournaments is_member=True is_upcoming=True %}
-        </table>
-        <br>
-        <br>
-        <a href='{% url 'show_clubs' %}' class="btn btn-info">
-          <i class="bi bi-reply-fill"></i> List of all clubs
-        </a>
-        <br>
-        <br>
-        <br>
-      </div>
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a id="organiser_past_tournaments_tab" class="nav-link" onclick="displayTournaments2('past', 'table')" type="button">Past</a>
+        </li>
+        <li class="nav-item">
+          <a id="organiser_ongoing_tournaments_tab" class="nav-link" onclick="displayTournaments2('ongoing', 'table')" type="button">Ongoing</a>
+        </li>
+        <li class="nav-item">
+          <a id="organiser_upcoming_tournaments_tab" class="nav-link active" onclick="displayTournaments2('upcoming', 'table')" type="button">Upcoming</a>
+        </li>
+      </ul>
+      <br>
+      <table class="table standard-chess-table table-hover" id="organiser_past_tournaments_table_body" style="display: none">
+        {% include 'tournament_partials/tournament_list.html' with tournaments=organiser_past_tournaments is_member=True is_upcoming=False %}
+      </table>
+      <table class="table standard-chess-table table-hover" id="organiser_ongoing_tournaments_table_body" style="display: none">
+        {% include 'tournament_partials/tournament_list.html' with tournaments=organiser_ongoing_tournaments is_member=True is_upcoming=False %}
+      </table>
+      <table class="table standard-chess-table table-hover" id="organiser_upcoming_tournaments_table_body">
+        {% include 'tournament_partials/tournament_list.html' with tournaments=organiser_upcoming_tournaments is_member=True is_upcoming=True %}
+      </table>
+      <br>
+      <br>
+      <a href='{% url 'show_clubs' %}' class="btn btn-info">
+        <i class="bi bi-reply-fill"></i> List of all clubs
+      </a>
+      <br>
+      <br>
+      <br>
     </div>
   </div>
+</div>
 {% endblock %}
