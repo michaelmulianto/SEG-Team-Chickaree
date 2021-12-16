@@ -89,7 +89,7 @@ def withdraw_participation_from_tournament(request, tournament_id):
 @tournament_exists
 def join_tournament(request, tournament_id):
     tour = Tournament.objects.get(id = tournament_id)
-       if Membership.objects.filter(club=tour.club, user=request.user).exists():
+    if Membership.objects.filter(club=tour.club, user=request.user).exists():
         member = Membership.objects.get(club=tour.club, user=request.user)
     else:
         messages.error(request, 'You are not a member of the club and cannot join the tournament')
@@ -135,7 +135,7 @@ def my_tournaments_list(request):
             else:
                 outer_index=None
 
-            if outer_index:
+            if outer_index!=None:
                 if tournament.end <= curr_time:
                     inner_index = 0
                 elif tournament.start <= curr_time:
