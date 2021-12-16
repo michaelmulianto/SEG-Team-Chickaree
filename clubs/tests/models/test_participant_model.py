@@ -8,7 +8,7 @@ class ParticipantModelTestCase(TestCase):
         'clubs/tests/fixtures/other_users.json',
         'clubs/tests/fixtures/default_club.json',
         'clubs/tests/fixtures/default_tournament.json',
-        'clubs/tests/fixtures/other_tournaments.json']
+        'clubs/tests/fixtures/other_tournaments.json']  
 
     def setUp(self):
 
@@ -41,18 +41,12 @@ class ParticipantModelTestCase(TestCase):
     def test_valid_participant(self):
         self._assert_participant_is_valid()
 
-    # round eliminated field test
     def test_round_eliminated_cannot_be_blank(self):
         self.participant.round_eliminated = None
         self._assert_participant_is_invalid()
 
     def test_round_eliminated_attribute_for_participant_must_be_integer(self):
         self.participant.round_eliminated = "WRONG INPUT"
-        self._assert_participant_is_invalid()
-
-    # joined field test
-    def test_joined_attribute_for_participant_must_be_datetime(self):
-        self.participant.joined = "WRONG INPUT"
         self._assert_participant_is_invalid()
 
     def test_a_member_can_participate_in_more_than_one_tournament(self):
@@ -100,6 +94,10 @@ class ParticipantModelTestCase(TestCase):
     def test_deleting_the_participant_model_does_not_cause_errors(self):
         self.participant.delete()
 
+    def test_joined_attribute_for_participant_must_be_integer(self):
+        self.participant.joined = "WRONG INPUT"
+        self._assert_participant_is_invalid()
+
     def test_creating_a_new_participant_shows_joined_field_after_older_participants(self):
         new_participant = Participant.objects.create(
                 member = self.second_membership,
@@ -108,9 +106,6 @@ class ParticipantModelTestCase(TestCase):
             )
         self.assertLess(self.participant.joined, new_participant.joined)
 
-    # test string
-    def test_str(self):
-        self.assertEqual(self.participant.__str__(), f'{self.first_membership.user.first_name} {self.first_membership.user.last_name} in {self.first_tournament.name} by {self.first_tournament.club}')
 
     #Assertions
     def _assert_participant_is_valid(self):
@@ -121,4 +116,4 @@ class ParticipantModelTestCase(TestCase):
 
     def _assert_participant_is_invalid(self):
         with self.assertRaises(ValidationError):
-            self.participant.full_clean()
+            self.participant.full_clean() 

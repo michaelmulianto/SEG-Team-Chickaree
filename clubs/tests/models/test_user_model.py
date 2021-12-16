@@ -1,7 +1,7 @@
 """Tests for User model, found in clubs/models.py"""
 
 from django.test import TestCase
-from clubs.models import User, Membership, Club
+from clubs.models import User
 from django.core.exceptions import ValidationError
 
 class UserModelTestCase(TestCase):
@@ -9,8 +9,7 @@ class UserModelTestCase(TestCase):
 
     fixtures = [
         'clubs/tests/fixtures/default_user.json',
-        'clubs/tests/fixtures/other_users.json',
-        'clubs/tests/fixtures/default_club.json'
+        'clubs/tests/fixtures/other_users.json'
     ]
 
     # Test setup
@@ -157,16 +156,6 @@ class UserModelTestCase(TestCase):
     def test_mini_gravatar(self):
         expected = "https://www.gravatar.com/avatar/363c1b0cd64dadffb867236a00e62986?size=50&default=mp"
         self.assertEqual(self.user.mini_gravatar(), expected)
-
-    # Test get clubs
-    def test_get_clubs(self):
-        self.assertEqual(len(self.user.get_clubs()), 0)
-        self.club = Club.objects.get(name="King\'s Knights")
-        Membership.objects.create(
-            user = self.user,
-            club = self.club,
-        )
-        self.assertEqual(len(self.user.get_clubs()), 1)
 
     # Helper functions.
     # Generic assertions.

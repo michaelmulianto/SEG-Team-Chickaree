@@ -1,7 +1,7 @@
 """Tests for Tournament model, found in tournaments/models.py"""
 
 from django.test import TestCase
-from clubs.models import Tournament, Membership, User, Participant, GroupStage, KnockoutStage, SingleGroup, Match, Club, Organiser
+from clubs.models import Tournament, Membership, User, Participant, GroupStage, KnockoutStage, SingleGroup, Match, Club
 from django.core.exceptions import ValidationError
 
 
@@ -353,18 +353,6 @@ class TournamentModelTestCase(TestCase):
         for match in matches:
             match.result = 1 # Let white win, we don't care about specifics
             match.save()
-
-    #Test string
-    def test_str(self):
-        self.assertEqual(self.tournament.__str__(), f'{self.tournament.name} by {self.tournament.club}')
-
-    #Test get participants
-    def test_get_participants(self):
-        self.assertEqual(len(self.tournament.get_participants()), len(Participant.objects.filter()))
-
-    #Test get organisers
-    def test_get_organisers(self):
-        self.assertEqual(len(self.tournament.get_organisers()), len(Organiser.objects.filter()))
 
     # Generic assertions.
     def _assert_tournament_is_valid(self):
