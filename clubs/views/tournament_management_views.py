@@ -1,10 +1,10 @@
 """Views related to the running of a tournament"""
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import UpdateView, FormView
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
-from .decorators import match_exists, tournament_exists
+from .decorators import match_exists, tournament_exists, club_exists, allowed_users, user_exists
 from .helpers import is_lead_organiser_of_tournament, is_user_organiser_of_tournament, is_participant_in_tournament, is_user_owner_of_club, is_user_officer_of_club, is_user_member_of_club
 
 from django.contrib import messages
@@ -13,8 +13,54 @@ from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render, redirect
 
-from clubs.forms import AddResultForm
+from clubs.forms import AddResultForm, OrganiseTournamentForm
 from clubs.models import Match, Tournament, Membership, Organiser
+
+class OrganiseTournamentView(FormView):
+    """Create a new tournament."""
+    form_class = OrganiseTournamentForm
+    template_name = "tournament/organise_tournament.html"
+
+    @method_decorator(login_required)
+    @method_decorator(club_exists)
+    @method_decorator(allowed_users(allowed_roles=[]))
+    def dispatch(self, request, club_id):
+        return super().dispatch(request)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_user'] = self.request.user
+        context['club'] = Club.objects.get(id=self.kwargs['club_id'])
+        return context
+
+    def form_valid(self, form):
+        if not is_user_owner_of_club(self.request.user, self.get_context_data()['club']) and not is_user_officer_of_club(self.request.user, self.get_context_data()['club']):
+            messages.add_message(self.request, messages.ERROR, "Only Owners or Officers of a club can create tournaments")
+            return super().form_invalid(form)
+
+        if form.cleaned_data['start'] < now() or form.cleaned_data['end'] < now() or form.cleaned_data['deadline'] < now():
+            messages.add_message(self.request, messages.ERROR, "Given time and date must not be in the past.")
+            return super().form_invalid(form)
+
+        self.object = form.save(self.get_context_data()['club'])
+        if Membership.objects.filter(club = self.get_context_data()['club'], user=self.request.user).exists():
+            member = Membership.objects.get(user = self.request.user, club = self.get_context_data()['club'])
+
+        Organiser.objects.create(
+            member = member,
+            tournament = self.object,
+            is_lead_organiser = True
+        )
+        return super().form_valid(form)
+
+
+    def get_success_url(self):
+        club = self.get_context_data()['club']
+        return reverse('show_club', kwargs={'club_id': club.id})
+
+    @method_decorator(user_exists)
+    def create_organiser(self, user):
+        pass
 
 @login_required
 @tournament_exists
