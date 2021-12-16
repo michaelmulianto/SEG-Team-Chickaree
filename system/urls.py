@@ -36,7 +36,7 @@ urlpatterns = [
 
     path('clubs/', views.show_clubs, name = 'show_clubs'),
     path('clubs/my/', views.my_clubs_list, name = 'my_clubs_list'),
-    path('clubs/<str:param>/<str:order>/', views.show_clubs, name = 'show_clubs'),
+    path('clubs/<str:param>/<str:order>/', views.ShowClubsView.as_view(), name = 'show_clubs'),
 
     path('club/create/', views.CreateClubView.as_view(), name='create_club'),
     path('club/<int:club_id>/', views.show_club, name='show_club'),
