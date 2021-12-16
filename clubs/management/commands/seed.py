@@ -98,6 +98,7 @@ class Command(BaseCommand):
 
             # Generate 3 Tournaments, one complete, one partially complete, one not started.
             tournaments = []
+            capacities = Tournament.capacities
             for j in range(0,3):
                 if j == 0:
                     starttime = now() - timedelta(hours=48)
@@ -114,7 +115,7 @@ class Command(BaseCommand):
                     club = club,
                     name = name,
                     description = self.faker.paragraph(nb_sentences=3),
-                    capacity = 16 * (j+1),
+                    capacity = choice(capacities),
                     start = starttime,
                     end = starttime + timedelta(hours=24),
                     deadline = starttime - timedelta(hours=24),
@@ -140,15 +141,6 @@ class Command(BaseCommand):
                 t.full_clean()
                 t.save()
                 tournaments.append(t)
-
-            # Helper for tournament generation
-            def complete_round(my_round):
-                # Arbitary result
-                matches = my_round.get_matches()
-                for match in matches:
-                    match.result=1
-                    match.black_player.round_eliminated = my_round.round_num
-                    match.save()
 
             # Complete all rounds of first tournament
             tpast = tournaments[0]
@@ -268,8 +260,8 @@ class Command(BaseCommand):
         # Firstly, the tournament where the deadline is in 24 hours, Jeb not signed up.
         t1 = Tournament.objects.create(
             club = kerbal,
-            name = "Tournament 2",
-            description = "The sequel to the much loved Tournament.",
+            name = "Jeroen's Second Tournament",
+            description = "Tournament with deadline 24 hours away and Jeb not signed up.",
             capacity = 32,
             deadline = seedtime + timedelta(hours=24),
             start = seedtime + timedelta(hours=25),
@@ -296,14 +288,14 @@ class Command(BaseCommand):
         # Secondly, the tournament where the deadline has already passed and Jeb has signed up.
         t2 = Tournament.objects.create(
             club = kerbal,
-            name = "Tournament",
-            description = "The original tournament.",
+            name = "Jeroen's Tournament 1",
+            description = "Tournament with deadline passed and Jeb signed up.",
             capacity = 32,
-            deadline = seedtime - timedelta(hours=1),
-            start = seedtime + timedelta(hours=23),
+            deadline = seedtime - timedelta(hours=24),
+            start = seedtime,
             end =  seedtime + timedelta(hours=47)
         )
-        t2.created_on = seedtime - timedelta(hours=2)
+        t2.created_on = seedtime - timedelta(hours=48)
 
         (Organiser.objects.create(
             member = val_member,
@@ -328,6 +320,43 @@ class Command(BaseCommand):
         t2.full_clean()
         t2.save()
 
+        # 'A small number of' past tournaments need to be created.
+        set_capacities=(16,48,96) # 32 is covered by the above two
+        for i in range(3):
+            t = Tournament.objects.create(
+                club = kerbal,
+                name = "Jeroen's Tournament 1",
+                description = "Tournament with deadline passed and Jeb signed up.",
+                capacity = set_capacities[i],
+                deadline = seedtime - timedelta(hours=72*(i+1)),
+                start = seedtime - timedelta(hours=48*(i+1)),
+                end = seedtime - timedelta(hours=24*(i+1))
+            )
+            t.created_on = seedtime - timedelta(hours=96*(i+1))
+            
+            (Organiser.objects.create(
+                member = val_member,
+                tournament = t2,
+                is_lead_organiser = True
+            )).save()
+            
+            participants = sample(list(Membership.objects.exclude(id=val_member.id)
+            .exclude(id=billie_member.id).filter(club=kerbal)), t.capacity)
+            
+            for membership in participants:
+                (Participant.objects.create(
+                    member = membership,
+                    tournament = t
+                )).save()
+                
+            t.full_clean()
+            t.save()
+            
+            t.generate_next_round()
+            while not t.get_is_complete():
+                complete_round(t.get_current_round())
+                t.generate_next_round()
+                
         # Other memberships required.....
         other_clubs = sample(list(Club.objects.exclude(id = kerbal.id)),3)
 
