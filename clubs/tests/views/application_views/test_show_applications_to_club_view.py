@@ -1,5 +1,6 @@
 """Test backend implementation of the application viewer functionality."""
 
+from django.template import RequestContext
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
@@ -7,6 +8,7 @@ from clubs.models import User, Club, Membership, Application
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
 from with_asserts.mixin import AssertHTMLMixin
 from django.conf import settings
+from django.template.loader import render_to_string
 
 class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
     """Test all aspects of the show applications to club view"""
@@ -122,37 +124,40 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/application_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['applications']), settings.APPLICATIONS_PER_PAGE)
-        applications_page = response.context['applications']
+        self.assertEqual(len(response.context['page_obj']), settings.APPLICATIONS_PER_PAGE)
+        applications_page = response.context['page_obj']
         self.assertFalse(applications_page.has_previous())
         self.assertTrue(applications_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
         page_one_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=1'
         response = self.client.get(page_one_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/application_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['applications']), settings.APPLICATIONS_PER_PAGE)
-        applications_page = response.context['applications']
+        self.assertEqual(len(response.context['page_obj']), settings.APPLICATIONS_PER_PAGE)
+        applications_page = response.context['page_obj']
         self.assertFalse(applications_page.has_previous())
         self.assertTrue(applications_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
         page_two_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=2'
         response = self.client.get(page_two_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/application_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['applications']), settings.APPLICATIONS_PER_PAGE)
-        applications_page = response.context['applications']
+        self.assertEqual(len(response.context['page_obj']), settings.APPLICATIONS_PER_PAGE)
+        applications_page = response.context['page_obj']
         self.assertTrue(applications_page.has_previous())
         self.assertTrue(applications_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
         page_three_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=3'
         response = self.client.get(page_three_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/application_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['applications']), 3)
-        applications_page = response.context['applications']
+        self.assertEqual(len(response.context['page_obj']), 3)
+        applications_page = response.context['page_obj']
         self.assertTrue(applications_page.has_previous())
-        self.assertFalse(applications_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
 
     def test_show_applications_list_with_pagination_does_not_contain_page_traversers_if_not_enough_applications(self):
         self.client.login(email=self.user_owner.email, password="Password123")
@@ -161,13 +166,159 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/application_list.html')
         self.assert_menu(response)
-        applications_page = response.context['applications']
+        applications_page = response.context['page_obj']
         self.assertFalse(applications_page.has_previous())
         self.assertFalse(applications_page.has_next())
         self.assertFalse(applications_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">', 0)
 
-    def _create_test_applications_for_default_club(self, banned_members_count = 10):
-        for future_applicant in range(banned_members_count):
+    def test_show_applications_list_with_pagination_creating_page_not_an_integer_error(self):
+        self.client.login(email=self.user_owner.email, password="Password123")
+        self._create_test_applications_for_default_club(settings.APPLICATIONS_PER_PAGE + 1)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/application_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['page_obj']), settings.APPLICATIONS_PER_PAGE )
+        applications_page = response.context['page_obj']
+        self.assertFalse(applications_page.has_previous())
+        self.assertTrue(applications_page.has_next())
+        self.assertTrue(applications_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">')
+
+        page_two_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=2'
+        response = self.client.get(page_two_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/application_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['page_obj']), 2)
+        applications_page = response.context['page_obj']
+        self.assertTrue(applications_page.has_previous())
+        self.assertFalse(applications_page.has_next())
+        self.assertTrue(applications_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">')
+
+        page_incorrect_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=INCORRECTINPUT'
+        response = self.client.get(page_incorrect_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/application_list.html')
+        self.assert_menu(response)
+        #test we're going back to the first page
+        self.assertEqual(len(response.context['page_obj']), settings.APPLICATIONS_PER_PAGE)
+        applications_page = response.context['page_obj']
+        self.assertFalse(applications_page.has_previous())
+        self.assertTrue(applications_page.has_next())
+        self.assertTrue(applications_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">')
+
+    def test_show_applications_list_with_pagination_creating_empty_page_error_from_bigger_page_number_than_exists(self):
+        self.client.login(email=self.user_owner.email, password="Password123")
+        self._create_test_applications_for_default_club(settings.APPLICATIONS_PER_PAGE * 2 + 1)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/application_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['page_obj']), settings.APPLICATIONS_PER_PAGE )
+        applications_page = response.context['page_obj']
+        self.assertFalse(applications_page.has_previous())
+        self.assertTrue(applications_page.has_next())
+        self.assertTrue(applications_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">')
+
+        page_two_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=2'
+        response = self.client.get(page_two_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/application_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['page_obj']), settings.APPLICATIONS_PER_PAGE )
+        applications_page = response.context['page_obj']
+        self.assertTrue(applications_page.has_previous())
+        self.assertTrue(applications_page.has_next())
+        self.assertTrue(applications_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">')
+
+        page_big_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=9999'
+        response = self.client.get(page_big_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/application_list.html')
+        self.assert_menu(response)
+        #test we're going to the last page
+        self.assertEqual(len(response.context['page_obj']), 2)
+        applications_page = response.context['page_obj']
+        self.assertTrue(applications_page.has_previous())
+        self.assertFalse(applications_page.has_next())
+        self.assertTrue(applications_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">')
+
+
+    def test_show_applications_list_with_pagination_creating_empty_page_error_from_smaller_page_number_than_exists(self):
+        self.client.login(email=self.user_owner.email, password="Password123")
+        self._create_test_applications_for_default_club(settings.APPLICATIONS_PER_PAGE * 2 + 1) #creating three pages
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/application_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['page_obj']), settings.APPLICATIONS_PER_PAGE )
+        applications_page = response.context['page_obj']
+        self.assertFalse(applications_page.has_previous())
+        self.assertTrue(applications_page.has_next())
+        self.assertTrue(applications_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">')
+
+        page_two_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=2'
+        response = self.client.get(page_two_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/application_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['page_obj']), settings.APPLICATIONS_PER_PAGE )
+        applications_page = response.context['page_obj']
+        self.assertTrue(applications_page.has_previous())
+        self.assertTrue(applications_page.has_next())
+        self.assertTrue(applications_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">')
+
+        page_zero_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=0'
+        response = self.client.get(page_zero_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/application_list.html')
+        self.assert_menu(response)
+        #test we're going to the last page
+        self.assertEqual(len(response.context['page_obj']), 2)
+        applications_page = response.context['page_obj']
+        self.assertTrue(applications_page.has_previous())
+        self.assertFalse(applications_page.has_next())
+        self.assertTrue(applications_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">')
+
+        page_one_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=1'
+        response = self.client.get(page_one_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/application_list.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['page_obj']), settings.APPLICATIONS_PER_PAGE )
+        applications_page = response.context['page_obj']
+        self.assertFalse(applications_page.has_previous())
+        self.assertTrue(applications_page.has_next())
+        self.assertTrue(applications_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">')
+
+        page_negative_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=-999'
+        response = self.client.get(page_negative_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'club/application_list.html')
+        self.assert_menu(response)
+        #test we're going to the last page
+        self.assertEqual(len(response.context['page_obj']), 2)
+        applications_page = response.context['page_obj']
+        self.assertTrue(applications_page.has_previous())
+        self.assertFalse(applications_page.has_next())
+        self.assertTrue(applications_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">')
+
+
+
+    def _create_test_applications_for_default_club(self, applications_count = 10):
+        for future_applicant in range(applications_count):
             
             user = User.objects.create(
                 username = f'USERNAME{future_applicant}',

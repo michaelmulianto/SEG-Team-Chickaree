@@ -27,12 +27,3 @@ class MenuTesterMixin(AssertHTMLMixin):
     def assert_no_menu(self, response):
         for url in self.menu_urls:
             self.assertNotHTML(response, f'a[href = "{url}"]')
-
-class PaginatorTraversalTesterMixin(AssertHTMLMixin):
-
-    def assert_paginator_traversal(self, response):
-        with self.assertHTML(response, ):
-            pass
-
-    def assert_no_paginator_traversal(self, response):
-        pass
