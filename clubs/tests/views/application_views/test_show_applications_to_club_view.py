@@ -172,8 +172,8 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assertFalse(applications_page.has_other_pages())
         self.assertContains(response, "class='pagination'", 0)
 
-    def _create_test_applications_for_default_club(self, banned_members_count = 10):
-        for future_applicant in range(banned_members_count):
+    def _create_test_applications_for_default_club(self, applications_count = 10):
+        for future_applicant in range(applications_count):
             
             user = User.objects.create(
                 username = f'USERNAME{future_applicant}',

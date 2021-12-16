@@ -4,6 +4,9 @@ from django.test import TestCase
 from django.urls import reverse
 from clubs.models import Club, Membership, User, Tournament, Organiser, Participant
 from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
+from django.conf import settings
+
+from clubs.views.decorators import tournament_exists
 
 class ShowTouramentParticipantsViewTestCase(TestCase, MenuTesterMixin):
     """Test aspects of show tournament participants view"""
@@ -75,3 +78,82 @@ class ShowTouramentParticipantsViewTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200) #OK
         self.assertTemplateUsed(response, "tournament/show_tournament_participants.html")
         self.assert_menu(response)
+
+    def test_get_show_clubs_with_pagination(self):
+        self.client.login(email=self.owner_user.email, password="Password123")
+        self._create_test_participants(settings.TOURNAMENT_PARTICIPANTS_PER_PAGE*2+3 - 1)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'tournament/show_tournament_participants.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['page_obj']), settings.TOURNAMENT_PARTICIPANTS_PER_PAGE)
+        clubs_page = response.context['page_obj']
+        self.assertFalse(clubs_page.has_previous())
+        self.assertTrue(clubs_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
+        page_one_url = reverse('show_tournament_participants', kwargs={'tournament_id': self.tournament.id}) + '?page=1'
+        response = self.client.get(page_one_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'tournament/show_tournament_participants.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['page_obj']), settings.TOURNAMENT_PARTICIPANTS_PER_PAGE)
+        clubs_page = response.context['page_obj']
+        self.assertFalse(clubs_page.has_previous())
+        self.assertTrue(clubs_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
+        page_two_url = reverse('show_tournament_participants', kwargs={'tournament_id': self.tournament.id}) + '?page=2'
+        response = self.client.get(page_two_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'tournament/show_tournament_participants.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['page_obj']), settings.TOURNAMENT_PARTICIPANTS_PER_PAGE)
+        clubs_page = response.context['page_obj']
+        self.assertTrue(clubs_page.has_previous())
+        self.assertTrue(clubs_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
+        page_three_url = reverse('show_tournament_participants', kwargs={'tournament_id': self.tournament.id}) + '?page=3'
+        response = self.client.get(page_three_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'tournament/show_tournament_participants.html')
+        self.assert_menu(response)
+        self.assertEqual(len(response.context['page_obj']), 3)
+        clubs_page = response.context['page_obj']
+        self.assertTrue(clubs_page.has_previous())
+        self.assertFalse(clubs_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
+
+    def test_show_clubs_with_pagination_does_not_contain_page_traversers_if_not_enough_clubs(self):
+        self.client.login(email=self.owner_user.email, password="Password123")
+        self._create_test_participants(settings.TOURNAMENT_PARTICIPANTS_PER_PAGE-2)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'tournament/show_tournament_participants.html')
+        self.assert_menu(response)
+        clubs_page = response.context['page_obj']
+        self.assertFalse(clubs_page.has_previous())
+        self.assertFalse(clubs_page.has_next())
+        self.assertFalse(clubs_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">', 0)
+
+    def _create_test_participants(self, participant_count=10):
+        for participant_id in range(participant_count):
+            user_participant = User.objects.create(
+                username = f'USERNAME{participant_id}',
+                last_name = f'LASTNAME{participant_id}',
+                first_name = f'FIRSTNAME{participant_id}',
+                email = f'EMAIL{participant_id}@gmail.com',
+                bio = f'BIO{participant_id}',
+                experience = 1
+            )
+
+            member_participant = Membership.objects.create(
+                club = self.club,
+                user = user_participant,
+                is_owner = False,
+                is_officer = False
+            )
+
+            Participant.objects.create(
+                member = member_participant,
+                tournament = self.tournament
+            )

@@ -95,8 +95,8 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.assertFalse(memberships_page.has_other_pages())
         self.assertContains(response, '<ul class="pagination ">', 0)
 
-    def _create_test_memberships_for_default_club(self, banned_members_count = 10):
-        for future_member in range(banned_members_count):
+    def _create_test_memberships_for_default_club(self, members_count = 10):
+        for future_member in range(members_count):
             
             user = User.objects.create(
                 username = f'USERNAME{future_member}',
