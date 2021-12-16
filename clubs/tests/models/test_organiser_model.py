@@ -96,6 +96,9 @@ class OrganiserModelTestCase(TestCase):
     def test_deleting_the_organiser_model_does_not_cause_errors(self):
         self.organiser.delete()
 
+    # Test string
+    def test_str(self):
+        self.assertEqual(self.organiser.__str__(),  f'{self.first_membership.user.first_name} {self.first_membership.user.last_name} organising {self.organiser.tournament.name} by {self.organiser.tournament.club}')
 
     #Assertions
     def _assert_organiser_is_valid(self):

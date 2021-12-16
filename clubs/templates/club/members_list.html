@@ -19,8 +19,8 @@
         </style>
         <h1>{{club.name}} Members: </h1>
         <br>
-        {% if memberships.has_other_pages %}
-          {% bootstrap_paginate memberships range=6 show_first_last="false" %}
+        {% if page_obj.has_other_pages %}
+          {% bootstrap_paginate page_obj range=6 show_first_last="false" %}
         {% endif %}
         <table class="table standard-table-spacing">
           <tr>
@@ -35,7 +35,7 @@
             {% endif %}
 
           </tr>
-        {% for member in memberships %}
+        {% for member in page_obj %}
           {% check_is_officer club member.user as is_member_an_officer %}
           {% check_is_owner club member.user as is_member_an_owner %}
           <tr>
@@ -75,8 +75,8 @@
           </tr>
         {% endfor %}
         </table>
-        {% if memberships.has_other_pages %}
-          {% bootstrap_paginate memberships range=6 show_first_last="false" %}
+        {% if page_obj.has_other_pages %}
+          {% bootstrap_paginate page_obj range=6 show_first_last="false" %}
         {% endif %}
         <a href='{% url 'show_club' club.id %}' class="btn btn-info">
           <i class="bi bi-reply-fill"></i> Back to club page

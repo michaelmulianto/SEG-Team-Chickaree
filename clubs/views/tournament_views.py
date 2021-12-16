@@ -19,6 +19,9 @@ from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 
+from django.conf import settings
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+
 @login_required
 @tournament_exists
 def show_tournament(request, tournament_id):
@@ -44,9 +47,21 @@ def show_tournament_participants(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     club = tournament.club
     if Membership.objects.filter(user=request.user, club=club).exists():
+
+        paginator = Paginator(tournament.get_participants(), settings.TOURNAMENT_PARTICIPANTS_PER_PAGE)
+
+        page = request.GET.get('page')
+        try:
+            page_obj = paginator.page(page)
+        except PageNotAnInteger:
+            page_obj  = paginator.page(1)
+        except EmptyPage:
+            page_obj  = paginator.page(paginator.num_pages)
+
         return render(request, 'tournament/show_tournament_participants.html', {
                 'current_user': request.user,
-                'tournament': tournament
+                'tournament': tournament,
+                'page_obj' :page_obj
             }
         )
     else:
@@ -107,9 +122,9 @@ def my_tournaments_list(request):
         [[],[],[]], # Participant... past/present/future
         [[],[],[]] # Organiser
     ]
-    
+
     curr_time = now()
-    
+
     for tournament in Tournament.objects.all():
         if Membership.objects.filter(user=current_user, club=tournament.club).exists():
             member= Membership.objects.get(user=current_user, club=tournament.club)
@@ -127,9 +142,9 @@ def my_tournaments_list(request):
                     inner_index = 1
                 else:
                     inner_index = 2
-                    
+
                 my_tournaments[outer_index][inner_index].append(tournament)
-    
+
     return render(request, 'tournament/my_tournament_list.html', {
                 'current_user': request.user,
                 'participant_past_tournaments': my_tournaments[0][0],
@@ -140,4 +155,3 @@ def my_tournaments_list(request):
                 'organiser_upcoming_tournaments': my_tournaments[1][2],
             }
         )
-            
