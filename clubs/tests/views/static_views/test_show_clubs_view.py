@@ -101,6 +101,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         clubs_page = response.context['page_obj']
         self.assertFalse(clubs_page.has_previous())
         self.assertTrue(clubs_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
         page_one_url = reverse('show_clubs') + '?page=1'
         response = self.client.get(page_one_url)
         self.assertEqual(response.status_code, 200)
@@ -110,6 +111,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         clubs_page = response.context['page_obj']
         self.assertFalse(clubs_page.has_previous())
         self.assertTrue(clubs_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
         page_two_url = reverse('show_clubs') + '?page=2'
         response = self.client.get(page_two_url)
         self.assertEqual(response.status_code, 200)
@@ -119,6 +121,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         clubs_page = response.context['page_obj']
         self.assertTrue(clubs_page.has_previous())
         self.assertTrue(clubs_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
         page_three_url = reverse('show_clubs') + '?page=3'
         response = self.client.get(page_three_url)
         self.assertEqual(response.status_code, 200)
@@ -128,6 +131,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         clubs_page = response.context['page_obj']
         self.assertTrue(clubs_page.has_previous())
         self.assertFalse(clubs_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
 
     def test_show_clubs_with_pagination_does_not_contain_page_traversers_if_not_enough_clubs(self):
         self.client.login(email=self.user.email, password="Password123")
@@ -140,6 +144,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.assertFalse(clubs_page.has_previous())
         self.assertFalse(clubs_page.has_next())
         self.assertFalse(clubs_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">', 0)
 
     def test_successful_empty_search(self):
         self.client.login(email=self.user.email, password="Password123")

@@ -74,6 +74,7 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         banned_members_page = response.context['page_obj']
         self.assertFalse(banned_members_page.has_previous())
         self.assertTrue(banned_members_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
         page_one_url = reverse('banned_members', kwargs = {'club_id': self.club.id}) + '?page=1'
         response = self.client.get(page_one_url)
         self.assertEqual(response.status_code, 200)
@@ -83,6 +84,7 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         banned_members_page = response.context['page_obj']
         self.assertFalse(banned_members_page.has_previous())
         self.assertTrue(banned_members_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
         page_two_url = reverse('banned_members', kwargs = {'club_id': self.club.id}) + '?page=2'
         response = self.client.get(page_two_url)
         self.assertEqual(response.status_code, 200)
@@ -92,15 +94,17 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         banned_members_page = response.context['page_obj']
         self.assertTrue(banned_members_page.has_previous())
         self.assertTrue(banned_members_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
         page_three_url = reverse('banned_members', kwargs = {'club_id': self.club.id}) + '?page=3'
         response = self.client.get(page_three_url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/banned_member_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['page_obj']), 3)# plus one becase we have already banned a member
+        self.assertEqual(len(response.context['page_obj']), 3)
         banned_members_page = response.context['page_obj']
         self.assertTrue(banned_members_page.has_previous())
         self.assertFalse(banned_members_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
 
     def test_show_banned_members_list_with_pagination_does_not_contain_page_traversers_if_not_enough_banned_members(self):
         self.client.login(email=self.user_club_owner.email, password="Password123")
@@ -113,6 +117,7 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         self.assertFalse(banned_members_page.has_previous())
         self.assertFalse(banned_members_page.has_next())
         self.assertFalse(banned_members_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">', 0)
 
     def _create_test_ban_for_default_club(self, banned_members_count = 10):
         for future_banned_member in range(banned_members_count):

@@ -50,6 +50,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         memberships_page = response.context['page_obj']
         self.assertFalse(memberships_page.has_previous())
         self.assertTrue(memberships_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
         page_one_url = reverse('members_list', kwargs={'club_id': self.club.id}) + '?page=1'
         response = self.client.get(page_one_url)
         self.assertEqual(response.status_code, 200)
@@ -59,6 +60,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         memberships_page = response.context['page_obj']
         self.assertFalse(memberships_page.has_previous())
         self.assertTrue(memberships_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
         page_two_url = reverse('members_list', kwargs={'club_id': self.club.id}) + '?page=2'
         response = self.client.get(page_two_url)
         self.assertEqual(response.status_code, 200)
@@ -68,6 +70,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         memberships_page = response.context['page_obj']
         self.assertTrue(memberships_page.has_previous())
         self.assertTrue(memberships_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
         page_three_url = reverse('members_list', kwargs={'club_id': self.club.id}) + '?page=3'
         response = self.client.get(page_three_url)
         self.assertEqual(response.status_code, 200)
@@ -77,6 +80,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         memberships_page = response.context['page_obj']
         self.assertTrue(memberships_page.has_previous())
         self.assertFalse(memberships_page.has_next())
+        self.assertContains(response, '<ul class="pagination ">')
 
     def test_show_members_list_with_pagination_does_not_contain_page_traversers_if_not_enough_members(self):
         self.client.login(email=self.user.email, password="Password123")
@@ -89,6 +93,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.assertFalse(memberships_page.has_previous())
         self.assertFalse(memberships_page.has_next())
         self.assertFalse(memberships_page.has_other_pages())
+        self.assertContains(response, '<ul class="pagination ">', 0)
 
     def _create_test_memberships_for_default_club(self, banned_members_count = 10):
         for future_member in range(banned_members_count):
