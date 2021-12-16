@@ -31,8 +31,8 @@ class MenuTesterMixin(AssertHTMLMixin):
 class PaginatorTraversalTesterMixin(AssertHTMLMixin):
 
     def assert_paginator_traversal(self, response):
-        with self.assertHTML(response, ):
+        with self.assertHTML(response, '<ul class="pagination ">'):
             pass
 
     def assert_no_paginator_traversal(self, response):
-        pass
+        self.assertNotHTML(response, '<ul class="pagination ">')

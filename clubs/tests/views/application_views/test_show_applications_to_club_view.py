@@ -1,14 +1,16 @@
 """Test backend implementation of the application viewer functionality."""
 
+from django.template import RequestContext
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.hashers import check_password
 from clubs.models import User, Club, Membership, Application
-from clubs.tests.helpers import reverse_with_next, MenuTesterMixin
+from clubs.tests.helpers import reverse_with_next, MenuTesterMixin, PaginatorTraversalTesterMixin
 from with_asserts.mixin import AssertHTMLMixin
 from django.conf import settings
+from django.template.loader import render_to_string
 
-class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
+class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin, PaginatorTraversalTesterMixin):
     """Test all aspects of the show applications to club view"""
 
     fixtures = [
@@ -152,7 +154,8 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(len(response.context['page_obj']), 3)
         applications_page = response.context['page_obj']
         self.assertTrue(applications_page.has_previous())
-        self.assertFalse(applications_page.has_next())
+        self.assert_paginator_traversal(response)
+        #self.assertContains(response, '<ul class="pagination ">')
 
     def test_show_applications_list_with_pagination_does_not_contain_page_traversers_if_not_enough_applications(self):
         self.client.login(email=self.user_owner.email, password="Password123")
@@ -165,6 +168,8 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assertFalse(applications_page.has_previous())
         self.assertFalse(applications_page.has_next())
         self.assertFalse(applications_page.has_other_pages())
+        self.assert_no_paginator_traversal(response)
+        #self.assertContains(response, "class='pagination'", 0)
 
     def _create_test_applications_for_default_club(self, banned_members_count = 10):
         for future_applicant in range(banned_members_count):
