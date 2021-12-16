@@ -141,7 +141,7 @@ class KnockOutStageModelTestCase(TestCase):
         for match in matches:
             if(i != len(matches) -1): # complete all matches except one
                 break
-            match.result = 1
+            match.result = 2
             match.save()
             i += 1
 

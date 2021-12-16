@@ -24,17 +24,21 @@ class Tournament(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     name = models.CharField(max_length=50, blank=False, unique = False)
     description =  models.CharField(max_length=280, blank=False)
-    
-    capacities = (2,4,8,16,32,48,96)
+        
+    CAPACITIES = (
+        (2,'2'),
+        (4,'4'),
+        (8,'8'),
+        (16,'16'),
+        (32, '32'),
+        (48,'48'),
+        (96,'96')
+    )
     capacity = models.PositiveIntegerField(
         default=16, 
         blank=False, 
-        validators=[
-            MinValueValidator(2), 
-            MaxValueValidator(96),
-            ValueInListValidator(capacities)
-                ]
-            )
+        choices=CAPACITIES
+    )
     
     
     deadline = models.DateTimeField(blank=False)

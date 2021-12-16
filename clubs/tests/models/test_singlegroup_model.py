@@ -67,6 +67,9 @@ class SingleGroupModelTestCase(TestCase):
     def test_too_few_matches_assigned_to_group(self):
         self.group.get_matches()[0].delete()
         self._assert_invalid_singlegroup()
+        
+    def test_get_winners_when_incomplete(self):
+        self.assertEqual(self.group.get_winners(), None)
 
     def test_too_many_matches_assigned_to_group(self):
         participants = list(Participant.objects.filter(tournament=self.tournament))[:2]
