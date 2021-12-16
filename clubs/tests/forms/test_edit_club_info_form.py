@@ -3,7 +3,6 @@ from django import forms
 from django.test import TestCase
 from clubs.forms import EditClubInfoForm
 from clubs.models import Club
-from django.urls import reverse
 
 class EditClubInfoFormTestCase(TestCase):
     """Unit tests of the edit_club_info form."""
@@ -11,7 +10,6 @@ class EditClubInfoFormTestCase(TestCase):
     fixtures = ['clubs/tests/fixtures/default_club.json']
 
     def setUp(self):
-        self.url = reverse('edit_account')
         self.form_input = {
             'name' : "Bishops",
             'location': "Paris",
