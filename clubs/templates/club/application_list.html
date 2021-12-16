@@ -35,7 +35,7 @@
               {% for app in page_obj %}
             <tr>
               {% include 'user_list_partials/table_row_basics.html' with user=app.user include_counter=True %}
-              <td><b>{{ app.user.experience }}</b></td>
+              <td><b>{{ app.user.get_experience_display }}</b></td>
               <td>{{ app.personal_statement }}</td>
               <td style="vertical-align: bottom; padding: 10px"><a href='{% url "respond_to_application" app.id 0  %}' onclick="confirmMsg('reject_application')" class="btn btn-danger">Reject</a></td>
               <td style="vertical-align: bottom; padding: 10px"><a href='{% url "respond_to_application" app.id 1  %}' onclick="confirmMsg('accept_application')" class="btn btn-success">Accept</a></td>
