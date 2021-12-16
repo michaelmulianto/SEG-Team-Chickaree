@@ -29,7 +29,7 @@ class OrganiseTournamentView(FormView):
         if (not is_user_owner_of_club(request.user, self.get_context_data()['club'])) and (not is_user_officer_of_club(self.request.user, self.get_context_data()['club'])):
             messages.add_message(request, messages.ERROR, "Only Owners or Officers of a club can create tournaments")
             return redirect('show_clubs')
-        
+
         return super().dispatch(request)
 
     def get_context_data(self, **kwargs):
@@ -40,9 +40,8 @@ class OrganiseTournamentView(FormView):
 
     def form_valid(self, form):
         self.object = form.save(self.get_context_data()['club'])
-        if Membership.objects.filter(club = self.get_context_data()['club'], user=self.request.user).exists():
-            member = Membership.objects.get(user = self.request.user, club = self.get_context_data()['club'])
-
+        member = Membership.objects.get(user = self.request.user, club = self.get_context_data()['club'])
+        
         Organiser.objects.create(
             member = member,
             tournament = self.object,
@@ -116,10 +115,10 @@ class AddResultView(UpdateView):
             pass
         else:
             my_form.fields["result"].choices = my_form.fields["result"].choices[:2]
-            
+
         my_form.fields["result"].choices[0] = (1, f'White Victory - {match.white_player.member.user.username}')
         my_form.fields["result"].choices[1] = (2, f'Black Victory - {match.black_player.member.user.username}')
-        
+
         return my_form
 
     def form_valid(self, form):
