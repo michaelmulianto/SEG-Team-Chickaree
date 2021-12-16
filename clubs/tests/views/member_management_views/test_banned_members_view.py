@@ -70,8 +70,8 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/banned_member_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['banned_members']), settings.BANNED_MEMBERS_PER_PAGE)
-        banned_members_page = response.context['banned_members']
+        self.assertEqual(len(response.context['page_obj']), settings.BANNED_MEMBERS_PER_PAGE)
+        banned_members_page = response.context['page_obj']
         self.assertFalse(banned_members_page.has_previous())
         self.assertTrue(banned_members_page.has_next())
         page_one_url = reverse('banned_members', kwargs = {'club_id': self.club.id}) + '?page=1'
@@ -79,8 +79,8 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/banned_member_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['banned_members']), settings.BANNED_MEMBERS_PER_PAGE)
-        banned_members_page = response.context['banned_members']
+        self.assertEqual(len(response.context['page_obj']), settings.BANNED_MEMBERS_PER_PAGE)
+        banned_members_page = response.context['page_obj']
         self.assertFalse(banned_members_page.has_previous())
         self.assertTrue(banned_members_page.has_next())
         page_two_url = reverse('banned_members', kwargs = {'club_id': self.club.id}) + '?page=2'
@@ -88,8 +88,8 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/banned_member_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['banned_members']), settings.BANNED_MEMBERS_PER_PAGE)
-        banned_members_page = response.context['banned_members']
+        self.assertEqual(len(response.context['page_obj']), settings.BANNED_MEMBERS_PER_PAGE)
+        banned_members_page = response.context['page_obj']
         self.assertTrue(banned_members_page.has_previous())
         self.assertTrue(banned_members_page.has_next())
         page_three_url = reverse('banned_members', kwargs = {'club_id': self.club.id}) + '?page=3'
@@ -97,8 +97,8 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/banned_member_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['banned_members']), 3)# plus one becase we have already banned a member
-        banned_members_page = response.context['banned_members']
+        self.assertEqual(len(response.context['page_obj']), 3)# plus one becase we have already banned a member
+        banned_members_page = response.context['page_obj']
         self.assertTrue(banned_members_page.has_previous())
         self.assertFalse(banned_members_page.has_next())
 
@@ -109,7 +109,7 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/banned_member_list.html')
         self.assert_menu(response)
-        banned_members_page = response.context['banned_members']
+        banned_members_page = response.context['page_obj']
         self.assertFalse(banned_members_page.has_previous())
         self.assertFalse(banned_members_page.has_next())
         self.assertFalse(banned_members_page.has_other_pages())

@@ -122,8 +122,8 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/application_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['applications']), settings.APPLICATIONS_PER_PAGE)
-        applications_page = response.context['applications']
+        self.assertEqual(len(response.context['page_obj']), settings.APPLICATIONS_PER_PAGE)
+        applications_page = response.context['page_obj']
         self.assertFalse(applications_page.has_previous())
         self.assertTrue(applications_page.has_next())
         page_one_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=1'
@@ -131,8 +131,8 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/application_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['applications']), settings.APPLICATIONS_PER_PAGE)
-        applications_page = response.context['applications']
+        self.assertEqual(len(response.context['page_obj']), settings.APPLICATIONS_PER_PAGE)
+        applications_page = response.context['page_obj']
         self.assertFalse(applications_page.has_previous())
         self.assertTrue(applications_page.has_next())
         page_two_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=2'
@@ -140,8 +140,8 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/application_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['applications']), settings.APPLICATIONS_PER_PAGE)
-        applications_page = response.context['applications']
+        self.assertEqual(len(response.context['page_obj']), settings.APPLICATIONS_PER_PAGE)
+        applications_page = response.context['page_obj']
         self.assertTrue(applications_page.has_previous())
         self.assertTrue(applications_page.has_next())
         page_three_url = reverse('show_applications_to_club', kwargs = {'club_id': self.club.id}) + '?page=3'
@@ -149,8 +149,8 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/application_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['applications']), 3)
-        applications_page = response.context['applications']
+        self.assertEqual(len(response.context['page_obj']), 3)
+        applications_page = response.context['page_obj']
         self.assertTrue(applications_page.has_previous())
         self.assertFalse(applications_page.has_next())
 
@@ -161,7 +161,7 @@ class ShowApplicationsToClubTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/application_list.html')
         self.assert_menu(response)
-        applications_page = response.context['applications']
+        applications_page = response.context['page_obj']
         self.assertFalse(applications_page.has_previous())
         self.assertFalse(applications_page.has_next())
         self.assertFalse(applications_page.has_other_pages())

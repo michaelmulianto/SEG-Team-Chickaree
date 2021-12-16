@@ -46,8 +46,8 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/members_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['memberships']), settings.MEMBERSHIPS_PER_PAGE)
-        memberships_page = response.context['memberships']
+        self.assertEqual(len(response.context['page_obj']), settings.MEMBERSHIPS_PER_PAGE)
+        memberships_page = response.context['page_obj']
         self.assertFalse(memberships_page.has_previous())
         self.assertTrue(memberships_page.has_next())
         page_one_url = reverse('members_list', kwargs={'club_id': self.club.id}) + '?page=1'
@@ -55,8 +55,8 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/members_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['memberships']), settings.MEMBERSHIPS_PER_PAGE)
-        memberships_page = response.context['memberships']
+        self.assertEqual(len(response.context['page_obj']), settings.MEMBERSHIPS_PER_PAGE)
+        memberships_page = response.context['page_obj']
         self.assertFalse(memberships_page.has_previous())
         self.assertTrue(memberships_page.has_next())
         page_two_url = reverse('members_list', kwargs={'club_id': self.club.id}) + '?page=2'
@@ -64,8 +64,8 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/members_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['memberships']), settings.MEMBERSHIPS_PER_PAGE)
-        memberships_page = response.context['memberships']
+        self.assertEqual(len(response.context['page_obj']), settings.MEMBERSHIPS_PER_PAGE)
+        memberships_page = response.context['page_obj']
         self.assertTrue(memberships_page.has_previous())
         self.assertTrue(memberships_page.has_next())
         page_three_url = reverse('members_list', kwargs={'club_id': self.club.id}) + '?page=3'
@@ -73,8 +73,8 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/members_list.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['memberships']), 3)
-        memberships_page = response.context['memberships']
+        self.assertEqual(len(response.context['page_obj']), 3)
+        memberships_page = response.context['page_obj']
         self.assertTrue(memberships_page.has_previous())
         self.assertFalse(memberships_page.has_next())
 
@@ -85,7 +85,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/members_list.html')
         self.assert_menu(response)
-        memberships_page = response.context['memberships']
+        memberships_page = response.context['page_obj']
         self.assertFalse(memberships_page.has_previous())
         self.assertFalse(memberships_page.has_next())
         self.assertFalse(memberships_page.has_other_pages())

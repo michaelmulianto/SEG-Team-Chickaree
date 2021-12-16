@@ -97,8 +97,8 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['clubs']), settings.CLUBS_PER_PAGE)
-        clubs_page = response.context['clubs']
+        self.assertEqual(len(response.context['page_obj']), settings.CLUBS_PER_PAGE)
+        clubs_page = response.context['page_obj']
         self.assertFalse(clubs_page.has_previous())
         self.assertTrue(clubs_page.has_next())
         page_one_url = reverse('show_clubs') + '?page=1'
@@ -106,8 +106,8 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['clubs']), settings.CLUBS_PER_PAGE)
-        clubs_page = response.context['clubs']
+        self.assertEqual(len(response.context['page_obj']), settings.CLUBS_PER_PAGE)
+        clubs_page = response.context['page_obj']
         self.assertFalse(clubs_page.has_previous())
         self.assertTrue(clubs_page.has_next())
         page_two_url = reverse('show_clubs') + '?page=2'
@@ -115,8 +115,8 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['clubs']), settings.CLUBS_PER_PAGE)
-        clubs_page = response.context['clubs']
+        self.assertEqual(len(response.context['page_obj']), settings.CLUBS_PER_PAGE)
+        clubs_page = response.context['page_obj']
         self.assertTrue(clubs_page.has_previous())
         self.assertTrue(clubs_page.has_next())
         page_three_url = reverse('show_clubs') + '?page=3'
@@ -124,8 +124,8 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
-        self.assertEqual(len(response.context['clubs']), 3)
-        clubs_page = response.context['clubs']
+        self.assertEqual(len(response.context['page_obj']), 3)
+        clubs_page = response.context['page_obj']
         self.assertTrue(clubs_page.has_previous())
         self.assertFalse(clubs_page.has_next())
 
@@ -136,7 +136,7 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assert_menu(response)
-        clubs_page = response.context['clubs']
+        clubs_page = response.context['page_obj']
         self.assertFalse(clubs_page.has_previous())
         self.assertFalse(clubs_page.has_next())
         self.assertFalse(clubs_page.has_other_pages())
