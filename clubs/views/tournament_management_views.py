@@ -7,6 +7,8 @@ from django.utils.decorators import method_decorator
 from .decorators import match_exists, tournament_exists, club_exists, allowed_users, user_exists
 from .helpers import is_lead_organiser_of_tournament, is_user_organiser_of_tournament, is_participant_in_tournament, is_user_owner_of_club, is_user_officer_of_club, is_user_member_of_club
 
+from django.utils.timezone import now
+
 from django.contrib import messages
 from django.contrib.auth import login
 from django.urls import reverse
@@ -14,7 +16,7 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 
 from clubs.forms import AddResultForm, OrganiseTournamentForm
-from clubs.models import Match, Tournament, Membership, Organiser
+from clubs.models import Match, Tournament, Membership, Organiser, Club
 
 class OrganiseTournamentView(FormView):
     """Create a new tournament."""

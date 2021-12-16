@@ -110,9 +110,10 @@ def my_tournaments_list(request):
     
     for tournament in Tournament.objects.all():
         if Membership.objects.filter(user=current_user, club=tournament.club).exists():
-            if Participant.objects.filter(tournament=tournament, user=current_user).exists():
+            member= Membership.objects.get(user=current_user, club=tournament.club)
+            if Participant.objects.filter(tournament=tournament, member=member).exists():
                 outer_index=0
-            elif Organiser.objects.filter(tournament=tournament, user=current_user).exists():
+            elif Organiser.objects.filter(tournament=tournament, member=member).exists():
                 outer_index=1
             else:
                 outer_index=None
@@ -127,7 +128,7 @@ def my_tournaments_list(request):
                     
                 my_tournaments[outer_index][inner_index].append(tournament)
     
-    return render(request, 'tournament/my_tournament_list.html', {
+    return render(request, 'tournament/my_tournaments_list.html', {
                 'current_user': request.user,
                 'participant_past_tournaments': my_tournaments[0][0],
                 'participant_ongoing_tournaments': my_tournaments[0][1],

@@ -2,8 +2,8 @@
 
 from django.test import TestCase
 from django.urls import reverse
-
-from clubs.models import User
+from clubs.tests.helpers import reverse_with_next
+from clubs.models import User, Tournament, Participant, Organiser, Membership, Club
 
 class MyTournamentListViewTestCase(TestCase):
     """Test all validation within view my tournaments list"""
@@ -17,3 +17,47 @@ class MyTournamentListViewTestCase(TestCase):
     
     def setUp(self):
         self.user = User.objects.get(username='johndoe')
+        self.t1 = Tournament.objects.get(id=1)
+        self.t2 = Tournament.objects.get(id=2)
+        self.t3 = Tournament.objects.get(id=3)
+        
+        self.member = Membership.objects.create(user=self.user, club=Club.objects.get(id=1))
+        
+        self.mt_1 = Participant.objects.create(
+            member=self.member,
+            tournament=self.t1
+        )
+        self.mt_2 = Participant.objects.create(
+            member=self.member,
+            tournament=self.t2
+        )
+        self.mt_3 = Organiser.objects.create(
+            member=self.member,
+            tournament=self.t3
+        )
+        
+        self.url = reverse('my_tournaments_list')
+        
+    def test_url_is_correct(self):
+        self.assertEqual(self.url, '/tournaments/my/')
+        
+    def test_get_my_tournaments_redirects_when_not_logged_in(self):
+        response = self.client.get(self.url)
+        redirect_url = reverse_with_next('log_in', self.url)
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        
+    def test_get_my_tournaments_successful_case(self):
+        self.client.login(email=self.user.email, password="Password123")
+        response = self.client.get(self.url, follow=True)
+        self.assertTemplateUsed(response, "tournament/my_tournaments_list.html")
+        self.assertEqual(response.status_code, 200)
+        
+    def test_get_my_tournaments_with_no_membertournamentrelationships(self):
+        self.mt_1.delete()
+        self.mt_2.delete()
+        self.mt_3.delete()
+        
+        self.client.login(email=self.user.email, password="Password123")
+        response = self.client.get(self.url, follow=True)
+        self.assertTemplateUsed(response, "tournament/my_tournaments_list.html")
+        self.assertEqual(response.status_code, 200)
