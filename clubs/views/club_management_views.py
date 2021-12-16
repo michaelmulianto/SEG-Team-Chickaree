@@ -18,7 +18,7 @@ from django.shortcuts import redirect
 class CreateClubView(FormView):
     """Create a new club."""
     form_class = CreateClubForm
-    template_name = "create_club.html"
+    template_name = "club/create_club.html"
 
     @method_decorator(login_required)
     def dispatch(self, request):
@@ -73,18 +73,13 @@ class EditClubInfoView(UpdateView):
     """Edit the details of a given club."""
 
     model = Club
-    template_name = "edit_club_info.html"
+    template_name = "club/edit_club_info.html"
     form_class = EditClubInfoForm
 
     @method_decorator(login_required)
     @method_decorator(club_exists)
     def dispatch(self, request, club_id):
         return super().dispatch(request)
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['current_user'] = self.request.user
-    #     return context
 
     def get_object(self):
         """Return the object (club) to be updated."""
@@ -104,8 +99,8 @@ def delete_club(request, club_id):
 
     if is_user_owner_of_club(current_user, club_to_delete):
         Club.objects.get(id=club_id).delete()
-        messages.add_message(request, messages.INFO, "The club has successfully been deleted")
+        messages.add_message(request, messages.INFO, "The club has successfully been deleted.")
         return redirect('show_clubs')
     else:
-        messages.add_message(request, messages.ERROR, "You are not the owner of this clubs")
+        messages.add_message(request, messages.ERROR, "You are not the owner of this club.")
         return redirect('show_club', club_id=club_id)

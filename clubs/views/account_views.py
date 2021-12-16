@@ -20,13 +20,13 @@ from django.shortcuts import render
 @login_required
 def account(request):
     """Render a page displaying the attributes of the currently logged in user."""
-    return render(request, 'account.html', { 'current_user': request.user })
+    return render(request, 'account/account.html', { 'current_user': request.user })
 
 
 class SignUpView(FormView):
     """Create a new user account."""
     form_class = SignUpForm
-    template_name = "sign_up.html"
+    template_name = "account/sign_up.html"
 
     @method_decorator(login_prohibited)
     def dispatch(self, request):
@@ -45,7 +45,7 @@ class EditAccountView(UpdateView):
     """Edit the details of the currently logged in user."""
 
     model = User
-    template_name = "edit_account.html"
+    template_name = "account/edit_account.html"
     form_class = EditAccountForm
 
     @method_decorator(login_required)
@@ -71,7 +71,7 @@ class EditAccountView(UpdateView):
 class ChangePasswordView(FormView):
     """Allow currently logged in user to change their password."""
 
-    template_name = 'change_password.html'
+    template_name = 'account/change_password.html'
     form_class = PasswordChangeForm
 
     @method_decorator(login_required)

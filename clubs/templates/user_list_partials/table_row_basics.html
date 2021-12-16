@@ -1,0 +1,6 @@
+{% if include_counter %}
+<td> {{ page_obj.start_index|add:forloop.counter0 }} </td>
+{% endif %}
+<td> <img src="{{user.mini_gravatar}}" alt="Gravatar" style="border-radius: 50%"> </td>
+<td> @{{ user.username }} </td>
+<td> {{ user.first_name }} {{ user.last_name }} </td>

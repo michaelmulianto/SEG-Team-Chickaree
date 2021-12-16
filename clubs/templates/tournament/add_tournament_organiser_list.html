@@ -1,0 +1,50 @@
+{% extends 'base_content.html' %}
+{% block title %}
+| Add organiser
+{% endblock %}
+{% block content %}
+{% load define_action %}
+
+{% check_is_lead_organiser current_user tournament as is_lead_organiser %}
+{% append_to_queryset tournament.club.get_officers tournament.club.get_owner as organiser_candidates %}
+{% remove_from_queryset organiser_candidates tournament.get_organisers_as_members as organiser_candidates %}
+
+
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <style>
+          .standard-table-spacing{
+            vertical-align: middle;
+            border-spacing: 10px 2px;
+          }
+        </style>
+        <h1> Organiser candidates: </h1>
+        <p>
+          Only officers or owner of the club can be orgainsers of the tournament. Ask the owner to promote a member to officer if you want them to help you organise the tournament.
+        </p>
+        <br>
+        <table class="table standard-table-spacing">
+          <tr>
+            {% include 'user_list_partials/table_header_basics.html' with include_counter=True %}
+            {% include 'user_list_partials/table_header_extras.html' with show_email=True %}
+            <th></th>
+          </tr>
+        {% for member in organiser_candidates %}
+        <tr>
+          {% include 'user_list_partials/table_row_basics.html' with user=member.user include_counter=True %}
+          {% include 'user_list_partials/table_row_extras.html' with user=member.user show_email=True %}
+          <td style="width: 100px"><a href='{% url 'add_organiser_to_tournament' tournament.id member.id %}' class="btn btn-success"><i class="bi bi-person-plus-fill"></i> Add </a></td>
+        </tr>
+        {% endfor %}
+        </table>
+        <a href='{% url 'show_tournament' tournament.id %}' class="btn btn-info">
+          <i class="bi bi-reply-fill"></i> Back to tournament page
+        </a>
+        <br>
+        <br>
+        <br>
+      </div>
+    </div>
+  </div>
+{% endblock %}

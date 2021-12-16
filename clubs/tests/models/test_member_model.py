@@ -1,7 +1,7 @@
 """
-Tests for Member model, found in clubs/models.py
+Tests for Membership model.
 
-The model effectively represents a many-to-many relationship, however we test a single relationship.
+The table effectively represents a many-to-many relationship, however we test a single relationship.
 """
 
 from django.test import TestCase
@@ -10,7 +10,7 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
 
-class MemberModelTestCase(TestCase):
+class MembershipModelTestCase(TestCase):
     """Test all aspects of a Membership to a club."""
 
     fixtures = [
@@ -90,6 +90,10 @@ class MemberModelTestCase(TestCase):
         with self.assertRaises(ValidationError):
             self.member_club_owner.is_officer = True
             self.member_club_owner.full_clean()
+
+    # Test string
+    def test_str(self):
+        self.assertEqual(self.membership.__str__(), f'User: {self.user.first_name} {self.user.last_name} at Club: {self.club}')
 
     #assertions
     def _assert_member_is_valid(self):

@@ -1,0 +1,35 @@
+{% extends 'base_content.html' %}
+{% block title %}
+| Organise Tournament
+{% endblock %}
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12 col-md-6 offset-md-3">
+        <h1>Organise Tournament</h1>
+        <form action="{% url 'organise_tournament' club.id %}" method="post">
+          {% csrf_token %}
+          {% include 'partials/bootstrap_form.html' with form=form %}
+          <a href='{% url 'show_club' club.id %}' class="btn btn-outline-danger">Cancel</a>&nbsp;
+          <input type="submit" value="Create" class="btn btn-primary">
+        </form>
+      </div>
+    </div>
+  </div>
+  <br>
+  <br>
+  <br>
+  <script>
+  $(function () {
+    $("#id_deadline").datetimepicker({
+      format: 'Y-m-d H:i:00',
+    });
+    $("#id_start").datetimepicker({
+      format: 'Y-m-d H:i:00',
+    });
+    $("#id_end").datetimepicker({
+      format: 'Y-m-d H:i:00',
+    });
+  });
+</script>
+{% endblock %}

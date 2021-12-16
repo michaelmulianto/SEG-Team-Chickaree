@@ -5,9 +5,8 @@ purpose like loggin in a user with the correct username and password.
 """
 
 from django import forms
-from clubs.models import User, Club, Application
+from clubs.models import User, Club, Application, Tournament, Match
 from django.core.validators import RegexValidator
-
 
 class LogInForm(forms.Form):
     """Form to grant access to a returning user's personalised content"""
@@ -108,3 +107,46 @@ class EditClubInfoForm(forms.ModelForm):
         model = Club
         fields = ['name', 'location', 'description']
         widgets = {'description': forms.Textarea()}
+
+class OrganiseTournamentForm(forms.ModelForm):
+    class Meta:
+        model = Tournament
+        fields = ['name', 'description', 'capacity', 'deadline', 'start', 'end']
+        deadline = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
+        start = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
+        end = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
+        widgets = {'description': forms.Textarea()}
+
+    # Verify our custom constraints are fullfiled.
+    def full_clean(self):
+        super().full_clean()
+        deadline = self.cleaned_data.get('deadline')
+        start = self.cleaned_data.get('start')
+        end = self.cleaned_data.get('end')
+        if deadline > start:
+            self.add_error('deadline', 'Deadline to join must be before tournament start.')
+            self.add_error('start', 'Deadline to join must be before tournament start.')
+        if start > end:
+            self.add_error('start', 'Start date must be before end date.')
+            self.add_error('end', 'Start date must be before end date.')
+
+    #Create new tournament using the tournament form data
+    def save(self, desired_club):
+        super().save(commit=False)
+        tournament = Tournament.objects.create(
+            club = desired_club,
+            name = self.cleaned_data.get('name'),
+            description = self.cleaned_data.get('description'),
+            capacity = self.cleaned_data.get('capacity'),
+            deadline = self.cleaned_data.get('deadline'),
+            start = self.cleaned_data.get('start'),
+            end = self.cleaned_data.get('end')
+        )
+        return tournament
+
+class AddResultForm(forms.ModelForm):
+    class Meta:
+        model = Match
+        fields = ['result']
+
+    result = forms.ChoiceField(choices=Match.Result.choices[1:])

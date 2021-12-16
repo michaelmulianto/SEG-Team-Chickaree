@@ -48,6 +48,10 @@ urlpatterns = [
     path('club/<int:club_id>/members/', views.members_list, name='members_list'),
     path('club/<int:club_id>/applications/', views.show_applications_to_club, name='show_applications_to_club'),
     path('club/<int:club_id>/banned_members/', views.banned_members, name='banned_members'),
+    path('club/<int:club_id>/organise_tournament/', views.OrganiseTournamentView.as_view(), name='organise_tournament'),
+
+    path('club/<int:tournament_id>/join_tournament/', views.join_tournament, name='join_tournament'),
+
 
     path('application/<int:app_id>/respond/<bool:is_accepted>/', views.respond_to_application, name='respond_to_application'),
 
@@ -58,4 +62,15 @@ urlpatterns = [
     path('member/<int:member_id>/transfer_ownership/', views.transfer_ownership_to_officer, name='transfer_ownership_to_officer'),
     path('member/<int:member_id>/kick/', views.kick_member, name='kick_member'),
     path('member/<int:member_id>/ban/', views.ban_member, name='ban_member'),
+
+    path('tournament/<int:tournament_id>/', views.show_tournament, name='show_tournament'),
+    path('tournament/<int:tournament_id>/begin/', views.begin_tournament, name='begin_tournament'),
+    path('tournament/<int:tournament_id>/participants', views.show_tournament_participants, name='show_tournament_participants'),
+    path('tournament/<int:tournament_id>/withdraw/', views.withdraw_participation_from_tournament, name='withdraw_from_tournament'),
+    path('tournament/<int:tournament_id>/add_organiser/', views.add_tournament_organiser_list, name='add_tournament_organiser_list'),
+    path('tournament/<int:tournament_id>/add_organiser/<int:member_id>', views.add_organiser_to_tournament, name='add_organiser_to_tournament'),
+    
+    path('tournaments/my/', views.my_tournaments_list, name='my_tournament_list'),
+    
+    path('match/<int:match_id>/add_result/', views.AddResultView.as_view(), name='add_result')
 ]

@@ -1,0 +1,56 @@
+<h3><b>Group Stage {{ group_stage.round_num }}</b></h3>
+<br>
+<script>
+  var tabs_dic{{forloop.counter}} = {
+    {% for single_group in group_stage.get_single_groups %}
+    "group{{forloop.counter}}" : "group{{forloop.counter}}_tab{{forloop.parentloop.counter}}",
+    {% endfor %}
+  };
+  var tables_dic{{forloop.counter}} = {
+    {% for single_group in group_stage.get_single_groups %}
+    "group{{forloop.counter}}" : "group{{forloop.counter}}_div{{forloop.parentloop.counter}}",
+    {% endfor %}
+  };
+</script>
+<ul class="nav nav-tabs">
+  {% for single_group in group_stage.get_single_groups %}
+  <li class="nav-item">
+    <a id="group{{forloop.counter}}_tab{{forloop.parentloop.counter}}" {% if forloop.counter == 1 %} class="nav-link active" {% else %} class="nav-link" {% endif %} onclick="displayTournaments{{forloop.parentloop.counter}}('group{{forloop.counter}}', 'flex')" type="button">Group {{forloop.counter}}</a>
+  </li>
+  {% endfor %}
+</ul>
+<br>
+<style>
+  .row {
+    display: flex;
+  }
+
+  .column {
+    flex: 50%;
+  }
+  tbody {
+    border-top: none !important;
+  }
+</style>
+{% for single_group in group_stage.get_single_groups %}
+<div class="row" id="group{{forloop.counter}}_div{{forloop.parentloop.counter}}" {% if not forloop.counter == 1 %} style="display: none" {% endif %}>
+  <div class="column">
+    <h3 class="text-center">Results</h3>
+    <br>
+    {% include 'tournament_partials/results_and_fixtures/results_table.html' %}
+  </div>
+  <div class="column text-center">
+    <h3 class="text-center">Fixtures</h3>
+    <br>
+    <div class="overflow-scroll" {% if single_group.get_standings|length == 6 %} style="height: 450px;" {% else %} style="height: 320px;" {% endif %}>
+      <table class="table">
+      {% for match in single_group.get_matches %}
+        <tr>
+        {% include 'tournament_partials/results_and_fixtures/group_stage_match_cell.html' %}
+        </tr>
+      {% endfor %}
+      </table>
+    </div>
+  </div>
+</div>
+{% endfor %}
