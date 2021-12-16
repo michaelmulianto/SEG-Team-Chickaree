@@ -33,7 +33,7 @@ def members_list(request, club_id):
     except EmptyPage:
         page_obj  = paginator.page(paginator.num_pages)
 
-    return render(request, 'club/members_list.html', {'current_user': request.user, 'club': club, 'memberships': page_obj})
+    return render(request, 'club/members_list.html', {'current_user': request.user, 'club': club, 'page_obj': page_obj})
 
 @login_required
 @club_exists

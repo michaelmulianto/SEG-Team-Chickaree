@@ -40,13 +40,13 @@
   <h1>You searched for {{ searched }}</h1>
   {% endif %}
 
-  {% if clubs.has_other_pages %}
-    {% bootstrap_paginate clubs range=6 show_first_last="false" %}
+  {% if page_obj.has_other_pages %}
+    {% bootstrap_paginate page_obj range=6 show_first_last="false" %}
   {% endif %}
 
 
   <table class="table table-hover">
-    {% for club in clubs %}
+    {% for club in page_obj %}
     {% check_has_applied club current_user as has_applied %}
     {% check_is_member club current_user as is_member %}
     {% check_is_owner club current_user as is_owner %}
@@ -82,8 +82,8 @@
     </tr>
     {% endfor %}
   </table>
-  {% if clubs.has_other_pages %}
-    {% bootstrap_paginate clubs range=6 show_first_last="false" %}
+  {% if page_obj.has_other_pages %}
+    {% bootstrap_paginate page_obj range=6 show_first_last="false" %}
   {% endif %}
 
 </div>
