@@ -160,6 +160,7 @@ class UserModelTestCase(TestCase):
 
     # Test get clubs
     def test_get_clubs(self):
+        self.assertEqual(len(self.user.get_clubs()), 0)
         self.club = Club.objects.get(name="King\'s Knights")
         Membership.objects.create(
             user = self.user,

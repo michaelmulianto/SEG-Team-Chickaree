@@ -77,6 +77,7 @@ class ClubModelTestCase(TestCase):
 
     # Test get get memberships
     def test_get_memberships(self):
+        self.assertEqual(len(self.club.get_memberships()), 0)
         self.member = Membership.objects.create(
             user = self.user,
             club = self.club,
@@ -85,6 +86,7 @@ class ClubModelTestCase(TestCase):
 
     # Test get banned members
     def test_get_banned_members(self):
+        self.assertEqual(len(self.club.get_memberships()), 0)
         self.ban = Ban.objects.create(
             club = self.club,
             user = self.user,
