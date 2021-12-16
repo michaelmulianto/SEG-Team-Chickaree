@@ -47,14 +47,3 @@ def sort_clubs(param, order):
         clubs = Club.objects.order_by("-" + param)
         order = "asc"
     return clubs
-
-def sort_clubs_for_as_set_of_clubs(clubs, param, order):
-    if order == None:
-        clubs = clubs
-    elif order == "asc":
-        clubs = clubs.order_by(param)
-        order = "des"
-    elif order == "des":
-        clubs = clubs.order_by("-" + param)
-        order = "asc"
-    return clubs
