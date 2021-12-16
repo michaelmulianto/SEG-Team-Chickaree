@@ -57,9 +57,11 @@ class KnockoutStage(TournamentStageBase, StageMethodInterface):
             if match.result == 1:
                 winners.append(match.white_player)
                 match.black_player.round_eliminated = self.round_num
+                match.black_player.save()
             elif match.result == 2:
                 winners.append(match.black_player)
                 match.white_player.round_eliminated = self.round_num
+                match.white_player.save()
         # Case draw not considered: To-do
         return winners
 
@@ -196,5 +198,6 @@ class SingleGroup(RoundOfMatches, StageMethodInterface):
 
         for entry in losers_standings:
             entry[0].round_eliminated = self.group_stage.round_num
+            entry[0].save()
 
         return winners
