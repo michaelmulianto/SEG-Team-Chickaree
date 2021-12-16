@@ -70,6 +70,10 @@ def check_is_owner(club_to_check, user):
 # TOURNAMENT tags
 
 @register.simple_tag
+def check_capacity_reached(tournament):
+    return Participant.objects.filter(tournament=tournament).count() == tournament.capacity
+
+@register.simple_tag
 def check_is_organiser(user, tournament):
     if Membership.objects.filter(user=user, club=tournament.club).exists():
         membership = Membership.objects.get(user=user, club=tournament.club)
