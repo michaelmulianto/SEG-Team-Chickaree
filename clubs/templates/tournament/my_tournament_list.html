@@ -86,7 +86,7 @@
         </ul>
         <br>
         <table class="table standard-chess-table table-hover" id="organiser_past_tournaments_table_body" style="display: none">
-          {% include 'tournament_partials/tournament_list.html' with tournaments=v_past_tournaments is_member=True is_upcoming=False %}
+          {% include 'tournament_partials/tournament_list.html' with tournaments=organiser_past_tournaments is_member=True is_upcoming=False %}
         </table>
         <table class="table standard-chess-table table-hover" id="organiser_ongoing_tournaments_table_body" style="display: none">
           {% include 'tournament_partials/tournament_list.html' with tournaments=organiser_ongoing_tournaments is_member=True is_upcoming=False %}
