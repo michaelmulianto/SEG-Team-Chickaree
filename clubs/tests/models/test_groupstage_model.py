@@ -35,7 +35,7 @@ class GroupStageModelTestCase(TestCase):
     def test_get_is_complete_and_get_winners_on_finished_round(self):
         expected_winners = []
         for match in self.group_stage.get_matches():
-            match.result = 1
+            match.result = 3
             match.save()
 
         for group in SingleGroup.objects.filter(group_stage = self.group_stage):

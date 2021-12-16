@@ -12,7 +12,6 @@ from django.db import models
 
 from django.db.models import UniqueConstraint
 from django.core.validators import MinValueValidator, MaxValueValidator
-from .validators import ValueInListValidator
 
 from django.db.models import Max
 from itertools import combinations
@@ -25,16 +24,20 @@ class Tournament(models.Model):
     name = models.CharField(max_length=50, blank=False, unique = False)
     description =  models.CharField(max_length=280, blank=False)
 
-    capacities = (2,4,8,16,32,48,96)
+    CAPACITIES = (
+        (2,'2'),
+        (4,'4'),
+        (8,'8'),
+        (16,'16'),
+        (32, '32'),
+        (48,'48'),
+        (96,'96')
+    )
     capacity = models.PositiveIntegerField(
         default=16,
         blank=False,
-        validators=[
-            MinValueValidator(2),
-            MaxValueValidator(96),
-            ValueInListValidator(capacities)
-                ]
-            )
+        choices=CAPACITIES
+    )
 
 
     deadline = models.DateTimeField(blank=False)
@@ -126,12 +129,16 @@ class Tournament(models.Model):
     def _participants_to_appropriate_capacity(self):
         participants = Participant.objects.filter(tournament=self)
         potential_capacity = self.capacity
-        cap_index = self.capacities.index(potential_capacity)
+        capacities =[]
+        for entry in self.CAPACITIES:
+            capacities.append(entry[0])
+
+        cap_index = capacities.index(potential_capacity)
         while participants.count() < potential_capacity:
             cap_index -= 1
             if cap_index == -1:
                 return participants
-            potential_capacity = self.capacities[cap_index]
+            potential_capacity = capacities[cap_index]
 
         excess_participant_count = participants.count() - potential_capacity
         ordered_participants = participants.order_by('-joined')
