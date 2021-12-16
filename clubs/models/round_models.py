@@ -17,9 +17,8 @@ class Match(models.Model):
     class Result(models.IntegerChoices):
         Incomplete = 0, 'Incomplete'
         White_Victory = 1, f'White Victory'
-        Black_Victory = 2, f'Black Victor'
+        Black_Victory = 2, f'Black Victory'
         Stalemate = 3, 'Stalemate'
-
 
     result = models.IntegerField(default = 0, choices = Result.choices, blank = False)
 
