@@ -71,6 +71,10 @@ class ClubModelTestCase(TestCase):
         self.club.description = self.second_club.description
         self._assert_club_is_valid()
 
+    # Test string
+    def test_str(self):
+        self.assertEqual(self.club.__str__(), self.club.name)
+
     # Test get get memberships
     def test_get_memberships(self):
         self.member = Membership.objects.create(
