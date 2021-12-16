@@ -9,8 +9,11 @@ Dependencies for helper functions are imported within those helpers.
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 from django.db import models
+
 from django.db.models import UniqueConstraint
 from django.core.validators import MinValueValidator, MaxValueValidator
+from .validators import ValueInListValidator
+
 from django.db.models import Max
 from itertools import combinations
 
@@ -21,7 +24,19 @@ class Tournament(models.Model):
     club = models.ForeignKey(Club, on_delete=models.CASCADE, unique=False, blank=False)
     name = models.CharField(max_length=50, blank=False, unique = False)
     description =  models.CharField(max_length=280, blank=False)
-    capacity = models.PositiveIntegerField(default=16, blank=False, validators=[MinValueValidator(2), MaxValueValidator(96)])
+    
+    capacities = (2,4,8,16,32,48,96)
+    capacity = models.PositiveIntegerField(
+        default=16, 
+        blank=False, 
+        validators=[
+            MinValueValidator(2), 
+            MaxValueValidator(96),
+            ValueInListValidator(capacities)
+                ]
+            )
+    
+    
     deadline = models.DateTimeField(blank=False)
     start = models.DateTimeField(blank=False)
     end = models.DateTimeField(blank=False)
@@ -61,10 +76,6 @@ class Tournament(models.Model):
 
     def full_clean(self, *args, **kwargs):
         super().full_clean(*args, **kwargs)
-        if self.capacity > 16 and ((self.capacity % 4 != 0) or (self.capacity % 6 != 0)) and self.capacity !=32:
-            raise ValidationError("The capacity should be divisible by both 4 and 6 when above 16 (except 32).")
-        if self.capacity > 32 and (self.capacity % 8 != 0):
-            raise ValidationError("The capacity should be divisible by 8 when above 32.")
         if self.capacity < Participant.objects.filter(tournament=self).count():
             raise ValidationError("At no point can there be more participants than capacity.")
         if self.deadline > self.start:
@@ -107,6 +118,27 @@ class Tournament(models.Model):
                 d += 1
                 n = n/2
             return d
+        
+    # If participants do not fill capacity, reduce number of participants to next lowest capacity.
+    def _participants_to_appropriate_capacity(self):
+        participants = Participant.objects.filter(tournament=self)
+        potential_capacity = self.capacity
+        cap_index = self.capacities.index(potential_capacity)
+        while participants.count() < potential_capacity:
+            cap_index -= 1
+            if cap_index == -1:
+                return participants
+            potential_capacity = self.capacities[cap_index]
+            
+        excess_participant_count = participants.count() - potential_capacity
+        ordered_participants = participants.order_by('-joined')
+        excess_participants = ordered_participants[:excess_participant_count]
+        
+        for p in excess_participants:
+            p.delete()
+        
+        self.capacity = potential_capacity
+        return Participant.objects.filter(tournament=self)
 
     def generate_next_round(self):
         self.full_clean() # Constraints are needed for this to work.
@@ -121,7 +153,7 @@ class Tournament(models.Model):
             participants = curr_round.get_winners()
             next_num = curr_round.round_num+1
         else: # No round has occured yet.
-            participants = list(Participant.objects.filter(tournament=self))
+            participants = list(self._participants_to_appropriate_capacity())
             next_num = 1
 
         if participants == None:

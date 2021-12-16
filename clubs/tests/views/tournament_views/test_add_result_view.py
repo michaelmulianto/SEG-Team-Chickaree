@@ -25,7 +25,7 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
             user=self.user,
             is_officer=True
         )
-        
+
         self.tournament = Tournament.objects.get(id=1)
         self.organiser = Organiser.objects.create(
             member = self.membership,
@@ -38,7 +38,9 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
             "result": 1,
         }
 
-        self.match = self.tournament.generate_next_round().get_matches()[0]
+        matches = self.tournament.generate_next_round().get_matches()
+        self.match = matches[0]
+        self.other_matches_in_same_round = matches[1:]
 
         self.url = reverse('add_result', kwargs={'match_id': self.match.id})
 
@@ -57,69 +59,103 @@ class AddResultViewTest(TestCase, MenuTesterMixin):
         redirect_url = reverse_with_next('log_in', self.url)
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
 
-    def test_successful_add_result(self):
+    def test_successful_add_result_incomplete_round(self):
         self.client.login(email=self.user.email, password="Password123")
+
+        curr_round = self.match.collection.tournament.get_current_round()
+        self.assertFalse(curr_round.get_is_complete())
 
         response = self.client.post(self.url, self.data, follow=True)
 
         self.assertEqual(Match.objects.get(id=self.match.id).result, self.data['result'])
+        self.assertFalse(curr_round.get_is_complete())
+
+        # Assert round has not changed
+        self.assertEqual(self.match.collection.tournament.get_current_round(), curr_round)
 
         # Response tests
-        response_url = reverse('show_clubs')
+        response_url = reverse('show_tournament', kwargs={'tournament_id': self.tournament.id})
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
-        
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
+
+    def test_successful_add_result_completes_round(self):
+        self.client.login(email=self.user.email, password="Password123")
+
+        for m in self.other_matches_in_same_round:
+            m.result=1
+            m.save()
+
+        curr_round = self.match.collection.tournament.get_current_round()
+        self.assertFalse(curr_round.get_is_complete())
+
+        response = self.client.post(self.url, self.data, follow=True)
+
+        self.assertEqual(Match.objects.get(id=self.match.id).result, self.data['result'])
+        self.assertTrue(curr_round.get_is_complete())
+
+        # Assert round has changed
+        self.assertNotEqual(self.match.collection.tournament.get_current_round(), curr_round)
+
+        # Response tests
+        response_url = reverse('show_tournament', kwargs={'tournament_id': self.tournament.id})
+        self.assertRedirects(
+            response, response_url,
+            status_code=302, target_status_code=200,
+            fetch_redirect_response=True
+        )
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
+
     def test_non_organiser_attempts_to_add_result(self):
         self.client.login(email=self.participant_user.email, password='Password123')
-    
+
         response = self.client.post(self.url, self.data, follow=True)
 
         self.assertEqual(self.match.result, 0)
-        
+
         # Response tests
-        response_url = reverse('show_clubs')
+        response_url = reverse('show_tournament', kwargs={'tournament_id': self.tournament.id})
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
-        
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')
+
     def test_non_member_add_result(self):
         self.client.login(email=self.user.email, password="Password123")
         self.membership.delete()
-        
+
         response = self.client.post(self.url, self.data, follow=True)
 
         self.assertEqual(Match.objects.get(id=self.match.id).result, 0)
 
         # Response tests
-        response_url = reverse('show_clubs')
+        response_url = reverse('show_club', kwargs={'club_id': self.club.id})
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
-        
+        self.assertTemplateUsed(response, 'club/show_club.html')
+
     def test_add_result_when_result_already_set(self):
         self.client.login(email=self.user.email, password="Password123")
         self.match.result = 2
         self.match.save()
-        
+
         response = self.client.post(self.url, self.data, follow=True)
 
         self.assertEqual(Match.objects.get(id=self.match.id).result, 2)
 
         # Response tests
-        response_url = reverse('show_clubs')
+        response_url = reverse('show_tournament', kwargs={'tournament_id': self.tournament.id})
         self.assertRedirects(
             response, response_url,
             status_code=302, target_status_code=200,
             fetch_redirect_response=True
         )
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'tournament/show_tournament.html')

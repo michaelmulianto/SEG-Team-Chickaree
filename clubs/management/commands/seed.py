@@ -4,6 +4,7 @@ from random import sample, choice
 from django.utils.timezone import now
 from datetime import timedelta
 from clubs.models import User, Club, Membership, Application, Ban, Tournament, Organiser, Participant
+from ..helpers import complete_round
 
 class Command(BaseCommand):
     """Fill the database with pseudorandom data and some mandated test cases."""
@@ -98,6 +99,7 @@ class Command(BaseCommand):
 
             # Generate 3 Tournaments, one complete, one partially complete, one not started.
             tournaments = []
+            capacities = Tournament.capacities
             for j in range(0,3):
                 if j == 0:
                     starttime = now() - timedelta(hours=48)
@@ -114,7 +116,7 @@ class Command(BaseCommand):
                     club = club,
                     name = name,
                     description = self.faker.paragraph(nb_sentences=3),
-                    capacity = 16 * (j+1),
+                    capacity = choice(capacities),
                     start = starttime,
                     end = starttime + timedelta(hours=24),
                     deadline = starttime - timedelta(hours=24),
@@ -140,15 +142,6 @@ class Command(BaseCommand):
                 t.full_clean()
                 t.save()
                 tournaments.append(t)
-
-            # Helper for tournament generation
-            def complete_round(my_round):
-                # Arbitary result
-                matches = my_round.get_matches()
-                for match in matches:
-                    match.result=1
-                    match.black_player.round_eliminated = my_round.round_num
-                    match.save()
 
             # Complete all rounds of first tournament
             tpast = tournaments[0]
@@ -243,21 +236,21 @@ class Command(BaseCommand):
 
         # Add other members to kerbal chess club
         other_kerbal_members = sample(list(User.objects.exclude(is_staff=True)
-            .exclude(id=val.id).exclude(id=jeb.id).exclude(id=billie.id)), 80)
+            .exclude(id=val.id).exclude(id=jeb.id).exclude(id=billie.id)), 110)
 
-        for user in other_kerbal_members[:70]:
+        for user in other_kerbal_members[:100]:
             (Membership.objects.create(
                 user = user,
                 club = kerbal
             )).save()
 
-        for user in other_kerbal_members[70:75]:
+        for user in other_kerbal_members[100:105]:
             (Application.objects.create(
                 user = user,
                 club = kerbal
             )).save()
 
-        for user in other_kerbal_members[75:len(other_kerbal_members)]:
+        for user in other_kerbal_members[105:len(other_kerbal_members)]:
             (Ban.objects.create(
                 user = user,
                 club = kerbal
@@ -268,8 +261,8 @@ class Command(BaseCommand):
         # Firstly, the tournament where the deadline is in 24 hours, Jeb not signed up.
         t1 = Tournament.objects.create(
             club = kerbal,
-            name = "Tournament 2",
-            description = "The sequel to the much loved Tournament.",
+            name = "Jeroen's Second Tournament",
+            description = "Tournament with deadline 24 hours away and Jeb not signed up.",
             capacity = 32,
             deadline = seedtime + timedelta(hours=24),
             start = seedtime + timedelta(hours=25),
@@ -296,14 +289,14 @@ class Command(BaseCommand):
         # Secondly, the tournament where the deadline has already passed and Jeb has signed up.
         t2 = Tournament.objects.create(
             club = kerbal,
-            name = "Tournament",
-            description = "The original tournament.",
+            name = "Jeroen's Tournament 1",
+            description = "Tournament with deadline passed and Jeb signed up.",
             capacity = 32,
-            deadline = seedtime - timedelta(hours=1),
-            start = seedtime + timedelta(hours=23),
+            deadline = seedtime - timedelta(hours=24),
+            start = seedtime,
             end =  seedtime + timedelta(hours=47)
         )
-        t2.created_on = seedtime - timedelta(hours=2)
+        t2.created_on = seedtime - timedelta(hours=48)
 
         (Organiser.objects.create(
             member = val_member,
@@ -328,6 +321,44 @@ class Command(BaseCommand):
         t2.full_clean()
         t2.save()
 
+        # 'A small number of' past tournaments need to be created.
+        set_capacities=(16,48,96) # 32 is covered by the above two
+        for i in range(3):
+            t = Tournament.objects.create(
+                club = kerbal,
+                name = f"Past Tourney {i}",
+                description = "This happened in the past.",
+                capacity = set_capacities[i],
+                deadline = seedtime - timedelta(hours=72*(i+1)),
+                start = seedtime - timedelta(hours=48*(i+1)),
+                end = seedtime - timedelta(hours=24*(i+1))
+            )
+            t.created_on = seedtime - timedelta(hours=96*(i+1))
+            
+            (Organiser.objects.create(
+                member = val_member,
+                tournament = t,
+                is_lead_organiser = True
+            )).save()
+            
+            participants = sample(list(Membership.objects.exclude(id=val_member.id)
+            .exclude(id=billie_member.id).filter(club=kerbal)), t.capacity)
+            
+            for membership in participants:
+                (Participant.objects.create(
+                    member = membership,
+                    tournament = t
+                )).save()
+                
+            t.full_clean()
+            t.save()
+            
+            # Complete tournament
+            my_round = t.generate_next_round()
+            while my_round != None:
+                complete_round(my_round)
+                my_round = t.generate_next_round()
+                
         # Other memberships required.....
         other_clubs = sample(list(Club.objects.exclude(id = kerbal.id)),3)
 
@@ -390,34 +421,43 @@ class Command(BaseCommand):
         )).save()
 
         less_lonely_club = Club.objects.create(
-            name="Club 123",
+            name="Interesting club",
             location="Aldwych",
-            description="Very long desc: " + "x"*264
+            description="Interesting club with interesting data"
         )
         less_lonely_club.full_clean()
         less_lonely_club.save()
 
-        (Membership.objects.create(
-            user = owner_user,
-            club = less_lonely_club,
-            is_owner = True
-        )).save()
+        members = sample(list(User.objects.exclude(is_staff=True), 110))
 
-        (Membership.objects.create(
-            user = choice(list(User.objects.exclude(username="testuser1"))),
-            club = less_lonely_club,
-        )).save()
+        officer_counter = 0
+        for user in members[:100]:
+            (Membership.objects.create(
+                user = user,
+                club = less_lonely_club,
+                is_officer = bool(officer_counter % 20)
+            )).save()
+            officer_counter +=1
 
-        (Ban.objects.create(
-            user = choice(list(User.objects.exclude(username="testuser1"))),
-            club = less_lonely_club,
-        )).save()
+        for user in members[100:105]:
+            (Application.objects.create(
+                user = user,
+                club = less_lonely_club
+            )).save()
+
+        for user in members[105:len(members)]:
+            (Ban.objects.create(
+                user = user,
+                club = less_lonely_club
+            )).save()
 
 
     def handle(self, *args, **options):
         print("Seeding database... Please be patient as we are creating ~750 users and distributing them among clubs and tournaments.")
         # It is VERY important that random data is generated first, so we can fully control the memberships of the mandated users
         self.generate_random_data()
+        print("Random data generated")
         self.generate_required_data()
+        print("Kerbal Chess Club data generated")
         #self.generate_edge_cases()
         print("Seeding Complete.")

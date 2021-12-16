@@ -8,6 +8,7 @@ passing in many variables in the view.
 """
 
 from django import template
+from django.utils import timezone
 from clubs.models import Application, Membership, Participant, Organiser
 
 register = template.Library()
@@ -43,6 +44,9 @@ def remove_from_queryset(qset_a, qset_b):
             list.remove(y)
     return list
 
+@register.simple_tag
+def is_later_than(date):
+    return date > timezone.now()
 
 # CLUB tags
 

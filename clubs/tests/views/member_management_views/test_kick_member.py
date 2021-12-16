@@ -61,7 +61,7 @@ class KickMemberViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assertFalse(self._has_member_been_kicked(self.member_being_kicked))
 
     def test_kick_redirects_when_not_owner_or_officer_of_club(self):
@@ -69,7 +69,7 @@ class KickMemberViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assertFalse(self._has_member_been_kicked(self.member_being_kicked))
 
     def test_kick_redirects_when_kicking_officer(self):
@@ -77,7 +77,7 @@ class KickMemberViewTestCase(TestCase):
         response = self.client.get(self.url_kick_an_officer, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assertFalse(self._has_member_been_kicked(self.member_club_officer))
 
     def test_kick_redirects_when_kicking_owner(self):
@@ -85,7 +85,7 @@ class KickMemberViewTestCase(TestCase):
         response = self.client.get(self.url_kick_the_owner, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assertFalse(self._has_member_been_kicked(self.member_club_owner))
 
     def test_successful_kick_as_officer(self):
@@ -94,14 +94,14 @@ class KickMemberViewTestCase(TestCase):
         self.assertTrue(self._has_member_been_kicked(self.member_being_kicked))
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
 
     def test_successful_kick_as_owner(self):
         self.client.login(email=self.user_club_owner.email, password="Password123")
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assertTrue(self._has_member_been_kicked(self.member_being_kicked))
 
     def _has_member_been_kicked(self, member):

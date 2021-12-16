@@ -8,7 +8,6 @@ from django import forms
 from clubs.models import User, Club, Application, Tournament, Match
 from django.core.validators import RegexValidator
 
-
 class LogInForm(forms.Form):
     """Form to grant access to a returning user's personalised content"""
     email = forms.CharField(label='Email')
@@ -116,7 +115,6 @@ class OrganiseTournamentForm(forms.ModelForm):
         deadline = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
         start = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
         end = forms.DateTimeField(input_formats=['%y-%m-%d %H:%M:%S'])
-
         widgets = {'description': forms.Textarea()}
 
     #Create new tournament using the tournament form data
@@ -137,5 +135,5 @@ class AddResultForm(forms.ModelForm):
     class Meta:
         model = Match
         fields = ['result']
-            
-    result = forms.ChoiceField(choices=Match.OUTCOMES[1:])
+        
+    result = forms.ChoiceField(choices=Match.Result.choices[1:])

@@ -59,7 +59,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assertFalse(self._has_member_been_promoted(self.target_member.id))
 
     def test_promote_redirects_when_not_owner_of_club(self):
@@ -67,7 +67,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assertFalse(self._has_member_been_promoted(self.target_member.id))
 
     def test_promote_redirects_when_owner_promoting_themselves(self):
@@ -76,7 +76,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         response = self.client.get(url_promote_owner, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assertFalse(self._has_member_been_promoted(self.owner_member.id))
 
     def test_promote_redirects_when_promoting_officer(self):
@@ -85,7 +85,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         response = self.client.get(url_promote_officer, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assertTrue(self._has_member_been_promoted(self.officer_member.id))
 
     def test_successful_promotion(self):
@@ -94,7 +94,7 @@ class PromoteMemberToOfficerViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assertTrue(self._has_member_been_promoted(self.target_member.id))
 
     def _has_member_been_promoted(self, member_id):

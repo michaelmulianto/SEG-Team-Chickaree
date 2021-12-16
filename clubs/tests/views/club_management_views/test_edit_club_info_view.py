@@ -34,7 +34,7 @@ class EditClubInfoViewTest(TestCase):
         self.client.login(email=self.user.email, password='Password123')
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'edit_club_info.html')
+        self.assertTemplateUsed(response, 'club/edit_club_info.html')
         form = response.context['form']
         self.assertTrue(isinstance(form, EditClubInfoForm))
         self.assertEqual(form.instance, self.club)
@@ -52,7 +52,7 @@ class EditClubInfoViewTest(TestCase):
         after_count = Club.objects.count()
         self.assertEqual(after_count, before_count)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'edit_club_info.html')
+        self.assertTemplateUsed(response, 'club/edit_club_info.html')
         form = response.context['form']
         self.assertTrue(isinstance(form, EditClubInfoForm))
         self.assertTrue(form.is_bound)
@@ -69,7 +69,7 @@ class EditClubInfoViewTest(TestCase):
         after_count = Club.objects.count()
         self.assertEqual(after_count, before_count)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'edit_club_info.html')
+        self.assertTemplateUsed(response, 'club/edit_club_info.html')
         form = response.context['form']
         self.assertTrue(isinstance(form, EditClubInfoForm))
         self.assertTrue(form.is_bound)
@@ -86,7 +86,7 @@ class EditClubInfoViewTest(TestCase):
         self.assertEqual(after_count, before_count)
         response_url = reverse('show_clubs')
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.club.refresh_from_db()
         self.assertEqual(self.club.name, "Bishops")
         self.assertEqual(self.club.location, "Paris")

@@ -23,7 +23,7 @@ class AccountViewTestCase(TestCase, MenuTesterMixin):
         self.client.login(email=self.user.email, password='Password123')
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'account.html')
+        self.assertTemplateUsed(response, 'account/account.html')
         self.assert_menu(response)
 
     def test_get_account_redirects_when_not_logged_in(self):

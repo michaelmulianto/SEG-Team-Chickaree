@@ -89,7 +89,7 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
         # Response tests
         response_url = reverse('show_club', kwargs={'club_id':self.club.id})
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_club.html')
+        self.assertTemplateUsed(response, 'club/show_club.html')
 
 
     def test_successful_officer_organise_tournament(self):
@@ -114,7 +114,7 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
         # Response tests
         response_url = reverse('show_club', kwargs={'club_id':self.club.id})
         self.assertRedirects(response, response_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_club.html')
+        self.assertTemplateUsed(response, 'club/show_club.html')
 
     def test_unsuccessful_create_tournament_empty_tournament_name(self):
         self.client.login(email=self.owner_user.email, password='Password123')
@@ -127,7 +127,7 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
 
         self.assertEqual(tournament_count_after, tournament_count_before)
         self.assertEqual(organiser_count_before, organiser_count_after)
-        self.assertTemplateUsed(response, 'organise_tournament.html')
+        self.assertTemplateUsed(response, 'tournament/organise_tournament.html')
 
     def test_unsuccessful_member_create_tournament(self):
         self.client.login(email=self.member_user.email, password='Password123')
@@ -150,7 +150,7 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
         tournament_count_after = Tournament.objects.count()
 
         self.assertEqual(tournament_count_after, tournament_count_before)
-        self.assertTemplateUsed(response, 'organise_tournament.html')
+        self.assertTemplateUsed(response, 'tournament/organise_tournament.html')
 
     def test_end_time_in_past_fails(self):
         self.client.login(email=self.owner_user.email, password='Password123')
@@ -160,7 +160,7 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
         tournament_count_after = Tournament.objects.count()
 
         self.assertEqual(tournament_count_after, tournament_count_before)
-        self.assertTemplateUsed(response, 'organise_tournament.html')
+        self.assertTemplateUsed(response, 'tournament/organise_tournament.html')
 
     def test_deadline_time_in_past_fails(self):
         self.client.login(email=self.owner_user.email, password='Password123')
@@ -170,5 +170,4 @@ class OrganiseTournamentViewTest(TestCase, MenuTesterMixin):
         tournament_count_after = Tournament.objects.count()
 
         self.assertEqual(tournament_count_after, tournament_count_before)
-        self.assertTemplateUsed(response, 'organise_tournament.html')
-        
+        self.assertTemplateUsed(response, 'tournament/organise_tournament.html')

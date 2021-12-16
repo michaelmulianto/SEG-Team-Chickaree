@@ -58,7 +58,7 @@ class DemoteOfficerToMemberViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('show_clubs')
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'show_clubs.html')
+        self.assertTemplateUsed(response, 'club/show_clubs.html')
         self.assertFalse(self._has_member_been_demoted(self.target_member.id))
 
     def test_demote_redirects_when_not_owner_of_club(self):
@@ -66,7 +66,7 @@ class DemoteOfficerToMemberViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assertFalse(self._has_member_been_demoted(self.target_member.id))
 
     def test_demote_redirects_when_owner_demoting_themselves(self):
@@ -75,7 +75,7 @@ class DemoteOfficerToMemberViewTestCase(TestCase):
         response = self.client.get(url_demote_owner, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assertTrue(self._has_member_been_demoted(self.owner_member.id))
 
     def test_demote_redirects_when_demoting_non_officer(self):
@@ -84,7 +84,7 @@ class DemoteOfficerToMemberViewTestCase(TestCase):
         response = self.client.get(url_demote_member, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assertTrue(self._has_member_been_demoted(self.non_officer_member.id))
 
     def test_successful_demotion(self):
@@ -93,7 +93,7 @@ class DemoteOfficerToMemberViewTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         redirect_url = reverse('members_list', kwargs = {'club_id': self.club.id})
         self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
-        self.assertTemplateUsed(response, 'members_list.html')
+        self.assertTemplateUsed(response, 'club/members_list.html')
         self.assertTrue(self._has_member_been_demoted(self.target_member.id))
 
     def _has_member_been_demoted(self, member_id):

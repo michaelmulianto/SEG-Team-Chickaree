@@ -11,6 +11,9 @@ from django.utils.decorators import method_decorator
 
 from clubs.models import Membership, Club, Ban
 
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.conf import settings
+
 
 @login_required
 @membership_exists
@@ -60,7 +63,18 @@ def banned_members(request, club_id):
     """Allow the owner and officer of a club to view banned members to said club."""
     club_to_view = Club.objects.get(id = club_id)
     if is_user_owner_of_club(request.user, club_to_view) or is_user_officer_of_club(request.user, club_to_view):
-        return render(request, 'banned_member_list.html', {'current_user': request.user, 'club': club_to_view})
+
+        paginator = Paginator(club_to_view.get_banned_members(), settings.BANNED_MEMBERS_PER_PAGE)
+
+        page = request.GET.get('page')
+        try:
+            page_obj = paginator.page(page)
+        except PageNotAnInteger:
+            page_obj  = paginator.page(1)
+        except EmptyPage:
+            page_obj  = paginator.page(paginator.num_pages)
+
+        return render(request, 'club/banned_member_list.html', {'current_user': request.user, 'club': club_to_view, 'banned_members':page_obj})
     else: #Access denied
         messages.error(request, "Only the club owner and officers can view banned members")
         return redirect('show_club', club_id=club_id)
