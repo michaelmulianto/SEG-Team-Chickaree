@@ -354,6 +354,14 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.client.login(email=self.user.email, password="Password123")
         self._create_test_clubs(settings.CLUBS_PER_PAGE * 2 + 1)
         self.form_input['searched'] = "NEW_CLUB"
+    def test_get_show_clubs_url_for_asc_sort_by_name(self):
+        self.url = reverse('show_clubs', kwargs={'param':'name', 'order': 'asc'})
+        self.assertEqual(self.url, '/clubs/name/asc/')
+
+    def test_sort_asc_by_name(self):
+        self.client.login(email=self.user.email, password="Password123")
+        self._create_test_clubs()
+        self.url = reverse('show_clubs', kwargs={'param':'name', 'order': 'asc'})
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/show_clubs.html')
@@ -395,6 +403,17 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.client.login(email=self.user.email, password="Password123")
         self._create_test_clubs(settings.CLUBS_PER_PAGE * 2 + 1) #creating three pages
         self.form_input['searched'] = "NEW_CLUB"
+        for club in Club.objects.all():
+            self.assertTrue(self._club_is_on_list(club))
+
+    def test_get_show_clubs_url_for_des_sort_by_name(self):
+        self.url = reverse('show_clubs', kwargs={'param':'name', 'order': 'des'})
+        self.assertEqual(self.url, '/clubs/name/des/')
+
+    def test_sort_des_by_name(self):
+        self.client.login(email=self.user.email, password="Password123")
+        self._create_test_clubs()
+        self.url = reverse('show_clubs', kwargs={'param':'name', 'order': 'des'})
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'club/show_clubs.html')
@@ -455,6 +474,8 @@ class ShowClubsViewTestCase(TestCase, MenuTesterMixin):
         self.assertFalse(applications_page.has_next())
         self.assertTrue(applications_page.has_other_pages())
         self.assertContains(response, '<ul class="pagination ">')
+        for club in Club.objects.all():
+            self.assertTrue(self._club_is_on_list(club))
 
     def _create_test_clubs(self, club_count=10):
         for club_id in range(club_count):

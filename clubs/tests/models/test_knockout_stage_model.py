@@ -1,4 +1,4 @@
-"""Tests for single group model, found in clubs/models.py"""
+"""Tests for single group model"""
 
 from django.test import TestCase
 from clubs.models import Participant, Tournament, KnockoutStage
