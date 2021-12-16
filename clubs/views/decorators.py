@@ -15,6 +15,16 @@ def login_prohibited(view_function):
 
     return modified_view_fuction
 
+def user_exists(view_function):
+    def modified_view_fuction(request, user_id, **kwargs):
+        if not User.objects.filter(id=user_id).exists():
+            messages.error(request, 'No user with id ' + str(user_id) + ' exists.')
+            return redirect(settings.REDIRECT_URL_WHEN_LOGGED_IN)
+        else:
+            return view_function(request, user_id, **kwargs)
+
+    return modified_view_fuction
+
 def club_exists(view_function):
     def modified_view_fuction(request, club_id, **kwargs):
         if not Club.objects.filter(id=club_id).exists():
@@ -87,3 +97,18 @@ def not_banned(view_function):
 
     return modified_view_fuction
 
+def allowed_users(allowed_roles=[]):
+    def decorator(view_func):
+        def wrapper_func(request, club_id, **kwargs):
+            club = Club.objects.get(id=club_id)
+            member = Membership.objects.get(user = request.user, club = club)
+            group = None
+            if member.is_owner == True or member.is_officer == True:
+                group = True
+            if group == True:
+                return view_func(request, club_id, **kwargs)
+            else:
+                return HttpResponse('You are not authorized to view this page')
+
+        return wrapper_func
+    return decorator
