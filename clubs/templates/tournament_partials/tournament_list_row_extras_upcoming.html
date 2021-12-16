@@ -1,7 +1,9 @@
-<td style="max-width: 30px;"> {{ tournament.get_participants.count }}/{{ tournament.capacity }} </td>
+{% widthratio tournament.get_participants.count tournament.capacity 100 as tournament_particpant_percentage %}
+
+<td style="max-width: 50px;"> {{ tournament.get_participants.count }}/{{ tournament.capacity }} </td>
 <td style="width: 100px;">
   <div class="progress">
-    <div class="progress-bar" role="progressbar" aria-valuenow="number_of_participants" aria-valuemin="0" aria-valuemax="{{ tournament.capacity }}"></div>
+    <div class="progress-bar" role="progressbar" style="width: {{ tournament_particpant_percentage }}%"></div>
   </div>
 </td>
 {% if not is_lead_organiser and is_member %}
