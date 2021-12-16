@@ -122,7 +122,7 @@ class ShowTouramentParticipantsViewTestCase(TestCase, MenuTesterMixin):
         self.assertFalse(clubs_page.has_next())
         self.assertContains(response, '<ul class="pagination ">')
 
-    def test_show_clubs_with_pagination_does_not_contain_page_traversers_if_not_enough_clubs(self):
+    def test_show_tournament_participants_with_pagination_does_not_contain_page_traversers_if_not_enough_clubs(self):
         self.client.login(email=self.owner_user.email, password="Password123")
         self._create_test_participants(settings.TOURNAMENT_PARTICIPANTS_PER_PAGE-2)
         response = self.client.get(self.url)
@@ -135,7 +135,7 @@ class ShowTouramentParticipantsViewTestCase(TestCase, MenuTesterMixin):
         self.assertFalse(clubs_page.has_other_pages())
         self.assertContains(response, '<ul class="pagination ">', 0)
 
-    def test_show_applications_list_with_pagination_creating_page_not_an_integer_error(self):
+    def test_show_tournament_participants_list_with_pagination_creating_page_not_an_integer_error(self):
         self.client.login(email=self.owner_user.email, password="Password123")
         self._create_test_participants(settings.TOURNAMENT_PARTICIPANTS_PER_PAGE + 1)
         response = self.client.get(self.url)
@@ -174,7 +174,7 @@ class ShowTouramentParticipantsViewTestCase(TestCase, MenuTesterMixin):
         self.assertTrue(applications_page.has_other_pages())
         self.assertContains(response, '<ul class="pagination ">')
 
-    def test_show_applications_list_with_pagination_creating_empty_page_error_from_bigger_page_number_than_exists(self):
+    def test_show_tournament_participants_list_with_pagination_creating_empty_page_error_from_bigger_page_number_than_exists(self):
         self.client.login(email=self.owner_user.email, password="Password123")
         self._create_test_participants(settings.TOURNAMENT_PARTICIPANTS_PER_PAGE * 2 + 1)
         response = self.client.get(self.url)
@@ -214,7 +214,7 @@ class ShowTouramentParticipantsViewTestCase(TestCase, MenuTesterMixin):
         self.assertContains(response, '<ul class="pagination ">')
 
 
-    def test_show_applications_list_with_pagination_creating_empty_page_error_from_smaller_page_number_than_exists(self):
+    def test_show_tournament_participants_list_with_pagination_creating_empty_page_error_from_smaller_page_number_than_exists(self):
         self.client.login(email=self.owner_user.email, password="Password123")
         self._create_test_participants(settings.TOURNAMENT_PARTICIPANTS_PER_PAGE * 2 + 1) #creating three pages
         response = self.client.get(self.url)

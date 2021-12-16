@@ -119,7 +119,7 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         self.assertFalse(banned_members_page.has_other_pages())
         self.assertContains(response, '<ul class="pagination ">', 0)
 
-    def test_show_applications_list_with_pagination_creating_page_not_an_integer_error(self):
+    def test_show_banned_members_list_with_pagination_creating_page_not_an_integer_error(self):
         self.client.login(email=self.user_club_owner.email, password="Password123")
         self._create_test_ban_for_default_club(settings.BANNED_MEMBERS_PER_PAGE + 1)
         response = self.client.get(self.url)
@@ -158,7 +158,7 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         self.assertTrue(applications_page.has_other_pages())
         self.assertContains(response, '<ul class="pagination ">')
 
-    def test_show_applications_list_with_pagination_creating_empty_page_error_from_bigger_page_number_than_exists(self):
+    def test_show_banned_members_list_with_pagination_creating_empty_page_error_from_bigger_page_number_than_exists(self):
         self.client.login(email=self.user_club_owner.email, password="Password123")
         self._create_test_ban_for_default_club(settings.BANNED_MEMBERS_PER_PAGE * 2 + 1)
         response = self.client.get(self.url)
@@ -198,7 +198,7 @@ class BannedMembersClubTestCase(TestCase, MenuTesterMixin):
         self.assertContains(response, '<ul class="pagination ">')
 
 
-    def test_show_applications_list_with_pagination_creating_empty_page_error_from_smaller_page_number_than_exists(self):
+    def test_show_banned_members_list_with_pagination_creating_empty_page_error_from_smaller_page_number_than_exists(self):
         self.client.login(email=self.user_club_owner.email, password="Password123")
         self._create_test_ban_for_default_club(settings.BANNED_MEMBERS_PER_PAGE * 2 + 1) #creating three pages
         response = self.client.get(self.url)

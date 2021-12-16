@@ -95,7 +95,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.assertFalse(memberships_page.has_other_pages())
         self.assertContains(response, '<ul class="pagination ">', 0)
 
-    def test_show_applications_list_with_pagination_creating_page_not_an_integer_error(self):
+    def test_show_members_list_with_pagination_creating_page_not_an_integer_error(self):
         self.client.login(email=self.user.email, password="Password123")
         self._create_test_memberships_for_default_club(settings.MEMBERSHIPS_PER_PAGE + 1)
         response = self.client.get(self.url)
@@ -134,7 +134,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.assertTrue(applications_page.has_other_pages())
         self.assertContains(response, '<ul class="pagination ">')
 
-    def test_show_applications_list_with_pagination_creating_empty_page_error_from_bigger_page_number_than_exists(self):
+    def test_show_members_list_with_pagination_creating_empty_page_error_from_bigger_page_number_than_exists(self):
         self.client.login(email=self.user.email, password="Password123")
         self._create_test_memberships_for_default_club(settings.MEMBERSHIPS_PER_PAGE * 2 + 1)
         response = self.client.get(self.url)
@@ -174,7 +174,7 @@ class MembersTestCase(TestCase, MenuTesterMixin):
         self.assertContains(response, '<ul class="pagination ">')
 
 
-    def test_show_applications_list_with_pagination_creating_empty_page_error_from_smaller_page_number_than_exists(self):
+    def test_show_members_list_with_pagination_creating_empty_page_error_from_smaller_page_number_than_exists(self):
         self.client.login(email=self.user.email, password="Password123")
         self._create_test_memberships_for_default_club(settings.MEMBERSHIPS_PER_PAGE * 2 + 1) #creating three pages
         response = self.client.get(self.url)

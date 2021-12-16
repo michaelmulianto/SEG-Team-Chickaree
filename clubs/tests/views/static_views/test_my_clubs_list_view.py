@@ -237,7 +237,7 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         self.assertFalse(my_clubs_page.has_other_pages())
         self.assertContains(response, '<ul class="pagination ">', 0)
 
-    def test_show_applications_list_with_pagination_creating_page_not_an_integer_error(self):
+    def test_show_my_clubs_list_with_pagination_creating_page_not_an_integer_error(self):
         self.client.login(email=self.user.email, password="Password123")
         self._create_test_clubs_and_apply_default_user(settings.CLUBS_PER_PAGE + 2)
         response = self.client.get(self.url)
@@ -276,7 +276,7 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         self.assertTrue(applications_page.has_other_pages())
         self.assertContains(response, '<ul class="pagination ">')
 
-    def test_show_applications_list_with_pagination_creating_empty_page_error_from_bigger_page_number_than_exists(self):
+    def test_show_my_clubs_list_with_pagination_creating_empty_page_error_from_bigger_page_number_than_exists(self):
         self.client.login(email=self.user.email, password="Password123")
         self._create_test_clubs_and_apply_default_user(settings.CLUBS_PER_PAGE * 2 + 2)
         response = self.client.get(self.url)
@@ -316,7 +316,7 @@ class MyClubsListTestCase(TestCase, MenuTesterMixin):
         self.assertContains(response, '<ul class="pagination ">')
 
 
-    def test_show_applications_list_with_pagination_creating_empty_page_error_from_smaller_page_number_than_exists(self):
+    def test_show_my_clubs_list_with_pagination_creating_empty_page_error_from_smaller_page_number_than_exists(self):
         self.client.login(email=self.user.email, password="Password123")
         self._create_test_clubs_and_apply_default_user(settings.CLUBS_PER_PAGE * 2 + 2) #creating three pages
         response = self.client.get(self.url)
