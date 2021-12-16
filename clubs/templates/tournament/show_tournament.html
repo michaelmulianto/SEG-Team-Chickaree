@@ -8,7 +8,7 @@
 {% load define_action %}
 {% check_is_lead_organiser current_user tournament as is_lead_organiser %}
 {% check_is_organiser current_user tournament as is_organiser %}
-{% is_later_than tournament.start as is_passed_startdate %}
+{% is_later_than tournament.start as is_past_startdate %}
 
   <div class="container">
     <div class="row">
@@ -68,7 +68,7 @@
         <br>
         {% endfor %}
         <div class="text-center">
-        {% if tournament.get_current_round == None and is_passed_startdate %}
+        {% if tournament.get_current_round == None and is_past_startdate %}
         <h4><b>The tournament hasn't started yet</b></h4>
         <p> After the sign up deadline, the tournament will be started by an organiser.</p>
         {% elif tournament.get_current_round == None %}
