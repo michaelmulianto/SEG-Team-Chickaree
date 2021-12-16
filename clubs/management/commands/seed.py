@@ -390,28 +390,35 @@ class Command(BaseCommand):
         )).save()
 
         less_lonely_club = Club.objects.create(
-            name="Club 123",
+            name="Interesting club",
             location="Aldwych",
-            description="Very long desc: " + "x"*264
+            description="Interesting club with interesting data"
         )
         less_lonely_club.full_clean()
         less_lonely_club.save()
 
-        (Membership.objects.create(
-            user = owner_user,
-            club = less_lonely_club,
-            is_owner = True
-        )).save()
+        members = sample(list(User.objects.exclude(is_staff=True), 110))
 
-        (Membership.objects.create(
-            user = choice(list(User.objects.exclude(username="testuser1"))),
-            club = less_lonely_club,
-        )).save()
+        officer_counter = 0
+        for user in members[:100]:
+            (Membership.objects.create(
+                user = user,
+                club = less_lonely_club,
+                is_officer = bool(officer_counter % 20)
+            )).save()
+            officer_counter +=1
 
-        (Ban.objects.create(
-            user = choice(list(User.objects.exclude(username="testuser1"))),
-            club = less_lonely_club,
-        )).save()
+        for user in members[100:105]:
+            (Application.objects.create(
+                user = user,
+                club = less_lonely_club
+            )).save()
+
+        for user in members[105:len(members)]:
+            (Ban.objects.create(
+                user = user,
+                club = less_lonely_club
+            )).save()
 
 
     def handle(self, *args, **options):
