@@ -1,9 +1,12 @@
+"""Tests for base model MemberTournament relationship"""
+
 from django.test import TestCase
 from clubs.models import Club, User, Membership, Tournament, MemberTournamentRelationship
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 
 class MemberTournamentRelationshipModelTestCase(TestCase):
+    """Tests all aspects of a relationship between a tournament and a member of its club."""
     
     fixtures = ['clubs/tests/fixtures/default_user.json',
             'clubs/tests/fixtures/other_users.json',

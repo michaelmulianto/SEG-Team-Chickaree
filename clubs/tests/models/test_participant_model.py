@@ -1,8 +1,11 @@
+"""Tests for participant model"""
+
 from django.test import TestCase
 from clubs.models import Organiser, Club, Participant, User, Membership, Tournament, MemberTournamentRelationship
 from django.core.exceptions import ValidationError
 
 class ParticipantModelTestCase(TestCase):
+    """Tests all model level validation of a participant of a tournament"""
 
     fixtures = ['clubs/tests/fixtures/default_user.json',
         'clubs/tests/fixtures/other_users.json',
@@ -57,7 +60,7 @@ class ParticipantModelTestCase(TestCase):
                 round_eliminated = 1
             )
         except(ValidationError):
-            self.fail("A member should be able to organise more than one tournament")
+            self.fail("A member should be able to participate in more than one tournament")
 
     def test_there_can_be_more_than_one_participant_model(self):
         try:

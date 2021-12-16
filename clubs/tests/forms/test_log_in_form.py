@@ -4,6 +4,7 @@ from django import forms
 from clubs.forms import LogInForm
 
 class LogInFormTestCase(TestCase):
+    """Test all aspects of login form."""
     
     def setUp(self):
         self.form_input = {
