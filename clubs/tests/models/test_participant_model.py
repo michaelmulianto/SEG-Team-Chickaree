@@ -109,6 +109,9 @@ class ParticipantModelTestCase(TestCase):
             )
         self.assertLess(self.participant.joined, new_participant.joined)
 
+    # Test string
+    def test_str(self):
+        self.assertEqual(self.participant.__str__(),  f'{self.first_membership.user.first_name} {self.first_membership.user.last_name} in {self.first_tournament.name} by {self.first_tournament.club}')
 
     #Assertions
     def _assert_participant_is_valid(self):

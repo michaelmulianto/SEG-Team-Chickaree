@@ -72,7 +72,7 @@ class Application(models.Model):
     personal_statement = models.CharField(max_length=580, blank=False, default = "")
 
     def __str__(self):
-        return f'User: {self.user.first_name} {self.user.last_name} to Club: {self.club}'
+        return f'Applications: {self.user.first_name} {self.user.last_name} to Club: {self.club}'
 
     class Meta:
         ordering = ['club']
@@ -89,7 +89,7 @@ class Ban(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=False, blank=False)
 
     def __str__(self):
-        return f'User: {self.user.first_name} {self.user.last_name} from Club: {self.club}'
+        return f'Ban: {self.user.first_name} {self.user.last_name} from Club: {self.club}'
 
     class Meta:
         ordering = ['club']

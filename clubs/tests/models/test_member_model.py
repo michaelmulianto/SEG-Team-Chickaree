@@ -91,6 +91,10 @@ class MembershipModelTestCase(TestCase):
             self.member_club_owner.is_officer = True
             self.member_club_owner.full_clean()
 
+    # Test string
+    def test_str(self):
+        self.assertEqual(self.membership.__str__(), f'User: {self.user.first_name} {self.user.last_name} at Club: {self.club}')
+
     #assertions
     def _assert_member_is_valid(self):
         try:

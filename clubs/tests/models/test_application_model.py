@@ -55,6 +55,10 @@ class ApplicationModelTestCase(TestCase):
         except(IntegrityError):
             self.assertRaises(IntegrityError)
 
+    # Test string
+    def test_str(self):
+        self.assertEqual(self.app.__str__(), f'Applications: {self.user.first_name} {self.user.last_name} to Club: {self.club}')
+
     # Assertions
     def _assert_app_is_valid(self):
         try:

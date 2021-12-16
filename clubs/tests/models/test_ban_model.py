@@ -40,7 +40,9 @@ class BanModelTestCase(TestCase):
         except(IntegrityError):
             self.assertRaises(IntegrityError)
 
-
+    # Test string
+    def test_str(self):
+        self.assertEqual(self.ban.__str__(), f'Ban: {self.user.first_name} {self.user.last_name} from Club: {self.club}')
 
     # Assertions
     def _assert_ban_is_valid(self):
