@@ -1,4 +1,4 @@
-"""Tests for Club model, found in clubs/models.py"""
+"""Tests for Match model"""
 
 from django.test import TestCase
 from clubs.models import Match, Participant, RoundOfMatches, Tournament, Club, User, Membership
@@ -7,7 +7,7 @@ from django.db.utils import IntegrityError
 
 
 class MatchModelTestCase(TestCase):
-    """Test all aspects of a match."""
+    """Test all aspects of a match, independent of any stage."""
 
     fixtures = ['clubs/tests/fixtures/default_user.json','clubs/tests/fixtures/other_users.json','clubs/tests/fixtures/default_club.json',
     'clubs/tests/fixtures/other_clubs.json', 'clubs/tests/fixtures/other_tournaments.json']

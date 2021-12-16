@@ -17,9 +17,6 @@ class Club(models.Model):
 
     def __str__(self):
         return f'{self.name}'
-    
-    # def full_clean(self):
-    #     super().full_clean()
 
     def get_memberships(self):
         return Membership.objects.filter(club=self)

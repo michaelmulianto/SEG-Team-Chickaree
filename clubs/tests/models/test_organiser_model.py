@@ -1,8 +1,11 @@
+"""Test for Organiser model"""
+
 from django.test import TestCase
 from clubs.models import Organiser, Club, User, Membership, Tournament, MemberTournamentRelationship
 from django.core.exceptions import ValidationError
 
 class OrganiserModelTestCase(TestCase):
+    """Tests all model level validation of an organiser of a tournament"""
 
     fixtures = ['clubs/tests/fixtures/default_user.json',
         'clubs/tests/fixtures/other_users.json',

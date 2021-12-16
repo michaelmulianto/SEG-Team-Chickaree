@@ -1,4 +1,4 @@
-"""Tests for Club model, found in clubs/models.py"""
+"""Tests for Club model"""
 
 from django.test import TestCase
 from clubs.models import Club, Membership, User, Ban, Application
@@ -9,13 +9,19 @@ class ClubModelTestCase(TestCase):
     """Test all aspects of a club."""
 
     fixtures = ['clubs/tests/fixtures/default_club.json',
-    'clubs/tests/fixtures/other_clubs.json', 'clubs/tests/fixtures/default_user.json']
+    'clubs/tests/fixtures/other_clubs.json', 'clubs/tests/fixtures/default_user.json', 'clubs/tests/fixtures/other_users.json']
 
     # Test setup
     def setUp(self):
+        self.owner_user = User.objects.get(username = 'janedoe')
         self.user = User.objects.get(username="johndoe")
         self.club = Club.objects.get(name="King\'s Knights")
         self.second_club = Club.objects.get(name="Queen\'s Rooks")
+        self.owner = Membership.objects.create(
+            user = self.owner_user,
+            club = self.club,
+            is_owner = True
+        )
 
     def test_valid_message(self):
         self._assert_club_is_valid()
@@ -77,12 +83,12 @@ class ClubModelTestCase(TestCase):
 
     # Test get get memberships
     def test_get_memberships(self):
-        self.assertEqual(len(self.club.get_memberships()), 0)
+        self.assertEqual(len(self.club.get_memberships()), 1)
         self.member = Membership.objects.create(
             user = self.user,
             club = self.club,
         )
-        self.assertEqual(len(self.club.get_memberships()), 1)
+        self.assertEqual(len(self.club.get_memberships()), 2)
 
     # Test get banned members
     def test_get_banned_members(self):
@@ -115,12 +121,7 @@ class ClubModelTestCase(TestCase):
 
     #Test get Owner
     def test_get_owners(self):
-        self.member = Membership.objects.create(
-            user = self.user,
-            club = self.club,
-            is_owner = True
-        )
-        self.assertEqual(self.club.get_owner(), self.member)
+        self.assertEqual(self.club.get_owner(), self.owner)
 
     # Helper functions.
     # Generic assertions.
