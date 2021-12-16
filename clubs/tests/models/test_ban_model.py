@@ -64,6 +64,10 @@ class BanModelTestCase(TestCase):
         self.ban.delete()
         self.assertTrue(User.objects.filter(id=self.user.id).exists())
 
+    #Test string
+    def test_str(self):
+        self.assertEqual(self.ban.__str__(), f'User: {self.user.first_name} {self.user.last_name} from Club: {self.club}')
+
     #Constraints:
     def test_user_and_club_together_are_unique(self):
         try:
