@@ -101,19 +101,40 @@ def join_tournament(request, tournament_id):
 @login_required
 def my_tournaments_list(request):
     current_user = request.user
-    my_tournaments_participant = []
-    my_tournaments_organiser = []
+    my_tournaments = [
+        [[],[],[]], # Participant... past/present/future
+        [[],[],[]] # Organiser
+    ]
+    
+    curr_time = now()
+    
     for tournament in Tournament.objects.all():
         if Membership.objects.filter(user=current_user, club=tournament.club).exists():
             if Participant.objects.filter(tournament=tournament, user=current_user).exists():
-                my_tournaments_participant.append(club)
+                outer_index=0
             elif Organiser.objects.filter(tournament=tournament, user=current_user).exists():
-                my_tournaments_organiser.append(club)
+                outer_index=1
+            else:
+                outer_index=None
+            
+            if outer_index:
+                if tournament.end <= curr_time:
+                    inner_index = 0
+                elif tournament.start <= curr_time:
+                    inner_index = 1
+                else:
+                    inner_index = 2
+                    
+                my_tournaments[outer_index][inner_index].append(tournament)
     
     return render(request, 'tournament/my_tournament_list.html', {
                 'current_user': request.user,
-                'participant_tournaments': my_tournaments_participant,
-                'organiser_tournaments': my_tournaments_organiser
+                'participant_tournaments_past': my_tournaments[0][0],
+                'participant_tournaments_present': my_tournaments[0][1],
+                'participant_tournaments_future': my_tournaments[0][2],
+                'organiser_tournaments_past': my_tournaments[1][0],
+                'organiser_tournaments_present': my_tournaments[1][1],
+                'organiser_tournaments_future': my_tournaments[1][2],
             }
         )
-                
+            
