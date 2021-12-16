@@ -77,6 +77,7 @@ class ClubModelTestCase(TestCase):
 
     # Test get get memberships
     def test_get_memberships(self):
+        self.assertEqual(len(self.club.get_memberships()), 0)
         self.member = Membership.objects.create(
             user = self.user,
             club = self.club,
@@ -85,6 +86,7 @@ class ClubModelTestCase(TestCase):
 
     # Test get banned members
     def test_get_banned_members(self):
+        self.assertEqual(len(self.club.get_banned_members()), 0)
         self.ban = Ban.objects.create(
             club = self.club,
             user = self.user,
@@ -93,6 +95,7 @@ class ClubModelTestCase(TestCase):
 
     # Test get applications
     def test_get_applications(self):
+        self.assertEqual(len(self.club.get_applications()), 0)
         self.app = Application.objects.create(
             club = self.club,
             user = self.user,
@@ -102,6 +105,7 @@ class ClubModelTestCase(TestCase):
 
     # Test get Officers
     def test_get_officers(self):
+        self.assertEqual(len(self.club.get_officers()), 0)
         self.member = Membership.objects.create(
             user = self.user,
             club = self.club,
@@ -110,7 +114,7 @@ class ClubModelTestCase(TestCase):
         self.assertEqual(len(self.club.get_officers()), 1)
 
     #Test get Owner
-    def test_get_officers(self):
+    def test_get_owners(self):
         self.member = Membership.objects.create(
             user = self.user,
             club = self.club,

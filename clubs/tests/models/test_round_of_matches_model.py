@@ -19,7 +19,6 @@ class RoundOfMatchesModelTestCase(TestCase):
         self.tourn = Tournament.objects.get(id=1)
         self.round = RoundOfMatches.objects.create(tournament=self.tourn)
 
-
     def test_valid_roundofmatches_object(self):
         self._assert_round_is_valid()
     
@@ -30,7 +29,6 @@ class RoundOfMatchesModelTestCase(TestCase):
     def test_tournament_must_be_type_Tournament(self):
         with self.assertRaises(ValueError):
             self.round.tournament = "WRONG INPUT"
-    
 
     #assertions
     def _assert_round_is_valid(self):
