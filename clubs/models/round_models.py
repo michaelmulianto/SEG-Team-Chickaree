@@ -69,15 +69,30 @@ class GroupStage(TournamentStageBase, StageMethodInterface):
         if not self.get_is_complete():
             return None
 
-        groups = list(SingleGroup.objects.filter(group_stage=self))
-        winners = []
+        # We assume the number of winners is even, with the current algorithms this should always be the case.
+        
+        groups = list(self.get_single_groups()))
+        winners_per_group = groups[0].winners_required
+        num_winners = len(groups)*winners_per_group
+        seeds = []
+        for i in range(winners_per_group):
+            seeds.append([])
+            
         for group in groups:
-            winners += group.get_winners()
-
+            winners_from_group = group.get_winners()
+            for i in range(winners_per_group):
+                seeds[i].append(winners_from_group[i])
+                
+        winners = []
+        for i in range(num_winners):
+            # 'Clever' use of modulo to seperate those in the same group.
+            # We also ensure 2 players in the same seed are not adjacent.
+            winners.append(seeds[i % winners_from_group][i % len(groups)])
+        
         return winners
 
     def get_matches(self):
-        groups = list(SingleGroup.objects.filter(group_stage=self))
+        groups = list(self.get_single_groups())
         matches = []
         for group in groups:
             matches += group.get_matches()
