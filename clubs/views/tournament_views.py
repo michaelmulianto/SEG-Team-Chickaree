@@ -22,6 +22,9 @@ from django.urls import reverse
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 
+from django.conf import settings
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+
 class OrganiseTournamentView(FormView):
     """Create a new tournament."""
     form_class = OrganiseTournamentForm
@@ -94,9 +97,21 @@ def show_tournament_participants(request, tournament_id):
     tournament = Tournament.objects.get(id=tournament_id)
     club = tournament.club
     if Membership.objects.filter(user=request.user, club=club).exists():
+
+        paginator = Paginator(tournament.get_participants(), settings.TOURNAMENT_PARTICIPANTS_PER_PAGE)
+
+        page = request.GET.get('page')
+        try:
+            page_obj = paginator.page(page)
+        except PageNotAnInteger:
+            page_obj  = paginator.page(1)
+        except EmptyPage:
+            page_obj  = paginator.page(paginator.num_pages)
+
         return render(request, 'tournament/show_tournament_participants.html', {
                 'current_user': request.user,
-                'tournament': tournament
+                'tournament': tournament,
+                'page_obj' :page_obj
             }
         )
     else:
