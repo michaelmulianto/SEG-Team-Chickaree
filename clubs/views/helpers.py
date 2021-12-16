@@ -1,7 +1,6 @@
 """Functions to aid functionality of the views"""
 from django.core.exceptions import ObjectDoesNotExist
 from clubs.models import Club, Membership, Organiser, Participant
-from clubs.views.decorators import is_head_organiser
 from django.db.models.functions import Lower
 
 
