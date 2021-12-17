@@ -132,7 +132,7 @@ class Command(BaseCommand):
                 o.full_clean()
                 o.save()
 
-                participants = sample(list(Membership.objects.exclude(id=org_member.id).filter(club=club)), t.capacity)
+                participants = sample(list(Membership.objects.exclude(id=org_member.id).exclude(is_owner=True).filter(club=club)), t.capacity)
                 for p in participants:
                     Participant.objects.create(
                         member = p,
