@@ -52,7 +52,7 @@ Run all tests with:
 $ python3 manage.py test
 ```
 
-**Collect static files with:**
+**[optional, for deployment] Collect static files with:**
 ```
 $ python3 manage.py collectstatic
 ```
