@@ -69,3 +69,6 @@ Main sources are:
 
 While all code is original, Stack overflow and other online resources is occasionally used as reference to fix problems or guide implementaion. Some notable references are:
   - [Single boolean constraint implementation mechanism](https://stackoverflow.com/questions/1455126/unique-booleanfield-value-in-django).
+  - [Sort list by diccionary values](https://www.geeksforgeeks.org/python-sort-list-by-dictionary-values/), used in get_winners() method.
+  - [Date countdown as filter tag in template](https://stackoverflow.com/questions/47622089/django-template-counting-days-from-now-to-specific-date).
+  - [Create basic custom template tags](https://stackoverflow.com/questions/6451304/django-simple-custom-template-tag-example), the concept is well now but unfamiliar to us and was often recommended as good practice.
