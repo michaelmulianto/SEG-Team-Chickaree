@@ -54,7 +54,6 @@ Seeding provides some nice test accounts, most mandated by the project non-funct
 All superusers should be created locally as they are not used in the deployed application: seeding and unseeding won't impact these.
 
 All passwords are "Password123"
-  - testuser1 / test@example.org (This covers edge cases useful for testing)
   - Jebediah142 / jeb@example.org
   - Valentina123 / val@example.org
   - Billie444 / billie@example.org
