@@ -8,8 +8,6 @@ The members of the team are:
 - Liam Clark Gutiérrez
 - Kanishk Upadhyay
 
-*Add any further information about the team here, such as absent team members.*
-
 ## Project structure
 The project is called `system`.  It currently consists of a single app `clubs`.
 
