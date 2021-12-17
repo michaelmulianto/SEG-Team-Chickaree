@@ -47,8 +47,6 @@ Run all tests with:
 $ python3 manage.py test
 ```
 
-*The above instructions should work in your version of the application.  If there are deviations, declare those here in bold.  Otherwise, remove this line.*
-
 ## Seeding and Useful Test Accounts
 Seeding provides some nice test accounts, most mandated by the project non-functional requirements.
 Seeding does not impact superusers.
