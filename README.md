@@ -28,6 +28,13 @@ Install all required packages:
 $ pip3 install -r requirements.txt
 ```
 
+**As in Tools video 10.2, you may have to reinstall libpq-dev to remove errors if using Ubuntu 20.04:**
+
+```
+$ sudo apt-get install libpq-dev --reinstall
+$ pip3 install -r requirements.txt
+```
+
 Migrate the database:
 
 ```
