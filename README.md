@@ -51,7 +51,8 @@ $ python3 manage.py test
 
 ## Seeding and Useful Test Accounts
 Seeding provides some nice test accounts, most mandated by the project non-functional requirements.
-All superusers should be created locally as they are not used in the deployed application: seeding and unseeding won't impact these.
+Seeding does not impact superusers.
+The deployed application is seeded.
 
 All passwords are "Password123"
   - Jebediah142 / jeb@example.org
