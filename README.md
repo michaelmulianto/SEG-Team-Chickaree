@@ -45,6 +45,11 @@ Run all tests with:
 $ python3 manage.py test
 ```
 
+**Collect static files with:**
+```
+$ python3 manage.py collectstatic
+```
+
 ## Seeding and Useful Test Accounts
 Seeding provides some nice test accounts, most mandated by the project non-functional requirements.
 Seeding does not impact superusers.
