@@ -99,7 +99,7 @@ class Command(BaseCommand):
 
             # Generate 3 Tournaments, one complete, one partially complete, one not started.
             tournaments = []
-            capacities = Tournament.capacities
+            capacities = [2,4,8,16,32,48,96]
             for j in range(0,3):
                 if j == 0:
                     starttime = now() - timedelta(hours=48)
