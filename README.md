@@ -14,7 +14,7 @@ The members of the team are:
 The project is called `system`.  It currently consists of a single app `clubs`.
 
 ## Deployed version of the application
-The deployed version of the application can be found at [URL](URL).
+The deployed version of the application can be found [here](https://lit-tundra-65931.herokuapp.com/).
 
 ## Installation instructions
 To install the software and use it in your local development environment, you must first set up and activate a local development environment.  From the root of the project:
@@ -54,7 +54,6 @@ Seeding provides some nice test accounts, most mandated by the project non-funct
 All superusers should be created locally as they are not used in the deployed application: seeding and unseeding won't impact these.
 
 All passwords are "Password123"
-  - testuser1 / test@example.org (This covers edge cases useful for testing)
   - Jebediah142 / jeb@example.org
   - Valentina123 / val@example.org
   - Billie444 / billie@example.org
